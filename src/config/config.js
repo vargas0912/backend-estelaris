@@ -15,7 +15,7 @@ module.exports = {
     define: {
       timestamps: true,
       paranoid: true,
-      // Fk type user_id
+      // Fk type user_id en vez de userI
       underscored: true
     }
   },
