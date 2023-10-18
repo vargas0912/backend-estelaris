@@ -1,9 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-// const { connection } = require('./database/db');
-const { sequelize } = require('./models/index');
 
-// const { dbConnectMySql } = require('../config/mysql');
+const { sequelize } = require('./models/index');
 
 class Server {
   constructor () {
@@ -25,6 +23,8 @@ class Server {
 
   async dbConnect () {
     // await dbConnectMySql();
+
+    // Verificar como hacer que en production siempre haga 'sequelize.authenticate'
     await sequelize.sync({ force: false }).then(() => {
       console.log(`Sequelize is online. Environment: ${process.env.NODE_ENV}`);
     });
