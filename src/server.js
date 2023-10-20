@@ -4,11 +4,11 @@ const cors = require('cors');
 const { sequelize } = require('./models/index');
 
 class Server {
-  constructor () {
+  constructor (environment) {
     this.app = express();
     this.port = process.env.PORT || 3000;
 
-    this.dbConnect();
+    this.dbConnect(environment);
     // this.morgan();
     this.middlewares();
   }
@@ -21,13 +21,19 @@ class Server {
     this.app.close();
   }
 
-  async dbConnect () {
-    // await dbConnectMySql();
-
-    // Verificar como hacer que en production siempre haga 'sequelize.authenticate'
-    await sequelize.sync({ force: false }).then(() => {
-      console.log(`Sequelize is online. Environment: ${process.env.NODE_ENV}`);
-    });
+  async dbConnect (environment) {
+    // Modo pruccion
+    if (environment === 'prudction') {
+      await sequelize.authentication().then(() => {
+        console.log('Sequelize is online');
+      });
+    } else {
+      // Modo desarrollo
+      // Verificar como hacer que en production siempre haga 'sequelize.authenticate'
+      await sequelize.sync({ force: false }).then(() => {
+        console.log(`Sequelize is online. Environment: ${process.env.NODE_ENV}`);
+      });
+    }
   }
 
   middlewares () {
