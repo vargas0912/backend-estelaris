@@ -19,7 +19,9 @@ module.exports = (sequelize, DataTypes) => {
     active: DataTypes.BOOLEAN
   }, {
     sequelize,
+    paranoid: true,
     modelName: 'municipalities'
   });
+
   return municipalities;
 };

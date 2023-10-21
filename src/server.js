@@ -23,7 +23,7 @@ class Server {
 
   async dbConnect (environment) {
     // Modo pruccion
-    if (environment === 'prudction') {
+    if (environment === 'test') {
       await sequelize.authentication().then(() => {
         console.log('Sequelize is online');
       });
@@ -43,7 +43,6 @@ class Server {
 
     this.app.use(express.static('storage'));
 
-    //* Invocar rutas. "./routes" va sobre el index.js que recorre la coleccion de rutas (archivos)
     this.app.use('/api', require('./routes'));
   }
 

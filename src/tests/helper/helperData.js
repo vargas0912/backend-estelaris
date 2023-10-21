@@ -1,5 +1,5 @@
 const testAuthLogin = {
-  email: 'test1@test.com',
+  email: 'superadmin@test.com',
   password: '12345678'
 };
 
@@ -11,10 +11,30 @@ const testAuthRegister = {
   role: 'user'
 };
 
+const testAuthRegisterSuperAdmin = {
+  name: 'Super admin',
+  email: 'superadmin@test.com',
+  role: 'superadmin',
+  password: '12345678'
+};
+
+const testAuthRegisterSuperAdminErr = {
+  name: 'Super admin',
+  email: 'superadmin@test.com',
+  role: 'user',
+  password: '12345678'
+};
+
+const testAuthRegisterSuperAdminFail = {
+  name: 'Super admin',
+  email: 'superadmin@test.com',
+  password: '12345678'
+};
+
 const testAuthRegisterAdmin = {
   name: 'User admin',
   email: 'test2@test.com',
-  role: ['admin'],
+  role: 'admin',
   password: '12345678'
 };
 
@@ -39,6 +59,9 @@ module.exports = {
   testAuthRegister,
   testAuthLogin,
   testAuthRegisterAdmin,
+  testAuthRegisterSuperAdmin,
+  testAuthRegisterSuperAdminErr,
+  testAuthRegisterSuperAdminFail,
   testStorageRegister,
   testDataProduct
 };
