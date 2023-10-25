@@ -2,20 +2,6 @@ const { users } = require('../models/index');
 const { encrypt } = require('../utils/handlePassword');
 const { tokenSign } = require('../utils/handleJwt');
 
-const getUsers = async () => {
-  // eslint-disable-next-line no-use-before-define
-  const data = await users.findAll();
-
-  // Omitir un valor específico de cada objeto en el array
-  const users = data.map(user => {
-    // eslint-disable-next-line no-unused-vars
-    const { password, ...rest } = user.toJSON();
-    return rest;
-  });
-
-  return users;
-};
-
 const getUser = async (id) => {
   const data = await users.findOne({
     where: {
@@ -28,6 +14,19 @@ const getUser = async (id) => {
   }
 
   return data;
+};
+
+const getUsers = async () => {
+  const data = await users.findAll();
+
+  // Omitir un valor específico de cada objeto en el array
+  const allUsers = data.map(user => {
+    // eslint-disable-next-line no-unused-vars
+    const { password, ...rest } = user.toJSON();
+    return rest;
+  });
+
+  return allUsers;
 };
 
 const registerUser = async (req) => {

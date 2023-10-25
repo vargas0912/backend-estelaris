@@ -6,8 +6,8 @@ const sequelize = new Sequelize(config);
 
 const dbConnectMySql = async () => {
   try {
-    // await sequelize.authenticate();
-    await sequelize.sync({ force: false });
+    await sequelize.authenticate();
+    // await sequelize.sync({ force: false });
     console.log(`MySQL is online. Environment: ${process.env.NODE_ENV}`);
   } catch (e) {
     console.log('MYSQL Error de conexión', e);

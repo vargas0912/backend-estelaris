@@ -8,7 +8,7 @@ class Server {
     this.app = express();
     this.port = process.env.PORT || 3000;
 
-    this.dbConnect(environment);
+    this.dbConnect();
     // this.morgan();
     this.middlewares();
   }
@@ -21,19 +21,27 @@ class Server {
     this.app.close();
   }
 
-  async dbConnect (environment) {
-    // Modo pruccion
-    if (environment === 'test') {
-      await sequelize.authentication().then(() => {
-        console.log('Sequelize is online');
-      });
-    } else {
-      // Modo desarrollo
-      // Verificar como hacer que en production siempre haga 'sequelize.authenticate'
-      await sequelize.sync({ force: false }).then(() => {
-        console.log(`Sequelize is online. Environment: ${process.env.NODE_ENV}`);
-      });
+  async dbConnect () {
+    try {
+      await sequelize.authenticate();
+      // await sequelize.sync({force:true});
+      console.log(`MySQL is online. Environment: ${process.env.NODE_ENV}`);
+    } catch (e) {
+      console.log('MYSQL Error de conexión', e);
     }
+    // Modo pruccion
+    // if (environment === 'test') {
+    //   await sequelize.authentication().then(() => {
+    //     console.log('Sequelize is online');
+    //   });
+    // } else {
+    //   // Modo desarrollo
+    //   // Verificar como hacer que en production siempre haga 'sequelize.authenticate'
+    //   // await sequelize.sync({ force: false }).then(() => {
+    //   await sequelize.authentication().then(() => {
+    //     console.log(`Sequelize is online. Environment: ${process.env.NODE_ENV}`);
+    //   });
+    // }
   }
 
   middlewares () {

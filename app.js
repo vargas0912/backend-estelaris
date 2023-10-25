@@ -4,6 +4,6 @@ const Server = require('./src/server');
 
 const server = new Server();
 
-const service = server.listen();
+server.listen();
 
-module.exports = { server, service };
+module.exports = server;
