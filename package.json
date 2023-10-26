@@ -10,7 +10,7 @@
     "lint:fix": "npm run lint -- --fix",
     "test": "NODE_ENV=test jest --verbose --silent",
     "pretest": "NODE_ENV=test npm run db:reset",
-    "db:reset": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all --seeders-path ./src/database/seeders",
+    "db:reset": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all --seeders-path ./src/database/seeders/test",
     "db:create:test": "NODE_ENV=test npx sequelize-cli db:create",
     "prepare": "husky install"
   },

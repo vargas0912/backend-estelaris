@@ -33,7 +33,7 @@ const testAuthRegisterSuperAdminFail = {
 
 const testAuthRegisterAdmin = {
   name: 'User admin',
-  email: 'test2@test.com',
+  email: 'admin@estelaris.com',
   role: 'admin',
   password: '12345678'
 };
