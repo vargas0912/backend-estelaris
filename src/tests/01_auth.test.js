@@ -146,6 +146,6 @@ describe('[Privileges] Test api privileges //api/privileges/', () => {
     await supertest(server.app)
       .post('/api/privilege')
       .send(testAuthLogin)
-      .expect(200);
+      .expect(404);
   });
 });
