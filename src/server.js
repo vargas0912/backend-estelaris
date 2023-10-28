@@ -1,6 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 
+const swaggerUI = require('swagger-ui-express');
+const openApiConfiguration = require('../docs/swagger');
+
 const { sequelize } = require('./models/index');
 
 class Server {
@@ -37,6 +40,8 @@ class Server {
     this.app.use(express.json());
 
     this.app.use(express.static('storage'));
+
+    this.app.use('/documentation', swaggerUI.serve, swaggerUI.setup(openApiConfiguration));
 
     this.app.use('/api', require('./routes'));
   }

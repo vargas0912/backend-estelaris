@@ -61,6 +61,10 @@ const getOnePrivilegeRecord = async (req, res) => {
 
     const privilege = await getOnePrivilege(req.id);
 
+    if (!privilege) {
+      res.status(404);
+    }
+
     res.send({ privilege });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
@@ -72,6 +76,10 @@ const getPrivilegesByModuleRecords = async (req, res) => {
     req = matchedData(req);
 
     const privileges = await getPrivilegeByModule(req.module);
+
+    if (!privileges) {
+      res.status(404);
+    }
 
     res.send({ privileges });
   } catch (error) {

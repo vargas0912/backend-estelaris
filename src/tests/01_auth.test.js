@@ -6,10 +6,13 @@ const {
   testAuthRegisterSuperAdminErr,
   testAuthRegisterSuperAdminFail,
   testAuthRegisterAdmin,
-  testAuthLogin
+  testAuthLogin,
+  privilegeWrong
 } = require('./helper/helperData');
 
 const server = require('../../app');
+
+let Token = '';
 
 // const api = supertest(server.app);
 
@@ -33,8 +36,11 @@ const server = require('../../app');
  * 1. Cargar seed de privilegios basicos
  * 2. Crear privilegio de prueba
  * 3. Crear privilegio con errores
- * 4. Asignar a user admin los privilegios
- * 5.
+ * 4. Ver lista de privilegios
+ * 5. Ver privilegio por id
+ * 6. Ver privilegio por modulo
+ * 7. Modificar privilegio
+ * 8. Eliminar privilegio
  */
 
 describe('[AUTH] super User register //api/auth/registerSuperUser', () => {
@@ -99,9 +105,7 @@ describe('[AUTH] super User register //api/auth/registerSuperUser', () => {
 });
 
 describe('[USERS] Test api users //api/users/', () => {
-  let Token = '';
-
-  test('7. Login for get data. 200', async () => {
+  test('Login for get data. 200', async () => {
     await supertest(server.app)
       .post('/api/auth/login')
       .set('Content-type', 'application/json')
@@ -114,38 +118,73 @@ describe('[USERS] Test api users //api/users/', () => {
       });
   });
 
-  test('8. Shows all users', async () => {
+  test('7. Shows all users', async () => {
     await supertest(server.app)
       .get('/api/users')
       .auth(Token, { type: 'bearer' })
-      // .set('Authorization', 'bearer ' + Token)
       .expect(200);
   });
 
-  test('9. Find wrong  user. Expect 404', async () => {
+  test('8. Find wrong  user. Expect 404', async () => {
     await supertest(server.app)
       .get('/api/users/25')
       .auth(Token, { type: 'bearer' })
       .expect(404);
-
-    // expect(response.body).toHaveProperty('user');
   });
 
-  test('10. Shows only one user. Expec 200', async () => {
+  test('9. Shows only one user. Expec 200', async () => {
     await supertest(server.app)
       .get('/api/users/1')
       .auth(Token, { type: 'bearer' })
       .expect(200);
+  });
 
-    // expect(response.body).toHaveProperty('user');
+  test('10. modify one user. Expect 200', async () => {
+    await supertest(server.app)
+      .put('/api/users/2')
+      .auth(Token, { type: 'bearer' })
+      .send({ name: 'User modified', role: 'superadmin' })
+      .expect(200);
+  });
+
+  test('11. modify one user with role wrong. Expect 400', async () => {
+    await supertest(server.app)
+      .put('/api/users/2')
+      .auth(Token, { type: 'bearer' })
+      .send({ name: 'User modified', role: 'speradmin' })
+      .expect(400);
   });
 });
 
 describe('[Privileges] Test api privileges //api/privileges/', () => {
-  test('1. Create test privilege. Expect 200', async () => {
+  test('1. show all privileges. Expect 200', async () => {
     await supertest(server.app)
-      .post('/api/privilege')
-      .send(testAuthLogin)
-      .expect(404);
+      .get('/api/privileges')
+      .auth(Token, { type: 'bearer' })
+      .expect(200);
+  });
+
+  test('2. show only one privilege. Expect 200', async () => {
+    await supertest(server.app)
+      .get('/api/privileges/1')
+      .auth(Token, { type: 'bearer' })
+      .expect(200);
+  });
+
+  test('3. show only one privilege  y module. Expect 200', async () => {
+    const response = await supertest(server.app)
+      .get('/api/privileges/module/users')
+      .auth(Token, { type: 'bearer' })
+      .expect(200);
+
+    expect(response.body).toHaveProperty('privileges');
+  });
+
+  test('2. Create test privilege. Expect 200', async () => {
+    await supertest(server.app)
+      .post('/api/privileges')
+      .auth(Token, { type: 'bearer' })
+      .send(privilegeWrong)
+      .expect(200);
   });
 });

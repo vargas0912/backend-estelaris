@@ -57,6 +57,8 @@ const updateRecord = async (req, res) => {
       user.set('password', undefined, { strict: false });
     }
 
+    console.log(user);
+
     res.send({ user });
   } catch (error) {
     handleHttpError(res, `ERROR_UPDATE_RECORD --> ${error}`, 400);

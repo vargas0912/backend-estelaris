@@ -4,14 +4,6 @@ const { privileges } = require('../models/index');
 const getOnePrivilege = async (id) => {
   const result = await privileges.findByPk(id);
 
-  if (!result) {
-    return {
-      result: {
-        msg: 'NOT_FOUND'
-      }
-    };
-  }
-
   return result;
 };
 
@@ -22,14 +14,6 @@ const getPrivilegeByModule = async (module) => {
         module
       }
     });
-
-  if (!result) {
-    return {
-      result: {
-        msg: 'NOT_FOUND'
-      }
-    };
-  }
 
   return result;
 };

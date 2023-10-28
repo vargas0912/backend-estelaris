@@ -25,7 +25,7 @@ const validateAddRecord = [
   check('name')
     .exists().withMessage(USER_VALIDATORS.NAME_NOT_EXISTS).bail()
     .notEmpty().withMessage(USER_VALIDATORS.NAME_IS_EMPTY).bail(),
-  check('codeName')
+  check('codename')
     .exists().withMessage(USER_VALIDATORS.CODE_NOT_EXISTS).bail()
     .notEmpty().withMessage(USER_VALIDATORS.CODE_IS_EMPTY).bail(),
   check('module')

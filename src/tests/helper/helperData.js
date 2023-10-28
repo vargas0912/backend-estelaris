@@ -1,3 +1,9 @@
+const privilegeWrong = {
+  name: 'name',
+  codename: 'codename',
+  module: 'module'
+};
+
 const testAuthLogin = {
   email: 'superadmin@test.com',
   password: '12345678'
@@ -43,18 +49,6 @@ const testStorageRegister = {
   filename: 'file-test.mp3'
 };
 
-const testDataProduct = {
-  name: 'Ejemplo',
-  description: 'Ejemplo',
-  cantidad: 2,
-  provider: {
-    name: 'Ejemplo',
-    contact: 'Ejemplo',
-    country: 'VE'
-  },
-  mediaId: ''
-};
-
 module.exports = {
   testAuthRegister,
   testAuthLogin,
@@ -63,5 +57,5 @@ module.exports = {
   testAuthRegisterSuperAdminErr,
   testAuthRegisterSuperAdminFail,
   testStorageRegister,
-  testDataProduct
+  privilegeWrong
 };
