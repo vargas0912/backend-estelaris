@@ -57,8 +57,6 @@ const updateRecord = async (req, res) => {
       user.set('password', undefined, { strict: false });
     }
 
-    console.log(user);
-
     res.send({ user });
   } catch (error) {
     handleHttpError(res, `ERROR_UPDATE_RECORD --> ${error}`, 400);
@@ -69,6 +67,7 @@ const deleteRecord = async (req, res) => {
   try {
     req = matchedData(req);
 
+    console.log(req);
     const result = await users.destroy({
       where: {
         id: req.id

@@ -1,7 +1,7 @@
-const privilegeWrong = {
-  name: 'name',
+const privilege = {
+  name: 'name test',
   codename: 'codename',
-  module: 'module'
+  module: 'module test'
 };
 
 const testAuthLogin = {
@@ -57,5 +57,5 @@ module.exports = {
   testAuthRegisterSuperAdminErr,
   testAuthRegisterSuperAdminFail,
   testStorageRegister,
-  privilegeWrong
+  privilege
 };

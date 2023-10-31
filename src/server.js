@@ -26,8 +26,8 @@ class Server {
 
   async dbConnect () {
     try {
-      await sequelize.authenticate();
-      // await sequelize.sync({ force: true });
+      // await sequelize.authenticate();
+      await sequelize.sync({ force: true });
       console.log(`MySQL is online. Environment: ${process.env.NODE_ENV}`);
     } catch (e) {
       console.log('MYSQL Error de conexión', e);

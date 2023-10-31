@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate (models) {
       // Un municipio pertenece a un estado
       this.belongsTo(models.states, { as: 'estado', foreignKey: 'state_id' });
+      this.hasMany(models.branches, { as: 'municipio', foreignKey: 'municipality_id' });
     }
   }
   municipalities.init({
