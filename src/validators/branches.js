@@ -13,13 +13,13 @@ const validateGetRecord = [
 ];
 
 const valiAddRecord = [
-  check('description')
+  check('name')
     .exists().withMessage(BRANCH_VALIDATORS.DESC_NOT_EXISTS).bail()
     .notEmpty().withMessage(BRANCH_VALIDATORS.DESC_IS_EMPTY).bail(),
   check('address')
     .exists().withMessage(BRANCH_VALIDATORS.ADDRESS_NOT_EXISTS).bail()
     .notEmpty().withMessage(BRANCH_VALIDATORS.ADDRESS_IS_EMPTY).bail(),
-  check('municipalityId')
+  check('municipality_id')
     .exists().withMessage(BRANCH_VALIDATORS.MUNICIPALITY_NOT_EXISTS).bail()
     .notEmpty().withMessage(BRANCH_VALIDATORS.MUNICIPALITY_IS_EMPTY).bail(),
   check('phone'),
@@ -40,7 +40,7 @@ const valiUpdateRecord = [
   check('address')
     .exists().withMessage(BRANCH_VALIDATORS.ADDRESS_NOT_EXISTS).bail()
     .notEmpty().withMessage(BRANCH_VALIDATORS.ADDRESS_IS_EMPTY).bail(),
-  check('municipalityId')
+  check('municipality_id')
     .exists().withMessage(BRANCH_VALIDATORS.MUNICIPALITY_NOT_EXISTS).bail()
     .notEmpty().withMessage(BRANCH_VALIDATORS.MUNICIPALITY_IS_EMPTY).bail(),
   check('phone'),

@@ -160,7 +160,7 @@ const swaggerDefinition = {
           address: {
             type: 'string'
           },
-          municipalityId: {
+          municipality_id: {
             type: 'number'
           },
           phone: {

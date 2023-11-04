@@ -1,8 +1,17 @@
-const { branches } = require('../models/index');
+const { branches, municipalities } = require('../models/index');
+
+const attributes = ['id', 'name', 'address', 'phone', 'created_at', 'updated_at'];
+const municipalityAttributes = ['id', 'name'];
 
 const getAllBranches = async () => {
   const result = await branches.findAll({
-    include: 'municipality'
+    attributes,
+    include: [
+      {
+        model: municipalities,
+        as: 'municipio',
+        attributes: municipalityAttributes
+      }]
   });
 
   return result;
@@ -11,10 +20,16 @@ const getAllBranches = async () => {
 const getBranch = async (id) => {
   const result = await branches.findOne(
     {
+      attributes,
       where: {
         id
       },
-      include: 'municipality'
+      include: [
+        {
+          model: municipalities,
+          as: 'municipio',
+          attributes: municipalityAttributes
+        }]
     });
 
   return result;
