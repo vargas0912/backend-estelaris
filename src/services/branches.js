@@ -42,7 +42,7 @@ const addNewBranch = async (body) => {
 };
 
 const updateBranch = async (branchId, req) => {
-  const { description, address, municipality, phone } = req.body;
+  const { description, address, municipality, phone } = req;
 
   const data = await branches.findByPk(branchId);
 

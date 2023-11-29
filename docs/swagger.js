@@ -249,10 +249,10 @@ const swaggerDefinition = {
       userPrivileges: {
         type: 'object',
         properties: {
-          userId: {
+          user_id: {
             type: 'number'
           },
-          privilegeId: {
+          privilege_id: {
             type: 'number'
           }
         }

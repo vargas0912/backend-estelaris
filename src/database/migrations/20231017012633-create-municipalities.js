@@ -27,7 +27,13 @@ module.exports = {
         type: Sequelize.DATE
       },
       state_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: {
+            tableName: 'states'
+          },
+          key: 'id'
+        }
       },
       deleted_at: {
         type: Sequelize.DATE

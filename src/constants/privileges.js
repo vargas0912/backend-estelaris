@@ -34,10 +34,10 @@ const USER_VALIDATORS = Object.freeze({
 
 const FIELDS = {
   ID: 'id',
-  USERID: 'userid',
+  USERID: 'user_id',
   CODENAME: 'codename',
   PID: 'pid',
-  PRIVILEGE_ID: 'privilegeId'
+  PRIVILEGE_ID: 'privilege_id'
 
 };
 

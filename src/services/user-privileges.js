@@ -1,7 +1,7 @@
-const { privileges, userPrivileges } = require('../models/index');
+const { privileges, userprivileges } = require('../models/index');
 
 const getAllUserPrivileges = async (userId) => {
-  const allPprivileges = await userPrivileges.findAll({
+  const allPrivileges = await userprivileges.findAll({
     attributes: ['id', 'userId', 'privilegeId'],
     where: {
       userId
@@ -14,11 +14,11 @@ const getAllUserPrivileges = async (userId) => {
     ]
   });
 
-  return allPprivileges;
+  return allPrivileges;
 };
 
 const getOneUserPrivilege = async (userId, codeName) => {
-  const datePrivileges = await userPrivileges.count({
+  const datePrivileges = await userprivileges.count({
     where: {
       userId
     },
@@ -36,13 +36,13 @@ const getOneUserPrivilege = async (userId, codeName) => {
 };
 
 const addNewUserPrivilege = async (body) => {
-  const privilege = await userPrivileges.create(body);
+  const privilege = await userprivileges.create(body);
 
   return privilege;
 };
 
 const deleteUserPrivilege = async (userId, privilegeId) => {
-  const userPrivilege = await userPrivileges.destroy({
+  const userPrivilege = await userprivileges.destroy({
     where: {
       userId,
       privilegeId

@@ -26,7 +26,7 @@ const validateGetUserOneRecord = [
 ];
 
 const validateAddUserRecord = [
-  check('userId')
+  check('user_id')
     .exists().withMessage(USER_VALIDATORS.USER_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(USER_VALIDATORS.USER_ID_IS_EMPTY).bail(),
   check(FIELDS.PRIVILEGE_ID)

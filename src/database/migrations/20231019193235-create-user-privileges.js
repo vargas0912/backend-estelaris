@@ -1,8 +1,9 @@
 'use strict';
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('user_privileges', {
+    await queryInterface.createTable('userprivileges', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -24,14 +25,28 @@ module.exports = {
         type: Sequelize.DATE
       },
       user_id: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {
+          model: {
+            tableName: 'users'
+          },
+          key: 'id'
+        }
       },
       privilege_id: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {
+          model: {
+            tableName: 'privileges'
+          },
+          key: 'id'
+        }
       }
     });
   },
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('user_privileges');
+    await queryInterface.dropTable('userprivileges');
   }
 };
