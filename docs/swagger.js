@@ -11,7 +11,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'http://localhost:3000/api'
+      url: 'http://localhost:3001/api'
     },
     {
       url: 'https://apires-mega-production.up.railway.app/api'

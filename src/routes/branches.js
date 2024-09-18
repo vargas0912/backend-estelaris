@@ -7,7 +7,7 @@ const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 
 const { getRecord, getRecords, addRecord, updateRecord, deleteRecord } = require('../controllers/branches');
-const { BRANCH } = require('../constants/branches');
+const { BRANCH } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
 
 /**

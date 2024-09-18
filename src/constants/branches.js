@@ -1,11 +1,3 @@
-const BRANCH = Object.freeze({
-  VIEW: 'view_branch',
-  VIEW_ALL: 'view_branches',
-  ADD: 'create_branch',
-  UPDATE: 'update_branch',
-  DELETE: 'delete_branch'
-});
-
 const BRANCH_VALIDATORS = Object.freeze({
   ID_NOT_EXISTS: 'ID_NOT_EXISTS',
   ID_IS_EMPTY: 'ID_IS_EMPTY',
@@ -17,4 +9,4 @@ const BRANCH_VALIDATORS = Object.freeze({
   MUNICIPALITY_IS_EMPTY: 'MUNICIPALITY_IS_EMPTY'
 });
 
-module.exports = { BRANCH, BRANCH_VALIDATORS };
+module.exports = { BRANCH_VALIDATORS };

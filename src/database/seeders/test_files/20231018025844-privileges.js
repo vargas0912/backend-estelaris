@@ -88,6 +88,7 @@ module.exports = {
         created_at: '2023-10-11 04:03:07.0',
         updated_at: '2023-10-11 04:03:07.0'
       }
+
     ];
 
     await queryInterface.bulkInsert('privileges', privileges, {});

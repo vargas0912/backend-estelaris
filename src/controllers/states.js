@@ -10,8 +10,8 @@ const { handleHttpError } = require('../utils/handleErorr');
 const getRecords = async (req, res) => {
   try {
     // eslint-disable-next-line no-use-before-define
-    const states = await states.findAll();
-    res.send({ states });
+    const data = await states.findAll();
+    res.send({ data });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }
