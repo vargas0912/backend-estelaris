@@ -1,5 +1,5 @@
 const fecha = new Date();
-const { BRANCH: BR, EMPlOYEE: EMP } = require('../../../constants/modules');
+const { BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV } = require('../../../constants/modules');
 
 const data = [
   // Sucursales
@@ -17,14 +17,14 @@ const data = [
   { name: EMP.NAME_DELETE, codeName: EMP.DELETE, module: EMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Privilegios
-  { name: 'Ver privilegio', codeName: 'view_privilege', module: 'privileges', created_at: fecha, updated_at: fecha },
-  { name: 'Crear privilegio', codeName: 'create_privilege', module: 'privileges', created_at: fecha, updated_at: fecha },
-  { name: 'Actualizar privilegio', codeName: 'update_privilege', module: 'privileges', created_at: fecha, updated_at: fecha },
-  { name: 'Eliminar privilegio', codeName: 'delete_privilege', module: 'privileges', created_at: fecha, updated_at: fecha },
-  { name: 'Ver usuario - privilegio', codeName: 'view_user_privilege', module: 'privileges', created_at: fecha, updated_at: fecha },
-  { name: 'Crear usuario - privilegio', codeName: 'create_user_privilege', module: 'privileges', created_at: fecha, updated_at: fecha },
-  { name: 'Eliminar usuario - privilegio', codeName: 'delete_user_privilege', module: 'privileges', created_at: fecha, updated_at: fecha },
-  { name: 'Ver privilegios por modulo', codeName: 'view_module', module: 'privileges', created_at: fecha, updated_at: fecha },
+  { name: PRV.NAME_VIEW, codeName: PRV.VIEW, module: PRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PRV.NAME_ADD, codeName: PRV.ADD, module: PRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PRV.NAME_UPDATE, codeName: PRV.UPDATE, module: PRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PRV.NAME_DELETE, codeName: PRV.DELETE, module: PRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PRV.NAME_USER_PRIVILEGE, codeName: PRV.VIEW_USER_PRIVILEGE, module: PRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PRV.NAME_ADD_USER_PRIVILEGE, codeName: PRV.ADD_USER_PRIVILEGE, module: PRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PRV.NAME_DEL_USER_PRIVILEGE, codeName: PRV.DEL_USER_PRIVILEGE, module: PRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PRV.NAME_VIEW_MODULE, codeName: PRV.VIEW_MODULE, module: 'privileges', created_at: fecha, updated_at: fecha },
 
   // Usuarios
   { name: 'Ver usuarios', codeName: 'view_users', module: 'users', created_at: fecha, updated_at: fecha },
