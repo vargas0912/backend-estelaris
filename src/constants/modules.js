@@ -46,4 +46,18 @@ const PRIVILEGE = Object.freeze({
   NAME_VIEW_MODULE: 'Ver privilegios por modulo'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE };
+const USERS = Object.freeze({
+  MODULE_NAME: 'users',
+  VIEW: 'view_user',
+  NAME_VIEW: 'Ver usuario',
+  VIEW_ALL: 'view_users',
+  NAME_ALL: 'Ver usuarios',
+  ADD: 'register_user',
+  NAME_ADD: 'Registrar usuarios',
+  UPDATE: 'update_user',
+  NAME_UPDATE: 'Modificar usuarios',
+  DELETE: 'delete_user',
+  NAME_DELETE: 'Eliminar usuarios'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS };
