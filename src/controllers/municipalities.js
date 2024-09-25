@@ -1,22 +1,7 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
 
-const { getAllMunicipalities, getMunicipality, getMunicipalitiesByStateId } = require('../services/municipalities');
-
-/**
- * Obtener lista de registros
- * @param {*} req Request
- * @param {*} res Response
- */
-const getAll = async (req, res) => {
-  try {
-    const data = await getAllMunicipalities();
-
-    res.send({ data });
-  } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
-  }
-};
+const { getMunicipality, getMunicipalitiesByStateId } = require('../services/municipalities');
 
 /**
  * Obtener detalle de un registro
@@ -25,12 +10,13 @@ const getAll = async (req, res) => {
  */
 const getById = async (req, res) => {
   try {
-    const { id } = matchedData(req);
+    console.log(req);
 
+    const { id } = matchedData(req);
     const data = await getMunicipality(id);
 
     if (!data) {
-      handleHttpError(res, `BRANCH ${id} NOT EXISTS`, 404);
+      handleHttpError(res, `MUNICIPALITY ${id} NOT EXISTS`, 404);
       return;
     }
 
@@ -57,4 +43,4 @@ const getByStateId = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, getByStateId };
+module.exports = { getById, getByStateId };

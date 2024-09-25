@@ -13,7 +13,7 @@ const validateGetRecord = [
 ];
 
 const validateGetRecordByState = [
-  check('state_id')
+  check('stateId')
     .exists().withMessage(MUNICIPALITY_VALIDATORS.STATE_NOT_EXISTS).bail()
     .notEmpty().withMessage(MUNICIPALITY_VALIDATORS.STATE_IS_EMPTY).bail(),
   (req, res, next) => {

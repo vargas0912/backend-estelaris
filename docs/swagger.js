@@ -137,14 +137,14 @@ const swaggerDefinition = {
       municipalities: {
         type: 'object',
         properties: {
-          stateId: {
-            type: 'number'
-          },
           key: {
             type: 'string'
           },
           name: {
             type: 'string'
+          },
+          state_id: {
+            type: 'number'
           },
           active: {
             type: 'boolean'
