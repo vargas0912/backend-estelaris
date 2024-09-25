@@ -10,8 +10,6 @@ const { getMunicipality, getMunicipalitiesByStateId } = require('../services/mun
  */
 const getById = async (req, res) => {
   try {
-    console.log(req);
-
     const { id } = matchedData(req);
     const data = await getMunicipality(id);
 
