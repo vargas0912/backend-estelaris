@@ -60,4 +60,12 @@ const USERS = Object.freeze({
   NAME_DELETE: 'Eliminar usuarios'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS };
+const MUNICIPALITIES = Object.freeze({
+  MODULE_NAME: 'municipalities',
+  VIEW: 'view_municipality',
+  NAME_VIEW: 'Ver municipio',
+  VIEW_STATE: 'view_state',
+  NAME_VIEW_STATE: 'Ver municipios por estado'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES };

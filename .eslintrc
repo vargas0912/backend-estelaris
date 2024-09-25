@@ -1,8 +1,12 @@
 {
     "extends": "standard",
     "rules": {
+        "quotes": [
+            "error",
+            "single"
+        ],
         "semi": [
-            2,
+            "error",
             "always"
         ]
     },

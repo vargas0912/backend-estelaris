@@ -6,37 +6,10 @@ const { validateGetRecord, validateGetRecordByState } = require('../validators/m
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 
-const { getAll, getById, getByStateId } = require('../controllers/municipalities');
+const { getById, getByStateId } = require('../controllers/municipalities');
 
-const { MUNICIPALITY } = require('../constants/municipalities');
+const { MUNICIPALITIES: MUN } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
-
-/**
- * Get all municipalities
- * @openapi
- * /municipalities:
- *    get:
- *      tags:
- *        - municipalities
- *      summary: Lista de municipios
- *      description: Obtener toda la lista de municipios
- *      security:
- *        - bearerAuth: []
- *      responses:
- *        '200':
- *          description: Arreglo de objetos de todos los municipios.
- *          content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/municipalities'
- *        '422':
- *          description: Error de validacion.
- */
-router.get('/', [
-  authMidleware,
-  checkRol([ROLE.USER, ROLE.ADMIN], MUNICIPALITY.VIEW_ALL)], getAll);
 
 /**
  * Get detail from municipality id
@@ -69,29 +42,29 @@ router.get('/', [
 router.get('/:id', [
   authMidleware,
   validateGetRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], MUNICIPALITY.VIEW)], getById);
+  checkRol([ROLE.USER, ROLE.ADMIN], MUN.VIEW)], getById);
 
 /**
 * Get detail from municipalities
 * @openapi
-* /municipalities/state/{id}:
+* /municipalities/state/{stateId}:
 *    get:
 *      tags:
 *        - municipalities
-*      summary: Municipio por identificador
-*      description: Consulta de municipio mediante el id proporcionado
+*      summary: Municipios por estado
+*      description: Consulta de municipios por estado de la republica
 *      security:
 *        - bearerAuth: []
 *      parameters:
-*      - name: id
+*      - name: stateId
 *        in: path
-*        description: Identificador del municipio
+*        description: Identificador del estado
 *        required: true
 *        schema:
 *          type: number
 *      responses:
 *        '200':
-*          description: Retorna el objecto del municipio consultado
+*          description: Retorna el objecto de todos los municpios del estado especificado
 *          content:
 *             application/json:
 *               schema:
@@ -99,9 +72,9 @@ router.get('/:id', [
 *        '422':
 *          description: Error de validacion.
 */
-router.get('state/:state_id', [
+router.get('/state/:stateId', [
   authMidleware,
   validateGetRecordByState,
-  checkRol([ROLE.USER, ROLE.ADMIN], MUNICIPALITY.VIEW_ALL)], getByStateId);
+  checkRol([ROLE.USER, ROLE.ADMIN], MUN.VIEW_STATE)], getByStateId);
 
 module.exports = router;
