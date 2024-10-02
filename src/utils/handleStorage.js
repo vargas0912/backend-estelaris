@@ -5,7 +5,7 @@ const multer = require('multer');
  *
  */
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: function(req, file, cb) {
     // Ruta local de almacenamiento
     // eslint-disable-next-line n/no-path-concat
     const pathStorage = path.join(__dirname, '/../../storage/'); // `${__dirname}/../../storage/`;
@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
     // Callback function
     cb(null, pathStorage);
   },
-  filename: function (req, file, cb) {
+  filename: function(req, file, cb) {
     // Get extension file
     const ext = file.originalname.split('.').pop();
 

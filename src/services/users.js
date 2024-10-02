@@ -2,7 +2,7 @@ const { users } = require('../models/index');
 const { encrypt } = require('../utils/handlePassword');
 const { tokenSign } = require('../utils/handleJwt');
 
-const getUser = async (id) => {
+const getUser = async(id) => {
   const data = await users.findOne({
     where: {
       id
@@ -16,7 +16,7 @@ const getUser = async (id) => {
   return data;
 };
 
-const getUsers = async () => {
+const getUsers = async() => {
   const data = await users.findAll();
 
   // Omitir un valor específico de cada objeto en el array
@@ -29,7 +29,7 @@ const getUsers = async () => {
   return allUsers;
 };
 
-const registerUser = async (req) => {
+const registerUser = async(req) => {
   const password = await encrypt(req.password);
   const body = { ...req, password };
 
@@ -47,7 +47,7 @@ const registerUser = async (req) => {
   return data;
 };
 
-const registerSuperAdmin = async (req) => {
+const registerSuperAdmin = async(req) => {
   const password = await encrypt(req.password);
   const body = { ...req, password };
 
@@ -64,7 +64,7 @@ const registerSuperAdmin = async (req) => {
   return data;
 };
 
-const findByEmail = async (req) => {
+const findByEmail = async(req) => {
   const query = {
     email: req.email
   };

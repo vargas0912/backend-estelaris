@@ -11,7 +11,7 @@ const { LOGIN, USER } = require('../constants/errors');
  * @param {*} req Request
  * @param {*} res Response
  */
-const registerAdminCtrl = async (req, res) => {
+const registerAdminCtrl = async(req, res) => {
   try {
     req = matchedData(req);
 
@@ -28,7 +28,7 @@ const registerAdminCtrl = async (req, res) => {
  * @param {*} req Request
  * @param {*} res Response
  */
-const registerCtrl = async (req, res) => {
+const registerCtrl = async(req, res) => {
   try {
     req = matchedData(req);
 
@@ -45,7 +45,7 @@ const registerCtrl = async (req, res) => {
  * @param {*} req Request
  * @param {*} res Response
  */
-const loginCtrl = async (req, res) => {
+const loginCtrl = async(req, res) => {
   try {
     req = matchedData(req);
 

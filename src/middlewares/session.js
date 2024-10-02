@@ -11,7 +11,7 @@ const { SESSION } = require('../constants/errors');
  * @param {Next} next
  * @returns
  */
-const authMidleware = async (req, res, next) => {
+const authMidleware = async(req, res, next) => {
   try {
     if (!req.headers.authorization) {
       handleHttpError(res, SESSION.NOT_TOKEN, 401);

@@ -7,7 +7,7 @@ const openApiConfiguration = require('../docs/swagger');
 const { sequelize } = require('./models/index');
 
 class Server {
-  constructor (environment) {
+  constructor(environment) {
     this.app = express();
     this.port = process.env.PORT || 3000;
 
@@ -16,15 +16,15 @@ class Server {
     this.middlewares();
   }
 
-  start () {
+  start() {
     this.server = this.express.listen(3000);
   }
 
-  stop () {
+  stop() {
     this.app.close();
   }
 
-  async dbConnect () {
+  async dbConnect() {
     try {
       await sequelize.authenticate();
       // await sequelize.sync({ force: true });
@@ -34,7 +34,7 @@ class Server {
     }
   }
 
-  middlewares () {
+  middlewares() {
     this.app.use(cors());
 
     this.app.use(express.json());
@@ -46,7 +46,7 @@ class Server {
     this.app.use('/api', require('./routes'));
   }
 
-  listen () {
+  listen() {
     this.app.listen(this.port, () => {
       console.log('Run server on port:', this.port);
     });

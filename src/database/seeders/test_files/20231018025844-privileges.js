@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     const privileges = [
       {
         name: 'Crear privilegio',
@@ -94,7 +94,7 @@ module.exports = {
     await queryInterface.bulkInsert('privileges', privileges, {});
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     await queryInterface.bulkDelete('privileges', null, {});
   }
 };
