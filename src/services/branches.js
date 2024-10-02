@@ -3,7 +3,7 @@ const { branches, municipalities } = require('../models/index');
 const attributes = ['id', 'name', 'address', 'phone', 'created_at', 'updated_at'];
 const municipalityAttributes = ['id', 'name'];
 
-const getAllBranches = async () => {
+const getAllBranches = async() => {
   const result = await branches.findAll({
     attributes,
     include: [
@@ -17,7 +17,7 @@ const getAllBranches = async () => {
   return result;
 };
 
-const getBranch = async (id) => {
+const getBranch = async(id) => {
   const result = await branches.findOne(
     {
       attributes,
@@ -35,14 +35,14 @@ const getBranch = async (id) => {
   return result;
 };
 
-const addNewBranch = async (body) => {
+const addNewBranch = async(body) => {
   const result = await branches.create(body);
 
   return result;
 };
 
-const updateBranch = async (branchId, req) => {
-  const { description, address, municipality, phone } = req;
+const updateBranch = async(branchId, req) => {
+  const { name, address, municipality, phone } = req;
 
   const data = await branches.findByPk(branchId);
 
@@ -54,7 +54,7 @@ const updateBranch = async (branchId, req) => {
     };
   }
 
-  data.description = description || data.description;
+  data.name = name || data.name;
   data.address = address || data.address;
   data.municipality = municipality || data.municipality;
   data.phone = phone || data.phone;
@@ -63,7 +63,7 @@ const updateBranch = async (branchId, req) => {
   return result;
 };
 
-const deleteBranch = async (id) => {
+const deleteBranch = async(id) => {
   const result = await branches.destroy({
     where: {
       id

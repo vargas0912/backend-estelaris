@@ -11,7 +11,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'http://localhost:3001/api'
+      url: 'http://localhost:3000/api'
     },
     {
       url: 'https://apires-mega-production.up.railway.app/api'
@@ -154,7 +154,7 @@ const swaggerDefinition = {
       branches: {
         type: 'object',
         properties: {
-          description: {
+          name: {
             type: 'string'
           },
           address: {
@@ -238,7 +238,7 @@ const swaggerDefinition = {
           name: {
             type: 'string'
           },
-          codeName: {
+          codename: {
             type: 'string'
           },
           module: {

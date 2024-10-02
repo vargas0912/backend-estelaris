@@ -4,7 +4,7 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class privileges extends Model {
-    static associate (models) {
+    static associate(models) {
       this.hasMany(models.userprivileges, { as: 'privileges', foreignKey: 'privilege_id' });
     }
   }
