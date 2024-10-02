@@ -5,7 +5,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
  * sign token method
  * @param {Object} user User object required
  */
-const tokenSign = async (user) => {
+const tokenSign = async(user) => {
   const sign = jwt.sign(
     {
       id: user.id,
@@ -25,7 +25,7 @@ const tokenSign = async (user) => {
  * @param {String} tokenJwt Sesion token
  * @returns
  */
-const verifyToken = async (tokenJwt) => {
+const verifyToken = async(tokenJwt) => {
   try {
     return jwt.verify(tokenJwt, JWT_SECRET);
   } catch (error) {

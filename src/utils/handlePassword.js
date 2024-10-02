@@ -5,7 +5,7 @@ const bcryptjs = require('bcryptjs');
  * @param {String} passwordPlain Password without encrypt
  * @returns {hash}
  */
-const encrypt = async (passwordPlain) => {
+const encrypt = async(passwordPlain) => {
   const hash = await bcryptjs.hash(passwordPlain, 10);
 
   return hash;
@@ -17,7 +17,7 @@ const encrypt = async (passwordPlain) => {
  * @param {String} hashPassword Password with hash encrypt
  * @returns { Boolean } False or true
  */
-const compare = async (passwordPlain, hashPassword) => {
+const compare = async(passwordPlain, hashPassword) => {
   return bcryptjs.compare(passwordPlain, hashPassword);
 };
 

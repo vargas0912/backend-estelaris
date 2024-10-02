@@ -10,7 +10,7 @@ const { ROLE } = require('../constants/roles');
  * @param {Array} rol User rol array
  * @returns next
  */
-const checkRol = (roles, codename) => async (req, res, next) => {
+const checkRol = (roles, codename) => async(req, res, next) => {
   try {
     const { user } = req;
 

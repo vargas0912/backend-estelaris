@@ -34,7 +34,7 @@ const valiUpdateRecord = [
   check('id')
     .exists().withMessage(BRANCH_VALIDATORS.ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(BRANCH_VALIDATORS.ID_IS_EMPTY).bail(),
-  check('description')
+  check('name')
     .exists().withMessage(BRANCH_VALIDATORS.DESC_NOT_EXISTS).bail()
     .notEmpty().withMessage(BRANCH_VALIDATORS.DESC_IS_EMPTY).bail(),
   check('address')

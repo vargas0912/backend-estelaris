@@ -8,7 +8,7 @@ const { getMunicipality, getMunicipalitiesByStateId } = require('../services/mun
  * @param {Request} req Request param
  * @param {Response} res Response param
  */
-const getById = async (req, res) => {
+const getById = async(req, res) => {
   try {
     const { id } = matchedData(req);
     const data = await getMunicipality(id);
@@ -24,7 +24,7 @@ const getById = async (req, res) => {
   }
 };
 
-const getByStateId = async (req, res) => {
+const getByStateId = async(req, res) => {
   try {
     const { stateId } = matchedData(req);
 

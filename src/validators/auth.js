@@ -14,7 +14,7 @@ const validateRegister = [
     .exists().withMessage(REGISTER.EMAIL_NOT_EXISTS).bail()
     .notEmpty().withMessage(REGISTER.EMAIL_EMPTY).bail()
     .isEmail().withMessage(REGISTER.EMAIL_INVALID).bail()
-    .custom(async (value) => {
+    .custom(async(value) => {
       // Verifiando si el email ya está registrado
       const user = await users.findOne({
         attributes: ['email'],

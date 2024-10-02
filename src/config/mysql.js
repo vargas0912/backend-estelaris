@@ -4,7 +4,7 @@ const config = require('./config')[env];
 
 const sequelize = new Sequelize(config);
 
-const dbConnectMySql = async () => {
+const dbConnectMySql = async() => {
   try {
     await sequelize.authenticate();
     // await sequelize.sync({ force: false });

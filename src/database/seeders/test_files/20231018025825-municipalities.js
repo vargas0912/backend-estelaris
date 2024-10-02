@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     const mun = [
       { key: 'A', name: 'Queretaro', active: 1, created_at: new Date(), updated_at: new Date(), state_id: 1 },
       { key: 'B', name: 'Michoacan', active: 1, created_at: new Date(), updated_at: new Date(), state_id: 1 },
@@ -14,7 +14,7 @@ module.exports = {
     await queryInterface.bulkInsert('municipalities', mun, {});
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     await queryInterface.bulkDelete('municipalities', null, {});
   }
 };

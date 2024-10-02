@@ -7,7 +7,7 @@ const { handleHttpError } = require('../utils/handleErorr');
  * @param {*} req Request
  * @param {*} res Response
  */
-const getRecords = async (req, res) => {
+const getRecords = async(req, res) => {
   try {
     // eslint-disable-next-line no-use-before-define
     const data = await states.findAll();
@@ -22,7 +22,7 @@ const getRecords = async (req, res) => {
  * @param {Request} req Request param
  * @param {Response} res Response param
  */
-const getRecord = async (req, res) => {
+const getRecord = async(req, res) => {
   try {
     const { id } = matchedData(req);
 

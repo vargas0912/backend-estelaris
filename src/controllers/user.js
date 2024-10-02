@@ -8,7 +8,7 @@ const { getUsers, getUser } = require('../services/users');
  * @param {*} req Request
  * @param {*} res Response
  */
-const getRecords = async (req, res) => {
+const getRecords = async(req, res) => {
   try {
     const users = await getUsers();
 
@@ -18,7 +18,7 @@ const getRecords = async (req, res) => {
   }
 };
 
-const getRecord = async (req, res) => {
+const getRecord = async(req, res) => {
   try {
     req = matchedData(req);
 
@@ -35,7 +35,7 @@ const getRecord = async (req, res) => {
   }
 };
 
-const updateRecord = async (req, res) => {
+const updateRecord = async(req, res) => {
   try {
     req = matchedData(req);
 
@@ -63,7 +63,7 @@ const updateRecord = async (req, res) => {
   }
 };
 
-const deleteRecord = async (req, res) => {
+const deleteRecord = async(req, res) => {
   try {
     req = matchedData(req);
 
