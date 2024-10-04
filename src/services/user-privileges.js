@@ -2,14 +2,15 @@ const { privileges, userprivileges } = require('../models/index');
 
 const getAllUserPrivileges = async(userId) => {
   const allPrivileges = await userprivileges.findAll({
-    attributes: ['id', 'userId', 'privilegeId'],
+    attributes: ['id', 'user_id', 'privilege_id'],
     where: {
-      userId
+      user_id: userId
     },
     include: [
       {
         model: privileges,
-        attributes: ['name', 'codeName']
+        as: 'privileges',
+        attributes: ['name', 'codename']
       }
     ]
   });
