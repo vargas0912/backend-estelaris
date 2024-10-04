@@ -8,7 +8,7 @@ const { getAllBranches, getBranch, addNewBranch, updateBranch, deleteBranch } = 
  * @param {*} req Request
  * @param {*} res Response
  */
-const getRecords = async (req, res) => {
+const getRecords = async(req, res) => {
   try {
     const branches = await getAllBranches();
 
@@ -23,7 +23,7 @@ const getRecords = async (req, res) => {
  * @param {Request} req Request param
  * @param {Response} res Response param
  */
-const getRecord = async (req, res) => {
+const getRecord = async(req, res) => {
   try {
     const { id } = matchedData(req);
 
@@ -45,7 +45,7 @@ const getRecord = async (req, res) => {
  * @param {*} req
  * @param {*} res
  */
-const addRecord = async (req, res) => {
+const addRecord = async(req, res) => {
   try {
     req = matchedData(req);
 
@@ -57,7 +57,7 @@ const addRecord = async (req, res) => {
   }
 };
 
-const updateRecord = async (req, res) => {
+const updateRecord = async(req, res) => {
   try {
     req = matchedData(req);
 
@@ -69,7 +69,7 @@ const updateRecord = async (req, res) => {
   }
 };
 
-const deleteRecord = async (req, res) => {
+const deleteRecord = async(req, res) => {
   try {
     req = matchedData(req);
 

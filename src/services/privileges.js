@@ -1,13 +1,13 @@
 const { request } = require('express');
 const { privileges } = require('../models/index');
 
-const getOnePrivilege = async (id) => {
+const getOnePrivilege = async(id) => {
   const result = await privileges.findByPk(id);
 
   return result;
 };
 
-const getPrivilegeByModule = async (module) => {
+const getPrivilegeByModule = async(module) => {
   const result = await privileges.findAll(
     {
       where: {
@@ -18,7 +18,7 @@ const getPrivilegeByModule = async (module) => {
   return result;
 };
 
-const getAllPrivileges = async () => {
+const getAllPrivileges = async() => {
   const result = await privileges.findAll();
 
   if (!result) {
@@ -32,14 +32,14 @@ const getAllPrivileges = async () => {
   return result;
 };
 
-const addPrivilege = async (body) => {
+const addPrivilege = async(body) => {
   const result = await privileges.create(body);
 
   return result;
 };
 
-const updatePrivilege = async (id, req = request) => {
-  const { name, codeName, module } = req;
+const updatePrivilege = async(id, req = request) => {
+  const { name, codename, module } = req;
 
   const data = await privileges.findByPk(id);
 
@@ -52,7 +52,7 @@ const updatePrivilege = async (id, req = request) => {
   }
 
   data.name = name || data.name;
-  data.codeName = codeName || data.codeName;
+  data.codename = codename || data.codename;
   data.module = module || data.module;
 
   const result = await data.save();
@@ -60,7 +60,7 @@ const updatePrivilege = async (id, req = request) => {
   return result;
 };
 
-const deletePrivilege = async (id) => {
+const deletePrivilege = async(id) => {
   const result = await privileges.destroy({
     where: {
       id

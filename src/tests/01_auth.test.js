@@ -43,7 +43,7 @@ const api = request(server.app);
  */
 
 describe('[AUTH] super User register //api/auth/registerSuperUser', () => {
-  test('1. Register superUser,  expected 200', async () => {
+  test('1. Register superUser,  expected 200', async() => {
     const response = await api
       .post('/api/auth/registerSuperUser')
       .send(testAuthRegisterSuperAdmin)
@@ -56,7 +56,7 @@ describe('[AUTH] super User register //api/auth/registerSuperUser', () => {
     // console.log(response.body);
   });
 
-  test('2. Register super user duplicated,  expected 400', async () => {
+  test('2. Register super user duplicated,  expected 400', async() => {
     await api
       .post('/api/auth/registerSuperUser')
       .send(testAuthRegisterSuperAdminErr)
@@ -65,7 +65,7 @@ describe('[AUTH] super User register //api/auth/registerSuperUser', () => {
     // console.log(response.body);
   });
 
-  test('3. Register super user incorrect,  expected 400', async () => {
+  test('3. Register super user incorrect,  expected 400', async() => {
     await api
       .post('/api/auth/registerSuperUser')
       .send(testAuthRegisterSuperAdminFail)
@@ -74,7 +74,7 @@ describe('[AUTH] super User register //api/auth/registerSuperUser', () => {
     // console.log(response.body);
   });
 
-  test('4. Register user admin,  expected 200', async () => {
+  test('4. Register user admin,  expected 200', async() => {
     await api
       .post('/api/auth/registerSuperUser')
       .send(testAuthRegisterAdmin)
@@ -83,7 +83,7 @@ describe('[AUTH] super User register //api/auth/registerSuperUser', () => {
     // console.log(response.body);
   });
 
-  test('5. Must be return password invalid error. 400', async () => {
+  test('5. Must be return password invalid error. 400', async() => {
     const newTestAuthLogin = { ...testAuthLogin, password: '123456789' };
     // console.log(newTestAuthLogin);
 
@@ -93,7 +93,7 @@ describe('[AUTH] super User register //api/auth/registerSuperUser', () => {
       .expect(400);
   });
 
-  test('6. Login ok. 200', async () => {
+  test('6. Login ok. 200', async() => {
     await api
       .post('/api/auth/login')
       .send(testAuthLogin)
@@ -104,7 +104,7 @@ describe('[AUTH] super User register //api/auth/registerSuperUser', () => {
 });
 
 describe('[USERS] Test api users //api/users/', () => {
-  test('Login for get data. 200', async () => {
+  test('Login for get data. 200', async() => {
     await api
       .post('/api/auth/login')
       .set('Content-type', 'application/json')
@@ -117,21 +117,21 @@ describe('[USERS] Test api users //api/users/', () => {
       });
   });
 
-  test('7. Shows all users', async () => {
+  test('7. Shows all users', async() => {
     await api
       .get('/api/users')
       .auth(Token, { type: 'bearer' })
       .expect(200);
   });
 
-  test('8. Find wrong  user. Expect 404', async () => {
+  test('8. Find wrong  user. Expect 404', async() => {
     await api
       .get('/api/users/25')
       .auth(Token, { type: 'bearer' })
       .expect(404);
   });
 
-  test('9. Shows only one user. Expec 200', async () => {
+  test('9. Shows only one user. Expec 200', async() => {
     const response = await api
       .get('/api/users/1')
       .auth(Token, { type: 'bearer' });
@@ -140,7 +140,7 @@ describe('[USERS] Test api users //api/users/', () => {
     expect(response.body.user.email).toEqual('superadmin@estelaris.com');
   });
 
-  test('10. modify one user. Expect 200', async () => {
+  test('10. modify one user. Expect 200', async() => {
     await api
       .put('/api/users/2')
       .auth(Token, { type: 'bearer' })
@@ -148,7 +148,7 @@ describe('[USERS] Test api users //api/users/', () => {
       .expect(200);
   });
 
-  test('11. modify one user with role wrong. Expect 400', async () => {
+  test('11. modify one user with role wrong. Expect 400', async() => {
     await api
       .put('/api/users/2')
       .auth(Token, { type: 'bearer' })
@@ -156,21 +156,21 @@ describe('[USERS] Test api users //api/users/', () => {
       .expect(400);
   });
 
-  test('12. delete user incorrect. Expect 404', async () => {
+  test('12. delete user incorrect. Expect 404', async() => {
     await api
       .delete('/api/users/2323')
       .auth(Token, { type: 'bearer' })
       .expect(404);
   });
 
-  test('13. delete user. Expect 200', async () => {
+  test('13. delete user. Expect 200', async() => {
     await api
       .delete('/api/users/3')
       .auth(Token, { type: 'bearer' })
       .expect(200);
   });
 
-  test('14. try show deleted user. Expec 404', async () => {
+  test('14. try show deleted user. Expec 404', async() => {
     await api
       .get('/api/users/3')
       .auth(Token, { type: 'bearer' })
@@ -179,21 +179,21 @@ describe('[USERS] Test api users //api/users/', () => {
 });
 
 describe('[Privileges] Test api privileges //api/privileges/', () => {
-  test('1. show all privileges. Expect 200', async () => {
+  test('1. show all privileges. Expect 200', async() => {
     await api
       .get('/api/privileges')
       .auth(Token, { type: 'bearer' })
       .expect(200);
   });
 
-  test('2. show only one privilege. Expect 200', async () => {
+  test('2. show only one privilege. Expect 200', async() => {
     await api
       .get('/api/privileges/1')
       .auth(Token, { type: 'bearer' })
       .expect(200);
   });
 
-  test('3. show only one privilege  y module. Expect 200', async () => {
+  test('3. show only one privilege  y module. Expect 200', async() => {
     const response = await api
       .get('/api/privileges/module/users')
       .auth(Token, { type: 'bearer' })
@@ -202,7 +202,7 @@ describe('[Privileges] Test api privileges //api/privileges/', () => {
     expect(response.body).toHaveProperty('privileges');
   });
 
-  test('2. Create test privilege. Expect 200', async () => {
+  test('2. Create test privilege. Expect 200', async() => {
     await api
       .post('/api/privileges')
       .auth(Token, { type: 'bearer' })

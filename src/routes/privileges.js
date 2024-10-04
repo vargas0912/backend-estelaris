@@ -207,7 +207,7 @@ router.put('/:id', [
  *          description: Actualiza datos de un privilegio
  *          security:
  *              - bearerAuth: []
- *          operationId: "updatePrivilege"
+ *          operationId: "deletePrivilege"
  *          parameters:
  *          - name: id
  *            in: path
@@ -271,8 +271,7 @@ router.delete('/:id', [
 router.get('/user/:id', [
   authMidleware,
   validateGetUserAllRecord,
-  checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.CREATE_USER)],
-getAllUserPrivilegesRecords);
+  checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.CREATE_USER)], getAllUserPrivilegesRecords);
 
 /**
  * Get all user privilege
@@ -313,8 +312,7 @@ getAllUserPrivilegesRecords);
 router.get('/user/:userid/code/:codename', [
   authMidleware,
   validateGetUserOneRecord,
-  checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.VIEW_USER)],
-getOneUserPrivilegeRecord);
+  checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.VIEW_USER)], getOneUserPrivilegeRecord);
 
 /**
  * Register new privilege
@@ -344,8 +342,7 @@ getOneUserPrivilegeRecord);
 router.post('/user/', [
   authMidleware,
   validateAddUserRecord,
-  checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.CREATE_USER)],
-addUserPrivilegeRecord);
+  checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.CREATE_USER)], addUserPrivilegeRecord);
 
 /**
  * Register new user
@@ -383,7 +380,6 @@ addUserPrivilegeRecord);
 router.delete('/user/:userid/privilege/:pid', [
   authMidleware,
   validateDeleteRecord,
-  checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.DELETE_USER)],
-deleteUserPrivilegeRecord);
+  checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.DELETE_USER)], deleteUserPrivilegeRecord);
 
 module.exports = router;

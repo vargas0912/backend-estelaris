@@ -18,7 +18,7 @@ const {
   getPrivilegeByModule
 } = require('../services/privileges');
 
-const addPrivilegeRecord = async (req, res) => {
+const addPrivilegeRecord = async(req, res) => {
   try {
     req = matchedData(req);
 
@@ -30,7 +30,7 @@ const addPrivilegeRecord = async (req, res) => {
   }
 };
 
-const updatePrivilegeRecord = async (req, res) => {
+const updatePrivilegeRecord = async(req, res) => {
   try {
     req = matchedData(req);
 
@@ -44,7 +44,7 @@ const updatePrivilegeRecord = async (req, res) => {
   }
 };
 
-const deletePrivilegeRecord = async (req, res) => {
+const deletePrivilegeRecord = async(req, res) => {
   try {
     req = matchedData(req);
 
@@ -55,7 +55,7 @@ const deletePrivilegeRecord = async (req, res) => {
   }
 };
 
-const getOnePrivilegeRecord = async (req, res) => {
+const getOnePrivilegeRecord = async(req, res) => {
   try {
     req = matchedData(req);
 
@@ -71,7 +71,7 @@ const getOnePrivilegeRecord = async (req, res) => {
   }
 };
 
-const getPrivilegesByModuleRecords = async (req, res) => {
+const getPrivilegesByModuleRecords = async(req, res) => {
   try {
     req = matchedData(req);
 
@@ -87,7 +87,7 @@ const getPrivilegesByModuleRecords = async (req, res) => {
   }
 };
 
-const getAllPrivilegesRecords = async (req, res) => {
+const getAllPrivilegesRecords = async(req, res) => {
   try {
     const privileges = await getAllPrivileges();
 
@@ -97,7 +97,7 @@ const getAllPrivilegesRecords = async (req, res) => {
   }
 };
 
-const getAllUserPrivilegesRecords = async (req, res) => {
+const getAllUserPrivilegesRecords = async(req, res) => {
   try {
     const role = req.user.role;
 
@@ -111,7 +111,7 @@ const getAllUserPrivilegesRecords = async (req, res) => {
   }
 };
 
-const getOneUserPrivilegeRecord = async (req, res) => {
+const getOneUserPrivilegeRecord = async(req, res) => {
   try {
     req = matchedData(req);
 
@@ -123,7 +123,7 @@ const getOneUserPrivilegeRecord = async (req, res) => {
   }
 };
 
-const addUserPrivilegeRecord = async (req, res) => {
+const addUserPrivilegeRecord = async(req, res) => {
   try {
     req = matchedData(req);
 
@@ -135,7 +135,7 @@ const addUserPrivilegeRecord = async (req, res) => {
   }
 };
 
-const deleteUserPrivilegeRecord = async (req, res) => {
+const deleteUserPrivilegeRecord = async(req, res) => {
   try {
     req = matchedData(req);
 
