@@ -207,7 +207,7 @@ router.put('/:id', [
  *          description: Actualiza datos de un privilegio
  *          security:
  *              - bearerAuth: []
- *          operationId: "deltetePrivilege"
+ *          operationId: "deletePrivilege"
  *          parameters:
  *          - name: id
  *            in: path
