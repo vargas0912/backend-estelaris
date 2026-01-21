@@ -91,7 +91,7 @@ describe('Branches Service - Unit Tests', () => {
         name: 'Sucursal Centro',
         address: 'Av. Principal 100',
         phone: '5551001000',
-        municipality: 1,
+        municipality_id: 1,
         save: jest.fn().mockResolvedValue({
           id: 1,
           name: 'Sucursal Modificada',
@@ -127,7 +127,7 @@ describe('Branches Service - Unit Tests', () => {
         name: 'Sucursal Original',
         address: 'Direccion Original',
         phone: '5550000000',
-        municipality: 1,
+        municipality_id: 1,
         save: jest.fn().mockResolvedValue({
           id: 1,
           name: 'Sucursal Original',
@@ -204,7 +204,7 @@ describe('Branches Service - Unit Tests', () => {
         name: 'Sucursal',
         address: 'Direccion',
         phone: '5550000000',
-        municipality: 1,
+        municipality_id: 1,
         save: jest.fn().mockRejectedValue(dbError)
       };
 
@@ -272,7 +272,7 @@ describe('Branches Service - Unit Tests', () => {
         name: 'Sucursal Original',
         address: 'Direccion Original',
         phone: '5550000000',
-        municipality: 1,
+        municipality_id: 1,
         save: jest.fn().mockResolvedValue({
           id: 1,
           name: 'Nuevo Nombre',
@@ -296,7 +296,7 @@ describe('Branches Service - Unit Tests', () => {
         name: 'Sucursal Original',
         address: 'Direccion Original',
         phone: '5550000000',
-        municipality: 1,
+        municipality_id: 1,
         save: jest.fn().mockResolvedValue({
           id: 1,
           name: 'Sucursal Original',
@@ -319,7 +319,7 @@ describe('Branches Service - Unit Tests', () => {
         name: 'Sucursal Original',
         address: 'Direccion Original',
         phone: '5550000000',
-        municipality: 1,
+        municipality_id: 1,
         save: jest.fn().mockResolvedValue({
           id: 1,
           name: 'Sucursal Original',
@@ -341,21 +341,21 @@ describe('Branches Service - Unit Tests', () => {
         name: 'Sucursal Original',
         address: 'Direccion Original',
         phone: '5550000000',
-        municipality: 1,
+        municipality_id: 1,
         save: jest.fn().mockResolvedValue({
           id: 1,
           name: 'Sucursal Original',
           address: 'Direccion Original',
           phone: '5550000000',
-          municipality: 5
+          municipality_id: 5
         })
       };
 
       branches.findByPk.mockResolvedValue(mockBranch);
 
-      await updateBranch(1, { municipality: 5 });
+      await updateBranch(1, { municipality_id: 5 });
 
-      expect(mockBranch.municipality).toBe(5);
+      expect(mockBranch.municipality_id).toBe(5);
     });
 
     test('updateBranch debe actualizar todos los campos', async() => {
@@ -364,13 +364,13 @@ describe('Branches Service - Unit Tests', () => {
         name: 'Sucursal Original',
         address: 'Direccion Original',
         phone: '5550000000',
-        municipality: 1,
+        municipality_id: 1,
         save: jest.fn().mockResolvedValue({
           id: 1,
           name: 'Nombre Nuevo',
           address: 'Direccion Nueva',
           phone: '5559999999',
-          municipality: 10
+          municipality_id: 10
         })
       };
 
@@ -380,13 +380,13 @@ describe('Branches Service - Unit Tests', () => {
         name: 'Nombre Nuevo',
         address: 'Direccion Nueva',
         phone: '5559999999',
-        municipality: 10
+        municipality_id: 10
       });
 
       expect(mockBranch.name).toBe('Nombre Nuevo');
       expect(mockBranch.address).toBe('Direccion Nueva');
       expect(mockBranch.phone).toBe('5559999999');
-      expect(mockBranch.municipality).toBe(10);
+      expect(mockBranch.municipality_id).toBe(10);
     });
   });
 
