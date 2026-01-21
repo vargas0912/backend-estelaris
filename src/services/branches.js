@@ -42,7 +42,7 @@ const addNewBranch = async(body) => {
 };
 
 const updateBranch = async(branchId, req) => {
-  const { name, address, municipality, phone } = req;
+  const { name, address, municipality_id: municipalityId, phone } = req;
 
   const data = await branches.findByPk(branchId);
 
@@ -56,7 +56,7 @@ const updateBranch = async(branchId, req) => {
 
   data.name = name || data.name;
   data.address = address || data.address;
-  data.municipality = municipality || data.municipality;
+  data.municipality_id = municipalityId || data.municipality_id;
   data.phone = phone || data.phone;
 
   const result = await data.save();
