@@ -8,7 +8,7 @@
     "dev": "nodemon ./app.js",
     "lint": "eslint --ignore-path .gitignore . --ext .js",
     "lint:fix": "npm run lint -- --fix",
-    "test": "NODE_ENV=test jest --verbose --silent",
+    "test": "NODE_ENV=test jest --verbose --silent --runInBand",
     "pretest": "NODE_ENV=test npm run db:reset",
     "db:reset": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all --seeders-path ./src/database/seeders/test_files",
     "db:create:test": "NODE_ENV=test npx sequelize-cli db:create",
@@ -20,14 +20,14 @@
     "bcryptjs": "2.4.3",
     "cors": "2.8.5",
     "dotenv": "16.3.1",
-    "express": "4.21.0",
-    "express-validator": "7.0.1",
-    "jsonwebtoken": "9.0.2",
+    "express": "^4.22.1",
+    "express-validator": "^7.3.1",
+    "jsonwebtoken": "^9.0.3",
     "multer": "1.4.5-lts.1",
-    "mysql2": "3.11.2",
-    "sequelize": "6.33.0",
+    "mysql2": "^3.16.1",
+    "sequelize": "^6.37.7",
     "swagger-jsdoc": "6.2.8",
-    "swagger-ui-express": "5.0.0"
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@commitlint/cli": "19.5.0",
@@ -35,9 +35,9 @@
     "husky": "8.0.0",
     "jest": "29.7.0",
     "lint-staged": "15.2.10",
-    "nodemon": "3.0.1",
-    "sequelize-cli": "6.6.1",
-    "standard": "17.1.0",
+    "nodemon": "^3.1.11",
+    "sequelize-cli": "^6.6.5",
+    "standard": "^17.1.2",
     "supertest": "6.3.3"
   },
   "eslintConfig": {

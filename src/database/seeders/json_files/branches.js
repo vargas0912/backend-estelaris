@@ -1,4 +1,4 @@
-// const fecha = new Date();
+const fecha = new Date();
 
 const data = [
   {
@@ -7,8 +7,8 @@ const data = [
     municipality_id: 743,
     phone: '(999) 999-9999',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2023-11-16 05:43:08.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Tejupilco',
@@ -16,8 +16,8 @@ const data = [
     municipality_id: 743,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Amatepec',
@@ -25,8 +25,8 @@ const data = [
     municipality_id: 669,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Palmar Chico',
@@ -34,8 +34,8 @@ const data = [
     municipality_id: 669,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Temascaltepec',
@@ -43,8 +43,8 @@ const data = [
     municipality_id: 747,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Almoloya',
@@ -52,8 +52,8 @@ const data = [
     municipality_id: 665,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'SP Limon',
@@ -61,8 +61,8 @@ const data = [
     municipality_id: 766,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Altamirano',
@@ -70,8 +70,8 @@ const data = [
     municipality_id: 84,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Santo Tomas',
@@ -79,8 +79,8 @@ const data = [
     municipality_id: 739,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Texcaltitlan',
@@ -88,8 +88,8 @@ const data = [
     municipality_id: 758,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Cutzamala',
@@ -97,8 +97,8 @@ const data = [
     municipality_id: 398,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Luvianos',
@@ -106,8 +106,8 @@ const data = [
     municipality_id: 784,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Colorines',
@@ -115,8 +115,8 @@ const data = [
     municipality_id: 771,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Arcelia',
@@ -124,8 +124,8 @@ const data = [
     municipality_id: 378,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Villa Victoria',
@@ -133,8 +133,8 @@ const data = [
     municipality_id: 775,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'SULTEPEC',
@@ -142,8 +142,8 @@ const data = [
     municipality_id: 741,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Tlapehuala',
@@ -151,8 +151,8 @@ const data = [
     municipality_id: 438,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'ZACAPUATO',
@@ -160,8 +160,8 @@ const data = [
     municipality_id: 398,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'BEJUCOS',
@@ -169,8 +169,8 @@ const data = [
     municipality_id: 743,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'COYUCA',
@@ -178,8 +178,8 @@ const data = [
     municipality_id: 84,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'ZACAZONAPAN',
@@ -187,8 +187,8 @@ const data = [
     municipality_id: 777,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'CENTRO',
@@ -196,8 +196,8 @@ const data = [
     municipality_id: 743,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'COATEPEC',
@@ -205,8 +205,8 @@ const data = [
     municipality_id: 682,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'SN SIMON DE GRO',
@@ -214,8 +214,8 @@ const data = [
     municipality_id: 738,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'VALLE DE BRAVO',
@@ -223,8 +223,8 @@ const data = [
     municipality_id: 771,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Ixtapan',
@@ -232,8 +232,8 @@ const data = [
     municipality_id: 701,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'ESTELARIS',
@@ -241,8 +241,8 @@ const data = [
     municipality_id: 743,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'LUVIANOS 2',
@@ -250,8 +250,8 @@ const data = [
     municipality_id: 784,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'VILLA',
@@ -259,8 +259,8 @@ const data = [
     municipality_id: 775,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Amanalco',
@@ -268,8 +268,8 @@ const data = [
     municipality_id: 668,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'EL ARCO',
@@ -277,8 +277,8 @@ const data = [
     municipality_id: 771,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'STO TOMAS 2',
@@ -286,8 +286,8 @@ const data = [
     municipality_id: 739,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'SAN FRANCISCO',
@@ -295,8 +295,8 @@ const data = [
     municipality_id: 693,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'VILLA GRO',
@@ -304,8 +304,8 @@ const data = [
     municipality_id: 651,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'TENANCINGO',
@@ -313,8 +313,8 @@ const data = [
     municipality_id: 749,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'Donato Guerra',
@@ -322,8 +322,8 @@ const data = [
     municipality_id: 693,
     phone: '',
 
-    created_at: '2000-01-01 00:00:00.0',
-    updated_at: '2000-01-01 00:00:00.0'
+    created_at: fecha,
+    updated_at: fecha
   },
   {
     name: 'adb',

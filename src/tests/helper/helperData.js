@@ -4,6 +4,20 @@ const privilege = {
   module: 'module test'
 };
 
+const positionCreate = {
+  name: 'Puesto de prueba'
+};
+
+const positionCreateEmpty = {
+  name: ''
+};
+
+const positionCreateInvalid = {};
+
+const positionUpdate = {
+  name: 'Puesto modificado'
+};
+
 const testAuthLogin = {
   email: 'superadmin@test.com',
   password: '12345678'
@@ -57,5 +71,9 @@ module.exports = {
   testAuthRegisterSuperAdminErr,
   testAuthRegisterSuperAdminFail,
   testStorageRegister,
-  privilege
+  privilege,
+  positionCreate,
+  positionCreateEmpty,
+  positionCreateInvalid,
+  positionUpdate
 };

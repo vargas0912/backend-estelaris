@@ -1,20 +1,17 @@
 {
-    "extends": "standard",
-    "rules": {
-        "space-before-function-paren": [
-            "warn",
-            "never"
-        ],
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "always"
-        ]
-    },
-    "env": {
-        "jest": true
-    }
+  "extends": "standard",
+  "rules": {
+    "space-before-function-paren": ["error", "never"],
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "semi": [
+      "error",
+      "always"
+    ]
+  },
+  "env": {
+    "jest": true
+  }
 }

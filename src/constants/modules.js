@@ -68,4 +68,18 @@ const MUNICIPALITIES = Object.freeze({
   NAME_VIEW_STATE: 'Ver municipios por estado'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES };
+const POSITION = Object.freeze({
+  MODULE_NAME: 'positions',
+  VIEW: 'view_position',
+  NAME_VIEW: 'Ver puesto',
+  VIEW_ALL: 'view_positions',
+  NAME_ALL: 'Ver puestos',
+  ADD: 'create_position',
+  NAME_ADD: 'Crear puesto',
+  UPDATE: 'update_position',
+  NAME_UPDATE: 'Modificar puesto',
+  DELETE: 'delete_position',
+  NAME_DELETE: 'Eliminar puesto'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION };
