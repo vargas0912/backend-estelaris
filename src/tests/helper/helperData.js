@@ -18,6 +18,28 @@ const positionUpdate = {
   name: 'Puesto modificado'
 };
 
+// Datos para tests de productCategories
+const productCategoryCreate = {
+  name: 'Categoría de prueba',
+  description: 'Descripción de la categoría de prueba'
+};
+
+const productCategoryCreateEmpty = {
+  name: ''
+};
+
+const productCategoryCreateInvalid = {};
+
+const productCategoryUpdate = {
+  name: 'Categoría modificada',
+  description: 'Descripción modificada'
+};
+
+const productCategoryCreate2 = {
+  name: 'Segunda categoría de prueba',
+  description: 'Segunda descripción'
+};
+
 const testAuthLogin = {
   email: 'superadmin@test.com',
   password: '12345678'
@@ -75,5 +97,10 @@ module.exports = {
   positionCreate,
   positionCreateEmpty,
   positionCreateInvalid,
-  positionUpdate
+  positionUpdate,
+  productCategoryCreate,
+  productCategoryCreateEmpty,
+  productCategoryCreateInvalid,
+  productCategoryUpdate,
+  productCategoryCreate2
 };
