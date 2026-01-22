@@ -82,4 +82,18 @@ const POSITION = Object.freeze({
   NAME_DELETE: 'Eliminar puesto'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION };
+const PRODUCT_CATEGORY = Object.freeze({
+  MODULE_NAME: 'productCategories',
+  VIEW: 'view_product_category',
+  NAME_VIEW: 'Ver categoría de producto',
+  VIEW_ALL: 'view_product_categories',
+  NAME_ALL: 'Ver categorías de productos',
+  ADD: 'create_product_category',
+  NAME_ADD: 'Crear categoría de producto',
+  UPDATE: 'update_product_category',
+  NAME_UPDATE: 'Modificar categoría de producto',
+  DELETE: 'delete_product_category',
+  NAME_DELETE: 'Eliminar categoría de producto'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY };
