@@ -92,6 +92,76 @@ const productCategoryCreate2 = {
   description: 'Segunda descripción'
 };
 
+// Datos de prueba para products
+const productCreate = {
+  sku: 'SKU-TEST-001',
+  name: 'Producto de prueba',
+  description: 'Descripción del producto de prueba',
+  short_description: 'Desc corta',
+  unit_of_measure: 'piece',
+  cost_price: 50.00,
+  base_price: 100.00,
+  is_active: true,
+  is_featured: false
+};
+
+const productCreateEmpty = {
+  sku: '',
+  name: '',
+  base_price: ''
+};
+
+const productCreateInvalid = {};
+
+const productUpdate = {
+  sku: 'SKU-TEST-001-UPD',
+  name: 'Producto modificado',
+  description: 'Descripción modificada',
+  base_price: 150.00
+};
+
+const productCreate2 = {
+  sku: 'SKU-TEST-002',
+  name: 'Segundo producto de prueba',
+  description: 'Segunda descripción',
+  base_price: 200.00
+};
+
+const productCreateFull = {
+  sku: 'SKU-FULL-001',
+  barcode: '7501234567890',
+  name: 'Producto completo',
+  description: 'Descripción completa del producto',
+  short_description: 'Desc corta completa',
+  category_id: 1,
+  unit_of_measure: 'kg',
+  cost_price: 75.50,
+  base_price: 125.99,
+  weight: 2.5,
+  dimensions: { length: 30, width: 20, height: 10 },
+  images: ['imagen1.jpg', 'imagen2.jpg'],
+  is_active: true,
+  is_featured: true,
+  seo_title: 'Producto Completo - Comprar',
+  seo_description: 'Descripción SEO del producto completo',
+  seo_keywords: 'producto, completo, test'
+};
+
+const productCreateNoSku = {
+  name: 'Producto sin SKU',
+  base_price: 100.00
+};
+
+const productCreateNoName = {
+  sku: 'SKU-NO-NAME',
+  base_price: 100.00
+};
+
+const productCreateNoPrice = {
+  sku: 'SKU-NO-PRICE',
+  name: 'Producto sin precio'
+};
+
 // Datos de prueba para privileges
 const privilegeCreate = {
   name: 'Crear Usuario',
@@ -240,5 +310,14 @@ module.exports = {
   productCategoryCreateEmpty,
   productCategoryCreateInvalid,
   productCategoryUpdate,
-  productCategoryCreate2
+  productCategoryCreate2,
+  productCreate,
+  productCreateEmpty,
+  productCreateInvalid,
+  productUpdate,
+  productCreate2,
+  productCreateFull,
+  productCreateNoSku,
+  productCreateNoName,
+  productCreateNoPrice
 };

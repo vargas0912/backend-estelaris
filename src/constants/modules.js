@@ -96,4 +96,18 @@ const PRODUCT_CATEGORY = Object.freeze({
   NAME_DELETE: 'Eliminar categoría de producto'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY };
+const PRODUCT = Object.freeze({
+  MODULE_NAME: 'products',
+  VIEW: 'view_product',
+  NAME_VIEW: 'Ver producto',
+  VIEW_ALL: 'view_products',
+  NAME_ALL: 'Ver productos',
+  ADD: 'create_product',
+  NAME_ADD: 'Crear producto',
+  UPDATE: 'update_product',
+  NAME_UPDATE: 'Modificar producto',
+  DELETE: 'delete_product',
+  NAME_DELETE: 'Eliminar producto'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT };
