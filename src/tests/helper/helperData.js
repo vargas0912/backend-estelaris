@@ -18,6 +18,7 @@ const positionUpdate = {
   name: 'Puesto modificado'
 };
 
+// Datos de prueba para branches
 const branchCreate = {
   name: 'Sucursal de prueba',
   address: 'Calle Test 123',
@@ -40,7 +41,6 @@ const branchUpdate = {
   municipality_id: 1
 };
 
-// Datos adicionales para tests de branches
 const branchCreateNoAddress = {
   name: 'Sucursal sin direccion',
   phone: '5551111111',
@@ -68,6 +68,28 @@ const branchCreate2 = {
   address: 'Avenida Segunda 456',
   phone: '5553333333',
   municipality_id: 1
+};
+
+// Datos para tests de productCategories
+const productCategoryCreate = {
+  name: 'Categoría de prueba',
+  description: 'Descripción de la categoría de prueba'
+};
+
+const productCategoryCreateEmpty = {
+  name: ''
+};
+
+const productCategoryCreateInvalid = {};
+
+const productCategoryUpdate = {
+  name: 'Categoría modificada',
+  description: 'Descripción modificada'
+};
+
+const productCategoryCreate2 = {
+  name: 'Segunda categoría de prueba',
+  description: 'Segunda descripción'
 };
 
 // Datos de prueba para privileges
@@ -213,5 +235,10 @@ module.exports = {
   userPrivilegeCreateEmpty,
   userPrivilegeCreateInvalid,
   userPrivilegeCreateNoUser,
-  userPrivilegeCreateNoPrivilege
+  userPrivilegeCreateNoPrivilege,
+  productCategoryCreate,
+  productCategoryCreateEmpty,
+  productCategoryCreateInvalid,
+  productCategoryUpdate,
+  productCategoryCreate2
 };
