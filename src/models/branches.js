@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   class branches extends Model {
     static associate(models) {
       this.belongsTo(models.municipalities, { as: 'municipio', foreignKey: 'municipality_id' });
+      this.hasMany(models.employees, { as: 'employees', foreignKey: 'branch_id' });
     }
   }
 
