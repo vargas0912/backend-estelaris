@@ -214,6 +214,97 @@ const productStockCreateNoBranch = {
   quantity: 100
 };
 
+// Datos de prueba para priceLists
+const priceListCreate = {
+  name: 'Lista de prueba',
+  description: 'Descripción de la lista de prueba',
+  discount_percent: 10,
+  is_active: true,
+  priority: 1
+};
+
+const priceListCreateEmpty = {
+  name: ''
+};
+
+const priceListCreateInvalid = {};
+
+const priceListUpdate = {
+  name: 'Lista modificada',
+  description: 'Descripción modificada',
+  discount_percent: 15
+};
+
+const priceListCreate2 = {
+  name: 'Segunda lista de prueba',
+  description: 'Segunda descripción',
+  discount_percent: 20,
+  is_active: true,
+  priority: 2
+};
+
+const priceListCreateFull = {
+  name: 'Lista completa',
+  description: 'Lista con todos los campos',
+  discount_percent: 25,
+  is_active: false,
+  priority: 5
+};
+
+const priceListCreateNoName = {
+  description: 'Lista sin nombre',
+  discount_percent: 10
+};
+
+// Datos de prueba para productPrices
+const productPriceCreate = {
+  product_id: 1,
+  price_list_id: 1,
+  price: 100.00,
+  min_quantity: 1
+};
+
+const productPriceCreateEmpty = {
+  product_id: '',
+  price_list_id: ''
+};
+
+const productPriceCreateInvalid = {};
+
+const productPriceUpdate = {
+  price: 150.00,
+  min_quantity: 5
+};
+
+const productPriceCreate2 = {
+  product_id: 1,
+  price_list_id: 2,
+  price: 90.00,
+  min_quantity: 1
+};
+
+const productPriceCreateTiered = {
+  product_id: 1,
+  price_list_id: 1,
+  price: 85.00,
+  min_quantity: 10
+};
+
+const productPriceCreateNoProduct = {
+  price_list_id: 1,
+  price: 100.00
+};
+
+const productPriceCreateNoPriceList = {
+  product_id: 1,
+  price: 100.00
+};
+
+const productPriceCreateNoPrice = {
+  product_id: 1,
+  price_list_id: 1
+};
+
 // Datos de prueba para privileges
 const privilegeCreate = {
   name: 'Crear Usuario',
@@ -379,5 +470,21 @@ module.exports = {
   productStockCreate2,
   productStockCreateFull,
   productStockCreateNoProduct,
-  productStockCreateNoBranch
+  productStockCreateNoBranch,
+  priceListCreate,
+  priceListCreateEmpty,
+  priceListCreateInvalid,
+  priceListUpdate,
+  priceListCreate2,
+  priceListCreateFull,
+  priceListCreateNoName,
+  productPriceCreate,
+  productPriceCreateEmpty,
+  productPriceCreateInvalid,
+  productPriceUpdate,
+  productPriceCreate2,
+  productPriceCreateTiered,
+  productPriceCreateNoProduct,
+  productPriceCreateNoPriceList,
+  productPriceCreateNoPrice
 };
