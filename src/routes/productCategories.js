@@ -12,7 +12,7 @@ const { ROLE } = require('../constants/roles');
 
 /**
  * @openapi
- * /product-categories:
+ * /productCategories:
  *    get:
  *      tags:
  *        - productCategories
@@ -33,7 +33,7 @@ router.get('/', [
 
 /**
  * @openapi
- * /product-categories/{id}:
+ * /productCategories/{id}:
  *    get:
  *      tags:
  *        - productCategories
@@ -62,7 +62,7 @@ router.get('/:id', [
 
 /**
  * @openapi
- * /product-categories:
+ * /productCategories:
  *      post:
  *          tags:
  *              - productCategories
@@ -94,7 +94,7 @@ router.post('/', [
 
 /**
  * @openapi
- * /product-categories/{id}:
+ * /productCategories/{id}:
  *      put:
  *          tags:
  *              - productCategories
@@ -133,7 +133,7 @@ router.put('/:id', [
 
 /**
  * @openapi
- * /product-categories/{id}:
+ * /productCategories/{id}:
  *      delete:
  *          tags:
  *              - productCategories
