@@ -162,6 +162,58 @@ const productCreateNoPrice = {
   name: 'Producto sin precio'
 };
 
+// Datos de prueba para productStocks
+const productStockCreate = {
+  product_id: 1,
+  branch_id: 1,
+  quantity: 100,
+  min_stock: 10,
+  max_stock: 200,
+  location: 'A-01-03'
+};
+
+const productStockCreateEmpty = {
+  product_id: '',
+  branch_id: ''
+};
+
+const productStockCreateInvalid = {};
+
+const productStockUpdate = {
+  quantity: 150,
+  min_stock: 15,
+  max_stock: 250,
+  location: 'B-02-05'
+};
+
+const productStockCreate2 = {
+  product_id: 1,
+  branch_id: 2,
+  quantity: 50,
+  min_stock: 5,
+  max_stock: 100
+};
+
+const productStockCreateFull = {
+  product_id: 1,
+  branch_id: 1,
+  quantity: 75.5,
+  min_stock: 10.25,
+  max_stock: 150.75,
+  location: 'C-03-07',
+  last_count_date: '2026-01-23'
+};
+
+const productStockCreateNoProduct = {
+  branch_id: 1,
+  quantity: 100
+};
+
+const productStockCreateNoBranch = {
+  product_id: 1,
+  quantity: 100
+};
+
 // Datos de prueba para privileges
 const privilegeCreate = {
   name: 'Crear Usuario',
@@ -319,5 +371,13 @@ module.exports = {
   productCreateFull,
   productCreateNoSku,
   productCreateNoName,
-  productCreateNoPrice
+  productCreateNoPrice,
+  productStockCreate,
+  productStockCreateEmpty,
+  productStockCreateInvalid,
+  productStockUpdate,
+  productStockCreate2,
+  productStockCreateFull,
+  productStockCreateNoProduct,
+  productStockCreateNoBranch
 };
