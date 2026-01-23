@@ -95,27 +95,49 @@ Los proveedores NO se vinculan directamente al catálogo de productos porque:
 
 ---
 
-### Fase 2: Inventario Multi-sucursal (Pendiente)
+### Fase 2: Inventario Multi-sucursal ✅ COMPLETADA
 
-**Modelo: ProductStocks**
-```
-- id, product_id (FK), branch_id (FK)
-- quantity (DECIMAL 12,3 - soporta fraccionables)
-- min_stock, max_stock (alertas)
-- location (ubicación en almacén)
-- last_count_date
-- timestamps + soft delete
-```
-
-**Archivos a crear:**
-- `src/database/migrations/XXXXXX-create-product-stocks.js`
+**Archivos creados:**
+- `src/database/migrations/20260123200000-create-product-stocks.js`
 - `src/models/productStocks.js`
 - `src/services/productStocks.js`
 - `src/controllers/productStocks.js`
 - `src/validators/productStocks.js`
 - `src/constants/productStocks.js`
 - `src/routes/productStocks.js`
-- Modificar `src/models/branches.js` - agregar `hasMany(productStocks)`
+- `src/tests/unit/productStocks.service.test.js`
+
+**Archivos modificados:**
+- `src/models/products.js` - Agregada relación `hasMany(productStocks)`
+- `src/models/branches.js` - Agregada relación `hasMany(productStocks)`
+- `src/constants/modules.js` - Agregado `PRODUCT_STOCK` con privilegios
+- `src/tests/helper/helperData.js` - Agregados datos de prueba
+
+**Campos del modelo ProductStock:**
+| Campo | Tipo | Requerido | Descripción |
+|-------|------|-----------|-------------|
+| product_id | INTEGER (FK) | Sí | Producto |
+| branch_id | INTEGER (FK) | Sí | Sucursal |
+| quantity | DECIMAL(12,3) | No | Cantidad (soporta fraccionables) |
+| min_stock | DECIMAL(12,3) | No | Stock mínimo para alerta |
+| max_stock | DECIMAL(12,3) | No | Stock máximo |
+| location | STRING(100) | No | Ubicación en almacén (ej: A-01-03) |
+| last_count_date | DATE | No | Fecha del último conteo físico |
+
+**Índices:**
+- Único: `product_id + branch_id` (evita duplicados)
+- Índices simples en `product_id`, `branch_id`, `quantity`
+
+**Endpoints:**
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/productStocks` | Listar todos los inventarios |
+| GET | `/api/productStocks/:id` | Obtener inventario por ID |
+| GET | `/api/productStocks/product/:product_id` | Inventario de un producto en todas las sucursales |
+| GET | `/api/productStocks/branch/:branch_id` | Inventario de una sucursal |
+| POST | `/api/productStocks` | Crear registro de inventario |
+| PUT | `/api/productStocks/:id` | Actualizar inventario |
+| DELETE | `/api/productStocks/:id` | Eliminar inventario (soft delete) |
 
 ---
 

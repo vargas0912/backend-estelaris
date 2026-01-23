@@ -110,4 +110,22 @@ const PRODUCT = Object.freeze({
   NAME_DELETE: 'Eliminar producto'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT };
+const PRODUCT_STOCK = Object.freeze({
+  MODULE_NAME: 'productStocks',
+  VIEW: 'view_product_stock',
+  NAME_VIEW: 'Ver inventario de producto',
+  VIEW_ALL: 'view_product_stocks',
+  NAME_ALL: 'Ver inventarios de productos',
+  VIEW_BY_PRODUCT: 'view_stocks_by_product',
+  NAME_VIEW_BY_PRODUCT: 'Ver inventario por producto',
+  VIEW_BY_BRANCH: 'view_stocks_by_branch',
+  NAME_VIEW_BY_BRANCH: 'Ver inventario por sucursal',
+  ADD: 'create_product_stock',
+  NAME_ADD: 'Crear inventario de producto',
+  UPDATE: 'update_product_stock',
+  NAME_UPDATE: 'Modificar inventario de producto',
+  DELETE: 'delete_product_stock',
+  NAME_DELETE: 'Eliminar inventario de producto'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK };
