@@ -70,6 +70,70 @@ const branchCreate2 = {
   municipality_id: 1
 };
 
+// Datos de prueba para privileges
+const privilegeCreate = {
+  name: 'Crear Usuario',
+  codename: 'create_user',
+  module: 'users'
+};
+
+const privilegeCreateEmpty = {
+  name: '',
+  codename: '',
+  module: ''
+};
+
+const privilegeCreateInvalid = {};
+
+const privilegeUpdate = {
+  name: 'Actualizar Usuario',
+  codename: 'update_user',
+  module: 'users'
+};
+
+const privilegeUpdateEmpty = {
+  name: '',
+  codename: '',
+  module: ''
+};
+
+const privilegeCreateNoCodename = {
+  name: 'Sin codename',
+  module: 'test'
+};
+
+const privilegeCreateNoModule = {
+  name: 'Sin modulo',
+  codename: 'no_module'
+};
+
+const privilegeCreate2 = {
+  name: 'Eliminar Usuario',
+  codename: 'delete_user',
+  module: 'users'
+};
+
+// Datos de prueba para user-privileges
+const userPrivilegeCreate = {
+  user_id: 1,
+  privilege_id: 1
+};
+
+const userPrivilegeCreateEmpty = {
+  user_id: '',
+  privilege_id: ''
+};
+
+const userPrivilegeCreateInvalid = {};
+
+const userPrivilegeCreateNoUser = {
+  privilege_id: 1
+};
+
+const userPrivilegeCreateNoPrivilege = {
+  user_id: 1
+};
+
 const testAuthLogin = {
   email: 'superadmin@test.com',
   password: '12345678'
@@ -136,5 +200,18 @@ module.exports = {
   branchCreateNoMunicipality,
   branchUpdateEmpty,
   branchUpdatePartial,
-  branchCreate2
+  branchCreate2,
+  privilegeCreate,
+  privilegeCreateEmpty,
+  privilegeCreateInvalid,
+  privilegeUpdate,
+  privilegeUpdateEmpty,
+  privilegeCreateNoCodename,
+  privilegeCreateNoModule,
+  privilegeCreate2,
+  userPrivilegeCreate,
+  userPrivilegeCreateEmpty,
+  userPrivilegeCreateInvalid,
+  userPrivilegeCreateNoUser,
+  userPrivilegeCreateNoPrivilege
 };
