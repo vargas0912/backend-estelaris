@@ -128,4 +128,36 @@ const PRODUCT_STOCK = Object.freeze({
   NAME_DELETE: 'Eliminar inventario de producto'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK };
+const PRICE_LIST = Object.freeze({
+  MODULE_NAME: 'priceLists',
+  VIEW: 'view_price_list',
+  NAME_VIEW: 'Ver lista de precios',
+  VIEW_ALL: 'view_price_lists',
+  NAME_ALL: 'Ver listas de precios',
+  ADD: 'create_price_list',
+  NAME_ADD: 'Crear lista de precios',
+  UPDATE: 'update_price_list',
+  NAME_UPDATE: 'Modificar lista de precios',
+  DELETE: 'delete_price_list',
+  NAME_DELETE: 'Eliminar lista de precios'
+});
+
+const PRODUCT_PRICE = Object.freeze({
+  MODULE_NAME: 'productPrices',
+  VIEW: 'view_product_price',
+  NAME_VIEW: 'Ver precio de producto',
+  VIEW_ALL: 'view_product_prices',
+  NAME_ALL: 'Ver precios de productos',
+  VIEW_BY_PRODUCT: 'view_prices_by_product',
+  NAME_VIEW_BY_PRODUCT: 'Ver precios por producto',
+  VIEW_BY_PRICE_LIST: 'view_prices_by_price_list',
+  NAME_VIEW_BY_PRICE_LIST: 'Ver precios por lista',
+  ADD: 'create_product_price',
+  NAME_ADD: 'Crear precio de producto',
+  UPDATE: 'update_product_price',
+  NAME_UPDATE: 'Modificar precio de producto',
+  DELETE: 'delete_product_price',
+  NAME_DELETE: 'Eliminar precio de producto'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE };
