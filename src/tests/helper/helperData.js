@@ -18,6 +18,58 @@ const positionUpdate = {
   name: 'Puesto modificado'
 };
 
+// Datos de prueba para branches
+const branchCreate = {
+  name: 'Sucursal de prueba',
+  address: 'Calle Test 123',
+  phone: '5551234567',
+  municipality_id: 1
+};
+
+const branchCreateEmpty = {
+  name: '',
+  address: '',
+  phone: ''
+};
+
+const branchCreateInvalid = {};
+
+const branchUpdate = {
+  name: 'Sucursal modificada',
+  address: 'Calle Modificada 456',
+  phone: '5559876543',
+  municipality_id: 1
+};
+
+const branchCreateNoAddress = {
+  name: 'Sucursal sin direccion',
+  phone: '5551111111',
+  municipality_id: 1
+};
+
+const branchCreateNoMunicipality = {
+  name: 'Sucursal sin municipio',
+  address: 'Calle Sin Municipio 789',
+  phone: '5552222222'
+};
+
+const branchUpdateEmpty = {
+  name: '',
+  address: '',
+  municipality_id: ''
+};
+
+const branchUpdatePartial = {
+  name: 'Solo nombre actualizado'
+};
+
+const branchCreate2 = {
+  name: 'Segunda sucursal de prueba',
+  address: 'Avenida Segunda 456',
+  phone: '5553333333',
+  municipality_id: 1
+};
+
 // Datos para tests de productCategories
 const productCategoryCreate = {
   name: 'Categoría de prueba',
@@ -38,6 +90,70 @@ const productCategoryUpdate = {
 const productCategoryCreate2 = {
   name: 'Segunda categoría de prueba',
   description: 'Segunda descripción'
+};
+
+// Datos de prueba para privileges
+const privilegeCreate = {
+  name: 'Crear Usuario',
+  codename: 'create_user',
+  module: 'users'
+};
+
+const privilegeCreateEmpty = {
+  name: '',
+  codename: '',
+  module: ''
+};
+
+const privilegeCreateInvalid = {};
+
+const privilegeUpdate = {
+  name: 'Actualizar Usuario',
+  codename: 'update_user',
+  module: 'users'
+};
+
+const privilegeUpdateEmpty = {
+  name: '',
+  codename: '',
+  module: ''
+};
+
+const privilegeCreateNoCodename = {
+  name: 'Sin codename',
+  module: 'test'
+};
+
+const privilegeCreateNoModule = {
+  name: 'Sin modulo',
+  codename: 'no_module'
+};
+
+const privilegeCreate2 = {
+  name: 'Eliminar Usuario',
+  codename: 'delete_user',
+  module: 'users'
+};
+
+// Datos de prueba para user-privileges
+const userPrivilegeCreate = {
+  user_id: 1,
+  privilege_id: 1
+};
+
+const userPrivilegeCreateEmpty = {
+  user_id: '',
+  privilege_id: ''
+};
+
+const userPrivilegeCreateInvalid = {};
+
+const userPrivilegeCreateNoUser = {
+  privilege_id: 1
+};
+
+const userPrivilegeCreateNoPrivilege = {
+  user_id: 1
 };
 
 const testAuthLogin = {
@@ -98,6 +214,28 @@ module.exports = {
   positionCreateEmpty,
   positionCreateInvalid,
   positionUpdate,
+  branchCreate,
+  branchCreateEmpty,
+  branchCreateInvalid,
+  branchUpdate,
+  branchCreateNoAddress,
+  branchCreateNoMunicipality,
+  branchUpdateEmpty,
+  branchUpdatePartial,
+  branchCreate2,
+  privilegeCreate,
+  privilegeCreateEmpty,
+  privilegeCreateInvalid,
+  privilegeUpdate,
+  privilegeUpdateEmpty,
+  privilegeCreateNoCodename,
+  privilegeCreateNoModule,
+  privilegeCreate2,
+  userPrivilegeCreate,
+  userPrivilegeCreateEmpty,
+  userPrivilegeCreateInvalid,
+  userPrivilegeCreateNoUser,
+  userPrivilegeCreateNoPrivilege,
   productCategoryCreate,
   productCategoryCreateEmpty,
   productCategoryCreateInvalid,
