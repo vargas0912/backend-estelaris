@@ -305,6 +305,66 @@ const productPriceCreateNoPrice = {
   price_list_id: 1
 };
 
+// Datos de prueba para suppliers
+const supplierCreate = {
+  name: 'Proveedor de prueba S.A.',
+  email: 'proveedor@test.com',
+  phone: '8181234567'
+};
+
+const supplierCreateEmpty = {
+  name: '',
+  email: ''
+};
+
+const supplierCreateInvalid = {};
+
+const supplierUpdate = {
+  name: 'Proveedor modificado S.A.',
+  email: 'modificado@test.com',
+  credit_limit: 25000.00
+};
+
+const supplierCreate2 = {
+  name: 'Segundo proveedor de prueba',
+  email: 'proveedor2@test.com',
+  phone: '8187654321'
+};
+
+const supplierCreateFull = {
+  name: 'Proveedor Completo S.A. de C.V.',
+  trade_name: 'Proveedor Completo',
+  tax_id: 'PCO123456789',
+  contact_name: 'Juan Pérez',
+  email: 'juan@proveedor.com',
+  phone: '8181234567',
+  mobile: '8112345678',
+  address: 'Av. Industrial 456',
+  municipality_id: 1,
+  postal_code: '64000',
+  website: 'https://proveedor.com',
+  payment_terms: '30 días',
+  credit_limit: 50000.00,
+  notes: 'Proveedor preferente',
+  is_active: true
+};
+
+const supplierCreateNoName = {
+  email: 'sinombre@test.com',
+  phone: '8181111111'
+};
+
+const supplierCreateNoEmail = {
+  name: 'Proveedor sin email',
+  phone: '8182222222'
+};
+
+const supplierCreateInvalidEmail = {
+  name: 'Proveedor email inválido',
+  email: 'no-es-email',
+  phone: '8183333333'
+};
+
 // Datos de prueba para privileges
 const privilegeCreate = {
   name: 'Crear Usuario',
@@ -486,5 +546,14 @@ module.exports = {
   productPriceCreateTiered,
   productPriceCreateNoProduct,
   productPriceCreateNoPriceList,
-  productPriceCreateNoPrice
+  productPriceCreateNoPrice,
+  supplierCreate,
+  supplierCreateEmpty,
+  supplierCreateInvalid,
+  supplierUpdate,
+  supplierCreate2,
+  supplierCreateFull,
+  supplierCreateNoName,
+  supplierCreateNoEmail,
+  supplierCreateInvalidEmail
 };
