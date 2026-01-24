@@ -160,4 +160,18 @@ const PRODUCT_PRICE = Object.freeze({
   NAME_DELETE: 'Eliminar precio de producto'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE };
+const SUPPLIER = Object.freeze({
+  MODULE_NAME: 'suppliers',
+  VIEW: 'view_supplier',
+  NAME_VIEW: 'Ver proveedor',
+  VIEW_ALL: 'view_suppliers',
+  NAME_ALL: 'Ver proveedores',
+  ADD: 'create_supplier',
+  NAME_ADD: 'Crear proveedor',
+  UPDATE: 'update_supplier',
+  NAME_UPDATE: 'Modificar proveedor',
+  DELETE: 'delete_supplier',
+  NAME_DELETE: 'Eliminar proveedor'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER };
