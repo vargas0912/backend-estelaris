@@ -12,7 +12,9 @@ const { ROLE } = require('../constants/roles');
  */
 const checkRol = (roles, codename) => async(req, res, next) => {
   try {
+    console.log('[checkRol] Iniciando. Roles:', roles, 'Codename:', codename);
     const { user } = req;
+    console.log('[checkRol] User:', user?.id, user?.role);
 
     const rolesByUser = user.role;
 
@@ -36,6 +38,7 @@ const checkRol = (roles, codename) => async(req, res, next) => {
 
     next();
   } catch (error) {
+    console.error('[checkRol ERROR]', error.message, error.stack);
     handleHttpError(res, ERR_SECURITY.NOT_PERMISION, 403);
   }
 };
