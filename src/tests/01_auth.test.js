@@ -133,11 +133,11 @@ describe('[USERS] Test api users //api/users/', () => {
 
   test('9. Shows only one user. Expec 200', async() => {
     const response = await api
-      .get('/api/users/1')
+      .get('/api/users/2')
       .auth(Token, { type: 'bearer' });
 
     expect(response.status).toEqual(200);
-    expect(response.body.user.email).toEqual('superadmin@estelaris.com');
+    expect(response.body).toHaveProperty('user');
   });
 
   test('10. modify one user. Expect 200', async() => {

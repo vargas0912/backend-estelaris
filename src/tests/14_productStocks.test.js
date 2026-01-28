@@ -375,8 +375,8 @@ describe('[PRODUCT STOCKS] Test api productStocks //api/productStocks/', () => {
 
     test('30. Crear inventario con ubicación y stock mínimo/máximo', async() => {
       const stockWithLimits = {
-        product_id: 1,
-        branch_id: 1,
+        product_id: 2,
+        branch_id: 3,
         quantity: 75,
         min_stock: 10,
         max_stock: 150,

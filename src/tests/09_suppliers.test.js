@@ -239,11 +239,11 @@ describe('[SUPPLIERS] Test api suppliers //api/suppliers/', () => {
   // Tests de ID inválido
   // ============================================
   describe('Tests de ID invalido', () => {
-    test('19. Obtener proveedor con ID no numérico. Expect 404', async() => {
+    test('19. Obtener proveedor con ID no numérico. Expect 400', async() => {
       await api
         .get('/api/suppliers/abc')
         .auth(Token, { type: 'bearer' })
-        .expect(404);
+        .expect(400);
     });
 
     test('20. Actualizar proveedor inexistente. Expect 200 con NOT_FOUND', async() => {

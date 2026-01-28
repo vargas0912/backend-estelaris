@@ -1,7 +1,7 @@
 'use strict';
 
 const { check } = require('express-validator');
-const { validateResults } = require('../utils/handleValidator');
+const validateResults = require('../utils/handleValidator');
 const { SUPPLIERS_VALIDATORS } = require('../constants/suppliers');
 
 const validateGetSupplier = [

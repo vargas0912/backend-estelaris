@@ -313,11 +313,11 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
   // Tests de ID inválido
   // ============================================
   describe('Tests de ID invalido', () => {
-    test('25. Obtener precio con ID no numérico. Expect 404', async() => {
+    test('25. Obtener precio con ID no numérico. Expect 400', async() => {
       await api
         .get('/api/productPrices/abc')
         .auth(Token, { type: 'bearer' })
-        .expect(404);
+        .expect(400);
     });
 
     test('26. Actualizar precio inexistente. Expect 200 con NOT_FOUND', async() => {

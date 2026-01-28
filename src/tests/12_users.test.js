@@ -216,14 +216,11 @@ describe('[USERS] Test api users //api/users/', () => {
       expect([200, 404]).toContain(response.status);
     });
 
-    test('15. Eliminar usuario inexistente. Expect 200 con result 0', async() => {
-      const response = await api
+    test('15. Eliminar usuario inexistente. Expect 404', async() => {
+      await api
         .delete('/api/users/99999')
         .auth(Token, { type: 'bearer' })
-        .expect(200);
-
-      expect(response.body).toHaveProperty('result');
-      expect(response.body.result).toBe(0);
+        .expect(404);
     });
 
     test('16. Eliminar usuario con ID no numérico. Expect 400', async() => {
