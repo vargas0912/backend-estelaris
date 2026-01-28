@@ -1,6 +1,6 @@
 'use strict';
 
-const { data: campaignProductsData } = require('./json_files/campaign-products');
+const { data: campaignProductsData } = require('../json_files/campaign-products');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {

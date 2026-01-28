@@ -3,6 +3,7 @@ const router = express.Router();
 const { validationResult } = require('express-validator');
 const authMiddleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
+const { ROLE } = require('../constants/roles');
 const { CAMPAIGN } = require('../constants/modules');
 const {
   getCampaigns,
@@ -69,7 +70,7 @@ const handleValidationErrors = (req, res, next) => {
 router.get(
   '/',
   authMiddleware,
-  checkRol(CAMPAIGN.VIEW_ALL),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.VIEW_ALL),
   getCampaignsValidator,
   handleValidationErrors,
   getCampaigns
@@ -92,7 +93,7 @@ router.get(
 router.get(
   '/active',
   authMiddleware,
-  checkRol(CAMPAIGN.VIEW_ACTIVE),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.VIEW_ACTIVE),
   getActiveCampaigns
 );
 
@@ -120,7 +121,7 @@ router.get(
 router.get(
   '/:id',
   authMiddleware,
-  checkRol(CAMPAIGN.VIEW),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.VIEW),
   getCampaignValidator,
   handleValidationErrors,
   getCampaign
@@ -168,7 +169,7 @@ router.get(
 router.post(
   '/',
   authMiddleware,
-  checkRol(CAMPAIGN.ADD),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.ADD),
   createCampaignValidator,
   handleValidationErrors,
   createCampaign
@@ -203,7 +204,7 @@ router.post(
 router.put(
   '/:id',
   authMiddleware,
-  checkRol(CAMPAIGN.UPDATE),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.UPDATE),
   updateCampaignValidator,
   handleValidationErrors,
   updateCampaign
@@ -232,7 +233,7 @@ router.put(
 router.post(
   '/:id/activate',
   authMiddleware,
-  checkRol(CAMPAIGN.ACTIVATE),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.ACTIVATE),
   getCampaignValidator,
   handleValidationErrors,
   activateCampaign
@@ -261,7 +262,7 @@ router.post(
 router.post(
   '/:id/deactivate',
   authMiddleware,
-  checkRol(CAMPAIGN.DEACTIVATE),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.DEACTIVATE),
   getCampaignValidator,
   handleValidationErrors,
   deactivateCampaign
@@ -290,7 +291,7 @@ router.post(
 router.delete(
   '/:id',
   authMiddleware,
-  checkRol(CAMPAIGN.DELETE),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.DELETE),
   getCampaignValidator,
   handleValidationErrors,
   deleteCampaign
@@ -319,7 +320,7 @@ router.delete(
 router.get(
   '/:id/branches',
   authMiddleware,
-  checkRol(CAMPAIGN.MANAGE_BRANCHES),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.MANAGE_BRANCHES),
   getCampaignValidator,
   handleValidationErrors,
   getCampaignBranches
@@ -361,7 +362,7 @@ router.get(
 router.post(
   '/:id/branches',
   authMiddleware,
-  checkRol(CAMPAIGN.MANAGE_BRANCHES),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.MANAGE_BRANCHES),
   addCampaignBranchesValidator,
   handleValidationErrors,
   addCampaignBranches
@@ -395,7 +396,7 @@ router.post(
 router.delete(
   '/:id/branches/:branch_id',
   authMiddleware,
-  checkRol(CAMPAIGN.MANAGE_BRANCHES),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.MANAGE_BRANCHES),
   removeCampaignBranchValidator,
   handleValidationErrors,
   removeCampaignBranch
