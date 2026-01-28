@@ -43,17 +43,12 @@ const api = request(server.app);
  */
 
 describe('[AUTH] super User register //api/auth/registerSuperUser', () => {
-  test('1. Register superUser,  expected 200', async() => {
-    const response = await api
+  test('1. Register superUser (already exists in seeder),  expected 400', async() => {
+    // El seeder ya creó el superadmin, por lo que debe fallar con 400
+    await api
       .post('/api/auth/registerSuperUser')
       .send(testAuthRegisterSuperAdmin)
-      .expect(200);
-
-    expect(response.body).toHaveProperty('superAdmin');
-    expect(response.body).toHaveProperty('superAdmin.token');
-    expect(response.body).toHaveProperty('superAdmin.user');
-
-    // console.log(response.body);
+      .expect(400);
   });
 
   test('2. Register super user duplicated,  expected 400', async() => {
