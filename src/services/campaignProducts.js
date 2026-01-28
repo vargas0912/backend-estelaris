@@ -1,4 +1,4 @@
-const { CampaignProducts, CampaignProductBranches, Campaigns, Products, Branches } = require('../models');
+const { campaignProducts: CampaignProducts, campaignProductBranches: CampaignProductBranches, campaigns: Campaigns, products: Products, branches: Branches } = require('../models');
 
 /**
  * Obtiene todos los productos de una campaña

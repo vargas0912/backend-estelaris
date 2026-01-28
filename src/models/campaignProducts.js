@@ -5,19 +5,19 @@ module.exports = (sequelize, DataTypes) => {
   class CampaignProducts extends Model {
     static associate(models) {
       // Un producto de campaña pertenece a una campaña
-      CampaignProducts.belongsTo(models.Campaigns, {
+      CampaignProducts.belongsTo(models.campaigns, {
         foreignKey: 'campaign_id',
         as: 'campaign'
       });
 
       // Un producto de campaña pertenece a un producto
-      CampaignProducts.belongsTo(models.Products, {
+      CampaignProducts.belongsTo(models.products, {
         foreignKey: 'product_id',
         as: 'product'
       });
 
       // Un producto de campaña puede tener múltiples overrides por sucursal
-      CampaignProducts.hasMany(models.CampaignProductBranches, {
+      CampaignProducts.hasMany(models.campaignProductBranches, {
         foreignKey: 'campaign_product_id',
         as: 'branchOverrides'
       });

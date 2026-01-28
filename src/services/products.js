@@ -1,4 +1,4 @@
-const { products, productCategories, Campaigns, CampaignProducts, CampaignProductBranches, Branches } = require('../models/index');
+const { products, productCategories, campaigns: Campaigns, campaignProducts: CampaignProducts, campaignProductBranches: CampaignProductBranches, branches: Branches } = require('../models/index');
 const { Op } = require('sequelize');
 
 const attributes = [

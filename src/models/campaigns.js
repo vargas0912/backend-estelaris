@@ -5,20 +5,20 @@ module.exports = (sequelize, DataTypes) => {
   class Campaigns extends Model {
     static associate(models) {
       // Una campaña tiene muchos productos
-      Campaigns.hasMany(models.CampaignProducts, {
+      Campaigns.hasMany(models.campaignProducts, {
         foreignKey: 'campaign_id',
         as: 'campaignProducts'
       });
 
       // Una campaña puede aplicar a varias sucursales
-      Campaigns.hasMany(models.CampaignBranches, {
+      Campaigns.hasMany(models.campaignBranches, {
         foreignKey: 'campaign_id',
         as: 'campaignBranches'
       });
 
       // Relación many-to-many con sucursales a través de CampaignBranches
-      Campaigns.belongsToMany(models.Branches, {
-        through: models.CampaignBranches,
+      Campaigns.belongsToMany(models.branches, {
+        through: models.campaignBranches,
         foreignKey: 'campaign_id',
         otherKey: 'branch_id',
         as: 'branches'

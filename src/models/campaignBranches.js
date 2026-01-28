@@ -5,13 +5,13 @@ module.exports = (sequelize, DataTypes) => {
   class CampaignBranches extends Model {
     static associate(models) {
       // Una asignación de campaña-sucursal pertenece a una campaña
-      CampaignBranches.belongsTo(models.Campaigns, {
+      CampaignBranches.belongsTo(models.campaigns, {
         foreignKey: 'campaign_id',
         as: 'campaign'
       });
 
       // Una asignación de campaña-sucursal pertenece a una sucursal
-      CampaignBranches.belongsTo(models.Branches, {
+      CampaignBranches.belongsTo(models.branches, {
         foreignKey: 'branch_id',
         as: 'branch'
       });
