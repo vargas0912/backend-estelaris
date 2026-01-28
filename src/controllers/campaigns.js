@@ -1,5 +1,5 @@
 const { matchedData } = require('express-validator');
-const { handleHttpError } = require('../utils/handleError');
+const { handleHttpError } = require('../utils/handleErorr');
 const campaignsService = require('../services/campaigns');
 const {
   ERROR_GET_CAMPAIGNS,
