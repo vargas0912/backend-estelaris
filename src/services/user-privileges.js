@@ -26,6 +26,7 @@ const getOneUserPrivilege = async(userId, codeName) => {
     include: [
       {
         model: privileges,
+        as: 'privileges',
         where: {
           codename: codeName
         }
