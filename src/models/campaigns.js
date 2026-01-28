@@ -2,22 +2,22 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class Campaigns extends Model {
+  class campaigns extends Model {
     static associate(models) {
       // Una campaña tiene muchos productos
-      Campaigns.hasMany(models.campaignProducts, {
+      this.hasMany(models.campaignProducts, {
         foreignKey: 'campaign_id',
         as: 'campaignProducts'
       });
 
       // Una campaña puede aplicar a varias sucursales
-      Campaigns.hasMany(models.campaignBranches, {
+      this.hasMany(models.campaignBranches, {
         foreignKey: 'campaign_id',
         as: 'campaignBranches'
       });
 
       // Relación many-to-many con sucursales a través de CampaignBranches
-      Campaigns.belongsToMany(models.branches, {
+      this.belongsToMany(models.branches, {
         through: models.campaignBranches,
         foreignKey: 'campaign_id',
         otherKey: 'branch_id',
@@ -83,7 +83,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Campaigns.init(
+  campaigns.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -158,7 +158,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Campaigns',
+      modelName: 'campaigns',
       tableName: 'campaigns',
       timestamps: true,
       paranoid: true,
@@ -166,5 +166,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  return Campaigns;
+  return campaigns;
 };

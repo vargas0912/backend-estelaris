@@ -2,23 +2,23 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class CampaignBranches extends Model {
+  class campaignBranches extends Model {
     static associate(models) {
       // Una asignación de campaña-sucursal pertenece a una campaña
-      CampaignBranches.belongsTo(models.campaigns, {
+      this.belongsTo(models.campaigns, {
         foreignKey: 'campaign_id',
         as: 'campaign'
       });
 
       // Una asignación de campaña-sucursal pertenece a una sucursal
-      CampaignBranches.belongsTo(models.branches, {
+      this.belongsTo(models.branches, {
         foreignKey: 'branch_id',
         as: 'branch'
       });
     }
   }
 
-  CampaignBranches.init(
+  campaignBranches.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'CampaignBranches',
+      modelName: 'campaignBranches',
       tableName: 'campaign_branches',
       timestamps: true,
       paranoid: true,
@@ -54,5 +54,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  return CampaignBranches;
+  return campaignBranches;
 };

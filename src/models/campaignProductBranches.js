@@ -2,16 +2,16 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class CampaignProductBranches extends Model {
+  class campaignProductBranches extends Model {
     static associate(models) {
       // Un override pertenece a un producto de campaña
-      CampaignProductBranches.belongsTo(models.campaignProducts, {
+      this.belongsTo(models.campaignProducts, {
         foreignKey: 'campaign_product_id',
         as: 'campaignProduct'
       });
 
       // Un override pertenece a una sucursal
-      CampaignProductBranches.belongsTo(models.branches, {
+      this.belongsTo(models.branches, {
         foreignKey: 'branch_id',
         as: 'branch'
       });
@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  CampaignProductBranches.init(
+  campaignProductBranches.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -67,7 +67,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'CampaignProductBranches',
+      modelName: 'campaignProductBranches',
       tableName: 'campaign_product_branches',
       timestamps: true,
       paranoid: true,
@@ -75,5 +75,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  return CampaignProductBranches;
+  return campaignProductBranches;
 };
