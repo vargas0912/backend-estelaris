@@ -518,43 +518,43 @@ const userPrivilegeCreateNoPrivilege = {
 };
 
 const testAuthLogin = {
-  email: 'superadmin@test.com',
-  password: '12345678'
+  email: 'superadmin@estelaris.com',
+  password: 'Admin123'
 };
 
 const testAuthRegister = {
   name: 'User test',
   email: 'test1@test.com',
-  password: '12345678',
+  password: 'Test1234',
   status: false,
   role: 'user'
 };
 
 const testAuthRegisterSuperAdmin = {
   name: 'Super admin',
-  email: 'superadmin@test.com',
+  email: 'superadmin@estelaris.com',
   role: 'superadmin',
-  password: '12345678'
+  password: 'Admin123'
 };
 
 const testAuthRegisterSuperAdminErr = {
   name: 'Super admin',
-  email: 'superadmin@test.com',
+  email: 'superadmin@estelaris.com',
   role: 'user',
-  password: '12345678'
+  password: 'Admin123'
 };
 
 const testAuthRegisterSuperAdminFail = {
   name: 'Super admin',
-  email: 'superadmin@test.com',
-  password: '12345678'
+  email: 'superadmin@estelaris.com',
+  password: 'Admin123'
 };
 
 const testAuthRegisterAdmin = {
   name: 'User admin',
   email: 'admin@estelaris.com',
   role: 'admin',
-  password: '12345678'
+  password: 'Admin123'
 };
 
 const testStorageRegister = {

@@ -1,4 +1,6 @@
 const { Sequelize } = require('sequelize');
+const logger = require('../utils/logger');
+
 const env = process.env.NODE_ENV || 'development';
 const config = require('./config')[env];
 
@@ -8,9 +10,10 @@ const dbConnectMySql = async() => {
   try {
     await sequelize.authenticate();
     // await sequelize.sync({ force: false });
-    console.log(`MySQL is online. Environment: ${process.env.NODE_ENV}`);
+    logger.info(`MySQL is online. Environment: ${process.env.NODE_ENV}`);
   } catch (e) {
-    console.log('MYSQL Error de conexión', e);
+    logger.error('MySQL connection error:', { error: e.message, stack: e.stack });
+    throw e; // Re-lanzar el error para que pueda ser manejado por el caller
   }
 };
 

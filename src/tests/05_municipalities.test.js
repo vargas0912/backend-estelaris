@@ -10,7 +10,7 @@ const municipalitiesTestUser = {
   name: 'Municipalities Test User',
   email: 'municipalities_test@test.com',
   role: 'superadmin',
-  password: '12345678'
+  password: 'Test1234'
 };
 
 /**

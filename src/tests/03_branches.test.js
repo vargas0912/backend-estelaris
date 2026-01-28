@@ -23,7 +23,7 @@ const branchesTestUser = {
   name: 'Branches Test User',
   email: 'branches_test@test.com',
   role: 'superadmin',
-  password: '12345678'
+  password: 'Test1234'
 };
 
 /**

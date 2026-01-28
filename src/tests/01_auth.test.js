@@ -163,6 +163,18 @@ describe('[USERS] Test api users //api/users/', () => {
       .expect(404);
   });
 
+  test('12b. create user to delete. Expect 200', async() => {
+    await api
+      .post('/api/auth/registerSuperUser')
+      .send({
+        name: 'User to delete',
+        email: 'todelete@test.com',
+        role: 'user',
+        password: 'Test1234'
+      })
+      .expect(200);
+  });
+
   test('13. delete user. Expect 200', async() => {
     await api
       .delete('/api/users/3')

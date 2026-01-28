@@ -24,7 +24,7 @@ const suppliersTestUser = {
   name: 'Suppliers Test User',
   email: 'suppliers_test@test.com',
   role: 'superadmin',
-  password: '12345678'
+  password: 'Test1234'
 };
 
 /**
