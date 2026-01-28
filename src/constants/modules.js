@@ -174,4 +174,42 @@ const SUPPLIER = Object.freeze({
   NAME_DELETE: 'Eliminar proveedor'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER };
+const CAMPAIGN = Object.freeze({
+  MODULE_NAME: 'campaigns',
+  VIEW: 'view_campaign',
+  NAME_VIEW: 'Ver campaña',
+  VIEW_ALL: 'view_campaigns',
+  NAME_ALL: 'Ver campañas',
+  VIEW_ACTIVE: 'view_active_campaigns',
+  NAME_VIEW_ACTIVE: 'Ver campañas activas',
+  ADD: 'create_campaign',
+  NAME_ADD: 'Crear campaña',
+  UPDATE: 'update_campaign',
+  NAME_UPDATE: 'Modificar campaña',
+  DELETE: 'delete_campaign',
+  NAME_DELETE: 'Eliminar campaña',
+  ACTIVATE: 'activate_campaign',
+  NAME_ACTIVATE: 'Activar campaña',
+  DEACTIVATE: 'deactivate_campaign',
+  NAME_DEACTIVATE: 'Desactivar campaña',
+  MANAGE_BRANCHES: 'manage_campaign_branches',
+  NAME_MANAGE_BRANCHES: 'Gestionar sucursales de campaña'
+});
+
+const CAMPAIGN_PRODUCT = Object.freeze({
+  MODULE_NAME: 'campaignProducts',
+  VIEW: 'view_campaign_product',
+  NAME_VIEW: 'Ver producto de campaña',
+  VIEW_ALL: 'view_campaign_products',
+  NAME_ALL: 'Ver productos de campaña',
+  ADD: 'create_campaign_product',
+  NAME_ADD: 'Agregar producto a campaña',
+  UPDATE: 'update_campaign_product',
+  NAME_UPDATE: 'Modificar producto de campaña',
+  DELETE: 'delete_campaign_product',
+  NAME_DELETE: 'Eliminar producto de campaña',
+  MANAGE_OVERRIDES: 'manage_campaign_product_overrides',
+  NAME_MANAGE_OVERRIDES: 'Gestionar overrides de producto'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT };

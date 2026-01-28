@@ -1,5 +1,5 @@
 const fecha = new Date();
-const { BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN } = require('../../../constants/modules');
+const { BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD } = require('../../../constants/modules');
 
 const data = [
   // Sucursales
@@ -49,7 +49,26 @@ const data = [
 
   // Municipios
   { name: MUN.NAME_VIEW, codeName: MUN.VIEW, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: MUN.NAME_VIEW_STATE, codeName: MUN.NAME_VIEW_STATE, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: MUN.NAME_VIEW_STATE, codeName: MUN.NAME_VIEW_STATE, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Campañas
+  { name: CMP.NAME_VIEW, codeName: CMP.VIEW, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMP.NAME_ALL, codeName: CMP.VIEW_ALL, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMP.NAME_VIEW_ACTIVE, codeName: CMP.VIEW_ACTIVE, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMP.NAME_ADD, codeName: CMP.ADD, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMP.NAME_UPDATE, codeName: CMP.UPDATE, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMP.NAME_DELETE, codeName: CMP.DELETE, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMP.NAME_ACTIVATE, codeName: CMP.ACTIVATE, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMP.NAME_DEACTIVATE, codeName: CMP.DEACTIVATE, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMP.NAME_MANAGE_BRANCHES, codeName: CMP.MANAGE_BRANCHES, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Productos de Campañas
+  { name: CMPPROD.NAME_VIEW, codeName: CMPPROD.VIEW, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMPPROD.NAME_ALL, codeName: CMPPROD.VIEW_ALL, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMPPROD.NAME_ADD, codeName: CMPPROD.ADD, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMPPROD.NAME_UPDATE, codeName: CMPPROD.UPDATE, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMPPROD.NAME_DELETE, codeName: CMPPROD.DELETE, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMPPROD.NAME_MANAGE_OVERRIDES, codeName: CMPPROD.MANAGE_OVERRIDES, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha }
 ];
 
 module.exports = { data };

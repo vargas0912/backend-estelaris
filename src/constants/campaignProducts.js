@@ -1,0 +1,20 @@
+module.exports = {
+  ERROR_GET_CAMPAIGN_PRODUCTS: 'Error al obtener los productos de la campaña',
+  ERROR_GET_CAMPAIGN_PRODUCT: 'Error al obtener el producto de campaña',
+  ERROR_CREATE_CAMPAIGN_PRODUCT: 'Error al agregar el producto a la campaña',
+  ERROR_UPDATE_CAMPAIGN_PRODUCT: 'Error al actualizar el producto de campaña',
+  ERROR_DELETE_CAMPAIGN_PRODUCT: 'Error al eliminar el producto de campaña',
+  ERROR_CAMPAIGN_PRODUCT_NOT_FOUND: 'Producto de campaña no encontrado',
+  ERROR_PRODUCT_ALREADY_IN_CAMPAIGN: 'El producto ya está en esta campaña',
+  ERROR_INVALID_DISCOUNT_TYPE: 'Tipo de descuento inválido',
+  ERROR_INVALID_DISCOUNT_VALUE: 'Valor de descuento inválido',
+  ERROR_NO_STOCK_AVAILABLE: 'No hay stock disponible para esta oferta',
+  ERROR_CALCULATE_PRICE: 'Error al calcular el precio de la oferta',
+  ERROR_INCREMENT_SOLD: 'Error al incrementar cantidad vendida',
+  ERROR_GET_BRANCH_OVERRIDES: 'Error al obtener los overrides de sucursal',
+  ERROR_CREATE_BRANCH_OVERRIDE: 'Error al crear el override de sucursal',
+  ERROR_UPDATE_BRANCH_OVERRIDE: 'Error al actualizar el override de sucursal',
+  ERROR_DELETE_BRANCH_OVERRIDE: 'Error al eliminar el override de sucursal',
+  ERROR_BRANCH_OVERRIDE_NOT_FOUND: 'Override de sucursal no encontrado',
+  ERROR_BRANCH_OVERRIDE_ALREADY_EXISTS: 'Ya existe un override para esta sucursal'
+};
