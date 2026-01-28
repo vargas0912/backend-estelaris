@@ -169,13 +169,13 @@ describe('User Privileges Service - Unit Tests', () => {
 
       expect(userprivileges.count).toHaveBeenCalledWith({
         where: {
-          userId: 1
+          user_id: 1
         },
         include: [
           {
             model: privileges,
             where: {
-              codeName: 'view_users'
+              codename: 'view_users'
             }
           }
         ]
@@ -191,13 +191,13 @@ describe('User Privileges Service - Unit Tests', () => {
 
       expect(userprivileges.count).toHaveBeenCalledWith({
         where: {
-          userId: 1
+          user_id: 1
         },
         include: [
           {
             model: privileges,
             where: {
-              codeName: 'delete_users'
+              codename: 'delete_users'
             }
           }
         ]
@@ -213,7 +213,7 @@ describe('User Privileges Service - Unit Tests', () => {
       expect(userprivileges.count).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
-            userId: 99
+            user_id: 99
           }
         })
       );
@@ -230,7 +230,7 @@ describe('User Privileges Service - Unit Tests', () => {
             {
               model: privileges,
               where: {
-                codeName: 'edit_branches'
+                codename: 'edit_branches'
               }
             }
           ]
@@ -378,8 +378,8 @@ describe('User Privileges Service - Unit Tests', () => {
 
       expect(userprivileges.destroy).toHaveBeenCalledWith({
         where: {
-          userId: 1,
-          privilegeId: 2
+          user_id: 1,
+          privilege_id: 2
         }
       });
       expect(userprivileges.destroy).toHaveBeenCalledTimes(1);
@@ -393,8 +393,8 @@ describe('User Privileges Service - Unit Tests', () => {
 
       expect(userprivileges.destroy).toHaveBeenCalledWith({
         where: {
-          userId: 999,
-          privilegeId: 888
+          user_id: 999,
+          privilege_id: 888
         }
       });
       expect(result).toEqual({
@@ -411,8 +411,8 @@ describe('User Privileges Service - Unit Tests', () => {
 
       expect(userprivileges.destroy).toHaveBeenCalledWith({
         where: {
-          userId: 42,
-          privilegeId: 1
+          user_id: 42,
+          privilege_id: 1
         }
       });
     });
@@ -424,8 +424,8 @@ describe('User Privileges Service - Unit Tests', () => {
 
       expect(userprivileges.destroy).toHaveBeenCalledWith({
         where: {
-          userId: 1,
-          privilegeId: 99
+          user_id: 1,
+          privilege_id: 99
         }
       });
     });
@@ -455,8 +455,8 @@ describe('User Privileges Service - Unit Tests', () => {
 
       expect(userprivileges.destroy).toHaveBeenCalledWith({
         where: {
-          userId: '5',
-          privilegeId: 10
+          user_id: '5',
+          privilege_id: 10
         }
       });
     });
@@ -468,8 +468,8 @@ describe('User Privileges Service - Unit Tests', () => {
 
       expect(userprivileges.destroy).toHaveBeenCalledWith({
         where: {
-          userId: 5,
-          privilegeId: '10'
+          user_id: 5,
+          privilege_id: '10'
         }
       });
     });
@@ -590,7 +590,7 @@ describe('User Privileges Service - Unit Tests', () => {
             {
               model: privileges,
               where: {
-                codeName: ''
+                codename: ''
               }
             }
           ]
@@ -610,7 +610,7 @@ describe('User Privileges Service - Unit Tests', () => {
             {
               model: privileges,
               where: {
-                codeName: 'special-privilege_123'
+                codename: 'special-privilege_123'
               }
             }
           ]
@@ -646,8 +646,8 @@ describe('User Privileges Service - Unit Tests', () => {
 
       expect(userprivileges.destroy).toHaveBeenCalledWith({
         where: {
-          userId: -1,
-          privilegeId: -2
+          user_id: -1,
+          privilege_id: -2
         }
       });
       expect(result).toEqual({
@@ -664,8 +664,8 @@ describe('User Privileges Service - Unit Tests', () => {
 
       expect(userprivileges.destroy).toHaveBeenCalledWith({
         where: {
-          userId: 0,
-          privilegeId: 0
+          user_id: 0,
+          privilege_id: 0
         }
       });
     });
@@ -751,13 +751,13 @@ describe('User Privileges Service - Unit Tests', () => {
       expect(userprivileges.count).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
-            userId: 99
+            user_id: 99
           },
           include: [
             {
               model: privileges,
               where: {
-                codeName: 'test_privilege'
+                codename: 'test_privilege'
               }
             }
           ]
@@ -787,8 +787,8 @@ describe('User Privileges Service - Unit Tests', () => {
 
       expect(userprivileges.destroy).toHaveBeenCalledWith({
         where: {
-          userId: 10,
-          privilegeId: 20
+          user_id: 10,
+          privilege_id: 20
         }
       });
     });
@@ -813,9 +813,9 @@ describe('User Privileges Service - Unit Tests', () => {
       const callArgs = userprivileges.count.mock.calls[0][0];
       expect(callArgs).toHaveProperty('where');
       expect(callArgs).toHaveProperty('include');
-      expect(callArgs.where).toHaveProperty('userId', 5);
+      expect(callArgs.where).toHaveProperty('user_id', 5);
       expect(callArgs.include[0]).toHaveProperty('model', privileges);
-      expect(callArgs.include[0].where).toHaveProperty('codeName', 'admin');
+      expect(callArgs.include[0].where).toHaveProperty('codename', 'admin');
     });
   });
 

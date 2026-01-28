@@ -45,8 +45,8 @@ const addNewUserPrivilege = async(body) => {
 const deleteUserPrivilege = async(userId, privilegeId) => {
   const userPrivilege = await userprivileges.destroy({
     where: {
-      userId,
-      privilegeId
+      user_id: userId,
+      privilege_id: privilegeId
     }
   });
 
