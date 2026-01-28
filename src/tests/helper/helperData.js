@@ -164,8 +164,8 @@ const productCreateNoPrice = {
 
 // Datos de prueba para productStocks
 const productStockCreate = {
-  product_id: 1,
-  branch_id: 1,
+  product_id: 2,
+  branch_id: 2,
   quantity: 100,
   min_stock: 10,
   max_stock: 200,
@@ -187,7 +187,7 @@ const productStockUpdate = {
 };
 
 const productStockCreate2 = {
-  product_id: 1,
+  product_id: 3,
   branch_id: 2,
   quantity: 50,
   min_stock: 5,
@@ -195,8 +195,8 @@ const productStockCreate2 = {
 };
 
 const productStockCreateFull = {
-  product_id: 1,
-  branch_id: 1,
+  product_id: 3,
+  branch_id: 3,
   quantity: 75.5,
   min_stock: 10.25,
   max_stock: 150.75,
@@ -258,8 +258,8 @@ const priceListCreateNoName = {
 
 // Datos de prueba para productPrices
 const productPriceCreate = {
-  product_id: 1,
-  price_list_id: 1,
+  product_id: 3,
+  price_list_id: 2,
   price: 100.00,
   min_quantity: 1
 };
@@ -277,17 +277,17 @@ const productPriceUpdate = {
 };
 
 const productPriceCreate2 = {
-  product_id: 1,
-  price_list_id: 2,
+  product_id: 3,
+  price_list_id: 3,
   price: 90.00,
   min_quantity: 1
 };
 
 const productPriceCreateTiered = {
-  product_id: 1,
-  price_list_id: 1,
+  product_id: 2,
+  price_list_id: 2,
   price: 85.00,
-  min_quantity: 10
+  min_quantity: 1
 };
 
 const productPriceCreateNoProduct = {
@@ -363,6 +363,94 @@ const supplierCreateInvalidEmail = {
   name: 'Proveedor email inválido',
   email: 'no-es-email',
   phone: '8183333333'
+};
+
+// Datos de prueba para users
+const userUpdate = {
+  name: 'Usuario actualizado',
+  role: 'user'
+};
+
+const userUpdateWithRole = {
+  name: 'Usuario con rol',
+  role: 'admin'
+};
+
+// Datos de prueba para employees
+const employeeCreate = {
+  name: 'Empleado de prueba',
+  email: 'empleado@test.com',
+  phone: '8181234567',
+  hire_date: '2026-01-15',
+  position_id: 1,
+  branch_id: 1,
+  active: true
+};
+
+const employeeCreateEmpty = {
+  name: '',
+  email: ''
+};
+
+const employeeCreateInvalid = {};
+
+const employeeUpdate = {
+  name: 'Empleado modificado',
+  email: 'empleado_mod@test.com',
+  phone: '8189876543',
+  hire_date: '2026-01-15',
+  position_id: 1,
+  branch_id: 1
+};
+
+const employeeCreate2 = {
+  name: 'Segundo empleado de prueba',
+  email: 'empleado2@test.com',
+  phone: '8187654321',
+  hire_date: '2026-01-20',
+  position_id: 1,
+  branch_id: 1,
+  active: true
+};
+
+const employeeCreateFull = {
+  name: 'Empleado Completo',
+  email: 'completo@test.com',
+  phone: '8181111111',
+  mobile: '8112222222',
+  hire_date: '2026-01-10',
+  termination_date: null,
+  position_id: 1,
+  branch_id: 1,
+  salary: 15000.00,
+  emergency_contact_name: 'Juan Pérez',
+  emergency_contact_phone: '8113333333',
+  notes: 'Empleado de confianza',
+  active: true
+};
+
+const employeeCreateNoName = {
+  email: 'sinombre@test.com',
+  position_id: 1,
+  branch_id: 1
+};
+
+const employeeCreateNoEmail = {
+  name: 'Empleado sin email',
+  position_id: 1,
+  branch_id: 1
+};
+
+const employeeCreateNoPosition = {
+  name: 'Empleado sin puesto',
+  email: 'sinpuesto@test.com',
+  branch_id: 1
+};
+
+const employeeCreateNoBranch = {
+  name: 'Empleado sin sucursal',
+  email: 'sinsucursal@test.com',
+  position_id: 1
 };
 
 // Datos de prueba para privileges
@@ -555,5 +643,17 @@ module.exports = {
   supplierCreateFull,
   supplierCreateNoName,
   supplierCreateNoEmail,
-  supplierCreateInvalidEmail
+  supplierCreateInvalidEmail,
+  userUpdate,
+  userUpdateWithRole,
+  employeeCreate,
+  employeeCreateEmpty,
+  employeeCreateInvalid,
+  employeeUpdate,
+  employeeCreate2,
+  employeeCreateFull,
+  employeeCreateNoName,
+  employeeCreateNoEmail,
+  employeeCreateNoPosition,
+  employeeCreateNoBranch
 };
