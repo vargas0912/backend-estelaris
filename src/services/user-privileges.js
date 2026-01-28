@@ -21,13 +21,13 @@ const getAllUserPrivileges = async(userId) => {
 const getOneUserPrivilege = async(userId, codeName) => {
   const datePrivileges = await userprivileges.count({
     where: {
-      userId
+      user_id: userId
     },
     include: [
       {
         model: privileges,
         where: {
-          codeName
+          codename: codeName
         }
       }
     ]
