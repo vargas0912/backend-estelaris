@@ -20,7 +20,7 @@ const productCategoriesTestUser = {
   name: 'ProductCategories Test User',
   email: 'productcategories_test@test.com',
   role: 'superadmin',
-  password: '12345678'
+  password: 'Test1234'
 };
 
 /**

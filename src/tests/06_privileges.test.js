@@ -23,7 +23,7 @@ const privilegesTestUser = {
   name: 'Privileges Test User',
   email: 'privileges_test@test.com',
   role: 'superadmin',
-  password: '12345678'
+  password: 'Test1234'
 };
 
 /**

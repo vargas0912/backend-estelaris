@@ -10,7 +10,7 @@ const statesTestUser = {
   name: 'States Test User',
   email: 'states_test@test.com',
   role: 'superadmin',
-  password: '12345678'
+  password: 'Test1234'
 };
 
 /**

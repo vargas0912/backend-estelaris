@@ -3,92 +3,27 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    const privileges = [
-      {
-        name: 'Crear privilegio',
-        codename: 'create_privilege',
-        module: 'privileges',
-        created_at: '2023-10-05 21:12:32.0',
-        updated_at: '2023-10-05 21:12:32.0'
-      },
-      {
-        name: 'Actualizar privilegio',
-        codename: 'update_privilege',
-        module: 'privileges',
-        created_at: '2023-10-05 21:12:45.0',
-        updated_at: '2023-10-05 21:12:45.0'
-      },
-      {
-        name: 'Eliminar privilegio',
-        codename: 'delete_privilege',
-        module: 'privileges',
-        created_at: '2023-10-05 21:12:58.0',
-        updated_at: '2023-10-05 21:12:58.0'
-      },
-      {
-        name: 'Ver usuario - privilegio',
-        codename: 'view_user_privilege',
-        module: 'privileges',
-        created_at: '2023-10-05 21:17:12.0',
-        updated_at: '2023-10-05 21:17:12.0'
-      },
-      {
-        name: 'Crear usuario - privilegio',
-        codename: 'create_user_privilege',
-        module: 'privileges',
-        created_at: '2023-10-05 21:17:30.0',
-        updated_at: '2023-10-05 21:17:30.0'
-      },
-      {
-        name: 'Eliminar usuario - privilegio',
-        codename: 'delete_user_privilege',
-        module: 'privileges',
-        created_at: '2023-10-05 21:17:45.0',
-        updated_at: '2023-10-05 21:17:45.0'
-      },
-      {
-        name: 'Ver usuarios',
-        codename: 'view_users',
-        module: 'users',
-        created_at: '2023-10-06 04:07:09.0',
-        updated_at: '2023-10-06 04:09:32.0'
-      },
-      {
-        name: 'Ver usuario',
-        codename: 'view_user',
-        module: 'users',
-        created_at: '2023-10-06 04:12:21.0',
-        updated_at: '2023-10-06 04:12:21.0'
-      },
-      {
-        name: 'Ver privilegios por modulo',
-        codename: 'view_module',
-        module: 'privileges',
-        created_at: '2023-10-06 04:43:59.0',
-        updated_at: '2023-10-06 05:10:57.0'
-      },
-      {
-        name: 'Modificar usuarios',
-        codename: 'update_user',
-        module: 'users',
-        created_at: '2023-10-06 04:52:33.0',
-        updated_at: '2023-10-06 04:52:33.0'
-      },
-      {
-        name: 'Eliminar usuarios',
-        codename: 'delete_user',
-        module: 'users',
-        created_at: '2023-10-06 05:13:20.0',
-        updated_at: '2023-10-06 05:13:20.0'
-      },
-      {
-        name: 'registrar usuarios',
-        codename: 'register_user',
-        module: 'users',
-        created_at: '2023-10-11 04:03:07.0',
-        updated_at: '2023-10-11 04:03:07.0'
-      }
+    const fecha = new Date();
 
+    // Privilegios con IDs explícitos coherentes con user_privileges
+    const privileges = [
+      // IDs 1-3: Privilegios (gestión de privilegios)
+      { id: 1, name: 'Crear privilegio', codename: 'create_privilege', module: 'privileges', created_at: fecha, updated_at: fecha },
+      { id: 2, name: 'Actualizar privilegio', codename: 'update_privilege', module: 'privileges', created_at: fecha, updated_at: fecha },
+      { id: 3, name: 'Eliminar privilegio', codename: 'delete_privilege', module: 'privileges', created_at: fecha, updated_at: fecha },
+
+      // IDs 4-6: User Privileges (asignación de privilegios a usuarios)
+      { id: 4, name: 'Ver usuario - privilegio', codename: 'view_user_privilege', module: 'privileges', created_at: fecha, updated_at: fecha },
+      { id: 5, name: 'Crear usuario - privilegio', codename: 'create_user_privilege', module: 'privileges', created_at: fecha, updated_at: fecha },
+      { id: 6, name: 'Eliminar usuario - privilegio', codename: 'delete_user_privilege', module: 'privileges', created_at: fecha, updated_at: fecha },
+
+      // IDs 7-12: Users (gestión de usuarios)
+      { id: 7, name: 'Ver usuarios', codename: 'view_users', module: 'users', created_at: fecha, updated_at: fecha },
+      { id: 8, name: 'Ver usuario', codename: 'view_user', module: 'users', created_at: fecha, updated_at: fecha },
+      { id: 9, name: 'Ver privilegios por modulo', codename: 'view_module', module: 'privileges', created_at: fecha, updated_at: fecha },
+      { id: 10, name: 'Modificar usuarios', codename: 'update_user', module: 'users', created_at: fecha, updated_at: fecha },
+      { id: 11, name: 'Eliminar usuarios', codename: 'delete_user', module: 'users', created_at: fecha, updated_at: fecha },
+      { id: 12, name: 'Registrar usuarios', codename: 'register_user', module: 'users', created_at: fecha, updated_at: fecha }
     ];
 
     await queryInterface.bulkInsert('privileges', privileges, {});

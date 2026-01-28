@@ -30,7 +30,10 @@ const validateRegister = [
   check('password')
     .exists().withMessage(REGISTER.PASSWORD_NOT_EXISTS).bail()
     .notEmpty().withMessage(REGISTER.PASSWORD_EMPTY).bail()
-    .isLength({ min: 3, max: 15 }).withMessage(REGISTER.PASSWORD_LENGTH_ERROR),
+    .isLength({ min: 8, max: 50 }).withMessage('Password must be between 8 and 50 characters').bail()
+    .matches(/\d/).withMessage('Password must contain at least one number').bail()
+    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter').bail()
+    .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter'),
   check('role')
     .exists().withMessage(REGISTER.ROLE_NOT_EXISTS).bail()
     .notEmpty().withMessage(REGISTER.ROLE_IS_EMPTY).bail()
@@ -48,7 +51,7 @@ const validateLogin = [
   check('password')
     .exists().withMessage(REGISTER.PASSWORD_NOT_EXISTS).bail()
     .notEmpty().withMessage(REGISTER.PASSWORD_EMPTY).bail()
-    .isLength({ min: 3, max: 15 }).withMessage(REGISTER.PASSWORD_LENGTH_ERROR),
+    .isLength({ min: 8, max: 50 }).withMessage('Password must be between 8 and 50 characters'),
   (req, res, next) => {
     return validateResults(req, res, next);
   }

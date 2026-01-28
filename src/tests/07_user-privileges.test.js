@@ -19,7 +19,7 @@ const userPrivilegesTestUser = {
   name: 'UserPrivileges Test User',
   email: 'userprivileges_test@test.com',
   role: 'superadmin',
-  password: '12345678'
+  password: 'Test1234'
 };
 
 // Usuario de prueba adicional para asignar privilegios
@@ -27,7 +27,7 @@ const additionalTestUser = {
   name: 'Additional User For Privileges',
   email: 'additional_user_privileges@test.com',
   role: 'admin',
-  password: '12345678'
+  password: 'Test1234'
 };
 
 /**

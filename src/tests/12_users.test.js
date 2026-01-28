@@ -16,7 +16,7 @@ const usersTestUser = {
   name: 'Users Test User',
   email: 'users_test@test.com',
   role: 'superadmin',
-  password: '12345678'
+  password: 'Test1234'
 };
 
 // Usuario adicional para pruebas
@@ -24,7 +24,7 @@ const additionalUser = {
   name: 'Usuario Adicional',
   email: 'adicional_user@test.com',
   role: 'user',
-  password: '12345678'
+  password: 'Test1234'
 };
 
 /**
@@ -272,7 +272,7 @@ describe('[USERS] Test api users //api/users/', () => {
         name: 'Usuario Rol Test',
         email: 'rol_test@test.com',
         role: 'user',
-        password: '12345678'
+        password: 'Test1234'
       };
 
       const createResponse = await api

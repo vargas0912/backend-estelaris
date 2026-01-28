@@ -6,9 +6,10 @@ const { encrypt } = require('../../../utils/handlePassword');
 module.exports = {
   // eslint-disable-next-line no-unused-vars
   async up(queryInterface, Sequelize) {
-    const password = await encrypt('superadmin');
+    const password = await encrypt('Admin123');
     const users = [
       {
+        id: 1,
         name: 'Super Admin',
         email: 'superadmin@estelaris.com',
         password,

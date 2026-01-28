@@ -22,7 +22,7 @@ const priceListsTestUser = {
   name: 'PriceLists Test User',
   email: 'pricelists_test@test.com',
   role: 'superadmin',
-  password: '12345678'
+  password: 'Test1234'
 };
 
 /**

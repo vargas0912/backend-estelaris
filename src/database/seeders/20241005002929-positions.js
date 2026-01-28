@@ -5,7 +5,13 @@ const { data } = require('./json_files/positions');
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.bulkInsert('positions', data, {});
+    const positions = data.map(item => ({
+      ...item,
+      created_at: new Date(),
+      updated_at: new Date()
+    }));
+
+    await queryInterface.bulkInsert('positions', positions, {});
   },
 
   async down(queryInterface, Sequelize) {

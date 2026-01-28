@@ -3,6 +3,8 @@ node_modules/
 storage/*
 !storage/.gitkeep
 coverage/
+logs/*
+!logs/.gitkeep
 
 .DS_Store
 **/*.backup.*
