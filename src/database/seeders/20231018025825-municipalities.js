@@ -1,10 +1,17 @@
+'use strict';
+
 const { data } = require('./json_files/municipalities');
 
 /** @type {import('sequelize-cli').Migration} */
-
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.bulkInsert('municipalities', data, {});
+    const municipalities = data.map(item => ({
+      ...item,
+      created_at: new Date(),
+      updated_at: new Date()
+    }));
+
+    await queryInterface.bulkInsert('municipalities', municipalities, {});
   },
 
   async down(queryInterface, Sequelize) {
