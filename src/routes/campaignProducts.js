@@ -3,6 +3,7 @@ const router = express.Router();
 const { validationResult } = require('express-validator');
 const authMiddleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
+const { ROLE } = require('../constants/roles');
 const { CAMPAIGN_PRODUCT } = require('../constants/modules');
 const {
   getProductsByCampaign,
@@ -68,7 +69,7 @@ const handleValidationErrors = (req, res, next) => {
 router.get(
   '/campaign/:campaign_id',
   authMiddleware,
-  checkRol(CAMPAIGN_PRODUCT.VIEW_ALL),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN_PRODUCT.VIEW_ALL),
   getProductsByCampaignValidator,
   handleValidationErrors,
   getProductsByCampaign
@@ -98,7 +99,7 @@ router.get(
 router.get(
   '/:id',
   authMiddleware,
-  checkRol(CAMPAIGN_PRODUCT.VIEW),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN_PRODUCT.VIEW),
   getCampaignProductValidator,
   handleValidationErrors,
   getCampaignProduct
@@ -144,7 +145,7 @@ router.get(
 router.post(
   '/',
   authMiddleware,
-  checkRol(CAMPAIGN_PRODUCT.ADD),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN_PRODUCT.ADD),
   createCampaignProductValidator,
   handleValidationErrors,
   createCampaignProduct
@@ -179,7 +180,7 @@ router.post(
 router.put(
   '/:id',
   authMiddleware,
-  checkRol(CAMPAIGN_PRODUCT.UPDATE),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN_PRODUCT.UPDATE),
   updateCampaignProductValidator,
   handleValidationErrors,
   updateCampaignProduct
@@ -208,7 +209,7 @@ router.put(
 router.delete(
   '/:id',
   authMiddleware,
-  checkRol(CAMPAIGN_PRODUCT.DELETE),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN_PRODUCT.DELETE),
   getCampaignProductValidator,
   handleValidationErrors,
   deleteCampaignProduct
@@ -235,7 +236,7 @@ router.delete(
 router.get(
   '/:id/branches',
   authMiddleware,
-  checkRol(CAMPAIGN_PRODUCT.MANAGE_OVERRIDES),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN_PRODUCT.MANAGE_OVERRIDES),
   getCampaignProductValidator,
   handleValidationErrors,
   getBranchOverrides
@@ -278,7 +279,7 @@ router.get(
 router.post(
   '/:id/branches/override',
   authMiddleware,
-  checkRol(CAMPAIGN_PRODUCT.MANAGE_OVERRIDES),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN_PRODUCT.MANAGE_OVERRIDES),
   createBranchOverrideValidator,
   handleValidationErrors,
   createBranchOverride
@@ -323,7 +324,7 @@ router.post(
 router.put(
   '/:id/branches/:branch_id/override',
   authMiddleware,
-  checkRol(CAMPAIGN_PRODUCT.MANAGE_OVERRIDES),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN_PRODUCT.MANAGE_OVERRIDES),
   updateBranchOverrideValidator,
   handleValidationErrors,
   updateBranchOverride
@@ -357,7 +358,7 @@ router.put(
 router.delete(
   '/:id/branches/:branch_id/override',
   authMiddleware,
-  checkRol(CAMPAIGN_PRODUCT.MANAGE_OVERRIDES),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN_PRODUCT.MANAGE_OVERRIDES),
   deleteBranchOverrideValidator,
   handleValidationErrors,
   deleteBranchOverride
