@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
 
       // Relación many-to-many con sucursales a través de CampaignBranches
       this.belongsToMany(models.branches, {
-        through: models.campaignBranches,
+        through: 'campaign_branches',
         foreignKey: 'campaign_id',
         otherKey: 'branch_id',
         as: 'branches'
