@@ -55,16 +55,12 @@ const getRecord = async(req, res) => {
  */
 const addRecord = async(req, res) => {
   try {
-    console.log('[addRecord] Iniciando...');
     req = matchedData(req);
-    console.log('[addRecord] Datos:', req);
 
     const supplier = await addNewSupplier(req);
-    console.log('[addRecord] Proveedor creado:', supplier);
 
     res.send({ supplier });
   } catch (error) {
-    console.error('[addRecord ERROR]', error.message, error.stack);
     handleHttpError(res, `ERROR_ADDING_RECORD --> ${error}`, 400);
   }
 };
