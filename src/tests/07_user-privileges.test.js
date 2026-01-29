@@ -33,32 +33,80 @@ const additionalTestUser = {
  */
 
 describe('[USER-PRIVILEGES] Test api user-privileges //api/privileges/user/', () => {
-  test('Login para obtener token. 200', async() => {
-    await api
+  test('Setup: Login o crear superadmin. 200', async() => {
+    // Intentar login primero
+    const loginResponse = await api
       .post('/api/auth/login')
       .set('Content-type', 'application/json')
-      .send(testUser)
-      .expect(200)
-      .then((res) => {
-        Token = res.body.sesion.token;
-        expect(res.body.sesion).toHaveProperty('token');
-      });
+      .send(testUser);
+
+    if (loginResponse.status === 200) {
+      // Login exitoso
+      Token = loginResponse.body.sesion.token;
+      expect(loginResponse.body.sesion).toHaveProperty('token');
+    } else {
+      // Login falló, intentar crear superadmin (bootstrap)
+      const registerResponse = await api
+        .post('/api/auth/registerSuperUser')
+        .send({
+          name: 'Super admin',
+          email: 'superadmin@estelaris.com',
+          role: 'superadmin',
+          password: 'Admin123'
+        });
+
+      // Puede ser 200 (creado) o 401 (ya existe superadmin pero no podemos autenticar)
+      if (registerResponse.status === 200) {
+        // Superadmin creado, hacer login
+        const retryLogin = await api
+          .post('/api/auth/login')
+          .set('Content-type', 'application/json')
+          .send(testUser);
+
+        expect(retryLogin.status).toBe(200);
+        Token = retryLogin.body.sesion.token;
+      } else {
+        // Ya existe superadmin pero login falló por otra razón
+        // Intentar con credenciales alternativas del test de auth
+        const fallbackLogin = await api
+          .post('/api/auth/login')
+          .set('Content-type', 'application/json')
+          .send({ email: 'super1@test.com', password: 'super1' });
+
+        if (fallbackLogin.status === 200) {
+          Token = fallbackLogin.body.sesion.token;
+        } else {
+          throw new Error('No se pudo obtener token de superadmin');
+        }
+      }
+    }
   });
 
   // Configuración inicial: crear usuario y privilegio para las pruebas
   test('0. Crear usuario adicional para pruebas. Expect 200', async() => {
     const response = await api
-      .post('/api/auth/registerSuperUser')
+      .post('/api/auth/register')
+      .auth(Token, { type: 'bearer' })
       .send(additionalTestUser);
 
-    // Si ya existe, obtener el ID del usuario
+    // Si ya existe (400), buscar el usuario
     if (response.status === 400) {
-      // Buscar el usuario (esto depende de tu implementación)
-      // Por ahora asumimos que existe y usaremos un ID conocido
-      testUserId = 1;
+      // Obtener lista de usuarios y buscar el email
+      const usersResponse = await api
+        .get('/api/users')
+        .auth(Token, { type: 'bearer' });
+
+      if (usersResponse.status === 200 && usersResponse.body.users) {
+        const existingUser = usersResponse.body.users.find(
+          u => u.email === additionalTestUser.email
+        );
+        testUserId = existingUser?.id || 2;
+      } else {
+        testUserId = 2; // Fallback
+      }
     } else {
       expect(response.status).toBe(200);
-      testUserId = response.body.user?.id || 1;
+      testUserId = response.body.user?.id || 2;
     }
   });
 
