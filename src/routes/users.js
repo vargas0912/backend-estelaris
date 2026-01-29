@@ -3,6 +3,7 @@ const router = express.Router();
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
+const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
 const { validateGetUser, validateUpdateUser } = require('../validators/auth');
 
@@ -34,6 +35,7 @@ const { USERS } = require('../constants/privileges');
  *          description: Error de validacion
  */
 router.get('/', [
+  readLimiter,
   authMidleware,
   checkRol([ROLE.ADMIN, ROLE.SUPERADMIN], USERS.VIEW_ALL)
 ], getRecords);
@@ -67,6 +69,7 @@ router.get('/', [
  *          description: Error de validacion.
  */
 router.get('/:id', [
+  readLimiter,
   authMidleware,
   validateGetUser,
   checkRol([ROLE.ADMIN, ROLE.SUPERADMIN], USERS.VIEW)
@@ -105,6 +108,7 @@ router.get('/:id', [
  *                  description: Error de validacion
  */
 router.put('/:id', [
+  writeLimiter,
   authMidleware,
   validateUpdateUser,
   checkRol([ROLE.ADMIN, ROLE.SUPERADMIN], USERS.UPDATE)
@@ -138,6 +142,7 @@ router.put('/:id', [
  *                  description: Error de validacion
  */
 router.delete('/:id', [
+  deleteLimiter,
   authMidleware,
   validateGetUser,
   checkRol([ROLE.ADMIN, ROLE.SUPERADMIN], USERS.DELETE)

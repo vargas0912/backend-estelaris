@@ -5,6 +5,7 @@ const { validateGetRecord, validateGetRecordByState } = require('../validators/m
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
+const { readLimiter } = require('../middlewares/rateLimiters');
 
 const { getById, getByStateId } = require('../controllers/municipalities');
 
@@ -40,6 +41,7 @@ const { ROLE } = require('../constants/roles');
  *          description: Error de validacion.
  */
 router.get('/:id', [
+  readLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], MUN.VIEW)], getById);
@@ -73,6 +75,7 @@ router.get('/:id', [
 *          description: Error de validacion.
 */
 router.get('/state/:stateId', [
+  readLimiter,
   authMidleware,
   validateGetRecordByState,
   checkRol([ROLE.USER, ROLE.ADMIN], MUN.VIEW_STATE)], getByStateId);

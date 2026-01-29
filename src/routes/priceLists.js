@@ -5,6 +5,7 @@ const { validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../valid
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
+const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
 const { getRecord, getRecords, addRecord, updateRecord, deleteRecord } = require('../controllers/priceLists');
 const { PRICE_LIST } = require('../constants/modules');
@@ -27,6 +28,7 @@ const { ROLE } = require('../constants/roles');
  *          description: Error de validacion.
  */
 router.get('/', [
+  readLimiter,
   authMidleware,
   checkRol([ROLE.USER, ROLE.ADMIN], PRICE_LIST.VIEW_ALL)
 ], getRecords);
@@ -55,6 +57,7 @@ router.get('/', [
  *          description: Error de validacion.
  */
 router.get('/:id', [
+  readLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRICE_LIST.VIEW)
@@ -101,6 +104,7 @@ router.get('/:id', [
  *                  description: Error al crear la lista de precios
  */
 router.post('/', [
+  writeLimiter,
   authMidleware,
   valiAddRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRICE_LIST.ADD)
@@ -149,6 +153,7 @@ router.post('/', [
  *                  description: Error al actualizar la lista de precios
  */
 router.put('/:id', [
+  writeLimiter,
   authMidleware,
   valiUpdateRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRICE_LIST.UPDATE)
@@ -180,6 +185,7 @@ router.put('/:id', [
  *                  description: Lista de precios no encontrada
  */
 router.delete('/:id', [
+  deleteLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRICE_LIST.DELETE)

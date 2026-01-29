@@ -11,6 +11,7 @@ const {
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
+const { readLimiter, writeLimiter, deleteLimiter, searchLimiter } = require('../middlewares/rateLimiters');
 
 const {
   getRecord,
@@ -41,6 +42,7 @@ const { ROLE } = require('../constants/roles');
  *          description: Error de validacion.
  */
 router.get('/', [
+  readLimiter,
   authMidleware,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW_ALL)
 ], getRecords);
@@ -69,6 +71,7 @@ router.get('/', [
  *          description: Error de validacion.
  */
 router.get('/product/:product_id', [
+  searchLimiter,
   authMidleware,
   validateGetByProduct,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW_BY_PRODUCT)
@@ -98,6 +101,7 @@ router.get('/product/:product_id', [
  *          description: Error de validacion.
  */
 router.get('/branch/:branch_id', [
+  searchLimiter,
   authMidleware,
   validateGetByBranch,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW_BY_BRANCH)
@@ -127,6 +131,7 @@ router.get('/branch/:branch_id', [
  *          description: Error de validacion.
  */
 router.get('/:id', [
+  readLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW)
@@ -183,6 +188,7 @@ router.get('/:id', [
  *                  description: Error al crear el inventario
  */
 router.post('/', [
+  writeLimiter,
   authMidleware,
   valiAddRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.ADD)
@@ -232,6 +238,7 @@ router.post('/', [
  *                  description: Error al actualizar el inventario
  */
 router.put('/:id', [
+  writeLimiter,
   authMidleware,
   valiUpdateRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.UPDATE)
@@ -263,6 +270,7 @@ router.put('/:id', [
  *                  description: Inventario no encontrado
  */
 router.delete('/:id', [
+  deleteLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.DELETE)

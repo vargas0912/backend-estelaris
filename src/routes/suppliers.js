@@ -7,6 +7,7 @@ const { validateGetSupplier, valiAddSupplier, valiUpdateSupplier } = require('..
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
+const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
 const { getRecord, getRecords, addRecord, updateRecord, deleteRecord } = require('../controllers/suppliers');
 const { SUPPLIER } = require('../constants/modules');
@@ -29,6 +30,7 @@ const { ROLE } = require('../constants/roles');
  *          description: Error de validacion.
  */
 router.get('/', [
+  readLimiter,
   authMidleware,
   checkRol([ROLE.USER, ROLE.ADMIN], SUPPLIER.VIEW_ALL)
 ], getRecords);
@@ -57,6 +59,7 @@ router.get('/', [
  *          description: Error de validacion.
  */
 router.get('/:id', [
+  readLimiter,
   authMidleware,
   validateGetSupplier,
   checkRol([ROLE.USER, ROLE.ADMIN], SUPPLIER.VIEW)
@@ -135,6 +138,7 @@ router.get('/:id', [
  *                  description: Error al crear el nuevo proveedor
  */
 router.post('/', [
+  writeLimiter,
   authMidleware,
   valiAddSupplier,
   checkRol([ROLE.USER, ROLE.ADMIN], SUPPLIER.ADD)
@@ -202,6 +206,7 @@ router.post('/', [
  *                  description: Error al actualizar el proveedor
  */
 router.put('/:id', [
+  writeLimiter,
   authMidleware,
   valiUpdateSupplier,
   checkRol([ROLE.USER, ROLE.ADMIN], SUPPLIER.UPDATE)
@@ -233,6 +238,7 @@ router.put('/:id', [
  *                  description: Proveedor no encontrado
  */
 router.delete('/:id', [
+  deleteLimiter,
   authMidleware,
   validateGetSupplier,
   checkRol([ROLE.USER, ROLE.ADMIN], SUPPLIER.DELETE)

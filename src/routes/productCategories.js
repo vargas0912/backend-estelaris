@@ -5,6 +5,7 @@ const { validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../valid
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
+const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
 const { getRecord, getRecords, addRecord, updateRecord, deleteRecord } = require('../controllers/productCategories');
 const { PRODUCT_CATEGORY } = require('../constants/modules');
@@ -27,6 +28,7 @@ const { ROLE } = require('../constants/roles');
  *          description: Error de validacion.
  */
 router.get('/', [
+  readLimiter,
   authMidleware,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_CATEGORY.VIEW_ALL)
 ], getRecords);
@@ -55,6 +57,7 @@ router.get('/', [
  *          description: Error de validacion.
  */
 router.get('/:id', [
+  readLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_CATEGORY.VIEW)
@@ -87,6 +90,7 @@ router.get('/:id', [
  *                  description: Error al crear la nueva categoría
  */
 router.post('/', [
+  writeLimiter,
   authMidleware,
   valiAddRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_CATEGORY.ADD)
@@ -126,6 +130,7 @@ router.post('/', [
  *                  description: Error al actualizar la categoría
  */
 router.put('/:id', [
+  writeLimiter,
   authMidleware,
   valiUpdateRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_CATEGORY.UPDATE)
@@ -157,6 +162,7 @@ router.put('/:id', [
  *                  description: Categoría no encontrada
  */
 router.delete('/:id', [
+  deleteLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_CATEGORY.DELETE)

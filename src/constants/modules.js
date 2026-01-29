@@ -54,6 +54,8 @@ const USERS = Object.freeze({
   NAME_ALL: 'Ver usuarios',
   ADD: 'register_user',
   NAME_ADD: 'Registrar usuarios',
+  CREATE_SUPERADMIN: 'create_superadmin',
+  NAME_CREATE_SUPERADMIN: 'Crear superadmin',
   UPDATE: 'update_user',
   NAME_UPDATE: 'Modificar usuarios',
   DELETE: 'delete_user',
@@ -212,4 +214,12 @@ const CAMPAIGN_PRODUCT = Object.freeze({
   NAME_MANAGE_OVERRIDES: 'Gestionar overrides de producto'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT };
+const STATES = Object.freeze({
+  MODULE_NAME: 'states',
+  VIEW: 'view_state',
+  NAME_VIEW: 'Ver estado',
+  VIEW_ALL: 'view_all_states',
+  NAME_ALL: 'Ver todos los estados'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES };

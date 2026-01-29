@@ -4,6 +4,11 @@ const router = express.Router();
 const { validateGetRecord } = require('../validators/states');
 
 const authMidleware = require('../middlewares/session');
+const checkRol = require('../middlewares/rol');
+const { readLimiter } = require('../middlewares/rateLimiters');
+
+const { ROLE } = require('../constants/roles');
+const { STATES } = require('../constants/modules');
 
 const { getRecord, getRecords } = require('../controllers/states');
 
@@ -30,7 +35,7 @@ const { getRecord, getRecords } = require('../controllers/states');
  *        '422':
  *          description: Error de validacion.
  */
-router.get('/', authMidleware, getRecords);
+router.get('/', readLimiter, authMidleware, checkRol([ROLE.USER, ROLE.ADMIN], STATES.VIEW_ALL), getRecords);
 
 /**
  * Get detail from states
@@ -60,6 +65,6 @@ router.get('/', authMidleware, getRecords);
  *        '422':
  *          description: Error de validacion.
  */
-router.get('/:id', validateGetRecord, authMidleware, getRecord);
+router.get('/:id', readLimiter, authMidleware, validateGetRecord, checkRol([ROLE.USER, ROLE.ADMIN], STATES.VIEW), getRecord);
 
 module.exports = router;

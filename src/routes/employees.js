@@ -5,6 +5,7 @@ const { validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../valid
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
+const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
 const { getRecord, getRecords, addRecord, updateRecord, deleteRecord } = require('../controllers/employees');
 const { EMPlOYEE } = require('../constants/modules');
@@ -27,6 +28,7 @@ const { ROLE } = require('../constants/roles');
  *          description: Error de validacion.
  */
 router.get('/', [
+  readLimiter,
   authMidleware,
   checkRol([ROLE.USER, ROLE.ADMIN], EMPlOYEE.VIEW_ALL)
 ], getRecords);
@@ -55,6 +57,7 @@ router.get('/', [
  *          description: Error de validacion.
  */
 router.get('/:id', [
+  readLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], EMPlOYEE.VIEW)
@@ -98,6 +101,7 @@ router.get('/:id', [
  *                  description: Error al crear el nuevo empleado
  */
 router.post('/', [
+  writeLimiter,
   authMidleware,
   valiAddRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], EMPlOYEE.ADD)
@@ -148,6 +152,7 @@ router.post('/', [
  *                  description: Error al actualizar el empleado
  */
 router.put('/:id', [
+  writeLimiter,
   authMidleware,
   valiUpdateRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], EMPlOYEE.UPDATE)
@@ -179,6 +184,7 @@ router.put('/:id', [
  *                  description: Empleado no encontrado
  */
 router.delete('/:id', [
+  deleteLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], EMPlOYEE.DELETE)

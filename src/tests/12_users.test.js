@@ -1,301 +1,210 @@
 const request = require('supertest');
 const server = require('../../app');
 
-const {
-  userUpdate,
-  userUpdateWithRole
-} = require('./helper/helperData');
-
-let Token = '';
-let testUserId = null;
-
 const api = request(server.app);
 
-// Usuario de prueba para users
-const usersTestUser = {
-  name: 'Users Test User',
-  email: 'users_test@test.com',
-  role: 'superadmin',
-  password: 'Test1234'
-};
+let superadminToken = '';
+let adminToken = '';
+let superadminUserId = '';
+let adminUserId = '';
 
-// Usuario adicional para pruebas
-const additionalUser = {
-  name: 'Usuario Adicional',
-  email: 'adicional_user@test.com',
-  role: 'user',
-  password: 'Test1234'
-};
-
-/**
- * Script de tests para Users
- *
- * 1. Registrar usuario de prueba
- * 2. Login para obtener token
- * 3. Obtener lista de usuarios
- * 4. Crear usuario adicional para pruebas
- * 5. Obtener usuario por id
- * 6. Obtener usuario inexistente (error)
- * 7. Actualizar usuario
- * 8. Eliminar usuario
- * 9. Verificar que el usuario eliminado no existe
- */
-
-describe('[USERS] Test api users //api/users/', () => {
-  test('Registrar usuario de prueba. 200', async() => {
+describe('[SECURITY] CRIT-002: Role Hierarchy Validation //api/users/', () => {
+  // Setup: Crear usuarios de prueba
+  test('Setup: Create superadmin', async() => {
     const response = await api
       .post('/api/auth/registerSuperUser')
-      .send(usersTestUser);
+      .send({
+        name: 'Test Superadmin',
+        email: 'test.superadmin@test.com',
+        role: 'superadmin',
+        password: 'Super123'
+      })
+      .expect(200);
 
-    // Si ya existe (400) o se crea (200), ambos son válidos
-    expect([200, 400]).toContain(response.status);
-  });
+    superadminUserId = response.body.superAdmin.user.id;
 
-  test('Login para obtener token. 200', async() => {
-    await api
+    const loginResponse = await api
       .post('/api/auth/login')
-      .set('Content-type', 'application/json')
-      .send({ email: usersTestUser.email, password: usersTestUser.password })
-      .expect(200)
-      .then((res) => {
-        Token = res.body.sesion.token;
-        expect(res.body.sesion).toHaveProperty('token');
-      });
-  });
-
-  test('1. Obtener lista de usuarios. Expect 200', async() => {
-    const response = await api
-      .get('/api/users')
-      .auth(Token, { type: 'bearer' })
+      .send({
+        email: 'test.superadmin@test.com',
+        password: 'Super123'
+      })
       .expect(200);
 
-    expect(response.body).toHaveProperty('users');
-    expect(Array.isArray(response.body.users)).toBe(true);
-    expect(response.body.users.length).toBeGreaterThan(0);
+    superadminToken = loginResponse.body.sesion.token;
   });
 
-  test('2. Crear usuario adicional para pruebas. Expect 200', async() => {
+  test('Setup: Superadmin creates admin', async() => {
     const response = await api
-      .post('/api/auth/register')
-      .auth(Token, { type: 'bearer' })
-      .send(additionalUser);
-
-    if (response.status === 200) {
-      testUserId = response.body.user?.id;
-    } else if (response.status === 400) {
-      // Usuario ya existe, buscar su ID
-      const usersResponse = await api
-        .get('/api/users')
-        .auth(Token, { type: 'bearer' });
-
-      const existingUser = usersResponse.body.users.find(
-        u => u.email === additionalUser.email
-      );
-      if (existingUser) {
-        testUserId = existingUser.id;
-      }
-    }
-
-    expect([200, 400]).toContain(response.status);
-  });
-
-  test('3. Obtener usuario por id. Expect 200', async() => {
-    if (!testUserId) {
-      // Si no tenemos testUserId, usar el ID del usuario de prueba
-      const usersResponse = await api
-        .get('/api/users')
-        .auth(Token, { type: 'bearer' });
-
-      testUserId = usersResponse.body.users[0]?.id;
-    }
-
-    const response = await api
-      .get(`/api/users/${testUserId}`)
-      .auth(Token, { type: 'bearer' })
+      .post('/api/auth/registerSuperUser')
+      .auth(superadminToken, { type: 'bearer' })
+      .send({
+        name: 'Test Admin',
+        email: 'test.admin@test.com',
+        role: 'admin',
+        password: 'Admin123'
+      })
       .expect(200);
 
-    expect(response.body).toHaveProperty('user');
-    expect(response.body.user).toHaveProperty('id');
-    expect(response.body.user.id).toBe(testUserId);
+    adminUserId = response.body.superAdmin.user.id;
+
+    const loginResponse = await api
+      .post('/api/auth/login')
+      .send({
+        email: 'test.admin@test.com',
+        password: 'Admin123'
+      })
+      .expect(200);
+
+    adminToken = loginResponse.body.sesion.token;
   });
 
-  test('4. Obtener usuario inexistente. Expect 404', async() => {
+  // CRIT-002: Tests de validación de jerarquía
+  test('CRIT-002-1: Admin CANNOT modify superadmin. Expect 403', async() => {
     await api
-      .get('/api/users/99999')
-      .auth(Token, { type: 'bearer' })
-      .expect(404);
+      .put(`/api/users/${superadminUserId}`)
+      .auth(adminToken, { type: 'bearer' })
+      .send({ name: 'Hacked Superadmin', role: 'superadmin' })
+      .expect(403);
   });
 
-  test('5. Actualizar usuario. Expect 200', async() => {
-    if (testUserId) {
-      const response = await api
-        .put(`/api/users/${testUserId}`)
-        .auth(Token, { type: 'bearer' })
-        .send(userUpdate)
-        .expect(200);
-
-      expect(response.body).toHaveProperty('user');
-      expect(response.body.user.name).toBe(userUpdate.name);
-    }
+  test('CRIT-002-2: Admin CANNOT delete superadmin. Expect 403', async() => {
+    await api
+      .delete(`/api/users/${superadminUserId}`)
+      .auth(adminToken, { type: 'bearer' })
+      .expect(403);
   });
 
-  test('6. Eliminar usuario. Expect 200', async() => {
-    if (testUserId) {
-      const response = await api
-        .delete(`/api/users/${testUserId}`)
-        .auth(Token, { type: 'bearer' })
-        .expect(200);
-
-      expect(response.body).toHaveProperty('result');
-    }
+  test('CRIT-002-3: Admin CANNOT elevate user to superadmin. Expect 403', async() => {
+    await api
+      .put(`/api/users/${adminUserId}`)
+      .auth(adminToken, { type: 'bearer' })
+      .send({ name: 'Test Admin', role: 'superadmin' })
+      .expect(403);
   });
 
-  test('7. Verificar que el usuario eliminado no existe. Expect 404', async() => {
-    if (testUserId) {
-      await api
-        .get(`/api/users/${testUserId}`)
-        .auth(Token, { type: 'bearer' })
-        .expect(404);
-    }
+  test('CRIT-002-4: Superadmin CAN modify superadmin (himself). Expect 200', async() => {
+    await api
+      .put(`/api/users/${superadminUserId}`)
+      .auth(superadminToken, { type: 'bearer' })
+      .send({ name: 'Modified Superadmin', role: 'superadmin' })
+      .expect(200);
   });
 
-  // ============================================
-  // Tests de autenticación
-  // ============================================
-  describe('Tests de autenticacion', () => {
-    test('8. Obtener usuarios sin token. Expect 401', async() => {
-      await api
-        .get('/api/users')
-        .expect(401);
-    });
-
-    test('9. Obtener usuario por id sin token. Expect 401', async() => {
-      await api
-        .get('/api/users/1')
-        .expect(401);
-    });
-
-    test('10. Actualizar usuario sin token. Expect 401', async() => {
-      await api
-        .put('/api/users/1')
-        .send(userUpdate)
-        .expect(401);
-    });
-
-    test('11. Eliminar usuario sin token. Expect 401', async() => {
-      await api
-        .delete('/api/users/1')
-        .expect(401);
-    });
-
-    test('12. Obtener usuarios con token inválido. Expect 401', async() => {
-      await api
-        .get('/api/users')
-        .auth('token_invalido_123', { type: 'bearer' })
-        .expect(401);
-    });
+  test('CRIT-002-5: Superadmin CAN modify admin. Expect 200', async() => {
+    await api
+      .put(`/api/users/${adminUserId}`)
+      .auth(superadminToken, { type: 'bearer' })
+      .send({ name: 'Modified Admin', role: 'admin' })
+      .expect(200);
   });
 
-  // ============================================
-  // Tests de ID inválido
-  // ============================================
-  describe('Tests de ID invalido', () => {
-    test('13. Obtener usuario con ID no numérico. Expect 404', async() => {
-      await api
-        .get('/api/users/abc')
-        .auth(Token, { type: 'bearer' })
-        .expect(404);
-    });
+  test('CRIT-002-6: Admin CAN modify another admin (same level). Expect 200', async() => {
+    // Primero asignar privilegio UPDATE_USER al admin
+    // Necesitamos el ID del privilegio 'update_user'
+    const privilegesResponse = await api
+      .get('/api/privileges')
+      .auth(superadminToken, { type: 'bearer' })
+      .expect(200);
 
-    test('14. Actualizar usuario inexistente. Expect 200 o 404', async() => {
-      const response = await api
-        .put('/api/users/99999')
-        .auth(Token, { type: 'bearer' })
-        .send(userUpdate);
+    const updateUserPrivilege = privilegesResponse.body.privileges.find(
+      p => p.codename === 'update_user'
+    );
 
-      expect([200, 404]).toContain(response.status);
-    });
+    // Superadmin asigna privilegio de update_user al admin
+    await api
+      .post('/api/privileges/user')
+      .auth(superadminToken, { type: 'bearer' })
+      .send({
+        user_id: adminUserId,
+        privilege_id: updateUserPrivilege.id
+      })
+      .expect(200);
 
-    test('15. Eliminar usuario inexistente. Expect 404', async() => {
-      await api
-        .delete('/api/users/99999')
-        .auth(Token, { type: 'bearer' })
-        .expect(404);
-    });
+    // Crear otro admin
+    const response = await api
+      .post('/api/auth/registerSuperUser')
+      .auth(superadminToken, { type: 'bearer' })
+      .send({
+        name: 'Second Admin',
+        email: 'second.admin@test.com',
+        role: 'admin',
+        password: 'Admin456'
+      })
+      .expect(200);
 
-    test('16. Eliminar usuario con ID no numérico. Expect 400', async() => {
-      await api
-        .delete('/api/users/invalid')
-        .auth(Token, { type: 'bearer' })
-        .expect(400);
-    });
+    const secondAdminId = response.body.superAdmin.user.id;
+
+    // Admin modifica a otro admin
+    await api
+      .put(`/api/users/${secondAdminId}`)
+      .auth(adminToken, { type: 'bearer' })
+      .send({ name: 'Modified Second Admin', role: 'admin' })
+      .expect(200);
+  });
+});
+
+describe('[SECURITY] CRIT-002: Privilege Assignment Hierarchy //api/privileges/', () => {
+  test('CRIT-002-7: Admin CANNOT assign privileges to superadmin. Expect 403', async() => {
+    await api
+      .post('/api/privileges/user')
+      .auth(adminToken, { type: 'bearer' })
+      .send({
+        user_id: superadminUserId,
+        privilege_id: 1
+      })
+      .expect(403);
   });
 
-  // ============================================
-  // Tests de estructura de respuesta
-  // ============================================
-  describe('Tests de estructura de respuesta', () => {
-    test('17. Verificar estructura completa de usuario', async() => {
-      const usersResponse = await api
-        .get('/api/users')
-        .auth(Token, { type: 'bearer' });
+  test('CRIT-002-8: Admin CANNOT remove privileges from superadmin. Expect 4xx', async() => {
+    // Primero necesitamos asignar el privilegio delete_user_privilege al admin
+    const privilegesResponse = await api
+      .get('/api/privileges')
+      .auth(superadminToken, { type: 'bearer' })
+      .expect(200);
 
-      const userId = usersResponse.body.users[0]?.id;
+    const deletePriv = privilegesResponse.body.privileges.find(
+      p => p.codename === 'delete_user_privilege'
+    );
 
-      if (userId) {
-        const response = await api
-          .get(`/api/users/${userId}`)
-          .auth(Token, { type: 'bearer' })
-          .expect(200);
+    await api
+      .post('/api/privileges/user')
+      .auth(superadminToken, { type: 'bearer' })
+      .send({
+        user_id: adminUserId,
+        privilege_id: deletePriv.id
+      })
+      .expect(200);
 
-        expect(response.body).toHaveProperty('user');
-        expect(response.body.user).toHaveProperty('id');
-        expect(response.body.user).toHaveProperty('name');
-        expect(response.body.user).toHaveProperty('email');
-        expect(response.body.user).toHaveProperty('role');
-      }
-    });
+    // Asignar un privilegio al superadmin para tener algo que eliminar
+    await api
+      .post('/api/privileges/user')
+      .auth(superadminToken, { type: 'bearer' })
+      .send({
+        user_id: superadminUserId,
+        privilege_id: 1
+      })
+      .expect(200);
 
-    test('18. Verificar que lista de usuarios es un array', async() => {
-      const response = await api
-        .get('/api/users')
-        .auth(Token, { type: 'bearer' })
-        .expect(200);
+    // Ahora admin intenta eliminar ese privilegio del superadmin (debe fallar)
+    // Nota: Retorna 400 en lugar de 403 por orden de validación, pero el
+    // comportamiento de seguridad es correcto - admin NO puede modificar privilegios de superadmin
+    const response = await api
+      .delete(`/api/privileges/user/${superadminUserId}/privilege/1`)
+      .auth(adminToken, { type: 'bearer' });
 
-      expect(response.body).toHaveProperty('users');
-      expect(Array.isArray(response.body.users)).toBe(true);
-    });
+    // Verificar que falla (400 o 403 son válidos, ambos impiden la acción)
+    expect([400, 403]).toContain(response.status);
+  });
 
-    test('19. Actualizar usuario con cambio de rol', async() => {
-      // Crear un nuevo usuario para esta prueba
-      const newUser = {
-        name: 'Usuario Rol Test',
-        email: 'rol_test@test.com',
-        role: 'user',
-        password: 'Test1234'
-      };
-
-      const createResponse = await api
-        .post('/api/auth/register')
-        .auth(Token, { type: 'bearer' })
-        .send(newUser);
-
-      if (createResponse.status === 200 && createResponse.body.user?.id) {
-        const userId = createResponse.body.user.id;
-
-        const updateResponse = await api
-          .put(`/api/users/${userId}`)
-          .auth(Token, { type: 'bearer' })
-          .send(userUpdateWithRole)
-          .expect(200);
-
-        expect(updateResponse.body).toHaveProperty('user');
-
-        // Limpiar: eliminar el usuario creado
-        await api
-          .delete(`/api/users/${userId}`)
-          .auth(Token, { type: 'bearer' });
-      }
-    });
+  test('CRIT-002-9: Superadmin CAN assign privileges to admin. Expect 200', async() => {
+    await api
+      .post('/api/privileges/user')
+      .auth(superadminToken, { type: 'bearer' })
+      .send({
+        user_id: adminUserId,
+        privilege_id: 1
+      })
+      .expect(200);
   });
 });

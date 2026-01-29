@@ -11,6 +11,7 @@ const {
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
+const { readLimiter, writeLimiter, deleteLimiter, searchLimiter } = require('../middlewares/rateLimiters');
 
 const {
   getRecord,
@@ -41,6 +42,7 @@ const { ROLE } = require('../constants/roles');
  *          description: Error de validacion.
  */
 router.get('/', [
+  readLimiter,
   authMidleware,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_PRICE.VIEW_ALL)
 ], getRecords);
@@ -69,6 +71,7 @@ router.get('/', [
  *          description: Error de validacion.
  */
 router.get('/product/:product_id', [
+  searchLimiter,
   authMidleware,
   validateGetByProduct,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_PRICE.VIEW_BY_PRODUCT)
@@ -98,6 +101,7 @@ router.get('/product/:product_id', [
  *          description: Error de validacion.
  */
 router.get('/priceList/:price_list_id', [
+  searchLimiter,
   authMidleware,
   validateGetByPriceList,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_PRICE.VIEW_BY_PRICE_LIST)
@@ -127,6 +131,7 @@ router.get('/priceList/:price_list_id', [
  *          description: Error de validacion.
  */
 router.get('/:id', [
+  readLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_PRICE.VIEW)
@@ -173,6 +178,7 @@ router.get('/:id', [
  *                  description: Error al crear el precio
  */
 router.post('/', [
+  writeLimiter,
   authMidleware,
   valiAddRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_PRICE.ADD)
@@ -214,6 +220,7 @@ router.post('/', [
  *                  description: Error al actualizar el precio
  */
 router.put('/:id', [
+  writeLimiter,
   authMidleware,
   valiUpdateRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_PRICE.UPDATE)
@@ -245,6 +252,7 @@ router.put('/:id', [
  *                  description: Precio no encontrado
  */
 router.delete('/:id', [
+  deleteLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_PRICE.DELETE)

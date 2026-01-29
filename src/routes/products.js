@@ -5,6 +5,7 @@ const { validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../valid
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
+const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
 const { getRecord, getRecords, addRecord, updateRecord, deleteRecord } = require('../controllers/products');
 const { PRODUCT } = require('../constants/modules');
@@ -27,6 +28,7 @@ const { ROLE } = require('../constants/roles');
  *          description: Error de validacion.
  */
 router.get('/', [
+  readLimiter,
   authMidleware,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT.VIEW_ALL)
 ], getRecords);
@@ -55,6 +57,7 @@ router.get('/', [
  *          description: Error de validacion.
  */
 router.get('/:id', [
+  readLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT.VIEW)
@@ -142,6 +145,7 @@ router.get('/:id', [
  *                  description: Error al crear el nuevo producto
  */
 router.post('/', [
+  writeLimiter,
   authMidleware,
   valiAddRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT.ADD)
@@ -219,6 +223,7 @@ router.post('/', [
  *                  description: Error al actualizar el producto
  */
 router.put('/:id', [
+  writeLimiter,
   authMidleware,
   valiUpdateRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT.UPDATE)
@@ -250,6 +255,7 @@ router.put('/:id', [
  *                  description: Producto no encontrado
  */
 router.delete('/:id', [
+  deleteLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT.DELETE)

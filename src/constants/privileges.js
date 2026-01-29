@@ -11,6 +11,7 @@ const PRIVILEGES = Object.freeze({
 
 const USERS = Object.freeze({
   REGISTER: 'register_user',
+  CREATE_SUPERADMIN: 'create_superadmin',
   VIEW: 'view_user',
   VIEW_ALL: 'view_users',
   UPDATE: 'update_user',
