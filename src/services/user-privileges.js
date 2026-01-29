@@ -21,13 +21,14 @@ const getAllUserPrivileges = async(userId) => {
 const getOneUserPrivilege = async(userId, codeName) => {
   const datePrivileges = await userprivileges.count({
     where: {
-      userId
+      user_id: userId
     },
     include: [
       {
         model: privileges,
+        as: 'privileges',
         where: {
-          codeName
+          codename: codeName
         }
       }
     ]
@@ -45,8 +46,8 @@ const addNewUserPrivilege = async(body) => {
 const deleteUserPrivilege = async(userId, privilegeId) => {
   const userPrivilege = await userprivileges.destroy({
     where: {
-      userId,
-      privilegeId
+      user_id: userId,
+      privilege_id: privilegeId
     }
   });
 

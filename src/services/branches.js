@@ -64,13 +64,18 @@ const updateBranch = async(branchId, req) => {
 };
 
 const deleteBranch = async(id) => {
-  const result = await branches.destroy({
-    where: {
-      id
-    }
-  });
+  const data = await branches.findByPk(id);
 
-  return result;
+  if (!data) {
+    return {
+      data: {
+        msg: 'NOT_FOUND'
+      }
+    };
+  }
+
+  await data.destroy();
+  return data;
 };
 
 module.exports = { getAllBranches, getBranch, addNewBranch, updateBranch, deleteBranch };

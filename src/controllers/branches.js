@@ -73,10 +73,16 @@ const deleteRecord = async(req, res) => {
   try {
     req = matchedData(req);
 
-    const result = await deleteBranch(req.id);
-    res.send({ result });
+    const branch = await deleteBranch(req.id);
+
+    if (branch.data && branch.data.msg === 'NOT_FOUND') {
+      handleHttpError(res, `BRANCH ${req.id} NOT EXISTS`, 404);
+      return;
+    }
+
+    res.send({ branch });
   } catch (error) {
-    handleHttpError(res, `ERROR_UPDATE_RECORD --> ${error}`, 400);
+    handleHttpError(res, `ERROR_DELETE_RECORD --> ${error}`, 400);
   }
 };
 
