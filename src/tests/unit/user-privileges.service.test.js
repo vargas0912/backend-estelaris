@@ -174,6 +174,7 @@ describe('User Privileges Service - Unit Tests', () => {
         include: [
           {
             model: privileges,
+            as: 'privileges',
             where: {
               codename: 'view_users'
             }
@@ -196,6 +197,7 @@ describe('User Privileges Service - Unit Tests', () => {
         include: [
           {
             model: privileges,
+            as: 'privileges',
             where: {
               codename: 'delete_users'
             }
@@ -229,6 +231,7 @@ describe('User Privileges Service - Unit Tests', () => {
           include: [
             {
               model: privileges,
+              as: 'privileges',
               where: {
                 codename: 'edit_branches'
               }
@@ -264,6 +267,7 @@ describe('User Privileges Service - Unit Tests', () => {
           include: [
             {
               model: privileges,
+              as: 'privileges',
               where: expect.any(Object)
             }
           ]
@@ -589,6 +593,7 @@ describe('User Privileges Service - Unit Tests', () => {
           include: [
             {
               model: privileges,
+              as: 'privileges',
               where: {
                 codename: ''
               }
@@ -609,6 +614,7 @@ describe('User Privileges Service - Unit Tests', () => {
           include: [
             {
               model: privileges,
+              as: 'privileges',
               where: {
                 codename: 'special-privilege_123'
               }
@@ -756,6 +762,7 @@ describe('User Privileges Service - Unit Tests', () => {
           include: [
             {
               model: privileges,
+              as: 'privileges',
               where: {
                 codename: 'test_privilege'
               }

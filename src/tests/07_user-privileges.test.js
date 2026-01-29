@@ -14,12 +14,10 @@ let testPrivilegeId = null;
 
 const api = request(server.app);
 
-// Usuario de prueba para user-privileges
-const userPrivilegesTestUser = {
-  name: 'UserPrivileges Test User',
-  email: 'userprivileges_test@test.com',
-  role: 'superadmin',
-  password: 'Test1234'
+// Usar el superadmin creado en 01_auth.test.js
+const testUser = {
+  email: 'superadmin@estelaris.com',
+  password: 'Admin123'
 };
 
 // Usuario de prueba adicional para asignar privilegios
@@ -35,20 +33,11 @@ const additionalTestUser = {
  */
 
 describe('[USER-PRIVILEGES] Test api user-privileges //api/privileges/user/', () => {
-  test('Registrar usuario de prueba principal. 200', async() => {
-    const response = await api
-      .post('/api/auth/registerSuperUser')
-      .send(userPrivilegesTestUser);
-
-    // Si ya existe (400) o se crea (200), ambos son válidos
-    expect([200, 400]).toContain(response.status);
-  });
-
   test('Login para obtener token. 200', async() => {
     await api
       .post('/api/auth/login')
       .set('Content-type', 'application/json')
-      .send({ email: userPrivilegesTestUser.email, password: userPrivilegesTestUser.password })
+      .send(testUser)
       .expect(200)
       .then((res) => {
         Token = res.body.sesion.token;

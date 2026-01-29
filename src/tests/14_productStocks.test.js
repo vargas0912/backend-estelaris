@@ -18,12 +18,10 @@ let secondStockId = null;
 
 const api = request(server.app);
 
-// Usuario de prueba para productStocks
-const productStocksTestUser = {
-  name: 'ProductStocks Test User',
-  email: 'productstocks_test@test.com',
-  role: 'superadmin',
-  password: 'Test1234'
+// Usar el superadmin creado en 01_auth.test.js
+const testUser = {
+  email: 'superadmin@estelaris.com',
+  password: 'Admin123'
 };
 
 /**
@@ -44,20 +42,11 @@ const productStocksTestUser = {
  */
 
 describe('[PRODUCT STOCKS] Test api productStocks //api/productStocks/', () => {
-  test('Registrar usuario de prueba. 200', async() => {
-    const response = await api
-      .post('/api/auth/registerSuperUser')
-      .send(productStocksTestUser);
-
-    // Si ya existe (400) o se crea (200), ambos son válidos
-    expect([200, 400]).toContain(response.status);
-  });
-
   test('Login para obtener token. 200', async() => {
     await api
       .post('/api/auth/login')
       .set('Content-type', 'application/json')
-      .send({ email: productStocksTestUser.email, password: productStocksTestUser.password })
+      .send(testUser)
       .expect(200)
       .then((res) => {
         Token = res.body.sesion.token;

@@ -19,12 +19,10 @@ let secondSupplierId = null;
 
 const api = request(server.app);
 
-// Usuario de prueba para suppliers
-const suppliersTestUser = {
-  name: 'Suppliers Test User',
-  email: 'suppliers_test@test.com',
-  role: 'superadmin',
-  password: 'Test1234'
+// Usar el superadmin creado en 01_auth.test.js
+const testUser = {
+  email: 'superadmin@estelaris.com',
+  password: 'Admin123'
 };
 
 /**
@@ -44,20 +42,11 @@ const suppliersTestUser = {
  */
 
 describe('[SUPPLIERS] Test api suppliers //api/suppliers/', () => {
-  test('Registrar usuario de prueba. 200', async() => {
-    const response = await api
-      .post('/api/auth/registerSuperUser')
-      .send(suppliersTestUser);
-
-    // Si ya existe (400) o se crea (200), ambos son válidos
-    expect([200, 400]).toContain(response.status);
-  });
-
   test('Login para obtener token. 200', async() => {
     await api
       .post('/api/auth/login')
       .set('Content-type', 'application/json')
-      .send({ email: suppliersTestUser.email, password: suppliersTestUser.password })
+      .send(testUser)
       .expect(200)
       .then((res) => {
         Token = res.body.sesion.token;

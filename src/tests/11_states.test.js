@@ -5,12 +5,10 @@ let Token = '';
 
 const api = request(server.app);
 
-// Usuario de prueba para states
-const statesTestUser = {
-  name: 'States Test User',
-  email: 'states_test@test.com',
-  role: 'superadmin',
-  password: 'Test1234'
+// Usar el superadmin creado en 01_auth.test.js
+const testUser = {
+  email: 'superadmin@estelaris.com',
+  password: 'Admin123'
 };
 
 /**
@@ -24,20 +22,11 @@ const statesTestUser = {
  */
 
 describe('[STATES] Test api states //api/states/', () => {
-  test('Registrar usuario de prueba. 200', async() => {
-    const response = await api
-      .post('/api/auth/registerSuperUser')
-      .send(statesTestUser);
-
-    // Si ya existe (400) o se crea (200), ambos son válidos
-    expect([200, 400]).toContain(response.status);
-  });
-
   test('Login para obtener token. 200', async() => {
     await api
       .post('/api/auth/login')
       .set('Content-type', 'application/json')
-      .send({ email: statesTestUser.email, password: statesTestUser.password })
+      .send(testUser)
       .expect(200)
       .then((res) => {
         Token = res.body.sesion.token;
