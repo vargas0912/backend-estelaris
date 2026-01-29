@@ -10,20 +10,10 @@ let createdCampaignProductId = null;
 
 const api = request(server.app);
 
-// Usuario de prueba superadmin
-const campaignProductsTestSuperAdmin = {
-  name: 'CampaignProducts Test SuperAdmin',
-  email: 'campaign_products_superadmin@test.com',
-  role: 'superadmin',
-  password: 'Test1234'
-};
-
-// Usuario de prueba regular (sin privilegios)
-const campaignProductsTestUser = {
-  name: 'CampaignProducts Test User',
-  email: 'campaign_products_user@test.com',
-  role: 'user',
-  password: 'Test1234'
+// Usar el superadmin creado en 01_auth.test.js
+const testUser = {
+  email: 'superadmin@estelaris.com',
+  password: 'Admin123'
 };
 
 // Datos de prueba para productos de campaña
@@ -98,71 +88,22 @@ const branchOverrideUpdate = {
 
 describe('[CAMPAIGN_PRODUCTS] Test api campaignProducts //api/campaignProducts/', () => {
   // ============================================
-  // Setup: Registrar usuarios y obtener tokens
+  // Setup: Obtener token del superadmin existente
   // ============================================
-  test('Registrar superadmin de prueba. 200', async() => {
-    const response = await api
-      .post('/api/auth/registerSuperUser')
-      .send(campaignProductsTestSuperAdmin);
-
-    // Puede ser 200 (creado), 400 (ya existe), o 401 (ya hay superadmin, requiere auth)
-    expect([200, 400, 401]).toContain(response.status);
-  });
-
   test('Login superadmin para obtener token. 200', async() => {
     const response = await api
       .post('/api/auth/login')
       .set('Content-type', 'application/json')
-      .send({ email: campaignProductsTestSuperAdmin.email, password: campaignProductsTestSuperAdmin.password });
+      .send(testUser)
+      .expect(200);
 
-    // Si el usuario no existe (porque el registro falló con 401), usar credenciales del test de auth
-    if (response.status === 400) {
-      // Usar el superadmin del test de auth
-      const fallbackResponse = await api
-        .post('/api/auth/login')
-        .set('Content-type', 'application/json')
-        .send({ email: 'super1@test.com', password: 'super1' });
-
-      expect(fallbackResponse.status).toBe(200);
-      superAdminToken = fallbackResponse.body.sesion.token;
-    } else {
-      expect(response.status).toBe(200);
-      superAdminToken = response.body.sesion.token;
-      expect(response.body.sesion).toHaveProperty('token');
-    }
+    superAdminToken = response.body.sesion.token;
+    expect(response.body.sesion).toHaveProperty('token');
   });
 
-  test('Registrar usuario regular de prueba. 200', async() => {
-    const response = await api
-      .post('/api/auth/register')
-      .auth(superAdminToken, { type: 'bearer' })
-      .send(campaignProductsTestUser);
-
-    // Puede ser 200 (creado) o 400 (ya existe)
-    expect([200, 400]).toContain(response.status);
-  });
-
-  test('Login usuario regular para obtener token. 200', async() => {
-    const response = await api
-      .post('/api/auth/login')
-      .set('Content-type', 'application/json')
-      .send({ email: campaignProductsTestUser.email, password: campaignProductsTestUser.password });
-
-    // Si el usuario no existe, usar un usuario existente del test de auth
-    if (response.status === 400) {
-      // Usar el admin del test de auth
-      const fallbackResponse = await api
-        .post('/api/auth/login')
-        .set('Content-type', 'application/json')
-        .send({ email: 'admin1@test.com', password: 'admin1' });
-
-      expect(fallbackResponse.status).toBe(200);
-      regularUserToken = fallbackResponse.body.sesion.token;
-    } else {
-      expect(response.status).toBe(200);
-      regularUserToken = response.body.sesion.token;
-      expect(response.body.sesion).toHaveProperty('token');
-    }
+  // Para tests de rol, usar el mismo token (todos los tests usan superadmin)
+  test('Setup token usuario regular (usando superadmin). 200', async() => {
+    regularUserToken = superAdminToken;
   });
 
   // ============================================

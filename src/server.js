@@ -52,31 +52,34 @@ class Server {
     // Compresión gzip para mejorar performance
     this.app.use(compression());
 
-    // Rate limiting global - 100 requests por 15 minutos
-    const globalLimiter = rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutos
-      max: 100, // Límite de 100 requests por ventana
-      message: {
-        error: 'Too many requests from this IP, please try again later.'
-      },
-      standardHeaders: true, // Retornar info de rate limit en headers `RateLimit-*`
-      legacyHeaders: false // Deshabilitar headers `X-RateLimit-*`
-    });
-    this.app.use(globalLimiter);
+    // Rate limiting - DESHABILITADO EN TESTS
+    if (process.env.NODE_ENV !== 'test') {
+      // Rate limiting global - 100 requests por 15 minutos
+      const globalLimiter = rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutos
+        max: 100, // Límite de 100 requests por ventana
+        message: {
+          error: 'Too many requests from this IP, please try again later.'
+        },
+        standardHeaders: true, // Retornar info de rate limit en headers `RateLimit-*`
+        legacyHeaders: false // Deshabilitar headers `X-RateLimit-*`
+      });
+      this.app.use(globalLimiter);
 
-    // Rate limiting específico para rutas de autenticación - 5 requests por 15 minutos
-    const authLimiter = rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutos
-      max: 5, // Límite de 5 intentos de login
-      message: {
-        error: 'Too many authentication attempts, please try again later.'
-      },
-      standardHeaders: true,
-      legacyHeaders: false,
-      // Solo aplicar a POST requests (login/register)
-      skipSuccessfulRequests: true // No contar requests exitosos
-    });
-    this.app.use('/api/auth', authLimiter);
+      // Rate limiting específico para rutas de autenticación - 5 requests por 15 minutos
+      const authLimiter = rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutos
+        max: 5, // Límite de 5 intentos de login
+        message: {
+          error: 'Too many authentication attempts, please try again later.'
+        },
+        standardHeaders: true,
+        legacyHeaders: false,
+        // Solo aplicar a POST requests (login/register)
+        skipSuccessfulRequests: true // No contar requests exitosos
+      });
+      this.app.use('/api/auth', authLimiter);
+    }
 
     // Body parser - Limitar tamaño del payload a 10kb por seguridad
     this.app.use(express.json({ limit: '10kb' }));

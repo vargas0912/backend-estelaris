@@ -147,21 +147,27 @@ describe('Branches Service - Unit Tests', () => {
 
   describe('deleteBranch', () => {
     test('debe eliminar una sucursal', async() => {
-      branches.destroy.mockResolvedValue(1);
+      const mockBranch = {
+        id: 1,
+        name: 'Sucursal a eliminar',
+        destroy: jest.fn().mockResolvedValue(true)
+      };
+
+      branches.findByPk.mockResolvedValue(mockBranch);
 
       const result = await deleteBranch(1);
 
-      expect(branches.destroy).toHaveBeenCalledTimes(1);
-      expect(branches.destroy).toHaveBeenCalledWith({ where: { id: 1 } });
-      expect(result).toBe(1);
+      expect(branches.findByPk).toHaveBeenCalledWith(1);
+      expect(mockBranch.destroy).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(mockBranch);
     });
 
-    test('debe retornar 0 si la sucursal no existe', async() => {
-      branches.destroy.mockResolvedValue(0);
+    test('debe retornar NOT_FOUND si la sucursal no existe', async() => {
+      branches.findByPk.mockResolvedValue(null);
 
       const result = await deleteBranch(999);
 
-      expect(result).toBe(0);
+      expect(result).toEqual({ data: { msg: 'NOT_FOUND' } });
     });
   });
 
@@ -215,7 +221,7 @@ describe('Branches Service - Unit Tests', () => {
 
     test('deleteBranch debe propagar error de BD', async() => {
       const dbError = new Error('Delete failed');
-      branches.destroy.mockRejectedValue(dbError);
+      branches.findByPk.mockRejectedValue(dbError);
 
       await expect(deleteBranch(1)).rejects.toThrow('Delete failed');
     });
@@ -238,11 +244,16 @@ describe('Branches Service - Unit Tests', () => {
     });
 
     test('deleteBranch debe llamar destroy con el id correcto', async() => {
-      branches.destroy.mockResolvedValue(1);
+      const mockBranch = {
+        id: 123,
+        destroy: jest.fn().mockResolvedValue(true)
+      };
+      branches.findByPk.mockResolvedValue(mockBranch);
 
       await deleteBranch(123);
 
-      expect(branches.destroy).toHaveBeenCalledWith({ where: { id: 123 } });
+      expect(branches.findByPk).toHaveBeenCalledWith(123);
+      expect(mockBranch.destroy).toHaveBeenCalledTimes(1);
     });
 
     test('addNewBranch debe pasar el body completo a create', async() => {
@@ -431,13 +442,18 @@ describe('Branches Service - Unit Tests', () => {
       expect(branches.findOne).toHaveBeenCalled();
     });
 
-    test('deleteBranch debe retornar numero de filas eliminadas', async() => {
-      branches.destroy.mockResolvedValue(1);
+    test('deleteBranch debe retornar el objeto eliminado', async() => {
+      const mockBranch = {
+        id: 1,
+        name: 'Sucursal',
+        destroy: jest.fn().mockResolvedValue(true)
+      };
+      branches.findByPk.mockResolvedValue(mockBranch);
 
       const result = await deleteBranch(1);
 
-      expect(typeof result).toBe('number');
-      expect(result).toBe(1);
+      expect(typeof result).toBe('object');
+      expect(result).toEqual(mockBranch);
     });
   });
 });

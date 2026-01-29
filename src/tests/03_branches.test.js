@@ -18,12 +18,10 @@ let secondBranchId = null;
 
 const api = request(server.app);
 
-// Usuario de prueba para branches
+// Usar el superadmin creado en 01_auth.test.js
 const branchesTestUser = {
-  name: 'Branches Test User',
-  email: 'branches_test@test.com',
-  role: 'superadmin',
-  password: 'Test1234'
+  email: 'superadmin@estelaris.com',
+  password: 'Admin123'
 };
 
 /**
@@ -31,20 +29,11 @@ const branchesTestUser = {
  */
 
 describe('[BRANCHES] Test api branches //api/branches/', () => {
-  test('Registrar usuario de prueba. 200', async() => {
-    const response = await api
-      .post('/api/auth/registerSuperUser')
-      .send(branchesTestUser);
-
-    // Si ya existe (400) o se crea (200), ambos son válidos
-    expect([200, 400]).toContain(response.status);
-  });
-
   test('Login para obtener token. 200', async() => {
     await api
       .post('/api/auth/login')
       .set('Content-type', 'application/json')
-      .send({ email: branchesTestUser.email, password: branchesTestUser.password })
+      .send(branchesTestUser)
       .expect(200)
       .then((res) => {
         Token = res.body.sesion.token;

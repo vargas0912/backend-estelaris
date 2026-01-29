@@ -5,12 +5,10 @@ let Token = '';
 
 const api = request(server.app);
 
-// Usuario de prueba para municipalities
-const municipalitiesTestUser = {
-  name: 'Municipalities Test User',
-  email: 'municipalities_test@test.com',
-  role: 'superadmin',
-  password: 'Test1234'
+// Usar el superadmin creado en 01_auth.test.js
+const testUser = {
+  email: 'superadmin@estelaris.com',
+  password: 'Admin123'
 };
 
 /**
@@ -21,20 +19,11 @@ const municipalitiesTestUser = {
  */
 
 describe('[MUNICIPALITIES] Test api municipalities //api/municipalities/', () => {
-  test('Registrar usuario de prueba. 200', async() => {
-    const response = await api
-      .post('/api/auth/registerSuperUser')
-      .send(municipalitiesTestUser);
-
-    // Si ya existe (400) o se crea (200), ambos son válidos
-    expect([200, 400]).toContain(response.status);
-  });
-
   test('Login para obtener token. 200', async() => {
     await api
       .post('/api/auth/login')
       .set('Content-type', 'application/json')
-      .send({ email: municipalitiesTestUser.email, password: municipalitiesTestUser.password })
+      .send(testUser)
       .expect(200)
       .then((res) => {
         Token = res.body.sesion.token;

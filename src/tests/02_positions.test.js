@@ -13,45 +13,33 @@ let createdPositionId = null;
 
 const api = request(server.app);
 
-// Usuario de prueba para positions
+// Usar el superadmin creado en 01_auth.test.js
 const positionsTestUser = {
-  name: 'Positions Test User',
-  email: 'positions_test@test.com',
-  role: 'superadmin',
-  password: 'Test1234'
+  email: 'superadmin@estelaris.com',
+  password: 'Admin123'
 };
 
 /**
  * Script de tests para Positions
  *
- * 1. Registrar usuario de prueba
- * 2. Login para obtener token
- * 3. Obtener lista de puestos
- * 4. Crear puesto con datos validos
- * 5. Crear puesto con datos vacios (error)
- * 6. Crear puesto con datos invalidos (error)
- * 7. Obtener puesto por id
- * 8. Obtener puesto inexistente (error)
- * 9. Actualizar puesto
- * 10. Eliminar puesto
- * 11. Verificar que el puesto eliminado no existe
+ * 1. Login para obtener token (usando superadmin existente)
+ * 2. Obtener lista de puestos
+ * 3. Crear puesto con datos validos
+ * 4. Crear puesto con datos vacios (error)
+ * 5. Crear puesto con datos invalidos (error)
+ * 6. Obtener puesto por id
+ * 7. Obtener puesto inexistente (error)
+ * 8. Actualizar puesto
+ * 9. Eliminar puesto
+ * 10. Verificar que el puesto eliminado no existe
  */
 
 describe('[POSITIONS] Test api positions //api/positions/', () => {
-  test('Registrar usuario de prueba. 200', async() => {
-    const response = await api
-      .post('/api/auth/registerSuperUser')
-      .send(positionsTestUser);
-
-    // Si ya existe (400) o se crea (200), ambos son válidos
-    expect([200, 400]).toContain(response.status);
-  });
-
   test('Login para obtener token. 200', async() => {
     await api
       .post('/api/auth/login')
       .set('Content-type', 'application/json')
-      .send({ email: positionsTestUser.email, password: positionsTestUser.password })
+      .send(positionsTestUser)
       .expect(200)
       .then((res) => {
         Token = res.body.sesion.token;
