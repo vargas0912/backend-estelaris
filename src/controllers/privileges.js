@@ -1,6 +1,8 @@
 const { matchedData } = require('express-validator');
 
 const { handleHttpError } = require('../utils/handleErorr');
+const { ERR_SECURITY } = require('../constants/errors');
+const { users } = require('../models/index');
 
 const {
   getOneUserPrivilege,
@@ -125,9 +127,28 @@ const getOneUserPrivilegeRecord = async(req, res) => {
 
 const addUserPrivilegeRecord = async(req, res) => {
   try {
-    req = matchedData(req);
+    const body = matchedData(req);
+    // eslint-disable-next-line camelcase
+    const { user_id } = body;
 
-    const privilege = await addNewUserPrivilege(req);
+    // Obtener el usuario objetivo
+    // eslint-disable-next-line camelcase
+    const targetUser = await users.findByPk(user_id);
+
+    if (!targetUser) {
+      handleHttpError(res, 'USER_NOT_EXISTS', 404);
+      return;
+    }
+
+    // Validar que NO se puede asignar privilegios a superadmin (excepto por otro superadmin)
+    const performingUserRole = req.user.role;
+    if (targetUser.role === 'superadmin' && performingUserRole !== 'superadmin') {
+      handleHttpError(res, ERR_SECURITY.FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES, 403);
+      return;
+    }
+
+    // Proceder con la asignación
+    const privilege = await addNewUserPrivilege(body);
 
     res.send({ privilege });
   } catch (error) {
@@ -137,9 +158,26 @@ const addUserPrivilegeRecord = async(req, res) => {
 
 const deleteUserPrivilegeRecord = async(req, res) => {
   try {
-    req = matchedData(req);
+    const body = matchedData(req);
+    const { userid, pid } = body;
 
-    const result = await deleteUserPrivilege(req.userid, req.pid);
+    // Obtener el usuario objetivo
+    const targetUser = await users.findByPk(userid);
+
+    if (!targetUser) {
+      handleHttpError(res, 'USER_NOT_EXISTS', 404);
+      return;
+    }
+
+    // Validar que NO se puede eliminar privilegios de superadmin (excepto por otro superadmin)
+    const performingUserRole = req.user.role;
+    if (targetUser.role === 'superadmin' && performingUserRole !== 'superadmin') {
+      handleHttpError(res, ERR_SECURITY.FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES, 403);
+      return;
+    }
+
+    // Proceder con la eliminación
+    const result = await deleteUserPrivilege(userid, pid);
 
     res.send({ result });
   } catch (error) {

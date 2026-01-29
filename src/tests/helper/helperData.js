@@ -562,6 +562,92 @@ const testStorageRegister = {
   filename: 'file-test.mp3'
 };
 
+// Datos de prueba para campaigns
+const campaignCreate = {
+  name: 'Campaña de prueba',
+  description: 'Descripción de la campaña de prueba',
+  start_date: '2026-02-01T00:00:00.000Z',
+  end_date: '2026-02-28T23:59:59.000Z',
+  is_active: false,
+  priority: 1
+};
+
+const campaignCreateEmpty = {
+  name: '',
+  start_date: '',
+  end_date: ''
+};
+
+const campaignCreateInvalid = {};
+
+const campaignUpdate = {
+  name: 'Campaña modificada',
+  description: 'Descripción modificada',
+  priority: 2
+};
+
+const campaignCreate2 = {
+  name: 'Segunda campaña de prueba',
+  description: 'Segunda descripción',
+  start_date: '2026-03-01T00:00:00.000Z',
+  end_date: '2026-03-31T23:59:59.000Z',
+  is_active: true,
+  priority: 3
+};
+
+const campaignInvalidDates = {
+  name: 'Campaña con fechas inválidas',
+  description: 'end_date antes de start_date',
+  start_date: '2026-02-28T00:00:00.000Z',
+  end_date: '2026-02-01T00:00:00.000Z',
+  is_active: false
+};
+
+// Datos de prueba para campaignProducts
+const campaignProductCreate = {
+  campaign_id: 1,
+  product_id: 1,
+  discount_type: 'percentage',
+  discount_value: 15.0,
+  max_quantity: 100
+};
+
+const campaignProductCreateEmpty = {
+  campaign_id: '',
+  product_id: '',
+  discount_type: '',
+  discount_value: ''
+};
+
+const campaignProductCreateInvalid = {};
+
+const campaignProductUpdate = {
+  discount_type: 'percentage',
+  discount_value: 20.0,
+  max_quantity: 150
+};
+
+const campaignProductCreate2 = {
+  campaign_id: 1,
+  product_id: 2,
+  discount_type: 'fixed_price',
+  discount_value: 99.99
+};
+
+const campaignProductInvalidDiscount = {
+  campaign_id: 1,
+  product_id: 1,
+  discount_type: 'percentage',
+  discount_value: 150
+};
+
+const campaignProductNegativeDiscount = {
+  campaign_id: 1,
+  product_id: 1,
+  discount_type: 'percentage',
+  discount_value: -10
+};
+
 module.exports = {
   testAuthRegister,
   testAuthLogin,
@@ -655,5 +741,18 @@ module.exports = {
   employeeCreateNoName,
   employeeCreateNoEmail,
   employeeCreateNoPosition,
-  employeeCreateNoBranch
+  employeeCreateNoBranch,
+  campaignCreate,
+  campaignCreateEmpty,
+  campaignCreateInvalid,
+  campaignUpdate,
+  campaignCreate2,
+  campaignInvalidDates,
+  campaignProductCreate,
+  campaignProductCreateEmpty,
+  campaignProductCreateInvalid,
+  campaignProductUpdate,
+  campaignProductCreate2,
+  campaignProductInvalidDiscount,
+  campaignProductNegativeDiscount
 };

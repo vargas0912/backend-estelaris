@@ -126,7 +126,7 @@ describe('[BRANCHES] Test api branches //api/branches/', () => {
       .auth(Token, { type: 'bearer' })
       .expect(200);
 
-    expect(response.body).toHaveProperty('result');
+    expect(response.body).toHaveProperty('branch');
   });
 
   test('9. Verificar que la sucursal eliminada no existe. Expect 404', async() => {
@@ -235,21 +235,18 @@ describe('[BRANCHES] Test api branches //api/branches/', () => {
       expect([200, 404]).toContain(response.status);
     });
 
-    test('20. Eliminar sucursal inexistente. Expect 200 con result 0', async() => {
-      const response = await api
+    test('20. Eliminar sucursal inexistente. Expect 404', async() => {
+      await api
         .delete('/api/branches/99999')
         .auth(Token, { type: 'bearer' })
-        .expect(200);
-
-      expect(response.body).toHaveProperty('result');
-      expect(response.body.result).toBe(0);
+        .expect(404);
     });
 
-    test('21. Eliminar sucursal con ID no numerico. Expect 400', async() => {
+    test('21. Eliminar sucursal con ID no numerico. Expect 404', async() => {
       await api
         .delete('/api/branches/invalid')
         .auth(Token, { type: 'bearer' })
-        .expect(400);
+        .expect(404);
     });
   });
 

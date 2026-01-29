@@ -1,6 +1,9 @@
 const ERR_SECURITY = Object.freeze({
   NOT_PERMISION: 'ERROR_NOT_PERMISSION',
-  NOT_PRIVILEGE: 'NOT_PRIVILEGE'
+  NOT_PRIVILEGE: 'NOT_PRIVILEGE',
+  FORBIDDEN_ROLE_HIERARCHY: 'No tiene permisos para modificar usuarios con ese rol',
+  FORBIDDEN_CANNOT_CREATE_SUPERADMIN: 'Solo un superadmin puede crear o elevar a superadmin',
+  FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES: 'Solo un superadmin puede modificar privilegios de superadmin'
 });
 
 const LOGIN = Object.freeze({

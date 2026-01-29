@@ -32,6 +32,7 @@ const data = [
   { name: USR.NAME_UPDATE, codeName: USR.UPDATE, module: USR.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: USR.NAME_DELETE, codeName: USR.DELETE, module: USR.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: USR.NAME_ADD, codeName: USR.ADD, module: USR.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: USR.NAME_CREATE_SUPERADMIN, codeName: USR.CREATE_SUPERADMIN, module: USR.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Categorias de producto
   { name: 'Ver categoria', codeName: 'view_category', module: 'categories', created_at: fecha, updated_at: fecha },
@@ -50,6 +51,10 @@ const data = [
   // Municipios
   { name: MUN.NAME_VIEW, codeName: MUN.VIEW, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: MUN.NAME_VIEW_STATE, codeName: MUN.NAME_VIEW_STATE, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Estados
+  { name: 'Ver estado', codeName: 'view_state', module: 'states', created_at: fecha, updated_at: fecha },
+  { name: 'Ver todos los estados', codeName: 'view_all_states', module: 'states', created_at: fecha, updated_at: fecha },
 
   // Campañas
   { name: CMP.NAME_VIEW, codeName: CMP.VIEW, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },

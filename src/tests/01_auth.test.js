@@ -43,37 +43,42 @@ const api = request(server.app);
  */
 
 describe('[AUTH] super User register //api/auth/registerSuperUser', () => {
-  test('1. Register superUser (already exists in seeder),  expected 400', async() => {
-    // El seeder ya creó el superadmin, por lo que debe fallar con 400
+  test('1. Register first superUser (bootstrap), expected 200', async() => {
+    // NO hay superadmin en el seeder, por lo que permite bootstrap inicial
+    // Este es el único momento en que el endpoint es público
     await api
       .post('/api/auth/registerSuperUser')
       .send(testAuthRegisterSuperAdmin)
-      .expect(400);
+      .expect(200);
   });
 
-  test('2. Register super user duplicated,  expected 400', async() => {
+  test('2. Register super user duplicated, expected 400', async() => {
+    // Ahora ya existe un superadmin, por lo que requiere autenticación
+    // Sin token, debe fallar con 401
     await api
       .post('/api/auth/registerSuperUser')
       .send(testAuthRegisterSuperAdminErr)
-      .expect(400);
+      .expect(401);
 
     // console.log(response.body);
   });
 
-  test('3. Register super user incorrect,  expected 400', async() => {
+  test('3. Register super user incorrect (without auth), expected 401', async() => {
+    // Ya existe superadmin, requiere autenticación
     await api
       .post('/api/auth/registerSuperUser')
       .send(testAuthRegisterSuperAdminFail)
-      .expect(400);
+      .expect(401);
 
     // console.log(response.body);
   });
 
-  test('4. Register user admin,  expected 200', async() => {
+  test('4. Register user without auth token, expected 401', async() => {
+    // Ya existe superadmin, requiere autenticación
     await api
       .post('/api/auth/registerSuperUser')
       .send(testAuthRegisterAdmin)
-      .expect(200);
+      .expect(401);
 
     // console.log(response.body);
   });
@@ -128,7 +133,7 @@ describe('[USERS] Test api users //api/users/', () => {
 
   test('9. Shows only one user. Expec 200', async() => {
     const response = await api
-      .get('/api/users/2')
+      .get('/api/users/1')
       .auth(Token, { type: 'bearer' });
 
     expect(response.status).toEqual(200);
@@ -137,7 +142,7 @@ describe('[USERS] Test api users //api/users/', () => {
 
   test('10. modify one user. Expect 200', async() => {
     await api
-      .put('/api/users/2')
+      .put('/api/users/1')
       .auth(Token, { type: 'bearer' })
       .send({ name: 'User modified', role: 'superadmin' })
       .expect(200);
@@ -145,7 +150,7 @@ describe('[USERS] Test api users //api/users/', () => {
 
   test('11. modify one user with role wrong. Expect 400', async() => {
     await api
-      .put('/api/users/2')
+      .put('/api/users/1')
       .auth(Token, { type: 'bearer' })
       .send({ name: 'User modified', role: 'speradmin' })
       .expect(400);
@@ -158,9 +163,25 @@ describe('[USERS] Test api users //api/users/', () => {
       .expect(404);
   });
 
-  test('12b. create user to delete. Expect 200', async() => {
+  test('11b. superadmin can create another user with auth. Expect 200', async() => {
+    // CRIT-001: Verificar que superadmin autenticado SÍ puede crear usuarios
     await api
       .post('/api/auth/registerSuperUser')
+      .auth(Token, { type: 'bearer' })
+      .send({
+        name: 'Admin User',
+        email: 'admin@test.com',
+        role: 'admin',
+        password: 'Admin1234'
+      })
+      .expect(200);
+  });
+
+  test('12b. create user to delete. Expect 200', async() => {
+    // Con autenticación del superadmin
+    await api
+      .post('/api/auth/registerSuperUser')
+      .auth(Token, { type: 'bearer' })
       .send({
         name: 'User to delete',
         email: 'todelete@test.com',

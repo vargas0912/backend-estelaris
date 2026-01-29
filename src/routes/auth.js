@@ -5,7 +5,9 @@ const { registerAdminCtrl, registerCtrl, loginCtrl } = require('../controllers/a
 const { validateLogin, validateRegister } = require('../validators/auth');
 
 const authMidleware = require('../middlewares/session');
+const conditionalAuthForSuperAdmin = require('../middlewares/conditionalAuth');
 const checkRol = require('../middlewares/rol');
+const conditionalCheckRol = require('../middlewares/conditionalCheckRol');
 
 const { USERS } = require('../constants/privileges');
 const { ROLE } = require('../constants/roles');
@@ -18,7 +20,9 @@ const { ROLE } = require('../constants/roles');
  *          tags:
  *              - auth
  *          summary: Registrar super usuario
- *          description: Alta de usuarios nuevos*
+ *          description: Alta de usuarios nuevos. Público solo si no existe ningún superadmin (bootstrap), luego requiere autenticación de superadmin
+ *          security:
+ *              - bearerAuth: []
  *          operationId: "createSuperUser"
  *          requestBody:
  *              content:
@@ -30,10 +34,16 @@ const { ROLE } = require('../constants/roles');
  *                  description: Registro de super usuario
  *              '201':
  *                  description: Super usuario registrado correctamente
+ *              '401':
+ *                  description: No autenticado (cuando ya existe al menos un superadmin)
  *              '403':
- *                  description: Error al registrar nuevo usuario
+ *                  description: Error al registrar nuevo usuario o sin permisos
  */
-router.post('/registerSuperUser', validateRegister, registerAdminCtrl);
+router.post('/registerSuperUser', [
+  conditionalAuthForSuperAdmin,
+  conditionalCheckRol([ROLE.SUPERADMIN], USERS.CREATE_SUPERADMIN),
+  validateRegister
+], registerAdminCtrl);
 
 /**
  * Register new user

@@ -5,6 +5,7 @@ const { validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../valid
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
+const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
 const { getRecord, getRecords, addRecord, updateRecord, deleteRecord } = require('../controllers/branches');
 const { BRANCH } = require('../constants/modules');
@@ -34,6 +35,7 @@ const { ROLE } = require('../constants/roles');
  *          description: Error de validacion.
  */
 router.get('/', [
+  readLimiter,
   authMidleware,
   checkRol([ROLE.USER, ROLE.ADMIN], BRANCH.VIEW_ALL)
 ], getRecords);
@@ -67,6 +69,7 @@ router.get('/', [
  *          description: Error de validacion.
  */
 router.get('/:id', [
+  readLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], BRANCH.VIEW)],
@@ -98,6 +101,7 @@ getRecord);
  *                  description: Error al crear la nueva sucursal
  */
 router.post('/', [
+  writeLimiter,
   authMidleware,
   valiAddRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], BRANCH.ADD)], addRecord);
@@ -135,6 +139,7 @@ router.post('/', [
  *                  description: Error al actualizar la sucursal
  */
 router.put('/:id', [
+  writeLimiter,
   authMidleware,
   valiUpdateRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], BRANCH.UPDATE)
@@ -189,6 +194,7 @@ router.put('/:id', [
  *                  description: Error al eliminar la sucursal
  */
 router.delete('/:id', [
+  deleteLimiter,
   authMidleware,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], BRANCH.DELETE)],
