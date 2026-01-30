@@ -8,10 +8,22 @@ let testBranchId = null;
 
 const api = request(server.app);
 
-// Usar el superadmin creado en 01_auth.test.js
+// Datos para registro y login
 const testUser = {
   email: 'superadmin@estelaris.com',
   password: 'Admin123'
+};
+
+const testRegularUser = {
+  name: 'Usuario Regular',
+  email: 'regular@estelaris.com',
+  role: 'user',
+  password: 'User1234'
+};
+
+const testRegularUserLogin = {
+  email: 'regular@estelaris.com',
+  password: 'User1234'
 };
 
 // Datos de prueba para campañas
@@ -69,7 +81,7 @@ const campaignInvalidDates = {
 
 describe('[CAMPAIGNS] Test api campaigns //api/campaigns/', () => {
   // ============================================
-  // Setup: Obtener token del superadmin existente
+  // Setup: Hacer login con superadmin (ya creado en 01_auth.test.js)
   // ============================================
   test('Login superadmin para obtener token. 200', async() => {
     const response = await api
@@ -82,9 +94,24 @@ describe('[CAMPAIGNS] Test api campaigns //api/campaigns/', () => {
     expect(response.body.sesion).toHaveProperty('token');
   });
 
-  // Para tests de rol, usar el mismo token (todos los tests usan superadmin)
-  test('Setup token usuario regular (usando superadmin). 200', async() => {
-    regularUserToken = superAdminToken;
+  // Crear usuario regular sin privilegios para tests de autorización
+  test('Setup: Crear usuario regular sin privilegios. 200', async() => {
+    await api
+      .post('/api/auth/register')
+      .auth(superAdminToken, { type: 'bearer' })
+      .send(testRegularUser)
+      .expect(200);
+  });
+
+  test('Setup: Login usuario regular para obtener token. 200', async() => {
+    const response = await api
+      .post('/api/auth/login')
+      .set('Content-type', 'application/json')
+      .send(testRegularUserLogin)
+      .expect(200);
+
+    regularUserToken = response.body.sesion.token;
+    expect(response.body.sesion).toHaveProperty('token');
   });
 
   // ============================================

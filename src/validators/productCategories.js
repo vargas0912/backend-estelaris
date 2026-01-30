@@ -16,6 +16,8 @@ const valiAddRecord = [
   check('name')
     .exists().withMessage(PRODUCT_CATEGORIES_VALIDATORS.NAME_NOT_EXISTS).bail()
     .notEmpty().withMessage(PRODUCT_CATEGORIES_VALIDATORS.NAME_IS_EMPTY).bail(),
+  check('description')
+    .optional(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }

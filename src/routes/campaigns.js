@@ -48,7 +48,7 @@ const handleValidationErrors = (req, res, next) => {
 
 /**
  * @swagger
- * /api/campaigns:
+ * /campaigns:
  *   get:
  *     summary: Obtiene todas las campañas
  *     tags: [Campaigns]
@@ -78,7 +78,7 @@ router.get(
 
 /**
  * @swagger
- * /api/campaigns/active:
+ * /campaigns/active:
  *   get:
  *     summary: Obtiene solo las campañas activas y vigentes
  *     tags: [Campaigns]
@@ -99,7 +99,7 @@ router.get(
 
 /**
  * @swagger
- * /api/campaigns/{id}:
+ * /campaigns/{id}:
  *   get:
  *     summary: Obtiene una campaña por ID
  *     tags: [Campaigns]
@@ -129,7 +129,7 @@ router.get(
 
 /**
  * @swagger
- * /api/campaigns:
+ * /campaigns:
  *   post:
  *     summary: Crea una nueva campaña
  *     tags: [Campaigns]
@@ -177,7 +177,7 @@ router.post(
 
 /**
  * @swagger
- * /api/campaigns/{id}:
+ * /campaigns/{id}:
  *   put:
  *     summary: Actualiza una campaña
  *     tags: [Campaigns]
@@ -212,7 +212,7 @@ router.put(
 
 /**
  * @swagger
- * /api/campaigns/{id}/activate:
+ * /campaigns/{id}/activate:
  *   post:
  *     summary: Activa una campaña
  *     tags: [Campaigns]
@@ -241,7 +241,7 @@ router.post(
 
 /**
  * @swagger
- * /api/campaigns/{id}/deactivate:
+ * /campaigns/{id}/deactivate:
  *   post:
  *     summary: Desactiva una campaña
  *     tags: [Campaigns]
@@ -270,7 +270,7 @@ router.post(
 
 /**
  * @swagger
- * /api/campaigns/{id}:
+ * /campaigns/{id}:
  *   delete:
  *     summary: Elimina una campaña
  *     tags: [Campaigns]
@@ -299,7 +299,7 @@ router.delete(
 
 /**
  * @swagger
- * /api/campaigns/{id}/branches:
+ * /campaigns/{id}/branches:
  *   get:
  *     summary: Obtiene las sucursales de una campaña
  *     tags: [Campaigns]
@@ -328,7 +328,7 @@ router.get(
 
 /**
  * @swagger
- * /api/campaigns/{id}/branches:
+ * /campaigns/{id}/branches:
  *   post:
  *     summary: Agrega sucursales a una campaña
  *     tags: [Campaigns]
@@ -370,7 +370,7 @@ router.post(
 
 /**
  * @swagger
- * /api/campaigns/{id}/branches/{branch_id}:
+ * /campaigns/{id}/branches/{branch_id}:
  *   delete:
  *     summary: Remueve una sucursal de una campaña
  *     tags: [Campaigns]

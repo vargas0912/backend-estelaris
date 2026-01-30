@@ -28,10 +28,12 @@ const validateGetUserOneRecord = [
 const validateAddUserRecord = [
   check('user_id')
     .exists().withMessage(USER_VALIDATORS.USER_ID_NOT_EXISTS).bail()
-    .notEmpty().withMessage(USER_VALIDATORS.USER_ID_IS_EMPTY).bail(),
+    .notEmpty().withMessage(USER_VALIDATORS.USER_ID_IS_EMPTY).bail()
+    .isNumeric().withMessage('USER_ID_MUST_BE_NUMERIC').bail(),
   check(FIELDS.PRIVILEGE_ID)
     .exists().withMessage(USER_VALIDATORS.PRIVILEGE_ID_NOT_EXISTS).bail()
-    .notEmpty().withMessage(USER_VALIDATORS.PRIVILEGE_ID_IS_EMPTY).bail(),
+    .notEmpty().withMessage(USER_VALIDATORS.PRIVILEGE_ID_IS_EMPTY).bail()
+    .isNumeric().withMessage('PRIVILEGE_ID_MUST_BE_NUMERIC').bail(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }

@@ -47,7 +47,7 @@ const handleValidationErrors = (req, res, next) => {
 
 /**
  * @swagger
- * /api/campaignProducts/campaign/{campaign_id}:
+ * /campaignProducts/campaign/{campaign_id}:
  *   get:
  *     summary: Obtiene todos los productos de una campaña
  *     tags: [CampaignProducts]
@@ -77,7 +77,7 @@ router.get(
 
 /**
  * @swagger
- * /api/campaignProducts/{id}:
+ * /campaignProducts/{id}:
  *   get:
  *     summary: Obtiene un producto de campaña por ID
  *     tags: [CampaignProducts]
@@ -107,7 +107,7 @@ router.get(
 
 /**
  * @swagger
- * /api/campaignProducts:
+ * /campaignProducts:
  *   post:
  *     summary: Agrega un producto a una campaña
  *     tags: [CampaignProducts]
@@ -153,7 +153,7 @@ router.post(
 
 /**
  * @swagger
- * /api/campaignProducts/{id}:
+ * /campaignProducts/{id}:
  *   put:
  *     summary: Actualiza un producto de campaña
  *     tags: [CampaignProducts]
@@ -188,7 +188,7 @@ router.put(
 
 /**
  * @swagger
- * /api/campaignProducts/{id}:
+ * /campaignProducts/{id}:
  *   delete:
  *     summary: Elimina un producto de una campaña
  *     tags: [CampaignProducts]
@@ -217,7 +217,7 @@ router.delete(
 
 /**
  * @swagger
- * /api/campaignProducts/{id}/branches:
+ * /campaignProducts/{id}/branches:
  *   get:
  *     summary: Obtiene los overrides de sucursal para un producto de campaña
  *     tags: [CampaignProducts]
@@ -244,7 +244,7 @@ router.get(
 
 /**
  * @swagger
- * /api/campaignProducts/{id}/branches/override:
+ * /campaignProducts/{id}/branches/override:
  *   post:
  *     summary: Crea un override de descuento para una sucursal
  *     tags: [CampaignProducts]
@@ -287,7 +287,7 @@ router.post(
 
 /**
  * @swagger
- * /api/campaignProducts/{id}/branches/{branch_id}/override:
+ * /campaignProducts/{id}/branches/{branch_id}/override:
  *   put:
  *     summary: Actualiza un override de sucursal
  *     tags: [CampaignProducts]
@@ -332,7 +332,7 @@ router.put(
 
 /**
  * @swagger
- * /api/campaignProducts/{id}/branches/{branch_id}/override:
+ * /campaignProducts/{id}/branches/{branch_id}/override:
  *   delete:
  *     summary: Elimina un override de sucursal
  *     tags: [CampaignProducts]

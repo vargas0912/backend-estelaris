@@ -4,6 +4,7 @@ module.exports = (sequelize, DataTypes) => {
   class users extends Model {
     static associate(models) {
       this.hasMany(models.userprivileges, { as: 'privilegios', foreignKey: 'user_id' });
+      this.hasOne(models.customers, { as: 'customer', foreignKey: 'user_id' });
     }
   }
   users.init({
