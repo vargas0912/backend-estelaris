@@ -1,0 +1,82 @@
+[
+  {
+    "name": "Juan Pérez García",
+    "email": "juan.perez@example.com",
+    "phone": "5551234567",
+    "mobile": "5559876543",
+    "tax_id": "PEGJ850215XY1",
+    "is_international": false,
+    "country": "México",
+    "municipality_id": 1,
+    "branch_id": 1,
+    "notes": "Cliente frecuente, preferencia por entregas por la tarde",
+    "is_active": true
+  },
+  {
+    "name": "María González López",
+    "email": "maria.gonzalez@example.com",
+    "phone": null,
+    "mobile": "5557654321",
+    "tax_id": null,
+    "is_international": false,
+    "country": "México",
+    "municipality_id": 2,
+    "branch_id": null,
+    "notes": "Cliente nuevo, sin historial de compras",
+    "is_active": true
+  },
+  {
+    "name": "Comercializadora ABC S.A. de C.V.",
+    "email": "ventas@abc-comercial.com.mx",
+    "phone": "5558887777",
+    "mobile": "5559998888",
+    "tax_id": "ABC1234567890",
+    "is_international": false,
+    "country": "México",
+    "municipality_id": 1,
+    "branch_id": 1,
+    "notes": "Empresa con línea de crédito aprobada",
+    "is_active": true
+  },
+  {
+    "name": "John Smith",
+    "email": "john.smith@globalmail.com",
+    "phone": "+12125551234",
+    "mobile": "+19175554321",
+    "tax_id": null,
+    "is_international": true,
+    "country": "USA",
+    "billing_address": "123 Main St, Apt 4B, New York, NY 10001, USA",
+    "municipality_id": null,
+    "branch_id": null,
+    "notes": "Cliente internacional, envíos a México para familia",
+    "is_active": true
+  },
+  {
+    "name": "Global Trading Inc.",
+    "email": "contact@globaltrading.cn",
+    "phone": "+862112345678",
+    "mobile": "+8613800138000",
+    "tax_id": "GT-CN-2024-001",
+    "is_international": true,
+    "country": "China",
+    "billing_address": "Suite 1501, International Commerce Tower, Pudong, Shanghai 200120, China",
+    "municipality_id": null,
+    "branch_id": null,
+    "notes": "Importador mayorista con bodega en México",
+    "is_active": true
+  },
+  {
+    "name": "Carlos Ramírez Hernández",
+    "email": "carlos.ramirez@example.com",
+    "phone": "5556667788",
+    "mobile": "5554445566",
+    "tax_id": "RAHC920830XY2",
+    "is_international": false,
+    "country": "México",
+    "municipality_id": 1,
+    "branch_id": 1,
+    "notes": "Cliente con portal activado",
+    "is_active": true
+  }
+]

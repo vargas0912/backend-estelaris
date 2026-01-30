@@ -1,5 +1,5 @@
 const fecha = new Date();
-const { BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD } = require('../../../constants/modules');
+const { BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD, CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR } = require('../../../constants/modules');
 
 const data = [
   // Sucursales
@@ -42,11 +42,21 @@ const data = [
   { name: 'Eliminar categoria', codeName: 'delete_category', module: 'categories', created_at: fecha, updated_at: fecha },
 
   // Clientes
-  { name: 'Ver clientes', codeName: 'view_customers', module: 'customers', created_at: fecha, updated_at: fecha },
-  { name: 'Ver cliente', codeName: 'view_customer', module: 'customers', created_at: fecha, updated_at: fecha },
-  { name: 'Crear clientes', codeName: 'create_customer', module: 'customers', created_at: fecha, updated_at: fecha },
-  { name: 'Actualizar clientes', codeName: 'update_customer', module: 'customers', created_at: fecha, updated_at: fecha },
-  { name: 'Eliminar clientes', codeName: 'delete_customer', module: 'customers', created_at: fecha, updated_at: fecha },
+  { name: CUST.NAME_VIEW, codeName: CUST.VIEW, module: CUST.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CUST.NAME_ALL, codeName: CUST.VIEW_ALL, module: CUST.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CUST.NAME_VIEW_BY_BRANCH, codeName: CUST.VIEW_BY_BRANCH, module: CUST.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CUST.NAME_VIEW_BY_MUNICIPALITY, codeName: CUST.VIEW_BY_MUNICIPALITY, module: CUST.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CUST.NAME_ADD, codeName: CUST.ADD, module: CUST.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CUST.NAME_UPDATE, codeName: CUST.UPDATE, module: CUST.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CUST.NAME_DELETE, codeName: CUST.DELETE, module: CUST.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CUST.NAME_ACTIVATE_PORTAL, codeName: CUST.ACTIVATE_PORTAL, module: CUST.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Direcciones de Clientes
+  { name: CUSTADDR.NAME_VIEW, codeName: CUSTADDR.VIEW, module: CUSTADDR.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CUSTADDR.NAME_ALL, codeName: CUSTADDR.VIEW_ALL, module: CUSTADDR.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CUSTADDR.NAME_ADD, codeName: CUSTADDR.ADD, module: CUSTADDR.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CUSTADDR.NAME_UPDATE, codeName: CUSTADDR.UPDATE, module: CUSTADDR.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CUSTADDR.NAME_DELETE, codeName: CUSTADDR.DELETE, module: CUSTADDR.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Municipios
   { name: MUN.NAME_VIEW, codeName: MUN.VIEW, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },

@@ -648,6 +648,119 @@ const campaignProductNegativeDiscount = {
   discount_value: -10
 };
 
+// Datos de prueba para customers
+const customerCreate = {
+  name: 'Cliente de prueba',
+  email: 'cliente.prueba@test.com',
+  phone: '5551234567',
+  mobile: '5559876543',
+  tax_id: 'CUPR850101XY1',
+  is_international: false,
+  country: 'México',
+  municipality_id: 1,
+  branch_id: 1,
+  notes: 'Cliente de prueba',
+  is_active: true
+};
+
+const customerCreateEmpty = {
+  name: '',
+  email: ''
+};
+
+const customerCreateInvalid = {};
+
+const customerUpdate = {
+  name: 'Cliente modificado',
+  email: 'cliente.modificado@test.com',
+  phone: '5559999999'
+};
+
+const customerCreate2 = {
+  name: 'Segundo cliente de prueba',
+  email: 'cliente2@test.com',
+  mobile: '5558888888',
+  is_international: false,
+  country: 'México',
+  municipality_id: 1
+};
+
+const customerCreateInternational = {
+  name: 'International Customer',
+  email: 'international@test.com',
+  phone: '+12125551234',
+  is_international: true,
+  country: 'USA',
+  billing_address: '123 Main St, New York, NY 10001',
+  notes: 'Cliente internacional'
+};
+
+const customerCreateNoPhone = {
+  name: 'Cliente sin teléfono',
+  email: 'sintelefono@test.com',
+  is_international: false,
+  country: 'México'
+};
+
+const customerCreateInvalidInternational = {
+  name: 'Cliente internacional inválido',
+  email: 'invalido@test.com',
+  phone: '5551111111',
+  is_international: true,
+  country: 'USA',
+  municipality_id: 1,
+  branch_id: 1
+};
+
+// Datos de prueba para customer addresses
+const customerAddressCreate = {
+  customer_id: 1,
+  address_type: 'shipping',
+  street: 'Calle de prueba 123',
+  neighborhood: 'Colonia Centro',
+  postal_code: '06000',
+  city: 'Ciudad de México',
+  state: 'Ciudad de México',
+  country: 'México',
+  municipality_id: 1,
+  is_default: true,
+  notes: 'Dirección de prueba'
+};
+
+const customerAddressCreateEmpty = {
+  customer_id: '',
+  address_type: '',
+  street: ''
+};
+
+const customerAddressCreateInvalid = {};
+
+const customerAddressUpdate = {
+  street: 'Calle modificada 456',
+  neighborhood: 'Colonia Modificada',
+  postal_code: '06100'
+};
+
+const customerAddressCreate2 = {
+  customer_id: 1,
+  address_type: 'billing',
+  street: 'Av. Segunda 789',
+  postal_code: '06200',
+  city: 'Ciudad de México',
+  state: 'Ciudad de México',
+  country: 'México',
+  municipality_id: 1,
+  is_default: false
+};
+
+const customerAddressCreateNoCustomer = {
+  address_type: 'shipping',
+  street: 'Calle sin cliente 999',
+  postal_code: '06000',
+  city: 'Ciudad de México',
+  state: 'Ciudad de México'
+};
+
 module.exports = {
   testAuthRegister,
   testAuthLogin,
@@ -754,5 +867,19 @@ module.exports = {
   campaignProductUpdate,
   campaignProductCreate2,
   campaignProductInvalidDiscount,
-  campaignProductNegativeDiscount
+  campaignProductNegativeDiscount,
+  customerCreate,
+  customerCreateEmpty,
+  customerCreateInvalid,
+  customerUpdate,
+  customerCreate2,
+  customerCreateInternational,
+  customerCreateNoPhone,
+  customerCreateInvalidInternational,
+  customerAddressCreate,
+  customerAddressCreateEmpty,
+  customerAddressCreateInvalid,
+  customerAddressUpdate,
+  customerAddressCreate2,
+  customerAddressCreateNoCustomer
 };

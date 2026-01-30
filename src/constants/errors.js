@@ -42,4 +42,37 @@ const REGISTER = Object.freeze({
   ROLE_INVALID: 'ROLE_INVALID'
 });
 
-module.exports = { ERR_SECURITY, LOGIN, USER, SESSION, REGISTER };
+const CUSTOMERS_VALIDATORS = Object.freeze({
+  NAME_REQUIRED: 'El nombre es obligatorio',
+  NAME_LENGTH: 'El nombre debe tener entre 2 y 150 caracteres',
+  EMAIL_REQUIRED: 'El email es obligatorio',
+  EMAIL_INVALID: 'Email inválido',
+  EMAIL_EXISTS: 'El email ya está registrado',
+  PHONE_OR_MOBILE_REQUIRED: 'Debe proporcionar al menos un teléfono o móvil',
+  TAX_ID_LENGTH: 'El RFC debe tener 13 caracteres',
+  MUNICIPALITY_NOT_EXISTS: 'El municipio no existe',
+  BRANCH_NOT_EXISTS: 'La sucursal no existe',
+  INTERNATIONAL_NO_LOCATION: 'Clientes internacionales no pueden tener municipio o sucursal',
+  COUNTRY_REQUIRED: 'El país es obligatorio',
+  CUSTOMER_NOT_FOUND: 'Cliente no encontrado',
+  USER_ID_ALREADY_EXISTS: 'Este cliente ya tiene portal activado',
+  USER_ID_NOT_UNIQUE: 'Este usuario ya está vinculado a otro cliente'
+});
+
+const CUSTOMER_ADDRESSES_VALIDATORS = Object.freeze({
+  CUSTOMER_REQUIRED: 'El ID del cliente es obligatorio',
+  CUSTOMER_NOT_EXISTS: 'El cliente no existe',
+  ADDRESS_TYPE_REQUIRED: 'El tipo de dirección es obligatorio',
+  ADDRESS_TYPE_INVALID: 'Tipo de dirección inválido (billing o shipping)',
+  STREET_REQUIRED: 'La calle es obligatoria',
+  STREET_LENGTH: 'La calle debe tener entre 1 y 255 caracteres',
+  POSTAL_CODE_REQUIRED: 'El código postal es obligatorio',
+  POSTAL_CODE_LENGTH: 'El código postal debe tener entre 5 y 10 caracteres',
+  CITY_REQUIRED: 'La ciudad es obligatoria',
+  STATE_REQUIRED: 'El estado es obligatorio',
+  COUNTRY_REQUIRED: 'El país es obligatorio',
+  MUNICIPALITY_NOT_EXISTS: 'El municipio no existe',
+  ADDRESS_NOT_FOUND: 'Dirección no encontrada'
+});
+
+module.exports = { ERR_SECURITY, LOGIN, USER, SESSION, REGISTER, CUSTOMERS_VALIDATORS, CUSTOMER_ADDRESSES_VALIDATORS };

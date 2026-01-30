@@ -222,4 +222,38 @@ const STATES = Object.freeze({
   NAME_ALL: 'Ver todos los estados'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES };
+const CUSTOMER = Object.freeze({
+  MODULE_NAME: 'customers',
+  VIEW: 'view_customer',
+  NAME_VIEW: 'Ver cliente',
+  VIEW_ALL: 'view_customers',
+  NAME_ALL: 'Ver clientes',
+  VIEW_BY_BRANCH: 'view_customers_by_branch',
+  NAME_VIEW_BY_BRANCH: 'Ver clientes por sucursal',
+  VIEW_BY_MUNICIPALITY: 'view_customers_by_municipality',
+  NAME_VIEW_BY_MUNICIPALITY: 'Ver clientes por municipio',
+  ADD: 'create_customer',
+  NAME_ADD: 'Crear cliente',
+  UPDATE: 'update_customer',
+  NAME_UPDATE: 'Modificar cliente',
+  DELETE: 'delete_customer',
+  NAME_DELETE: 'Eliminar cliente',
+  ACTIVATE_PORTAL: 'activate_customer_portal',
+  NAME_ACTIVATE_PORTAL: 'Activar portal de cliente'
+});
+
+const CUSTOMER_ADDRESS = Object.freeze({
+  MODULE_NAME: 'customerAddresses',
+  VIEW: 'view_customer_address',
+  NAME_VIEW: 'Ver dirección de cliente',
+  VIEW_ALL: 'view_customer_addresses',
+  NAME_ALL: 'Ver direcciones de cliente',
+  ADD: 'create_customer_address',
+  NAME_ADD: 'Crear dirección',
+  UPDATE: 'update_customer_address',
+  NAME_UPDATE: 'Modificar dirección',
+  DELETE: 'delete_customer_address',
+  NAME_DELETE: 'Eliminar dirección'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS };
