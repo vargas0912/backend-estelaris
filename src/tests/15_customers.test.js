@@ -18,13 +18,6 @@ let secondCustomerId = null;
 
 const api = request(server.app);
 
-const customersTestSuperAdmin = {
-  name: 'Super Admin',
-  email: 'superadmin@estelaris.com',
-  password: 'Admin123',
-  role: 'superadmin'
-};
-
 const customersTestLogin = {
   email: 'superadmin@estelaris.com',
   password: 'Admin123'
@@ -35,13 +28,6 @@ const customersTestLogin = {
  */
 
 describe('[CUSTOMERS] Test api customers //api/customers/', () => {
-  test('Setup: Registrar superusuario. 200', async() => {
-    await api
-      .post('/api/auth/registerSuperUser')
-      .send(customersTestSuperAdmin)
-      .expect(200);
-  });
-
   test('Login para obtener token. 200', async() => {
     await api
       .post('/api/auth/login')

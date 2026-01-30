@@ -17,13 +17,6 @@ let testCustomerId = null;
 
 const api = request(server.app);
 
-const addressesTestSuperAdmin = {
-  name: 'Super Admin',
-  email: 'superadmin@estelaris.com',
-  password: 'Admin123',
-  role: 'superadmin'
-};
-
 const addressesTestLogin = {
   email: 'superadmin@estelaris.com',
   password: 'Admin123'
@@ -34,13 +27,6 @@ const addressesTestLogin = {
  */
 
 describe('[CUSTOMER ADDRESSES] Test api customer-addresses //api/customer-addresses/', () => {
-  test('Setup: Registrar superusuario. 200', async() => {
-    await api
-      .post('/api/auth/registerSuperUser')
-      .send(addressesTestSuperAdmin)
-      .expect(200);
-  });
-
   test('Login para obtener token. 200', async() => {
     await api
       .post('/api/auth/login')

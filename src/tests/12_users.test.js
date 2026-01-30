@@ -9,29 +9,18 @@ let superadminUserId = '';
 let adminUserId = '';
 
 describe('[SECURITY] CRIT-002: Role Hierarchy Validation //api/users/', () => {
-  // Setup: Crear usuarios de prueba
-  test('Setup: Create superadmin', async() => {
-    const response = await api
-      .post('/api/auth/registerSuperUser')
-      .send({
-        name: 'Test Superadmin',
-        email: 'test.superadmin@test.com',
-        role: 'superadmin',
-        password: 'Super123'
-      })
-      .expect(200);
-
-    superadminUserId = response.body.superAdmin.user.id;
-
+  // Setup: Usar el superadmin existente (creado en 01_auth.test.js)
+  test('Setup: Login as superadmin', async() => {
     const loginResponse = await api
       .post('/api/auth/login')
       .send({
-        email: 'test.superadmin@test.com',
-        password: 'Super123'
+        email: 'superadmin@estelaris.com',
+        password: 'Admin123'
       })
       .expect(200);
 
     superadminToken = loginResponse.body.sesion.token;
+    superadminUserId = loginResponse.body.sesion.user.id;
   });
 
   test('Setup: Superadmin creates admin', async() => {
