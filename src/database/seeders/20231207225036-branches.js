@@ -7,6 +7,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     const branches = data.map(item => ({
       ...item,
+      opening_date: new Date(),
       created_at: new Date(),
       updated_at: new Date()
     }));

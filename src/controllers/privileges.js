@@ -102,9 +102,8 @@ const getAllPrivilegesRecords = async(req, res) => {
 const getAllUserPrivilegesRecords = async(req, res) => {
   try {
     const role = req.user.role;
-
+    console.log(role);
     req = matchedData(req);
-
     const privileges = await getAllUserPrivileges(req.id);
 
     res.send({ role, privileges });
@@ -142,8 +141,15 @@ const addUserPrivilegeRecord = async(req, res) => {
 
     // Validar que NO se puede asignar privilegios a superadmin (excepto por otro superadmin)
     const performingUserRole = req.user.role;
-    if (targetUser.role === 'superadmin' && performingUserRole !== 'superadmin') {
-      handleHttpError(res, ERR_SECURITY.FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES, 403);
+    if (
+      targetUser.role === 'superadmin' &&
+      performingUserRole !== 'superadmin'
+    ) {
+      handleHttpError(
+        res,
+        ERR_SECURITY.FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES,
+        403
+      );
       return;
     }
 
@@ -171,8 +177,15 @@ const deleteUserPrivilegeRecord = async(req, res) => {
 
     // Validar que NO se puede eliminar privilegios de superadmin (excepto por otro superadmin)
     const performingUserRole = req.user.role;
-    if (targetUser.role === 'superadmin' && performingUserRole !== 'superadmin') {
-      handleHttpError(res, ERR_SECURITY.FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES, 403);
+    if (
+      targetUser.role === 'superadmin' &&
+      performingUserRole !== 'superadmin'
+    ) {
+      handleHttpError(
+        res,
+        ERR_SECURITY.FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES,
+        403
+      );
       return;
     }
 

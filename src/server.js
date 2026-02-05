@@ -93,6 +93,11 @@ class Server {
   }
 
   routes() {
+    this.app.get('/openapi.json', (req, res) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.send(openApiConfiguration);
+    });
+
     // Health check endpoint
     this.app.get('/health', (req, res) => {
       res.status(200).json({
