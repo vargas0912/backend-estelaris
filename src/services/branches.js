@@ -1,6 +1,15 @@
 const { branches, municipalities } = require('../models/index');
 
-const attributes = ['id', 'name', 'address', 'phone', 'created_at', 'updated_at'];
+const attributes = [
+  'id',
+  'name',
+  'address',
+  'phone',
+  'opening_date',
+  'created_at',
+  'updated_at'
+];
+
 const municipalityAttributes = ['id', 'name'];
 
 const getAllBranches = async() => {
@@ -11,26 +20,27 @@ const getAllBranches = async() => {
         model: municipalities,
         as: 'municipio',
         attributes: municipalityAttributes
-      }]
+      }
+    ]
   });
 
   return result;
 };
 
 const getBranch = async(id) => {
-  const result = await branches.findOne(
-    {
-      attributes,
-      where: {
-        id
-      },
-      include: [
-        {
-          model: municipalities,
-          as: 'municipio',
-          attributes: municipalityAttributes
-        }]
-    });
+  const result = await branches.findOne({
+    attributes,
+    where: {
+      id
+    },
+    include: [
+      {
+        model: municipalities,
+        as: 'municipio',
+        attributes: municipalityAttributes
+      }
+    ]
+  });
 
   return result;
 };
@@ -42,7 +52,13 @@ const addNewBranch = async(body) => {
 };
 
 const updateBranch = async(branchId, req) => {
-  const { name, address, municipality_id: municipalityId, phone } = req;
+  const {
+    name,
+    address,
+    municipality_id: municipalityId,
+    phone,
+    opening_date: openingDate
+  } = req;
 
   const data = await branches.findByPk(branchId);
 
@@ -58,6 +74,7 @@ const updateBranch = async(branchId, req) => {
   data.address = address || data.address;
   data.municipality_id = municipalityId || data.municipality_id;
   data.phone = phone || data.phone;
+  data.opening_date = openingDate || data.opening_date;
 
   const result = await data.save();
   return result;
@@ -78,4 +95,10 @@ const deleteBranch = async(id) => {
   return data;
 };
 
-module.exports = { getAllBranches, getBranch, addNewBranch, updateBranch, deleteBranch };
+module.exports = {
+  getAllBranches,
+  getBranch,
+  addNewBranch,
+  updateBranch,
+  deleteBranch
+};

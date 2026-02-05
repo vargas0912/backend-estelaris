@@ -23,6 +23,7 @@ const branchCreate = {
   name: 'Sucursal de prueba',
   address: 'Calle Test 123',
   phone: '5551234567',
+  opening_date: new Date(),
   municipality_id: 1
 };
 
@@ -38,6 +39,7 @@ const branchUpdate = {
   name: 'Sucursal modificada',
   address: 'Calle Modificada 456',
   phone: '5559876543',
+  opening_date: new Date(),
   municipality_id: 1
 };
 
@@ -67,6 +69,7 @@ const branchCreate2 = {
   name: 'Segunda sucursal de prueba',
   address: 'Avenida Segunda 456',
   phone: '5553333333',
+  opening_date: new Date(),
   municipality_id: 1
 };
 
@@ -99,8 +102,8 @@ const productCreate = {
   description: 'Descripción del producto de prueba',
   short_description: 'Desc corta',
   unit_of_measure: 'piece',
-  cost_price: 50.00,
-  base_price: 100.00,
+  cost_price: 50.0,
+  base_price: 100.0,
   is_active: true,
   is_featured: false
 };
@@ -117,14 +120,14 @@ const productUpdate = {
   sku: 'SKU-TEST-001-UPD',
   name: 'Producto modificado',
   description: 'Descripción modificada',
-  base_price: 150.00
+  base_price: 150.0
 };
 
 const productCreate2 = {
   sku: 'SKU-TEST-002',
   name: 'Segundo producto de prueba',
   description: 'Segunda descripción',
-  base_price: 200.00
+  base_price: 200.0
 };
 
 const productCreateFull = {
@@ -135,7 +138,7 @@ const productCreateFull = {
   short_description: 'Desc corta completa',
   category_id: 1,
   unit_of_measure: 'kg',
-  cost_price: 75.50,
+  cost_price: 75.5,
   base_price: 125.99,
   weight: 2.5,
   dimensions: { length: 30, width: 20, height: 10 },
@@ -149,12 +152,12 @@ const productCreateFull = {
 
 const productCreateNoSku = {
   name: 'Producto sin SKU',
-  base_price: 100.00
+  base_price: 100.0
 };
 
 const productCreateNoName = {
   sku: 'SKU-NO-NAME',
-  base_price: 100.00
+  base_price: 100.0
 };
 
 const productCreateNoPrice = {
@@ -260,7 +263,7 @@ const priceListCreateNoName = {
 const productPriceCreate = {
   product_id: 3,
   price_list_id: 2,
-  price: 100.00,
+  price: 100.0,
   min_quantity: 1
 };
 
@@ -272,32 +275,32 @@ const productPriceCreateEmpty = {
 const productPriceCreateInvalid = {};
 
 const productPriceUpdate = {
-  price: 150.00,
+  price: 150.0,
   min_quantity: 5
 };
 
 const productPriceCreate2 = {
   product_id: 3,
   price_list_id: 3,
-  price: 90.00,
+  price: 90.0,
   min_quantity: 1
 };
 
 const productPriceCreateTiered = {
   product_id: 2,
   price_list_id: 2,
-  price: 85.00,
+  price: 85.0,
   min_quantity: 1
 };
 
 const productPriceCreateNoProduct = {
   price_list_id: 1,
-  price: 100.00
+  price: 100.0
 };
 
 const productPriceCreateNoPriceList = {
   product_id: 1,
-  price: 100.00
+  price: 100.0
 };
 
 const productPriceCreateNoPrice = {
@@ -322,7 +325,7 @@ const supplierCreateInvalid = {};
 const supplierUpdate = {
   name: 'Proveedor modificado S.A.',
   email: 'modificado@test.com',
-  credit_limit: 25000.00
+  credit_limit: 25000.0
 };
 
 const supplierCreate2 = {
@@ -344,7 +347,7 @@ const supplierCreateFull = {
   postal_code: '64000',
   website: 'https://proveedor.com',
   payment_terms: '30 días',
-  credit_limit: 50000.00,
+  credit_limit: 50000.0,
   notes: 'Proveedor preferente',
   is_active: true
 };
@@ -422,7 +425,7 @@ const employeeCreateFull = {
   termination_date: null,
   position_id: 1,
   branch_id: 1,
-  salary: 15000.00,
+  salary: 15000.0,
   emergency_contact_name: 'Juan Pérez',
   emergency_contact_phone: '8113333333',
   notes: 'Empleado de confianza',
