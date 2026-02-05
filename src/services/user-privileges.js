@@ -10,7 +10,8 @@ const getAllUserPrivileges = async(userId) => {
       {
         model: privileges,
         as: 'privileges',
-        attributes: ['name', 'codename']
+        attributes: ['name', 'codename'],
+        required: true // INNER JOIN - solo trae privilegios NO eliminados
       }
     ]
   });
