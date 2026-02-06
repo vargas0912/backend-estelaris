@@ -1,6 +1,6 @@
 const BRANCH = Object.freeze({
   MODULE_NAME: 'branches',
-  VIEW: 'view_branch',
+  VIEW: 'view_branches',
   NAME_VIEW: 'Ver sucursal',
   VIEW_ALL: 'view_branches',
   NAME_ALL: 'Ver sucursales',

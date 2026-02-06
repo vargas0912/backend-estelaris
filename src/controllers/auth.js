@@ -5,6 +5,7 @@ const { users } = require('../models/index');
 const { handleHttpError } = require('../utils/handleErorr');
 const { registerUser, registerSuperAdmin } = require('../services/users');
 const { LOGIN, USER } = require('../constants/errors');
+const { getAllUserPrivileges } = require('../services/user-privileges');
 
 /**
  * This controller is used for register user
@@ -45,6 +46,7 @@ const registerCtrl = async(req, res) => {
  * @param {*} req Request
  * @param {*} res Response
  */
+
 const loginCtrl = async(req, res) => {
   try {
     req = matchedData(req);
@@ -68,8 +70,12 @@ const loginCtrl = async(req, res) => {
       return;
     }
 
+    // AGREGAR ESTO: Cargar privileges del usuario
+    const userPrivileges = await getAllUserPrivileges(user.id);
+    const privilegesCodes = userPrivileges.map((p) => p.privileges.codename);
+
     const sesion = {
-      token: await tokenSign(user),
+      token: await tokenSign(user, privilegesCodes), // <- Pasar privileges aquí
       user
     };
 
@@ -79,5 +85,4 @@ const loginCtrl = async(req, res) => {
     handleHttpError(res, LOGIN.ERR_LOGIN, 400);
   }
 };
-
 module.exports = { registerAdminCtrl, registerCtrl, loginCtrl };

@@ -1,4 +1,5 @@
 const { privileges, userprivileges } = require('../models/index');
+// const { getAllUserPrivileges } = require(' ./services/user-privileges');
 
 const getAllUserPrivileges = async(userId) => {
   const allPrivileges = await userprivileges.findAll({

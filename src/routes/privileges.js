@@ -3,6 +3,7 @@ const router = express.Router();
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
+const checkOwnPrivilegesOrSuperAdmin = require('../middlewares/checkOwnPrivilegesOrSuperAdmin');
 
 const {
   addUserPrivilegeRecord, // UserPrivilege
@@ -271,7 +272,7 @@ router.delete('/:id', [
 router.get('/user/:id', [
   authMidleware,
   validateGetUserAllRecord,
-  checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.CREATE_USER)], getAllUserPrivilegesRecords);
+  checkOwnPrivilegesOrSuperAdmin(PRIVILEGES.VIEW_USER)], getAllUserPrivilegesRecords);
 
 /**
  * Get all user privilege
