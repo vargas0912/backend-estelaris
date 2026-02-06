@@ -5,7 +5,9 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 // Validar que JWT_SECRET esté configurado
 if (!JWT_SECRET) {
-  logger.error('FATAL ERROR: JWT_SECRET is not defined in environment variables');
+  logger.error(
+    'FATAL ERROR: JWT_SECRET is not defined in environment variables'
+  );
   process.exit(1);
 }
 
@@ -14,17 +16,19 @@ if (!JWT_SECRET) {
  * @param {Object} user - Objeto de usuario con id y role
  * @returns {Promise<string>} Token JWT firmado
  */
-const tokenSign = async(user) => {
+const tokenSign = async(user, privileges = []) => {
+  // <- Agregar parámetro privileges
   try {
     const sign = jwt.sign(
       {
         id: user.id,
-        role: user.role
+        role: user.role,
+        privileges // <- Agregar privileges al payload.
       },
       JWT_SECRET,
       {
         expiresIn: '2h',
-        algorithm: 'HS256', // Especificar algoritmo explícitamente para prevenir algorithm confusion attacks
+        algorithm: 'HS256',
         issuer: 'estelaris-api',
         audience: 'estelaris-client'
       }
@@ -32,11 +36,13 @@ const tokenSign = async(user) => {
 
     return sign;
   } catch (error) {
-    logger.error('Error signing JWT token:', { error: error.message, userId: user.id });
+    logger.error('Error signing JWT token:', {
+      error: error.message,
+      userId: user.id
+    });
     throw error;
   }
 };
-
 /**
  * Verifica y decodifica un token JWT
  * @param {String} tokenJwt - Token JWT a verificar

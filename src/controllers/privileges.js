@@ -102,7 +102,7 @@ const getAllPrivilegesRecords = async(req, res) => {
 const getAllUserPrivilegesRecords = async(req, res) => {
   try {
     const role = req.user.role;
-    console.log(role);
+
     req = matchedData(req);
     const privileges = await getAllUserPrivileges(req.id);
 

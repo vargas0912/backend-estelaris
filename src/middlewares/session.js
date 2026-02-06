@@ -12,6 +12,7 @@ const { SESSION } = require('../constants/errors');
  * @param {Next} next
  * @returns
  */
+
 const authMidleware = async(req, res, next) => {
   try {
     if (!req.headers.authorization) {
@@ -51,7 +52,12 @@ const authMidleware = async(req, res, next) => {
       return;
     }
 
-    req.user = user;
+    // CAMBIO: Agregar privileges del JWT al usuario
+    const userPlain = user.toJSON ? user.toJSON() : user; // Convertir Sequelize model a objeto
+    req.user = {
+      ...userPlain,
+      privileges: dataToken.privileges || [] // <- Agregar privileges del JWT
+    };
 
     next();
   } catch (error) {
