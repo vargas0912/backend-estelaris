@@ -74,7 +74,7 @@ router.get('/product/:product_id', [
   searchLimiter,
   authMidleware,
   validateGetByProduct,
-  checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW_BY_PRODUCT)
+  checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW_ALL)
 ], getRecordsByProduct);
 
 /**
@@ -104,7 +104,7 @@ router.get('/branch/:branch_id', [
   searchLimiter,
   authMidleware,
   validateGetByBranch,
-  checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW_BY_BRANCH)
+  checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW_ALL)
 ], getRecordsByBranch);
 
 /**
@@ -134,7 +134,7 @@ router.get('/:id', [
   readLimiter,
   authMidleware,
   validateGetRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW)
+  checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW_ALL)
 ], getRecord);
 
 /**

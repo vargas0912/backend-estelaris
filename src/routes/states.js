@@ -65,6 +65,6 @@ router.get('/', readLimiter, authMidleware, checkRol([ROLE.USER, ROLE.ADMIN], ST
  *        '422':
  *          description: Error de validacion.
  */
-router.get('/:id', readLimiter, authMidleware, validateGetRecord, checkRol([ROLE.USER, ROLE.ADMIN], STATES.VIEW), getRecord);
+router.get('/:id', readLimiter, authMidleware, validateGetRecord, checkRol([ROLE.USER, ROLE.ADMIN], STATES.VIEW_ALL), getRecord);
 
 module.exports = router;

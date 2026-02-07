@@ -121,7 +121,7 @@ router.get(
 router.get(
   '/:id',
   authMiddleware,
-  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.VIEW),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.VIEW_ALL),
   getCampaignValidator,
   handleValidationErrors,
   getCampaign

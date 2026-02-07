@@ -60,7 +60,7 @@ router.get('/:id', [
   readLimiter,
   authMidleware,
   validateGetRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT.VIEW)
+  checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT.VIEW_ALL)
 ], getRecord);
 
 /**
