@@ -61,7 +61,8 @@ describe('User Privileges Service - Unit Tests', () => {
           {
             model: privileges,
             as: 'privileges',
-            attributes: ['name', 'codename']
+            attributes: ['name', 'codename'],
+            required: true
           }
         ]
       });
@@ -84,7 +85,8 @@ describe('User Privileges Service - Unit Tests', () => {
           {
             model: privileges,
             as: 'privileges',
-            attributes: ['name', 'codename']
+            attributes: ['name', 'codename'],
+            required: true
           }
         ]
       });
@@ -128,7 +130,8 @@ describe('User Privileges Service - Unit Tests', () => {
             {
               model: privileges,
               as: 'privileges',
-              attributes: ['name', 'codename']
+              attributes: ['name', 'codename'],
+              required: true
             }
           ]
         })

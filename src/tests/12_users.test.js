@@ -110,7 +110,18 @@ describe('[SECURITY] CRIT-002: Role Hierarchy Validation //api/users/', () => {
       })
       .expect(200);
 
+    const loginResponse = await api
+      .post('/api/auth/login')
+      .send({
+        email: 'test.admin@test.com',
+        password: 'Admin123'
+      })
+      .expect(200);
+
+    adminToken = loginResponse.body.sesion.token;
+
     // Crear otro admin
+    // u
     const response = await api
       .post('/api/auth/registerSuperUser')
       .auth(superadminToken, { type: 'bearer' })
