@@ -1,7 +1,5 @@
 const BRANCH = Object.freeze({
   MODULE_NAME: 'branches',
-  VIEW: 'view_branches',
-  NAME_VIEW: 'Ver sucursal',
   VIEW_ALL: 'view_branches',
   NAME_ALL: 'Ver sucursales',
   ADD: 'create_branch',
@@ -14,8 +12,6 @@ const BRANCH = Object.freeze({
 
 const EMPlOYEE = Object.freeze({
   MODULE_NAME: 'employees',
-  VIEW: 'view_employee',
-  NAME_VIEW: 'Ver empleado',
   VIEW_ALL: 'view_employees',
   NAME_ALL: 'Ver empleados',
   ADD: 'create_employee',
@@ -28,8 +24,6 @@ const EMPlOYEE = Object.freeze({
 
 const PRIVILEGE = Object.freeze({
   MODULE_NAME: 'privileges',
-  VIEW: 'view_privilege',
-  NAME_VIEW: 'Ver privilegio',
   ADD: 'create_privilege',
   NAME_ADD: 'Crear privilegio',
   UPDATE: 'update_privilege',
@@ -48,8 +42,6 @@ const PRIVILEGE = Object.freeze({
 
 const USERS = Object.freeze({
   MODULE_NAME: 'users',
-  VIEW: 'view_user',
-  NAME_VIEW: 'Ver usuario',
   VIEW_ALL: 'view_users',
   NAME_ALL: 'Ver usuarios',
   ADD: 'register_user',
@@ -64,16 +56,14 @@ const USERS = Object.freeze({
 
 const MUNICIPALITIES = Object.freeze({
   MODULE_NAME: 'municipalities',
-  VIEW: 'view_municipality',
-  NAME_VIEW: 'Ver municipio',
+  VIEW_ALL: 'view_municipality',
+  NAME_VIEW: 'Ver municipios',
   VIEW_STATE: 'view_state',
   NAME_VIEW_STATE: 'Ver municipios por estado'
 });
 
 const POSITION = Object.freeze({
   MODULE_NAME: 'positions',
-  VIEW: 'view_position',
-  NAME_VIEW: 'Ver puesto',
   VIEW_ALL: 'view_positions',
   NAME_ALL: 'Ver puestos',
   ADD: 'create_position',
@@ -86,8 +76,6 @@ const POSITION = Object.freeze({
 
 const PRODUCT_CATEGORY = Object.freeze({
   MODULE_NAME: 'productCategories',
-  VIEW: 'view_product_category',
-  NAME_VIEW: 'Ver categoría de producto',
   VIEW_ALL: 'view_product_categories',
   NAME_ALL: 'Ver categorías de productos',
   ADD: 'create_product_category',
@@ -100,8 +88,6 @@ const PRODUCT_CATEGORY = Object.freeze({
 
 const PRODUCT = Object.freeze({
   MODULE_NAME: 'products',
-  VIEW: 'view_product',
-  NAME_VIEW: 'Ver producto',
   VIEW_ALL: 'view_products',
   NAME_ALL: 'Ver productos',
   ADD: 'create_product',
@@ -114,8 +100,6 @@ const PRODUCT = Object.freeze({
 
 const PRODUCT_STOCK = Object.freeze({
   MODULE_NAME: 'productStocks',
-  VIEW: 'view_product_stock',
-  NAME_VIEW: 'Ver inventario de producto',
   VIEW_ALL: 'view_product_stocks',
   NAME_ALL: 'Ver inventarios de productos',
   VIEW_BY_PRODUCT: 'view_stocks_by_product',
@@ -132,8 +116,6 @@ const PRODUCT_STOCK = Object.freeze({
 
 const PRICE_LIST = Object.freeze({
   MODULE_NAME: 'priceLists',
-  VIEW: 'view_price_list',
-  NAME_VIEW: 'Ver lista de precios',
   VIEW_ALL: 'view_price_lists',
   NAME_ALL: 'Ver listas de precios',
   ADD: 'create_price_list',
@@ -146,8 +128,6 @@ const PRICE_LIST = Object.freeze({
 
 const PRODUCT_PRICE = Object.freeze({
   MODULE_NAME: 'productPrices',
-  VIEW: 'view_product_price',
-  NAME_VIEW: 'Ver precio de producto',
   VIEW_ALL: 'view_product_prices',
   NAME_ALL: 'Ver precios de productos',
   VIEW_BY_PRODUCT: 'view_prices_by_product',
@@ -164,8 +144,6 @@ const PRODUCT_PRICE = Object.freeze({
 
 const SUPPLIER = Object.freeze({
   MODULE_NAME: 'suppliers',
-  VIEW: 'view_supplier',
-  NAME_VIEW: 'Ver proveedor',
   VIEW_ALL: 'view_suppliers',
   NAME_ALL: 'Ver proveedores',
   ADD: 'create_supplier',
@@ -178,8 +156,6 @@ const SUPPLIER = Object.freeze({
 
 const CAMPAIGN = Object.freeze({
   MODULE_NAME: 'campaigns',
-  VIEW: 'view_campaign',
-  NAME_VIEW: 'Ver campaña',
   VIEW_ALL: 'view_campaigns',
   NAME_ALL: 'Ver campañas',
   VIEW_ACTIVE: 'view_active_campaigns',
@@ -200,8 +176,6 @@ const CAMPAIGN = Object.freeze({
 
 const CAMPAIGN_PRODUCT = Object.freeze({
   MODULE_NAME: 'campaignProducts',
-  VIEW: 'view_campaign_product',
-  NAME_VIEW: 'Ver producto de campaña',
   VIEW_ALL: 'view_campaign_products',
   NAME_ALL: 'Ver productos de campaña',
   ADD: 'create_campaign_product',
@@ -216,16 +190,12 @@ const CAMPAIGN_PRODUCT = Object.freeze({
 
 const STATES = Object.freeze({
   MODULE_NAME: 'states',
-  VIEW: 'view_state',
-  NAME_VIEW: 'Ver estado',
   VIEW_ALL: 'view_all_states',
   NAME_ALL: 'Ver todos los estados'
 });
 
 const CUSTOMER = Object.freeze({
   MODULE_NAME: 'customers',
-  VIEW: 'view_customer',
-  NAME_VIEW: 'Ver cliente',
   VIEW_ALL: 'view_customers',
   NAME_ALL: 'Ver clientes',
   VIEW_BY_BRANCH: 'view_customers_by_branch',
@@ -244,8 +214,6 @@ const CUSTOMER = Object.freeze({
 
 const CUSTOMER_ADDRESS = Object.freeze({
   MODULE_NAME: 'customerAddresses',
-  VIEW: 'view_customer_address',
-  NAME_VIEW: 'Ver dirección de cliente',
   VIEW_ALL: 'view_customer_addresses',
   NAME_ALL: 'Ver direcciones de cliente',
   ADD: 'create_customer_address',

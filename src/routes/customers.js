@@ -89,7 +89,7 @@ router.get('/:id', [
   readLimiter,
   authMidleware,
   validateGetRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], CUSTOMER.VIEW)
+  checkRol([ROLE.USER, ROLE.ADMIN], CUSTOMER.VIEW_ALL)
 ], getRecord);
 
 /**
@@ -124,7 +124,7 @@ router.get('/branch/:branchId', [
   readLimiter,
   authMidleware,
   validateGetByBranch,
-  checkRol([ROLE.USER, ROLE.ADMIN], CUSTOMER.VIEW_BY_BRANCH)
+  checkRol([ROLE.USER, ROLE.ADMIN], CUSTOMER.VIEW_ALL)
 ], getRecordsByBranch);
 
 /**
@@ -159,7 +159,7 @@ router.get('/municipality/:municipalityId', [
   readLimiter,
   authMidleware,
   validateGetByMunicipality,
-  checkRol([ROLE.USER, ROLE.ADMIN], CUSTOMER.VIEW_BY_MUNICIPALITY)
+  checkRol([ROLE.USER, ROLE.ADMIN], CUSTOMER.VIEW_ALL)
 ], getRecordsByMunicipality);
 
 /**

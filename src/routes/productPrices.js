@@ -74,7 +74,7 @@ router.get('/product/:product_id', [
   searchLimiter,
   authMidleware,
   validateGetByProduct,
-  checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_PRICE.VIEW_BY_PRODUCT)
+  checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_PRICE.VIEW_ALL)
 ], getRecordsByProduct);
 
 /**
@@ -104,7 +104,7 @@ router.get('/priceList/:price_list_id', [
   searchLimiter,
   authMidleware,
   validateGetByPriceList,
-  checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_PRICE.VIEW_BY_PRICE_LIST)
+  checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_PRICE.VIEW_ALL)
 ], getRecordsByPriceList);
 
 /**
@@ -134,7 +134,7 @@ router.get('/:id', [
   readLimiter,
   authMidleware,
   validateGetRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_PRICE.VIEW)
+  checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_PRICE.VIEW_ALL)
 ], getRecord);
 
 /**

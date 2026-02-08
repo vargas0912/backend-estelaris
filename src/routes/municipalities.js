@@ -44,7 +44,7 @@ router.get('/:id', [
   readLimiter,
   authMidleware,
   validateGetRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], MUN.VIEW)], getById);
+  checkRol([ROLE.USER, ROLE.ADMIN], MUN.VIEW_ALL)], getById);
 
 /**
 * Get detail from municipalities
@@ -78,6 +78,6 @@ router.get('/state/:stateId', [
   readLimiter,
   authMidleware,
   validateGetRecordByState,
-  checkRol([ROLE.USER, ROLE.ADMIN], MUN.VIEW_STATE)], getByStateId);
+  checkRol([ROLE.USER, ROLE.ADMIN], MUN.VIEW_ALL)], getByStateId);
 
 module.exports = router;

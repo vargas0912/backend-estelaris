@@ -313,7 +313,7 @@ router.get('/user/:id', [
 router.get('/user/:userid/code/:codename', [
   authMidleware,
   validateGetUserOneRecord,
-  checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.VIEW_USER)], getOneUserPrivilegeRecord);
+  checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.VIEW_ALL)], getOneUserPrivilegeRecord);
 
 /**
  * Register new privilege

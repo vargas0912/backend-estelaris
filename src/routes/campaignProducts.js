@@ -99,7 +99,7 @@ router.get(
 router.get(
   '/:id',
   authMiddleware,
-  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN_PRODUCT.VIEW),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN_PRODUCT.VIEW_ALL),
   getCampaignProductValidator,
   handleValidationErrors,
   getCampaignProduct

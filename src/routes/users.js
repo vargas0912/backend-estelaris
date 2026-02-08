@@ -72,7 +72,7 @@ router.get('/:id', [
   readLimiter,
   authMidleware,
   validateGetUser,
-  checkRol([ROLE.ADMIN, ROLE.SUPERADMIN], USERS.VIEW)
+  checkRol([ROLE.ADMIN, ROLE.SUPERADMIN], USERS.VIEW_ALL)
 ], getRecord);
 
 /**
