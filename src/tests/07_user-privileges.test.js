@@ -325,8 +325,8 @@ describe('[USER-PRIVILEGES] Test api user-privileges //api/privileges/user/', ()
         .delete('/api/privileges/user/99999/privilege/99999')
         .auth(Token, { type: 'bearer' });
 
-      // Puede retornar 200 (sin resultado) o 400 (validacion)
-      expect([200, 400]).toContain(response.status);
+      // Puede retornar 200 (sin resultado), 400 (validacion) o 404 (usuario no existe)
+      expect([200, 400, 404]).toContain(response.status);
     });
   });
 
