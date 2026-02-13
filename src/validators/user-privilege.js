@@ -1,4 +1,4 @@
-const { check } = require('express-validator');
+const { check, param } = require('express-validator');
 
 const validateResults = require('../utils/handleValidator');
 
@@ -14,10 +14,11 @@ const validateGetUserAllRecord = [
 ];
 
 const validateGetUserOneRecord = [
-  check(FIELDS.USERID)
+  param('userid')
     .exists().withMessage(USER_VALIDATORS.ID_NOT_EXISTS).bail()
-    .notEmpty().withMessage(USER_VALIDATORS.ID_IS_EMPTY).bail(),
-  check(FIELDS.CODENAME)
+    .notEmpty().withMessage(USER_VALIDATORS.ID_IS_EMPTY).bail()
+    .isInt().withMessage(USER_VALIDATORS.ID_MUST_BE_NUMERIC).bail(),
+  param(FIELDS.CODENAME)
     .exists().withMessage(USER_VALIDATORS.CODE_NOT_EXISTS).bail()
     .notEmpty().withMessage(USER_VALIDATORS.CODE_IS_EMPTY).bail(),
   (req, res, next) => {
@@ -40,12 +41,14 @@ const validateAddUserRecord = [
 ];
 
 const validateDeleteRecord = [
-  check(FIELDS.USERID)
+  param('userid')
     .exists().withMessage(USER_VALIDATORS.USER_ID_NOT_EXISTS).bail()
-    .notEmpty().withMessage(USER_VALIDATORS.USER_ID_IS_EMPTY).bail(),
-  check(FIELDS.PID)
+    .notEmpty().withMessage(USER_VALIDATORS.USER_ID_IS_EMPTY).bail()
+    .isInt().withMessage(USER_VALIDATORS.ID_MUST_BE_NUMERIC).bail(),
+  param(FIELDS.PID)
     .exists().withMessage(USER_VALIDATORS.PRIVILEGE_ID_NOT_EXISTS).bail()
-    .notEmpty().withMessage(USER_VALIDATORS.PRIVILEGE_ID_IS_EMPTY).bail(),
+    .notEmpty().withMessage(USER_VALIDATORS.PRIVILEGE_ID_IS_EMPTY).bail()
+    .isInt().withMessage(USER_VALIDATORS.ID_MUST_BE_NUMERIC).bail(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }
