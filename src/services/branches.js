@@ -19,7 +19,8 @@ const getAllBranches = async() => {
       {
         model: municipalities,
         as: 'municipio',
-        attributes: municipalityAttributes
+        attributes: municipalityAttributes,
+        required: true
       }
     ]
   });
@@ -37,7 +38,8 @@ const getBranch = async(id) => {
       {
         model: municipalities,
         as: 'municipio',
-        attributes: municipalityAttributes
+        attributes: municipalityAttributes,
+        required: true
       }
     ]
   });

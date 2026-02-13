@@ -57,6 +57,8 @@ const valiAddSupplier = [
   check('is_active')
     .optional()
     .isBoolean().withMessage(SUPPLIERS_VALIDATORS.IS_ACTIVE_NOT_BOOLEAN),
+  check('notes')
+    .optional(),
   (req, res, next) => validateResults(req, res, next)
 ];
 
@@ -109,6 +111,8 @@ const valiUpdateSupplier = [
   check('is_active')
     .optional()
     .isBoolean().withMessage(SUPPLIERS_VALIDATORS.IS_ACTIVE_NOT_BOOLEAN),
+  check('notes')
+    .optional(),
   (req, res, next) => validateResults(req, res, next)
 ];
 
