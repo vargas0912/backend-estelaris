@@ -2,11 +2,24 @@ const fecha = new Date();
 const { BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD, CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR } = require('../../../constants/modules');
 
 const data = [
+  // Estados
+  { name: 'Ver todos los estados', codeName: 'view_all_states', module: 'states', created_at: fecha, updated_at: fecha },
+
+  // Municipios
+  { name: MUN.NAME_VIEW, codeName: MUN.VIEW_ALL, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: MUN.NAME_VIEW_STATE, codeName: MUN.NAME_VIEW_STATE, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
   // Sucursales
   { name: BR.NAME_ADD, codeName: BR.ADD, module: BR.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: BR.NAME_ALL, codeName: BR.VIEW_ALL, module: BR.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: BR.NAME_UPDATE, codeName: BR.UPDATE, module: BR.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: BR.NAME_DELETE, codeName: BR.DELETE, module: BR.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // proveedores
+  { name: 'Ver proveedores', codeName: 'view_suppliers', module: 'suppliers', created_at: fecha, updated_at: fecha },
+  { name: 'Ver proveedores', codeName: 'view_suppliers', module: 'suppliers', created_at: fecha, updated_at: fecha },
+  { name: 'Ver proveedores', codeName: 'view_suppliers', module: 'suppliers', created_at: fecha, updated_at: fecha },
+  { name: 'Ver proveedores', codeName: 'view_suppliers', module: 'suppliers', created_at: fecha, updated_at: fecha },
 
   // Empleados
   { name: EMP.NAME_ALL, codeName: EMP.VIEW_ALL, module: EMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
@@ -50,13 +63,6 @@ const data = [
   { name: CUSTADDR.NAME_ADD, codeName: CUSTADDR.ADD, module: CUSTADDR.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: CUSTADDR.NAME_UPDATE, codeName: CUSTADDR.UPDATE, module: CUSTADDR.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: CUSTADDR.NAME_DELETE, codeName: CUSTADDR.DELETE, module: CUSTADDR.MODULE_NAME, created_at: fecha, updated_at: fecha },
-
-  // Municipios
-  { name: MUN.NAME_VIEW, codeName: MUN.VIEW, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: MUN.NAME_VIEW_STATE, codeName: MUN.NAME_VIEW_STATE, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },
-
-  // Estados
-  { name: 'Ver todos los estados', codeName: 'view_all_states', module: 'states', created_at: fecha, updated_at: fecha },
 
   // Campañas
   { name: CMP.NAME_ALL, codeName: CMP.VIEW_ALL, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },

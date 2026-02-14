@@ -16,14 +16,12 @@ if (!JWT_SECRET) {
  * @param {Object} user - Objeto de usuario con id y role
  * @returns {Promise<string>} Token JWT firmado
  */
-const tokenSign = async(user, privileges = []) => {
-  // <- Agregar parámetro privileges
+const tokenSign = async(user) => {
   try {
     const sign = jwt.sign(
       {
         id: user.id,
-        role: user.role,
-        privileges // <- Agregar privileges al payload.
+        role: user.role
       },
       JWT_SECRET,
       {
