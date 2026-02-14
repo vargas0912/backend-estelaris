@@ -1,3 +1,4 @@
+const { getOneUserPrivilege } = require('../services/user-privileges');
 const { handleHttpError } = require('../utils/handleErorr');
 
 const { ERR_SECURITY } = require('../constants/errors');
@@ -23,10 +24,9 @@ const checkRol = (roles, codename) => async(req, res, next) => {
     }
 
     if (user.role !== ROLE.SUPERADMIN) {
-      // CAMBIO: Verificar privileges del JWT en lugar de consultar DB
-      const hasPrivilege = user.privileges && user.privileges.includes(codename);
+      const privilege = await getOneUserPrivilege(user.id, codename);
 
-      if (!hasPrivilege) {
+      if (!privilege) {
         handleHttpError(res, ERR_SECURITY.NOT_PRIVILEGE, 403);
         return;
       }

@@ -91,6 +91,51 @@ npx sequelize-cli db:seed:all
 npx sequelize-cli db:seed:all --seeders-path ./src/database/seeders/test_files
 ```
 
+### Inicializacion de base de datos en produccion
+
+Para inicializar la base de datos en un entorno de produccion por primera vez (o cuando se requiera un reset completo), ejecutar el siguiente comando. **Esta operacion es destructiva: elimina la base de datos existente y la recrea desde cero.**
+
+```bash
+npx sequelize-cli db:drop && \
+npx sequelize-cli db:create && \
+npx sequelize-cli db:migrate && \
+npx sequelize-cli db:seed:all
+```
+
+Este comando:
+1. Elimina la base de datos configurada en `NODE_ENV=production`
+2. La recrea limpia
+3. Ejecuta todas las migraciones en orden cronologico
+4. Ejecuta todos los seeders en orden cronologico (garantizado por los timestamps en los nombres de archivo)
+
+#### Datos de produccion (migracion desde SQL Server)
+
+Los seeders de produccion leen los datos desde los archivos en `src/database/seeders/json_files/`. Estos archivos contienen los datos exportados del sistema actual que corre en SQL Server.
+
+Antes de ejecutar el comando de inicializacion, actualizar los archivos `.js` y `.json` en ese directorio con los datos exportados desde SQL Server:
+
+```
+src/database/seeders/json_files/
+├── states.js             # Estados
+├── municipalities.js     # Municipios (depende de states)
+├── branches.js           # Sucursales (depende de municipalities)
+├── users.js              # Usuarios
+├── privileges.js         # Privilegios del sistema
+├── user-privileges.js    # Asignacion de privilegios
+├── positions.js          # Puestos
+├── employees.js          # Empleados
+├── product-categories.js # Categorias de productos
+├── products.js           # Productos
+├── product-stocks.js     # Stock por sucursal
+├── price-lists.js        # Listas de precios
+├── product-prices.js     # Precios por lista
+├── suppliers.js          # Proveedores
+├── campaigns.js          # Campanias
+└── campaign-products.js  # Productos por campania
+```
+
+> **Nota:** No usar `db:seed:undo:all` antes de este comando. Si la tabla `SequelizeData` tiene registros de seeders de test, el undo fallara porque esos archivos viven en `test_files/` y no en el path por defecto. El `db:drop` resuelve esto directamente.
+
 ## Estructura del proyecto
 
 ```

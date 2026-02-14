@@ -52,12 +52,7 @@ const authMidleware = async(req, res, next) => {
       return;
     }
 
-    // CAMBIO: Agregar privileges del JWT al usuario
-    const userPlain = user.toJSON ? user.toJSON() : user; // Convertir Sequelize model a objeto
-    req.user = {
-      ...userPlain,
-      privileges: dataToken.privileges || [] // <- Agregar privileges del JWT
-    };
+    req.user = user;
 
     next();
   } catch (error) {
