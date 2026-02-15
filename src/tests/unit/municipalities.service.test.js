@@ -59,7 +59,8 @@ describe('Municipalities Service - Unit Tests', () => {
           {
             model: states,
             as: 'estado',
-            attributes: ['id', 'name']
+            attributes: ['id', 'name'],
+            required: true
           }
         ]
       });
@@ -82,7 +83,8 @@ describe('Municipalities Service - Unit Tests', () => {
           {
             model: states,
             as: 'estado',
-            attributes: ['id', 'name']
+            attributes: ['id', 'name'],
+            required: true
           }
         ]
       });
@@ -126,7 +128,8 @@ describe('Municipalities Service - Unit Tests', () => {
             {
               model: states,
               as: 'estado',
-              attributes: ['id', 'name']
+              attributes: ['id', 'name'],
+              required: true
             }
           ]
         })
@@ -226,7 +229,8 @@ describe('Municipalities Service - Unit Tests', () => {
           {
             model: states,
             as: 'estado',
-            attributes: ['id', 'name']
+            attributes: ['id', 'name'],
+            required: true
           }
         ]
       });
@@ -248,7 +252,8 @@ describe('Municipalities Service - Unit Tests', () => {
           {
             model: states,
             as: 'estado',
-            attributes: ['id', 'name']
+            attributes: ['id', 'name'],
+            required: true
           }
         ]
       });
@@ -292,7 +297,8 @@ describe('Municipalities Service - Unit Tests', () => {
             {
               model: states,
               as: 'estado',
-              attributes: ['id', 'name']
+              attributes: ['id', 'name'],
+              required: true
             }
           ]
         })
