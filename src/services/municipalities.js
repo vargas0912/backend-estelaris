@@ -13,7 +13,8 @@ const getMunicipalitiesByStateId = async(stateId) => {
       {
         model: states,
         as: 'estado',
-        attributes: stateAttributes
+        attributes: stateAttributes,
+        required: true
       }]
   });
 
@@ -31,7 +32,8 @@ const getMunicipality = async(id) => {
         {
           model: states,
           as: 'estado',
-          attributes: stateAttributes
+          attributes: stateAttributes,
+          required: true
         }]
     });
 
