@@ -75,14 +75,14 @@ const POSITION = Object.freeze({
 });
 
 const PRODUCT_CATEGORY = Object.freeze({
-  MODULE_NAME: 'productCategories',
-  VIEW_ALL: 'view_product_categories',
+  MODULE_NAME: 'categories',
+  VIEW_ALL: 'view_categories',
   NAME_ALL: 'Ver categorías de productos',
-  ADD: 'create_product_category',
+  ADD: 'create_category',
   NAME_ADD: 'Crear categoría de producto',
-  UPDATE: 'update_product_category',
+  UPDATE: 'update_category',
   NAME_UPDATE: 'Modificar categoría de producto',
-  DELETE: 'delete_product_category',
+  DELETE: 'delete_category',
   NAME_DELETE: 'Eliminar categoría de producto'
 });
 

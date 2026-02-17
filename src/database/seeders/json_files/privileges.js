@@ -1,5 +1,5 @@
 const fecha = new Date();
-const { BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD, CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR } = require('../../../constants/modules');
+const { BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD, CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP } = require('../../../constants/modules');
 
 const data = [
   // Estados
@@ -44,10 +44,10 @@ const data = [
   { name: USR.NAME_CREATE_SUPERADMIN, codeName: USR.CREATE_SUPERADMIN, module: USR.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Categorias de producto
-  { name: 'Ver categorias', codeName: 'view_categories', module: 'categories', created_at: fecha, updated_at: fecha },
-  { name: 'Crear categoria', codeName: 'create_category', module: 'categories', created_at: fecha, updated_at: fecha },
-  { name: 'Editar categoria', codeName: 'update_category', module: 'categories', created_at: fecha, updated_at: fecha },
-  { name: 'Eliminar categoria', codeName: 'delete_category', module: 'categories', created_at: fecha, updated_at: fecha },
+  { name: CATP.NAME_ALL, codeName: CATP.VIEW_ALL, module: CATP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CATP.NAME_ADD, codeName: CATP.ADD, module: CATP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CATP.NAME_UPDATE, codeName: CATP.UPDATE, module: CATP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CATP.NAME_DELETE, codeName: CATP.DELETE, module: CATP.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Clientes
   { name: CUST.NAME_ALL, codeName: CUST.VIEW_ALL, module: CUST.MODULE_NAME, created_at: fecha, updated_at: fecha },
