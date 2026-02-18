@@ -11,12 +11,14 @@ const getAllEmployees = async() => {
       {
         model: positions,
         as: 'position',
-        attributes: positionAttributes
+        attributes: positionAttributes,
+        required: true
       },
       {
         model: branches,
         as: 'branch',
-        attributes: branchAttributes
+        attributes: branchAttributes,
+        required: true
       }
     ]
   });
@@ -34,12 +36,14 @@ const getEmployee = async(id) => {
       {
         model: positions,
         as: 'position',
-        attributes: positionAttributes
+        attributes: positionAttributes,
+        required: true
       },
       {
         model: branches,
         as: 'branch',
-        attributes: branchAttributes
+        attributes: branchAttributes,
+        required: true
       }
     ]
   });
