@@ -16,12 +16,14 @@ const getAllAddresses = async() => {
       {
         model: customers,
         as: 'customer',
-        attributes: customerAttributes
+        attributes: customerAttributes,
+        required: true
       },
       {
         model: municipalities,
         as: 'municipality',
-        attributes: municipalityAttributes
+        attributes: municipalityAttributes,
+        required: true
       }
     ]
   });
@@ -37,12 +39,14 @@ const getAddress = async(id) => {
       {
         model: customers,
         as: 'customer',
-        attributes: customerAttributes
+        attributes: customerAttributes,
+        required: true
       },
       {
         model: municipalities,
         as: 'municipality',
-        attributes: municipalityAttributes
+        attributes: municipalityAttributes,
+        required: true
       }
     ]
   });
@@ -58,7 +62,8 @@ const getAddressesByCustomer = async(customerId) => {
       {
         model: municipalities,
         as: 'municipality',
-        attributes: municipalityAttributes
+        attributes: municipalityAttributes,
+        required: true
       }
     ],
     order: [

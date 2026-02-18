@@ -84,7 +84,8 @@ const getCustomersByBranch = async(branchId) => {
       {
         model: branches,
         as: 'branch',
-        attributes: branchAttributes
+        attributes: branchAttributes,
+        required: true
       }
     ]
   });
@@ -100,7 +101,8 @@ const getCustomersByMunicipality = async(municipalityId) => {
       {
         model: municipalities,
         as: 'municipality',
-        attributes: municipalityAttributes
+        attributes: municipalityAttributes,
+        required: true
       },
       {
         model: branches,
