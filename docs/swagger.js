@@ -22,6 +22,12 @@ const swaggerDefinition = {
       bearerAuth: {
         type: 'http',
         scheme: 'bearer'
+      },
+      branchHeader: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'X-Branch-ID',
+        description: 'ID de la sucursal activa. Requerido en endpoints transaccionales (inventarios, empleados) para usuarios no superadmin.'
       }
     },
     schemas: {
@@ -744,6 +750,28 @@ const swaggerDefinition = {
           discount_value_override: {
             type: 'number',
             format: 'decimal'
+          },
+          created_at: {
+            type: 'string',
+            format: 'date-time'
+          },
+          updated_at: {
+            type: 'string',
+            format: 'date-time'
+          }
+        }
+      },
+      userBranches: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'integer'
+          },
+          user_id: {
+            type: 'integer'
+          },
+          branch_id: {
+            type: 'integer'
           },
           created_at: {
             type: 'string',
