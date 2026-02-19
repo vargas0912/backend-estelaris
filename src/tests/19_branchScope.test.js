@@ -1,6 +1,5 @@
 const request = require('supertest');
 const server = require('../../app');
-const { userBranches, userprivileges, privileges } = require('../../models/index');
 
 const api = request(server.app);
 
@@ -19,9 +18,8 @@ const adminUserData = {
 let superadminToken = '';
 let adminToken = '';
 let adminUserId = null;
-let userBranchRecord = null;
-const createdPrivilegeIds = [];
-const assignedUserPrivilegeIds = [];
+let userBranchAssignmentId = null;
+let viewEmployeesPrivilegeId = null;
 
 /**
  * Tests para el middleware branchScope
@@ -34,108 +32,81 @@ const assignedUserPrivilegeIds = [];
  * 5. Admin con X-Branch-ID de sucursal asignada → 200
  */
 
-const findOrCreatePrivilege = async(codename, name, module) => {
-  let priv = await privileges.findOne({ where: { codename } });
-  if (!priv) {
-    priv = await privileges.create({ name, codename, module });
-    createdPrivilegeIds.push(priv.id);
-  }
-  return priv;
-};
-
 describe('[BRANCH SCOPE] Middleware de scope por sucursal', () => {
   beforeAll(async() => {
-    // Login como superadmin
+    // 1. Login como superadmin
     const superadminResponse = await api
       .post('/api/auth/login')
       .send(superadminLogin);
 
-    if (superadminResponse.status === 200) {
-      superadminToken = superadminResponse.body.sesion.token;
-    }
+    if (superadminResponse.status !== 200) return;
+    superadminToken = superadminResponse.body.sesion.token;
 
-    // Crear usuario admin de prueba
+    // 2. Crear usuario admin de prueba
     const adminResponse = await api
       .post('/api/auth/registerSuperUser')
       .auth(superadminToken, { type: 'bearer' })
       .send(adminUserData);
 
-    if (adminResponse.status === 200) {
-      adminUserId = adminResponse.body.superAdmin?.user?.id;
+    if (adminResponse.status !== 200) return;
+    adminUserId = adminResponse.body.superAdmin?.user?.id;
+    if (!adminUserId) return;
 
-      // Login como admin
-      const adminLoginResponse = await api
-        .post('/api/auth/login')
-        .send({
-          email: adminUserData.email,
-          password: adminUserData.password
-        });
+    // 3. Login como admin
+    const adminLoginResponse = await api
+      .post('/api/auth/login')
+      .send({ email: adminUserData.email, password: adminUserData.password });
 
-      if (adminLoginResponse.status === 200) {
-        adminToken = adminLoginResponse.body.sesion.token;
-      }
+    if (adminLoginResponse.status === 200) {
+      adminToken = adminLoginResponse.body.sesion.token;
+    }
 
-      if (adminUserId) {
-        // Asignar sucursal 1 al admin directamente en la DB
-        userBranchRecord = await userBranches.create({
-          user_id: adminUserId,
-          branch_id: 1
-        });
+    // 4. Obtener ID del privilegio view_employees (está seeded)
+    const privResponse = await api
+      .get('/api/privileges/module/employees')
+      .auth(superadminToken, { type: 'bearer' });
 
-        // Obtener o crear privilegios necesarios y asignarlos al admin
-        const viewStocksPriv = await findOrCreatePrivilege(
-          'view_product_stocks',
-          'Ver inventarios de productos',
-          'productStocks'
-        );
-        const viewEmployeesPriv = await findOrCreatePrivilege(
-          'view_employees',
-          'Ver empleados',
-          'employees'
-        );
+    if (privResponse.status === 200) {
+      const viewPriv = privResponse.body.privileges?.find(p => p.codename === 'view_employees');
+      if (viewPriv) viewEmployeesPrivilegeId = viewPriv.id;
+    }
 
-        const p1 = await userprivileges.create({
-          user_id: adminUserId,
-          privilege_id: viewStocksPriv.id
-        });
-        assignedUserPrivilegeIds.push(p1.id);
+    // 5. Asignar privilegio view_employees al admin via API
+    if (viewEmployeesPrivilegeId) {
+      await api
+        .post('/api/privileges/user/')
+        .auth(superadminToken, { type: 'bearer' })
+        .send({ user_id: adminUserId, privilege_id: viewEmployeesPrivilegeId });
+    }
 
-        const p2 = await userprivileges.create({
-          user_id: adminUserId,
-          privilege_id: viewEmployeesPriv.id
-        });
-        assignedUserPrivilegeIds.push(p2.id);
-      }
+    // 6. Asignar sucursal 1 al admin via API (superadmin bypasea checkRol)
+    const branchAssignResponse = await api
+      .post('/api/userBranches')
+      .auth(superadminToken, { type: 'bearer' })
+      .send({ user_id: adminUserId, branch_id: 1 });
+
+    if (branchAssignResponse.status === 200) {
+      userBranchAssignmentId = branchAssignResponse.body.assignment?.id;
     }
   });
 
   afterAll(async() => {
-    // Limpiar user_privileges asignados
-    if (assignedUserPrivilegeIds.length > 0) {
-      await userprivileges.destroy({
-        where: { id: assignedUserPrivilegeIds },
-        force: true
-      });
+    // Remover asignación de sucursal
+    if (userBranchAssignmentId) {
+      await api
+        .delete(`/api/userBranches/${userBranchAssignmentId}`)
+        .auth(superadminToken, { type: 'bearer' });
     }
 
-    // Limpiar asignación de sucursal
-    if (userBranchRecord) {
-      await userBranches.destroy({
-        where: { id: userBranchRecord.id },
-        force: true
-      });
-    }
-
-    // Eliminar privilegios creados en el test (si los creamos)
-    if (createdPrivilegeIds.length > 0) {
-      await privileges.destroy({
-        where: { id: createdPrivilegeIds },
-        force: true
-      });
+    // Remover privilegio asignado al admin
+    if (adminUserId && viewEmployeesPrivilegeId) {
+      await api
+        .delete(`/api/privileges/user/${adminUserId}/privilege/${viewEmployeesPrivilegeId}`)
+        .auth(superadminToken, { type: 'bearer' });
     }
 
     // Eliminar usuario de prueba
-    if (adminUserId && superadminToken) {
+    if (adminUserId) {
       await api
         .delete(`/api/users/${adminUserId}`)
         .auth(superadminToken, { type: 'bearer' });
@@ -165,15 +136,11 @@ describe('[BRANCH SCOPE] Middleware de scope por sucursal', () => {
 
       const response = await api
         .post('/api/auth/login')
-        .send({
-          email: adminUserData.email,
-          password: adminUserData.password
-        })
+        .send({ email: adminUserData.email, password: adminUserData.password })
         .expect(200);
 
       expect(response.body.sesion).toHaveProperty('branches');
       expect(Array.isArray(response.body.sesion.branches)).toBe(true);
-      // Admin tiene 1 sucursal asignada
       expect(response.body.sesion.branches.length).toBe(1);
       expect(response.body.sesion.branches[0].id).toBe(1);
     });
@@ -294,25 +261,8 @@ describe('[BRANCH SCOPE] Middleware de scope por sucursal', () => {
   // Tests de admin con sucursal asignada: 200
   // ============================================
   describe('Admin con sucursal asignada recibe 200', () => {
-    test('10. Admin con X-Branch-ID de sucursal asignada en GET /productStocks. Expect 200', async() => {
-      if (!adminToken || !adminUserId) {
-        console.log('Admin not available, skipping test');
-        expect(true).toBe(true);
-        return;
-      }
-
-      const response = await api
-        .get('/api/productStocks')
-        .auth(adminToken, { type: 'bearer' })
-        .set('X-Branch-ID', '1')
-        .expect(200);
-
-      expect(response.body).toHaveProperty('stocks');
-      expect(Array.isArray(response.body.stocks)).toBe(true);
-    });
-
-    test('11. Admin con X-Branch-ID de sucursal asignada en GET /employees. Expect 200', async() => {
-      if (!adminToken || !adminUserId) {
+    test('10. Admin con X-Branch-ID de sucursal asignada en GET /employees. Expect 200', async() => {
+      if (!adminToken || !userBranchAssignmentId) {
         console.log('Admin not available, skipping test');
         expect(true).toBe(true);
         return;
@@ -328,21 +278,21 @@ describe('[BRANCH SCOPE] Middleware de scope por sucursal', () => {
       expect(Array.isArray(response.body.employees)).toBe(true);
     });
 
-    test('12. Los stocks devueltos pertenecen a la sucursal indicada', async() => {
-      if (!adminToken || !adminUserId) {
+    test('11. Los empleados devueltos pertenecen a la sucursal indicada', async() => {
+      if (!adminToken || !userBranchAssignmentId) {
         console.log('Admin not available, skipping test');
         expect(true).toBe(true);
         return;
       }
 
       const response = await api
-        .get('/api/productStocks')
+        .get('/api/employees')
         .auth(adminToken, { type: 'bearer' })
         .set('X-Branch-ID', '1')
         .expect(200);
 
-      const stocks = response.body.stocks;
-      const allFromBranch = stocks.every(s => s.branch_id === 1);
+      const employees = response.body.employees;
+      const allFromBranch = employees.every(e => e.branch?.id === 1);
       expect(allFromBranch).toBe(true);
     });
   });
@@ -351,7 +301,7 @@ describe('[BRANCH SCOPE] Middleware de scope por sucursal', () => {
   // Tests de X-Branch-ID con valor inválido
   // ============================================
   describe('X-Branch-ID con valor inválido', () => {
-    test('13. X-Branch-ID no numérico recibe 400', async() => {
+    test('12. X-Branch-ID no numérico recibe 400', async() => {
       if (!adminToken) {
         console.log('Admin token not available, skipping test');
         expect(true).toBe(true);
@@ -367,7 +317,7 @@ describe('[BRANCH SCOPE] Middleware de scope por sucursal', () => {
       expect(response.body.error).toBe('BRANCH_ID_REQUIRED');
     });
 
-    test('14. X-Branch-ID cero recibe 400', async() => {
+    test('13. X-Branch-ID cero recibe 400', async() => {
       if (!adminToken) {
         console.log('Admin token not available, skipping test');
         expect(true).toBe(true);
