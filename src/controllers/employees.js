@@ -10,7 +10,7 @@ const { getAllEmployees, getEmployee, addNewEmployee, updateEmployee, deleteEmpl
  */
 const getRecords = async(req, res) => {
   try {
-    const employees = await getAllEmployees();
+    const employees = await getAllEmployees(req.branchId);
 
     res.send({ employees });
   } catch (error) {

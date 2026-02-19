@@ -4,6 +4,7 @@ const router = express.Router();
 const { validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../validators/employees');
 
 const authMidleware = require('../middlewares/session');
+const branchScope = require('../middlewares/branchScope');
 const checkRol = require('../middlewares/rol');
 const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
@@ -30,6 +31,7 @@ const { ROLE } = require('../constants/roles');
 router.get('/', [
   readLimiter,
   authMidleware,
+  branchScope,
   checkRol([ROLE.USER, ROLE.ADMIN], EMPlOYEE.VIEW_ALL)
 ], getRecords);
 
@@ -59,6 +61,7 @@ router.get('/', [
 router.get('/:id', [
   readLimiter,
   authMidleware,
+  branchScope,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], EMPlOYEE.VIEW_ALL)
 ], getRecord);
@@ -103,6 +106,7 @@ router.get('/:id', [
 router.post('/', [
   writeLimiter,
   authMidleware,
+  branchScope,
   valiAddRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], EMPlOYEE.ADD)
 ], addRecord);
@@ -154,6 +158,7 @@ router.post('/', [
 router.put('/:id', [
   writeLimiter,
   authMidleware,
+  branchScope,
   valiUpdateRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], EMPlOYEE.UPDATE)
 ], updateRecord);
@@ -186,6 +191,7 @@ router.put('/:id', [
 router.delete('/:id', [
   deleteLimiter,
   authMidleware,
+  branchScope,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], EMPlOYEE.DELETE)
 ], deleteRecord);

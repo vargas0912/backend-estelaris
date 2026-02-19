@@ -18,7 +18,7 @@ const {
  */
 const getRecords = async(req, res) => {
   try {
-    const stocks = await getAllProductStocks();
+    const stocks = await getAllProductStocks(req.branchId);
 
     res.send({ stocks });
   } catch (error) {

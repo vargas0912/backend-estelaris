@@ -10,6 +10,7 @@ const {
 } = require('../validators/productStocks');
 
 const authMidleware = require('../middlewares/session');
+const branchScope = require('../middlewares/branchScope');
 const checkRol = require('../middlewares/rol');
 const { readLimiter, writeLimiter, deleteLimiter, searchLimiter } = require('../middlewares/rateLimiters');
 
@@ -44,6 +45,7 @@ const { ROLE } = require('../constants/roles');
 router.get('/', [
   readLimiter,
   authMidleware,
+  branchScope,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW_ALL)
 ], getRecords);
 
@@ -73,6 +75,7 @@ router.get('/', [
 router.get('/product/:product_id', [
   searchLimiter,
   authMidleware,
+  branchScope,
   validateGetByProduct,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW_ALL)
 ], getRecordsByProduct);
@@ -103,6 +106,7 @@ router.get('/product/:product_id', [
 router.get('/branch/:branch_id', [
   searchLimiter,
   authMidleware,
+  branchScope,
   validateGetByBranch,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW_ALL)
 ], getRecordsByBranch);
@@ -133,6 +137,7 @@ router.get('/branch/:branch_id', [
 router.get('/:id', [
   readLimiter,
   authMidleware,
+  branchScope,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW_ALL)
 ], getRecord);
@@ -190,6 +195,7 @@ router.get('/:id', [
 router.post('/', [
   writeLimiter,
   authMidleware,
+  branchScope,
   valiAddRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.ADD)
 ], addRecord);
@@ -240,6 +246,7 @@ router.post('/', [
 router.put('/:id', [
   writeLimiter,
   authMidleware,
+  branchScope,
   valiUpdateRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.UPDATE)
 ], updateRecord);
@@ -272,6 +279,7 @@ router.put('/:id', [
 router.delete('/:id', [
   deleteLimiter,
   authMidleware,
+  branchScope,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.DELETE)
 ], deleteRecord);

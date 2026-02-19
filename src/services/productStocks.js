@@ -16,9 +16,12 @@ const attributes = [
 const productAttributes = ['id', 'sku', 'name'];
 const branchAttributes = ['id', 'name'];
 
-const getAllProductStocks = async() => {
+const getAllProductStocks = async(branchId = null) => {
+  const where = branchId !== null ? { branch_id: branchId } : {};
+
   const result = await productStocks.findAll({
     attributes,
+    where,
     include: [
       {
         model: products,

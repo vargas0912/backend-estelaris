@@ -4,9 +4,12 @@ const attributes = ['id', 'name', 'email', 'phone', 'hire_date', 'active', 'crea
 const positionAttributes = ['id', 'name'];
 const branchAttributes = ['id', 'name'];
 
-const getAllEmployees = async() => {
+const getAllEmployees = async(branchId = null) => {
+  const where = branchId !== null ? { branch_id: branchId } : {};
+
   const result = await employees.findAll({
     attributes,
+    where,
     include: [
       {
         model: positions,
