@@ -30,12 +30,6 @@ const validateCreate = [
     .exists().withMessage(CUSTOMER_ADDRESSES_VALIDATORS.POSTAL_CODE_REQUIRED).bail()
     .notEmpty().withMessage(CUSTOMER_ADDRESSES_VALIDATORS.POSTAL_CODE_REQUIRED).bail()
     .isLength({ min: 5, max: 10 }).withMessage(CUSTOMER_ADDRESSES_VALIDATORS.POSTAL_CODE_LENGTH),
-  check('city')
-    .exists().withMessage(CUSTOMER_ADDRESSES_VALIDATORS.CITY_REQUIRED).bail()
-    .notEmpty().withMessage(CUSTOMER_ADDRESSES_VALIDATORS.CITY_REQUIRED),
-  check('state')
-    .exists().withMessage(CUSTOMER_ADDRESSES_VALIDATORS.STATE_REQUIRED).bail()
-    .notEmpty().withMessage(CUSTOMER_ADDRESSES_VALIDATORS.STATE_REQUIRED),
   check('country')
     .optional()
     .notEmpty().withMessage(CUSTOMER_ADDRESSES_VALIDATORS.COUNTRY_REQUIRED),
@@ -68,12 +62,6 @@ const validateUpdate = [
     .optional()
     .notEmpty().withMessage(CUSTOMER_ADDRESSES_VALIDATORS.POSTAL_CODE_REQUIRED).bail()
     .isLength({ min: 5, max: 10 }).withMessage(CUSTOMER_ADDRESSES_VALIDATORS.POSTAL_CODE_LENGTH),
-  check('city')
-    .optional()
-    .notEmpty().withMessage(CUSTOMER_ADDRESSES_VALIDATORS.CITY_REQUIRED),
-  check('state')
-    .optional()
-    .notEmpty().withMessage(CUSTOMER_ADDRESSES_VALIDATORS.STATE_REQUIRED),
   check('country')
     .optional()
     .notEmpty().withMessage(CUSTOMER_ADDRESSES_VALIDATORS.COUNTRY_REQUIRED),

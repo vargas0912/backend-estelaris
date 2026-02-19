@@ -2,8 +2,7 @@ const { customerAddresses, customers, municipalities } = require('../models/inde
 
 const attributes = [
   'id', 'customer_id', 'address_type', 'street', 'neighborhood', 'postal_code',
-  'city', 'state', 'country', 'municipality_id', 'is_default', 'notes',
-  'created_at', 'updated_at'
+  'country', 'municipality_id', 'is_default', 'notes', 'created_at', 'updated_at'
 ];
 
 const municipalityAttributes = ['id', 'name'];
@@ -46,7 +45,7 @@ const getAddress = async(id) => {
         model: municipalities,
         as: 'municipality',
         attributes: municipalityAttributes,
-        required: true
+        required: false
       }
     ]
   });
@@ -63,7 +62,7 @@ const getAddressesByCustomer = async(customerId) => {
         model: municipalities,
         as: 'municipality',
         attributes: municipalityAttributes,
-        required: true
+        required: false
       }
     ],
     order: [

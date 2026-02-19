@@ -7,7 +7,8 @@ const {
   customerAddressCreateInvalid,
   customerAddressUpdate,
   customerAddressCreate2,
-  customerAddressCreateNoCustomer
+  customerAddressCreateNoCustomer,
+  testAuthRegisterSuperAdmin
 } = require('./helper/helperData');
 
 let Token = '';
@@ -27,6 +28,12 @@ const addressesTestLogin = {
  */
 
 describe('[CUSTOMER ADDRESSES] Test api customer-addresses //api/customer-addresses/', () => {
+  beforeAll(async() => {
+    await api
+      .post('/api/auth/registerSuperUser')
+      .send(testAuthRegisterSuperAdmin);
+  });
+
   test('Login para obtener token. 200', async() => {
     await api
       .post('/api/auth/login')

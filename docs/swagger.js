@@ -351,12 +351,6 @@ const swaggerDefinition = {
           postal_code: {
             type: 'string'
           },
-          city: {
-            type: 'string'
-          },
-          state: {
-            type: 'string'
-          },
           country: {
             type: 'string'
           },

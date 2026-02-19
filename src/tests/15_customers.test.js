@@ -9,7 +9,8 @@ const {
   customerCreate2,
   customerCreateInternational,
   customerCreateNoPhone,
-  customerCreateInvalidInternational
+  customerCreateInvalidInternational,
+  testAuthRegisterSuperAdmin
 } = require('./helper/helperData');
 
 let Token = '';
@@ -28,6 +29,12 @@ const customersTestLogin = {
  */
 
 describe('[CUSTOMERS] Test api customers //api/customers/', () => {
+  beforeAll(async() => {
+    await api
+      .post('/api/auth/registerSuperUser')
+      .send(testAuthRegisterSuperAdmin);
+  });
+
   test('Login para obtener token. 200', async() => {
     await api
       .post('/api/auth/login')
