@@ -1,5 +1,5 @@
 const fecha = new Date();
-const { BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD, CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP } = require('../../../constants/modules');
+const { BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD, CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR } = require('../../../constants/modules');
 
 const data = [
   // Estados
@@ -79,7 +79,12 @@ const data = [
   { name: CMPPROD.NAME_ADD, codeName: CMPPROD.ADD, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: CMPPROD.NAME_UPDATE, codeName: CMPPROD.UPDATE, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: CMPPROD.NAME_DELETE, codeName: CMPPROD.DELETE, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: CMPPROD.NAME_MANAGE_OVERRIDES, codeName: CMPPROD.MANAGE_OVERRIDES, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: CMPPROD.NAME_MANAGE_OVERRIDES, codeName: CMPPROD.MANAGE_OVERRIDES, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Sucursales de usuario
+  { name: UBR.NAME_ALL, codeName: UBR.VIEW_ALL, module: UBR.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: UBR.NAME_ADD, codeName: UBR.ADD, module: UBR.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: UBR.NAME_DELETE, codeName: UBR.DELETE, module: UBR.MODULE_NAME, created_at: fecha, updated_at: fecha }
 ];
 
 module.exports = { data };
