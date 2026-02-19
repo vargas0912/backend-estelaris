@@ -5,6 +5,12 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.hasMany(models.userprivileges, { as: 'privilegios', foreignKey: 'user_id' });
       this.hasOne(models.customers, { as: 'customer', foreignKey: 'user_id' });
+      this.belongsToMany(models.branches, {
+        through: 'user_branches',
+        as: 'branches',
+        foreignKey: 'user_id',
+        otherKey: 'branch_id'
+      });
     }
   }
   users.init({

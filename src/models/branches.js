@@ -21,6 +21,12 @@ module.exports = (sequelize, DataTypes) => {
         as: 'customers',
         foreignKey: 'branch_id'
       });
+      this.belongsToMany(models.users, {
+        through: 'user_branches',
+        as: 'users',
+        foreignKey: 'branch_id',
+        otherKey: 'user_id'
+      });
     }
   }
 
