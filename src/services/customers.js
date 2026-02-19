@@ -62,7 +62,7 @@ const getCustomer = async(id) => {
         as: 'addresses',
         attributes: [
           'id', 'address_type', 'street', 'neighborhood', 'postal_code',
-          'city', 'state', 'country', 'municipality_id', 'is_default', 'notes'
+          'country', 'municipality_id', 'is_default', 'notes'
         ]
       }
     ]

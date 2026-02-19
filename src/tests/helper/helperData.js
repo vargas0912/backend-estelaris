@@ -722,8 +722,6 @@ const customerAddressCreate = {
   street: 'Calle de prueba 123',
   neighborhood: 'Colonia Centro',
   postal_code: '06000',
-  city: 'Ciudad de México',
-  state: 'Ciudad de México',
   country: 'México',
   municipality_id: 1,
   is_default: true,
@@ -749,8 +747,6 @@ const customerAddressCreate2 = {
   address_type: 'billing',
   street: 'Av. Segunda 789',
   postal_code: '06200',
-  city: 'Ciudad de México',
-  state: 'Ciudad de México',
   country: 'México',
   municipality_id: 1,
   is_default: false
@@ -759,9 +755,7 @@ const customerAddressCreate2 = {
 const customerAddressCreateNoCustomer = {
   address_type: 'shipping',
   street: 'Calle sin cliente 999',
-  postal_code: '06000',
-  city: 'Ciudad de México',
-  state: 'Ciudad de México'
+  postal_code: '06000'
 };
 
 module.exports = {
