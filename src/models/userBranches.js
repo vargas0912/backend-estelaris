@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
       modelName: 'userBranches',
       tableName: 'user_branches',
       timestamps: true,
-      paranoid: true,
+      paranoid: false,
       underscored: true
     }
   );
