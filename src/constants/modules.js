@@ -224,4 +224,14 @@ const CUSTOMER_ADDRESS = Object.freeze({
   NAME_DELETE: 'Eliminar dirección'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS };
+const USER_BRANCH = Object.freeze({
+  MODULE_NAME: 'userBranches',
+  VIEW_ALL: 'view_user_branches',
+  NAME_ALL: 'Ver sucursales de usuario',
+  ADD: 'create_user_branch',
+  NAME_ADD: 'Asignar sucursal a usuario',
+  DELETE: 'delete_user_branch',
+  NAME_DELETE: 'Remover sucursal de usuario'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH };

@@ -1,10 +1,11 @@
 const { matchedData } = require('express-validator');
 const { compare } = require('../utils/handlePassword');
 const { tokenSign } = require('../utils/handleJwt');
-const { users } = require('../models/index');
+const { users, branches } = require('../models/index');
 const { handleHttpError } = require('../utils/handleErorr');
 const { registerUser, registerSuperAdmin } = require('../services/users');
 const { LOGIN, USER } = require('../constants/errors');
+const { ROLE } = require('../constants/roles');
 
 /**
  * This controller is used for register user
@@ -69,9 +70,25 @@ const loginCtrl = async(req, res) => {
       return;
     }
 
+    let branchesList;
+    if (user.role === ROLE.SUPERADMIN) {
+      branchesList = await branches.findAll({ attributes: ['id', 'name'] });
+    } else {
+      branchesList = await branches.findAll({
+        attributes: ['id', 'name'],
+        include: [{
+          association: 'users',
+          where: { id: user.id },
+          attributes: [],
+          through: { attributes: [] }
+        }]
+      });
+    }
+
     const sesion = {
       token: await tokenSign(user),
-      user
+      user,
+      branches: branchesList
     };
 
     user.set('password', undefined, { strict: false });
