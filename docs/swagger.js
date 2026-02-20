@@ -4,7 +4,7 @@ const swaggerJsdoc = require('swagger-jsdoc');
  * Api config Info
  */
 const swaggerDefinition = {
-  openapi: '3.0.0',
+  openapi: '3.1.0',
   info: {
     title: 'Documentacion de API\'s de Estelaris Mueblerias',
     version: '1.3.0'
