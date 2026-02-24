@@ -8,7 +8,8 @@ const {
   valiAddRecord,
   valiUpdateRecord,
   validateGenerateByProduct,
-  validateGenerateByPriceList
+  validateGenerateByPriceList,
+  validateRecalculateByProduct
 } = require('../validators/productPrices');
 
 const authMidleware = require('../middlewares/session');
@@ -25,7 +26,8 @@ const {
   deleteRecord,
   generateByProduct,
   generateByPriceList,
-  generateAll
+  generateAll,
+  recalculateByProduct
 } = require('../controllers/productPrices');
 const { PRODUCT_PRICE } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
@@ -258,6 +260,56 @@ router.post('/generate/all', [
   authMidleware,
   checkRol([ROLE.ADMIN], PRODUCT_PRICE.GENERATE_ALL)
 ], generateAll);
+
+/**
+ * @openapi
+ * /productPrices/recalculate/product/{product_id}:
+ *   put:
+ *     tags:
+ *       - productPrices
+ *     summary: Recalcular precios existentes de un producto
+ *     description: >
+ *       Actualiza el precio de todos los registros existentes en product_prices para un producto dado,
+ *       aplicando la fórmula `base_price * (1 - discount_percent / 100)` con el base_price actual del producto.
+ *       A diferencia de generate, este endpoint NO borra ni recrea registros — actualiza los existentes,
+ *       incluyendo precios escalonados (min_quantity > 1). Útil cuando cambia el base_price del producto.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: product_id
+ *         in: path
+ *         description: ID del producto a recalcular
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Precios recalculados correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: object
+ *                   properties:
+ *                     product_id:
+ *                       type: integer
+ *                     updated:
+ *                       type: integer
+ *                     prices_processed:
+ *                       type: integer
+ *       '404':
+ *         description: Producto no encontrado, inactivo o sin precios registrados
+ *       '422':
+ *         description: Error de validación
+ */
+router.put('/recalculate/product/:product_id', [
+  writeLimiter,
+  authMidleware,
+  validateRecalculateByProduct,
+  checkRol([ROLE.ADMIN], PRODUCT_PRICE.RECALCULATE_BY_PRODUCT)
+], recalculateByProduct);
 
 /**
  * @openapi
