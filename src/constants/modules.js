@@ -139,7 +139,13 @@ const PRODUCT_PRICE = Object.freeze({
   UPDATE: 'update_product_price',
   NAME_UPDATE: 'Modificar precio de producto',
   DELETE: 'delete_product_price',
-  NAME_DELETE: 'Eliminar precio de producto'
+  NAME_DELETE: 'Eliminar precio de producto',
+  GENERATE_BY_PRODUCT: 'generate_prices_by_product',
+  NAME_GENERATE_BY_PRODUCT: 'Generar precios por producto',
+  GENERATE_BY_PRICE_LIST: 'generate_prices_by_price_list',
+  NAME_GENERATE_BY_PRICE_LIST: 'Generar precios por lista',
+  GENERATE_ALL: 'generate_all_prices',
+  NAME_GENERATE_ALL: 'Generar todos los precios'
 });
 
 const SUPPLIER = Object.freeze({

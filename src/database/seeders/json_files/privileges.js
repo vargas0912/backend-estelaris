@@ -1,5 +1,9 @@
 const fecha = new Date();
-const { BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD, CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR } = require('../../../constants/modules');
+const {
+  BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD,
+  CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR, PRODUCT: PRD, POSITION: POS, PRICE_LIST: PL,
+  PRODUCT_PRICE: PP
+} = require('../../../constants/modules');
 
 const data = [
   // Estados
@@ -43,11 +47,40 @@ const data = [
   { name: USR.NAME_ADD, codeName: USR.ADD, module: USR.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: USR.NAME_CREATE_SUPERADMIN, codeName: USR.CREATE_SUPERADMIN, module: USR.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
+  // Puestos de trabajo
+  { name: POS.NAME_ALL, codeName: POS.VIEW_ALL, module: POS.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: POS.NAME_ADD, codeName: POS.ADD, module: POS.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: POS.NAME_UPDATE, codeName: POS.UPDATE, module: POS.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: POS.NAME_DELETE, codeName: POS.DELETE, module: POS.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
   // Categorias de producto
   { name: CATP.NAME_ALL, codeName: CATP.VIEW_ALL, module: CATP.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: CATP.NAME_ADD, codeName: CATP.ADD, module: CATP.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: CATP.NAME_UPDATE, codeName: CATP.UPDATE, module: CATP.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: CATP.NAME_DELETE, codeName: CATP.DELETE, module: CATP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Producto
+  { name: PRD.NAME_ALL, codeName: PRD.VIEW_ALL, module: PRD.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PRD.NAME_ADD, codeName: PRD.ADD, module: PRD.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PRD.NAME_UPDATE, codeName: PRD.UPDATE, module: PRD.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PRD.NAME_DELETE, codeName: PRD.DELETE, module: PRD.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Price list
+  { name: PL.NAME_ALL, codeName: PL.VIEW_ALL, module: PL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PL.NAME_ADD, codeName: PL.ADD, module: PL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PL.NAME_UPDATE, codeName: PL.UPDATE, module: PL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PL.NAME_DELETE, codeName: PL.DELETE, module: PL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Product Price
+  { name: PP.NAME_ALL, codeName: PP.VIEW_ALL, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PP.NAME_NAME_VIEW_BY_PRODUCT, codeName: PP.VIEW_BY_PRODUCT, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PP.NAME_NAME_VIEW_BY_PRICE_LIST, codeName: PP.VIEW_BY_PRICE_LIST, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PP.NAME_ADD, codeName: PP.ADD, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PP.NAME_UPDATE, codeName: PP.UPDATE, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PP.NAME_DELETE, codeName: PP.DELETE, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PP.NAME_GENERATE_BY_PRODUCT, codeName: PP.GENERATE_BY_PRODUCT, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PP.NAME_GENERATE_BY_PRICE_LIST, codeName: PP.GENERATE_BY_PRICE_LIST, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PP.NAME_GENERATE_ALL, codeName: PP.GENERATE_ALL, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Clientes
   { name: CUST.NAME_ALL, codeName: CUST.VIEW_ALL, module: CUST.MODULE_NAME, created_at: fecha, updated_at: fecha },

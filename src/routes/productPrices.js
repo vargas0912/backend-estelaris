@@ -6,7 +6,9 @@ const {
   validateGetByProduct,
   validateGetByPriceList,
   valiAddRecord,
-  valiUpdateRecord
+  valiUpdateRecord,
+  validateGenerateByProduct,
+  validateGenerateByPriceList
 } = require('../validators/productPrices');
 
 const authMidleware = require('../middlewares/session');
@@ -20,7 +22,10 @@ const {
   getRecordsByPriceList,
   addRecord,
   updateRecord,
-  deleteRecord
+  deleteRecord,
+  generateByProduct,
+  generateByPriceList,
+  generateAll
 } = require('../controllers/productPrices');
 const { PRODUCT_PRICE } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
@@ -136,6 +141,123 @@ router.get('/:id', [
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_PRICE.VIEW_ALL)
 ], getRecord);
+
+/**
+ * @openapi
+ * /productPrices/generate/product/{product_id}:
+ *   post:
+ *     tags:
+ *       - productPrices
+ *     summary: Generar precios de un producto en todas las listas activas
+ *     description: >
+ *       Calcula y registra automáticamente el precio del producto en cada lista de precios activa
+ *       usando la fórmula `base_price * (1 - discount_percent / 100)`.
+ *       Solo genera precios con `min_quantity = 1` (precio base). Los precios escalonados se gestionan manualmente.
+ *       La operación es idempotente.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: product_id
+ *         in: path
+ *         description: ID del producto
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Precios generados correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   $ref: '#/components/schemas/generateByProductResult'
+ *       '404':
+ *         description: Producto no encontrado o inactivo
+ *       '422':
+ *         description: Error de validación
+ */
+router.post('/generate/product/:product_id', [
+  writeLimiter,
+  authMidleware,
+  validateGenerateByProduct,
+  checkRol([ROLE.ADMIN], PRODUCT_PRICE.GENERATE_BY_PRODUCT)
+], generateByProduct);
+
+/**
+ * @openapi
+ * /productPrices/generate/priceList/{price_list_id}:
+ *   post:
+ *     tags:
+ *       - productPrices
+ *     summary: Generar precios de todos los productos activos en una lista
+ *     description: >
+ *       Calcula y registra automáticamente el precio de todos los productos activos en la lista indicada
+ *       usando la fórmula `base_price * (1 - discount_percent / 100)`.
+ *       Solo genera precios con `min_quantity = 1`. La operación es idempotente.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: price_list_id
+ *         in: path
+ *         description: ID de la lista de precios
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Precios generados correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   $ref: '#/components/schemas/generateByPriceListResult'
+ *       '404':
+ *         description: Lista de precios no encontrada o inactiva
+ *       '422':
+ *         description: Error de validación
+ */
+router.post('/generate/priceList/:price_list_id', [
+  writeLimiter,
+  authMidleware,
+  validateGenerateByPriceList,
+  checkRol([ROLE.ADMIN], PRODUCT_PRICE.GENERATE_BY_PRICE_LIST)
+], generateByPriceList);
+
+/**
+ * @openapi
+ * /productPrices/generate/all:
+ *   post:
+ *     tags:
+ *       - productPrices
+ *     summary: Generar precios para todos los productos en todas las listas activas
+ *     description: >
+ *       Cross-join completo: calcula y registra el precio de cada producto activo en cada lista de precios activa.
+ *       Usa la fórmula `base_price * (1 - discount_percent / 100)`.
+ *       Solo genera precios con `min_quantity = 1`. La operación es idempotente y segura para correr múltiples veces.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Precios generados correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   $ref: '#/components/schemas/generateAllResult'
+ *       '404':
+ *         description: No hay productos o listas activas
+ */
+router.post('/generate/all', [
+  writeLimiter,
+  authMidleware,
+  checkRol([ROLE.ADMIN], PRODUCT_PRICE.GENERATE_ALL)
+], generateAll);
 
 /**
  * @openapi
