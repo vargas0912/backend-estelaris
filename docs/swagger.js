@@ -783,6 +783,60 @@ const swaggerDefinition = {
           }
         }
       },
+      generateByProductResult: {
+        type: 'object',
+        description: 'Resultado de la generación masiva de precios para un producto',
+        properties: {
+          product_id: {
+            type: 'integer',
+            description: 'ID del producto procesado'
+          },
+          created: {
+            type: 'integer',
+            description: 'Cantidad de registros insertados en esta ejecución'
+          },
+          price_lists_processed: {
+            type: 'integer',
+            description: 'Cantidad de listas de precios activas procesadas'
+          }
+        }
+      },
+      generateByPriceListResult: {
+        type: 'object',
+        description: 'Resultado de la generación masiva de precios para una lista de precios',
+        properties: {
+          price_list_id: {
+            type: 'integer',
+            description: 'ID de la lista de precios procesada'
+          },
+          created: {
+            type: 'integer',
+            description: 'Cantidad de registros insertados en esta ejecución'
+          },
+          products_processed: {
+            type: 'integer',
+            description: 'Cantidad de productos activos procesados'
+          }
+        }
+      },
+      generateAllResult: {
+        type: 'object',
+        description: 'Resultado de la generación masiva de precios completa (cross-join)',
+        properties: {
+          created: {
+            type: 'integer',
+            description: 'Cantidad de registros insertados en esta ejecución'
+          },
+          products_processed: {
+            type: 'integer',
+            description: 'Cantidad de productos activos procesados'
+          },
+          price_lists_processed: {
+            type: 'integer',
+            description: 'Cantidad de listas de precios activas procesadas'
+          }
+        }
+      },
       storage: {
         type: 'object',
         properties: {

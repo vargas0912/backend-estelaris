@@ -76,10 +76,15 @@ const valiUpdateRecord = [
   }
 ];
 
+const validateGenerateByProduct = validateGetByProduct;
+const validateGenerateByPriceList = validateGetByPriceList;
+
 module.exports = {
   validateGetRecord,
   validateGetByProduct,
   validateGetByPriceList,
   valiAddRecord,
-  valiUpdateRecord
+  valiUpdateRecord,
+  validateGenerateByProduct,
+  validateGenerateByPriceList
 };

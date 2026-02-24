@@ -8,7 +8,10 @@ const {
   getPricesByPriceList,
   addNewProductPrice,
   updateProductPrice,
-  deleteProductPrice
+  deleteProductPrice,
+  generatePricesByProduct,
+  generatePricesByPriceList,
+  generateAllPrices
 } = require('../services/productPrices');
 
 /**
@@ -122,6 +125,53 @@ const deleteRecord = async(req, res) => {
   }
 };
 
+const generateByProduct = async(req, res) => {
+  try {
+    const { product_id: productId } = matchedData(req);
+    const result = await generatePricesByProduct(productId);
+
+    if (result.error) {
+      handleHttpError(res, result.error, 404);
+      return;
+    }
+
+    res.send({ result });
+  } catch (error) {
+    handleHttpError(res, `ERROR_GENERATE_BY_PRODUCT -> ${error}`, 400);
+  }
+};
+
+const generateByPriceList = async(req, res) => {
+  try {
+    const { price_list_id: priceListId } = matchedData(req);
+    const result = await generatePricesByPriceList(priceListId);
+
+    if (result.error) {
+      handleHttpError(res, result.error, 404);
+      return;
+    }
+
+    res.send({ result });
+  } catch (error) {
+    handleHttpError(res, `ERROR_GENERATE_BY_PRICE_LIST -> ${error}`, 400);
+  }
+};
+
+const generateAll = async(req, res) => {
+  try {
+    const result = await generateAllPrices();
+
+    if (result.error) {
+      handleHttpError(res, result.error, 404);
+      return;
+    }
+
+    res.send({ result });
+  } catch (error) {
+    handleHttpError(res, `ERROR_GENERATE_ALL -> ${error}`, 400);
+  }
+};
+
 module.exports = {
   getRecord,
   getRecords,
@@ -129,5 +179,8 @@ module.exports = {
   getRecordsByPriceList,
   addRecord,
   updateRecord,
-  deleteRecord
+  deleteRecord,
+  generateByProduct,
+  generateByPriceList,
+  generateAll
 };

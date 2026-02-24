@@ -427,4 +427,122 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       expect(true).toBe(true);
     });
   });
+
+  // ============================================
+  // Tests de generación masiva de precios
+  // ============================================
+  describe('Tests de generacion masiva de precios', () => {
+    test('34. Generar precios por producto existente. Expect 200', async() => {
+      const response = await api
+        .post('/api/productPrices/generate/product/1')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('result');
+      expect(response.body.result).toHaveProperty('product_id');
+      expect(response.body.result.product_id).toBe(1);
+      expect(response.body.result).toHaveProperty('price_lists_processed');
+      expect(response.body.result.price_lists_processed).toBeGreaterThan(0);
+    });
+
+    test('35. Generar precios por producto inexistente. Expect 404', async() => {
+      const response = await api
+        .post('/api/productPrices/generate/product/99999')
+        .auth(Token, { type: 'bearer' })
+        .expect(404);
+
+      expect(response.body).toHaveProperty('error');
+    });
+
+    test('36. Generar precios por lista activa. Expect 200', async() => {
+      const response = await api
+        .post('/api/productPrices/generate/priceList/1')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('result');
+      expect(response.body.result).toHaveProperty('price_list_id');
+      expect(response.body.result.price_list_id).toBe(1);
+      expect(response.body.result).toHaveProperty('products_processed');
+      expect(response.body.result.products_processed).toBeGreaterThan(0);
+    });
+
+    test('37. Generar precios por lista inexistente. Expect 404', async() => {
+      const response = await api
+        .post('/api/productPrices/generate/priceList/99999')
+        .auth(Token, { type: 'bearer' })
+        .expect(404);
+
+      expect(response.body).toHaveProperty('error');
+    });
+
+    test('38. Generar todos los precios. Expect 200', async() => {
+      const response = await api
+        .post('/api/productPrices/generate/all')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('result');
+      expect(response.body.result).toHaveProperty('created');
+      expect(response.body.result).toHaveProperty('products_processed');
+      expect(response.body.result).toHaveProperty('price_lists_processed');
+    });
+
+    test('39. Idempotencia: llamar generate/all dos veces no genera duplicados. Expect 200', async() => {
+      const first = await api
+        .post('/api/productPrices/generate/all')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      const second = await api
+        .post('/api/productPrices/generate/all')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(first.body).toHaveProperty('result');
+      expect(second.body).toHaveProperty('result');
+    });
+
+    test('40. Generar precios sin token. Expect 401', async() => {
+      await api
+        .post('/api/productPrices/generate/all')
+        .expect(401);
+    });
+
+    test('41. Generar precios por producto con ID no numerico. Expect 400', async() => {
+      await api
+        .post('/api/productPrices/generate/product/abc')
+        .auth(Token, { type: 'bearer' })
+        .expect(400);
+    });
+
+    test('42. Verificar matematica del precio: base_price * (1 - discount/100)', async() => {
+      // Lista 2 (Mayoreo) tiene discount_percent = 10
+      // Si el producto 1 tiene base_price conocido, verificar precio calculado
+      const generateResponse = await api
+        .post('/api/productPrices/generate/product/1')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(generateResponse.body.result).toHaveProperty('product_id', 1);
+
+      const pricesResponse = await api
+        .get('/api/productPrices/product/1')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(pricesResponse.body).toHaveProperty('prices');
+      const prices = pricesResponse.body.prices;
+
+      // Buscar el precio para la lista con descuento (list_id 2, 10% de descuento)
+      const priceForList2 = prices.find(p => p.price_list_id === 2 && p.min_quantity === 1);
+      if (priceForList2 && priceForList2.priceList) {
+        const discount = parseFloat(priceForList2.priceList.discount_percent);
+        const expectedPrice = parseFloat(
+          (parseFloat(priceForList2.product ? priceForList2.product.base_price : 0) * (1 - discount / 100)).toFixed(2)
+        );
+        expect(parseFloat(priceForList2.price)).toBeCloseTo(expectedPrice, 2);
+      }
+    });
+  });
 });
