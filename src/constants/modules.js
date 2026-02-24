@@ -145,7 +145,9 @@ const PRODUCT_PRICE = Object.freeze({
   GENERATE_BY_PRICE_LIST: 'generate_prices_by_price_list',
   NAME_GENERATE_BY_PRICE_LIST: 'Generar precios por lista',
   GENERATE_ALL: 'generate_all_prices',
-  NAME_GENERATE_ALL: 'Generar todos los precios'
+  NAME_GENERATE_ALL: 'Generar todos los precios',
+  RECALCULATE_BY_PRODUCT: 'recalculate_prices_by_product',
+  NAME_RECALCULATE_BY_PRODUCT: 'Recalcular precios por producto'
 });
 
 const SUPPLIER = Object.freeze({

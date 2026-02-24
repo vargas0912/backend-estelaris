@@ -11,7 +11,8 @@ const {
   deleteProductPrice,
   generatePricesByProduct,
   generatePricesByPriceList,
-  generateAllPrices
+  generateAllPrices,
+  recalculatePricesByProduct
 } = require('../services/productPrices');
 
 /**
@@ -172,6 +173,22 @@ const generateAll = async(req, res) => {
   }
 };
 
+const recalculateByProduct = async(req, res) => {
+  try {
+    const { product_id: productId } = matchedData(req);
+    const result = await recalculatePricesByProduct(productId);
+
+    if (result.error) {
+      handleHttpError(res, result.error, 404);
+      return;
+    }
+
+    res.send({ result });
+  } catch (error) {
+    handleHttpError(res, `ERROR_RECALCULATE_BY_PRODUCT -> ${error}`, 400);
+  }
+};
+
 module.exports = {
   getRecord,
   getRecords,
@@ -182,5 +199,6 @@ module.exports = {
   deleteRecord,
   generateByProduct,
   generateByPriceList,
-  generateAll
+  generateAll,
+  recalculateByProduct
 };

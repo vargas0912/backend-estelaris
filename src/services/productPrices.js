@@ -14,7 +14,7 @@ const attributes = [
 const productAttributes = ['id', 'sku', 'name', 'base_price'];
 const priceListAttributes = ['id', 'name', 'discount_percent'];
 
-const getAllProductPrices = async() => {
+const getAllProductPrices = async () => {
   const result = await productPrices.findAll({
     attributes,
     include: [
@@ -34,7 +34,7 @@ const getAllProductPrices = async() => {
   return result;
 };
 
-const getProductPrice = async(id) => {
+const getProductPrice = async (id) => {
   const result = await productPrices.findOne({
     attributes,
     where: {
@@ -57,7 +57,7 @@ const getProductPrice = async(id) => {
   return result;
 };
 
-const getPricesByProduct = async(productId) => {
+const getPricesByProduct = async (productId) => {
   const result = await productPrices.findAll({
     attributes,
     where: {
@@ -76,7 +76,7 @@ const getPricesByProduct = async(productId) => {
   return result;
 };
 
-const getPricesByPriceList = async(priceListId) => {
+const getPricesByPriceList = async (priceListId) => {
   const result = await productPrices.findAll({
     attributes,
     where: {
@@ -95,13 +95,13 @@ const getPricesByPriceList = async(priceListId) => {
   return result;
 };
 
-const addNewProductPrice = async(body) => {
+const addNewProductPrice = async (body) => {
   const result = await productPrices.create(body);
 
   return result;
 };
 
-const updateProductPrice = async(id, req) => {
+const updateProductPrice = async (id, req) => {
   const {
     product_id: productId,
     price_list_id: priceListId,
@@ -128,11 +128,13 @@ const updateProductPrice = async(id, req) => {
   return result;
 };
 
-const deleteProductPrice = async(id) => {
+const deleteProductPrice = async (id) => {
   const result = await productPrices.destroy({
     where: {
       id
-    }
+    },
+    force: true,
+    paranoid: false
   });
 
   return result;
@@ -140,7 +142,7 @@ const deleteProductPrice = async(id) => {
 
 const CHUNK_SIZE = 100;
 
-const generatePricesByProduct = async(productId) => {
+const generatePricesByProduct = async (productId) => {
   const product = await products.findOne({
     where: { id: productId, is_active: true }
   });
@@ -188,7 +190,7 @@ const generatePricesByProduct = async(productId) => {
   };
 };
 
-const generatePricesByPriceList = async(priceListId) => {
+const generatePricesByPriceList = async (priceListId) => {
   const priceList = await priceLists.findOne({
     where: { id: priceListId, is_active: true }
   });
@@ -241,7 +243,7 @@ const generatePricesByPriceList = async(priceListId) => {
   };
 };
 
-const generateAllPrices = async() => {
+const generateAllPrices = async () => {
   const [activeProducts, activeLists] = await Promise.all([
     products.findAll({ where: { is_active: true } }),
     priceLists.findAll({ where: { is_active: true } })
@@ -293,6 +295,50 @@ const generateAllPrices = async() => {
   };
 };
 
+const recalculatePricesByProduct = async (productId) => {
+  const product = await products.findOne({
+    where: { id: productId, is_active: true }
+  });
+
+  if (!product) {
+    return { error: 'PRODUCT_NOT_FOUND_OR_INACTIVE' };
+  }
+
+  const existingPrices = await productPrices.findAll({
+    where: { product_id: productId },
+    include: [
+      {
+        model: priceLists,
+        as: 'priceList',
+        attributes: priceListAttributes
+      }
+    ]
+  });
+
+  if (!existingPrices.length) {
+    return { error: 'NO_PRICES_FOUND' };
+  }
+
+  const basePrice = parseFloat(product.base_price);
+
+  const recordsToUpdate = existingPrices.filter(record => record.priceList);
+
+  const updated = await Promise.all(
+    recordsToUpdate.map(async (record) => {
+      const discountPercent = parseFloat(record.priceList.discount_percent);
+      record.price = parseFloat((basePrice * (1 - discountPercent / 100)).toFixed(2));
+      await record.save();
+      return 1;
+    })
+  );
+
+  return {
+    product_id: productId,
+    updated: updated.length,
+    prices_processed: existingPrices.length
+  };
+};
+
 module.exports = {
   getAllProductPrices,
   getProductPrice,
@@ -303,5 +349,6 @@ module.exports = {
   deleteProductPrice,
   generatePricesByProduct,
   generatePricesByPriceList,
-  generateAllPrices
+  generateAllPrices,
+  recalculatePricesByProduct
 };
