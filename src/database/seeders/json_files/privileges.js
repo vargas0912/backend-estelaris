@@ -2,7 +2,7 @@ const fecha = new Date();
 const {
   BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD,
   CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR, PRODUCT: PRD, POSITION: POS, PRICE_LIST: PL,
-  PRODUCT_PRICE: PP
+  PRODUCT_PRICE: PP, PURCHASE: PURCH
 } = require('../../../constants/modules');
 
 const data = [
@@ -117,7 +117,14 @@ const data = [
   // Sucursales de usuario
   { name: UBR.NAME_ALL, codeName: UBR.VIEW_ALL, module: UBR.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: UBR.NAME_ADD, codeName: UBR.ADD, module: UBR.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: UBR.NAME_DELETE, codeName: UBR.DELETE, module: UBR.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: UBR.NAME_DELETE, codeName: UBR.DELETE, module: UBR.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Compras
+  { name: PURCH.NAME_ALL, codeName: PURCH.VIEW_ALL, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PURCH.NAME_ADD, codeName: PURCH.ADD, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PURCH.NAME_UPDATE, codeName: PURCH.UPDATE, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PURCH.NAME_CANCEL, codeName: PURCH.CANCEL, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PURCH.NAME_DELETE, codeName: PURCH.DELETE, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha }
 ];
 
 module.exports = { data };
