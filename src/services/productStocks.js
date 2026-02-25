@@ -9,6 +9,8 @@ const attributes = [
   'max_stock',
   'location',
   'last_count_date',
+  'purch_id',
+  'bar_code',
   'created_at',
   'updated_at'
 ];
@@ -160,7 +162,7 @@ const updateFromPurchase = async (purchaseId, details, branchId, userId, transac
 
   for (const [productIdStr, qty] of Object.entries(grouped)) {
     const productId = parseInt(productIdStr);
-    const batchRef = `${productId}-${purchaseId}`;
+    const barCode = `${productId}-${purchaseId}`;
     const minStock = parseFloat((qty * 0.25).toFixed(3));
     const maxStock = parseFloat((qty * 1.5).toFixed(3));
 
@@ -170,7 +172,8 @@ const updateFromPurchase = async (purchaseId, details, branchId, userId, transac
         quantity: qty,
         min_stock: minStock,
         max_stock: maxStock,
-        batch_ref: batchRef,
+        purch_id: purchaseId,
+        bar_code: barCode,
         last_count_date: today
       },
       transaction
@@ -178,7 +181,8 @@ const updateFromPurchase = async (purchaseId, details, branchId, userId, transac
 
     if (!created) {
       stock.quantity = parseFloat(stock.quantity) + qty;
-      stock.batch_ref = batchRef;
+      stock.purch_id = purchaseId;
+      stock.bar_code = barCode;
       stock.last_count_date = today;
       await stock.save({ transaction });
     }

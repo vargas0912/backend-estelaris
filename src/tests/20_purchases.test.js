@@ -368,7 +368,7 @@ describe('[PURCHASES] Test api purchases /api/purchases/', () => {
       expect(response.body.purchase.received_at).not.toBeNull();
     });
 
-    test('R3. Verificar que productStock.quantity se actualizó. Expect > 0', async () => {
+    test('R3. Verificar que productStock se actualizó con quantity, purch_id y bar_code. Expect > 0', async () => {
       const response = await api
         .get('/api/productStocks')
         .auth(Token, { type: 'bearer' })
@@ -382,6 +382,8 @@ describe('[PURCHASES] Test api purchases /api/purchases/', () => {
 
       expect(stockForProduct).toBeDefined();
       expect(parseFloat(stockForProduct.quantity)).toBeGreaterThan(0);
+      expect(stockForProduct.purch_id).toBe(receivePurchaseId);
+      expect(stockForProduct.bar_code).toBe(`${purchaseForReceive.items[0].product_id}-${receivePurchaseId}`);
     });
 
     test('R4. Recibir compra ya recibida. Expect 409', async () => {
