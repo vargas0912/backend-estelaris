@@ -1,0 +1,285 @@
+const express = require('express');
+const router = express.Router();
+
+const {
+  validateGetRecord,
+  validateGetBySupplier,
+  validateGetByBranch,
+  valiAddRecord,
+  valiUpdateRecord
+} = require('../validators/purchases');
+
+const authMidleware = require('../middlewares/session');
+const checkRol = require('../middlewares/rol');
+const { readLimiter, writeLimiter, deleteLimiter, searchLimiter } = require('../middlewares/rateLimiters');
+
+const {
+  getRecords,
+  getRecord,
+  getRecordsBySupplier,
+  getRecordsByBranch,
+  addRecord,
+  updateRecord,
+  cancelRecord,
+  deleteRecord
+} = require('../controllers/purchases');
+
+const { PURCHASE } = require('../constants/modules');
+const { ROLE } = require('../constants/roles');
+
+/**
+ * @openapi
+ * /purchases:
+ *    get:
+ *      tags:
+ *        - purchases
+ *      summary: Lista de compras
+ *      description: Obtener todas las compras con sus detalles
+ *      security:
+ *        - bearerAuth: []
+ *      responses:
+ *        '200':
+ *          description: Arreglo de compras.
+ */
+router.get('/', [
+  readLimiter,
+  authMidleware,
+  checkRol([ROLE.USER, ROLE.ADMIN], PURCHASE.VIEW_ALL)
+], getRecords);
+
+/**
+ * @openapi
+ * /purchases/supplier/{supplier_id}:
+ *    get:
+ *      tags:
+ *        - purchases
+ *      summary: Compras por proveedor
+ *      security:
+ *        - bearerAuth: []
+ *      parameters:
+ *      - name: supplier_id
+ *        in: path
+ *        required: true
+ *        schema:
+ *          type: number
+ *      responses:
+ *        '200':
+ *          description: Arreglo de compras del proveedor
+ */
+router.get('/supplier/:supplier_id', [
+  searchLimiter,
+  authMidleware,
+  validateGetBySupplier,
+  checkRol([ROLE.USER, ROLE.ADMIN], PURCHASE.VIEW_ALL)
+], getRecordsBySupplier);
+
+/**
+ * @openapi
+ * /purchases/branch/{branch_id}:
+ *    get:
+ *      tags:
+ *        - purchases
+ *      summary: Compras por sucursal
+ *      security:
+ *        - bearerAuth: []
+ *      parameters:
+ *      - name: branch_id
+ *        in: path
+ *        required: true
+ *        schema:
+ *          type: number
+ *      responses:
+ *        '200':
+ *          description: Arreglo de compras de la sucursal
+ */
+router.get('/branch/:branch_id', [
+  searchLimiter,
+  authMidleware,
+  validateGetByBranch,
+  checkRol([ROLE.USER, ROLE.ADMIN], PURCHASE.VIEW_ALL)
+], getRecordsByBranch);
+
+/**
+ * @openapi
+ * /purchases/{id}:
+ *    get:
+ *      tags:
+ *        - purchases
+ *      summary: Compra por id
+ *      security:
+ *        - bearerAuth: []
+ *      parameters:
+ *      - name: id
+ *        in: path
+ *        required: true
+ *        schema:
+ *          type: number
+ *      responses:
+ *        '200':
+ *          description: Objeto de la compra
+ *        '404':
+ *          description: Compra no encontrada
+ */
+router.get('/:id', [
+  readLimiter,
+  authMidleware,
+  validateGetRecord,
+  checkRol([ROLE.USER, ROLE.ADMIN], PURCHASE.VIEW_ALL)
+], getRecord);
+
+/**
+ * @openapi
+ * /purchases:
+ *    post:
+ *      tags:
+ *        - purchases
+ *      summary: Crear compra
+ *      description: Crear compra con encabezado y detalle en una sola transacción atómica
+ *      security:
+ *        - bearerAuth: []
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              required:
+ *                - supplier_id
+ *                - branch_id
+ *                - purch_date
+ *                - items
+ *              properties:
+ *                supplier_id:
+ *                  type: integer
+ *                branch_id:
+ *                  type: integer
+ *                purch_date:
+ *                  type: string
+ *                  format: date
+ *                purch_type:
+ *                  type: string
+ *                  enum: [Contado, Credito]
+ *                payment_method:
+ *                  type: string
+ *                  enum: [Efectivo, Transferencia, Cheque, Tarjeta]
+ *                items:
+ *                  type: array
+ *                  items:
+ *                    type: object
+ *                    required:
+ *                      - product_id
+ *                      - qty
+ *                      - unit_price
+ *                    properties:
+ *                      product_id:
+ *                        type: integer
+ *                      qty:
+ *                        type: number
+ *                      unit_price:
+ *                        type: number
+ *                      discount:
+ *                        type: number
+ *                      tax_rate:
+ *                        type: number
+ *      responses:
+ *        '200':
+ *          description: Compra creada correctamente
+ *        '400':
+ *          description: Error de validación o productos inválidos
+ */
+router.post('/', [
+  writeLimiter,
+  authMidleware,
+  valiAddRecord,
+  checkRol([ROLE.USER, ROLE.ADMIN], PURCHASE.ADD)
+], addRecord);
+
+/**
+ * @openapi
+ * /purchases/{id}:
+ *    put:
+ *      tags:
+ *        - purchases
+ *      summary: Actualizar compra
+ *      security:
+ *        - bearerAuth: []
+ *      parameters:
+ *      - name: id
+ *        in: path
+ *        required: true
+ *        schema:
+ *          type: number
+ *      responses:
+ *        '200':
+ *          description: Compra actualizada
+ *        '404':
+ *          description: Compra no encontrada
+ */
+router.put('/:id', [
+  writeLimiter,
+  authMidleware,
+  valiUpdateRecord,
+  checkRol([ROLE.USER, ROLE.ADMIN], PURCHASE.UPDATE)
+], updateRecord);
+
+/**
+ * @openapi
+ * /purchases/{id}/cancel:
+ *    put:
+ *      tags:
+ *        - purchases
+ *      summary: Cancelar compra
+ *      security:
+ *        - bearerAuth: []
+ *      parameters:
+ *      - name: id
+ *        in: path
+ *        required: true
+ *        schema:
+ *          type: number
+ *      responses:
+ *        '200':
+ *          description: Compra cancelada
+ *        '400':
+ *          description: La compra ya está cancelada
+ *        '404':
+ *          description: Compra no encontrada
+ */
+router.put('/:id/cancel', [
+  writeLimiter,
+  authMidleware,
+  validateGetRecord,
+  checkRol([ROLE.USER, ROLE.ADMIN], PURCHASE.CANCEL)
+], cancelRecord);
+
+/**
+ * @openapi
+ * /purchases/{id}:
+ *    delete:
+ *      tags:
+ *        - purchases
+ *      summary: Eliminar compra
+ *      description: Soft delete, solo si status es Pendiente
+ *      security:
+ *        - bearerAuth: []
+ *      parameters:
+ *      - name: id
+ *        in: path
+ *        required: true
+ *        schema:
+ *          type: number
+ *      responses:
+ *        '200':
+ *          description: Compra eliminada
+ *        '400':
+ *          description: La compra no puede eliminarse en su estado actual
+ *        '404':
+ *          description: Compra no encontrada
+ */
+router.delete('/:id', [
+  deleteLimiter,
+  authMidleware,
+  validateGetRecord,
+  checkRol([ROLE.USER, ROLE.ADMIN], PURCHASE.DELETE)
+], deleteRecord);
+
+module.exports = router;

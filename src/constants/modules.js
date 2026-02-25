@@ -242,4 +242,18 @@ const USER_BRANCH = Object.freeze({
   NAME_DELETE: 'Remover sucursal de usuario'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH };
+const PURCHASE = Object.freeze({
+  MODULE_NAME: 'purchases',
+  VIEW_ALL: 'view_purchases',
+  NAME_ALL: 'Ver compras',
+  ADD: 'create_purchase',
+  NAME_ADD: 'Registrar compra',
+  UPDATE: 'update_purchase',
+  NAME_UPDATE: 'Modificar compra',
+  CANCEL: 'cancel_purchase',
+  NAME_CANCEL: 'Cancelar compra',
+  DELETE: 'delete_purchase',
+  NAME_DELETE: 'Eliminar compra'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE };

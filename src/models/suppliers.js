@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         as: 'municipality',
         foreignKey: 'municipality_id'
       });
+      this.hasMany(models.purchases, { as: 'purchases', foreignKey: 'supplier_id' });
     }
   }
 
