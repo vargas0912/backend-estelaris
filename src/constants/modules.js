@@ -253,7 +253,9 @@ const PURCHASE = Object.freeze({
   CANCEL: 'cancel_purchase',
   NAME_CANCEL: 'Cancelar compra',
   DELETE: 'delete_purchase',
-  NAME_DELETE: 'Eliminar compra'
+  NAME_DELETE: 'Eliminar compra',
+  RECEIVE: 'receive_purchase',
+  NAME_RECEIVE: 'Recibir compra'
 });
 
 module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE };

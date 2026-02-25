@@ -86,6 +86,30 @@ const purchaseUpdateStatus = {
   status: 'Pagado'
 };
 
+const purchaseForReceive = {
+  supplier_id: 1,
+  branch_id: 1,
+  purch_date: '2026-02-25',
+  purch_type: 'Contado',
+  payment_method: 'Efectivo',
+  items: [
+    {
+      product_id: 1,
+      qty: 10,
+      unit_price: 50.00,
+      discount: 0,
+      tax_rate: 16
+    },
+    {
+      product_id: 2,
+      qty: 5,
+      unit_price: 30.00,
+      discount: 0,
+      tax_rate: 16
+    }
+  ]
+};
+
 module.exports = {
   purchaseCreate,
   purchaseCreateCredit,
@@ -96,5 +120,6 @@ module.exports = {
   purchaseCreateEmptyItems,
   purchaseCreateInvalidProduct,
   purchaseUpdate,
-  purchaseUpdateStatus
+  purchaseUpdateStatus,
+  purchaseForReceive
 };

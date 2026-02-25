@@ -1,4 +1,4 @@
-const { productStocks, products, branches } = require('../models/index');
+const { productStocks, stockMovements, products, branches } = require('../models/index');
 
 const attributes = [
   'id',
@@ -9,6 +9,8 @@ const attributes = [
   'max_stock',
   'location',
   'last_count_date',
+  'purch_id',
+  'bar_code',
   'created_at',
   'updated_at'
 ];
@@ -147,6 +149,56 @@ const deleteProductStock = async(id) => {
   return result;
 };
 
+const updateFromPurchase = async (purchaseId, details, branchId, userId, transaction) => {
+  // Agrupar detalles por product_id sumando qty si hay duplicados
+  const grouped = {};
+  for (const detail of details) {
+    const pid = detail.product_id;
+    const qty = parseFloat(detail.qty);
+    grouped[pid] = (grouped[pid] || 0) + qty;
+  }
+
+  const today = new Date();
+
+  for (const [productIdStr, qty] of Object.entries(grouped)) {
+    const productId = parseInt(productIdStr);
+    const barCode = `${productId}-${purchaseId}`;
+    const minStock = parseFloat((qty * 0.25).toFixed(3));
+    const maxStock = parseFloat((qty * 1.5).toFixed(3));
+
+    const [stock, created] = await productStocks.findOrCreate({
+      where: { product_id: productId, branch_id: branchId },
+      defaults: {
+        quantity: qty,
+        min_stock: minStock,
+        max_stock: maxStock,
+        purch_id: purchaseId,
+        bar_code: barCode,
+        last_count_date: today
+      },
+      transaction
+    });
+
+    if (!created) {
+      stock.quantity = parseFloat(stock.quantity) + qty;
+      stock.purch_id = purchaseId;
+      stock.bar_code = barCode;
+      stock.last_count_date = today;
+      await stock.save({ transaction });
+    }
+
+    await stockMovements.create({
+      product_id: productId,
+      branch_id: branchId,
+      reference_type: 'purchase',
+      reference_id: purchaseId,
+      qty_change: qty,
+      notes: `Recepción de compra #${purchaseId}`,
+      created_by: userId
+    }, { transaction });
+  }
+};
+
 module.exports = {
   getAllProductStocks,
   getProductStock,
@@ -154,5 +206,6 @@ module.exports = {
   getStocksByBranch,
   addNewProductStock,
   updateProductStock,
-  deleteProductStock
+  deleteProductStock,
+  updateFromPurchase
 };

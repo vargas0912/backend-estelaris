@@ -112,10 +112,20 @@ const valiUpdateRecord = [
   (req, res, next) => validateResults(req, res, next)
 ];
 
+const validateReceiveRecord = [
+  check('id')
+    .exists().withMessage(PURCHASES_VALIDATORS.ID_NOT_EXISTS).bail()
+    .notEmpty().withMessage(PURCHASES_VALIDATORS.ID_IS_EMPTY).bail()
+    .isInt().withMessage(PURCHASES_VALIDATORS.ID_INVALID).bail()
+    .toInt(),
+  (req, res, next) => validateResults(req, res, next)
+];
+
 module.exports = {
   validateGetRecord,
   validateGetBySupplier,
   validateGetByBranch,
   valiAddRecord,
-  valiUpdateRecord
+  valiUpdateRecord,
+  validateReceiveRecord
 };

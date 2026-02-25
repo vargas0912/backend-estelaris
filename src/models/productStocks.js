@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
         as: 'branch',
         foreignKey: 'branch_id'
       });
+      this.belongsTo(models.purchases, {
+        as: 'lastPurchase',
+        foreignKey: 'purch_id'
+      });
     }
   }
   productStocks.init({
@@ -44,6 +48,14 @@ module.exports = (sequelize, DataTypes) => {
     },
     last_count_date: {
       type: DataTypes.DATE,
+      allowNull: true
+    },
+    purch_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    bar_code: {
+      type: DataTypes.STRING(100),
       allowNull: true
     }
   }, {
