@@ -26,6 +26,7 @@ const {
 
 const { PURCHASE } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
+const branchScope = require('../middlewares/branchScope');
 
 /**
  * @openapi
@@ -44,6 +45,7 @@ const { ROLE } = require('../constants/roles');
 router.get('/', [
   readLimiter,
   authMidleware,
+  branchScope,
   checkRol([ROLE.USER, ROLE.ADMIN], PURCHASE.VIEW_ALL)
 ], getRecords);
 
@@ -95,6 +97,7 @@ router.get('/supplier/:supplier_id', [
 router.get('/branch/:branch_id', [
   searchLimiter,
   authMidleware,
+  branchScope,
   validateGetByBranch,
   checkRol([ROLE.USER, ROLE.ADMIN], PURCHASE.VIEW_ALL)
 ], getRecordsByBranch);
@@ -123,6 +126,7 @@ router.get('/branch/:branch_id', [
 router.get('/:id', [
   readLimiter,
   authMidleware,
+  branchScope,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PURCHASE.VIEW_ALL)
 ], getRecord);

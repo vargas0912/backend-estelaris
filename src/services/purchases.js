@@ -70,9 +70,11 @@ const purchaseIncludes = [
   }
 ];
 
-const getAllPurchases = async () => {
+const getAllPurchases = async (branchId) => {
+  const where = branchId ? { branch_id: branchId } : {};
   const result = await purchases.findAll({
     attributes: purchaseAttributes,
+    where,
     include: purchaseIncludes,
     order: [['purch_date', 'DESC']]
   });

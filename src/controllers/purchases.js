@@ -14,7 +14,7 @@ const {
 
 const getRecords = async (req, res) => {
   try {
-    const purchaseList = await getAllPurchases();
+    const purchaseList = await getAllPurchases(req.branchId);
     res.send({ purchases: purchaseList });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
