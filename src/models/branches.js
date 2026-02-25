@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: 'user_id'
       });
       this.hasMany(models.purchases, { as: 'purchases', foreignKey: 'branch_id' });
+      this.hasMany(models.stockMovements, { as: 'stockMovements', foreignKey: 'branch_id' });
     }
   }
 

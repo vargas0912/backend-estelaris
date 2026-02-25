@@ -45,6 +45,10 @@ module.exports = (sequelize, DataTypes) => {
     last_count_date: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    batch_ref: {
+      type: DataTypes.STRING(100),
+      allowNull: true
     }
   }, {
     sequelize,

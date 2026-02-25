@@ -9,7 +9,8 @@ const {
   createPurchase,
   updatePurchase,
   cancelPurchase,
-  deletePurchase
+  deletePurchase,
+  receivePurchase
 } = require('../services/purchases');
 
 const getRecords = async (req, res) => {
@@ -138,6 +139,28 @@ const deleteRecord = async (req, res) => {
   }
 };
 
+const receiveRecord = async (req, res) => {
+  try {
+    const { id } = matchedData(req);
+    const userId = req.user.id;
+    const result = await receivePurchase(id, userId);
+
+    if (result && result.error === 'NOT_FOUND') {
+      handleHttpError(res, `PURCHASE ${id} NOT EXISTS`, 404);
+      return;
+    }
+
+    if (result && result.error) {
+      handleHttpError(res, result.error, 409);
+      return;
+    }
+
+    res.send({ purchase: result });
+  } catch (error) {
+    handleHttpError(res, `ERROR_RECEIVE_RECORD --> ${error}`, 400);
+  }
+};
+
 module.exports = {
   getRecords,
   getRecord,
@@ -146,5 +169,6 @@ module.exports = {
   addRecord,
   updateRecord,
   cancelRecord,
-  deleteRecord
+  deleteRecord,
+  receiveRecord
 };

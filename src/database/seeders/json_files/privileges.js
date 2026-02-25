@@ -124,7 +124,8 @@ const data = [
   { name: PURCH.NAME_ADD, codeName: PURCH.ADD, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: PURCH.NAME_UPDATE, codeName: PURCH.UPDATE, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: PURCH.NAME_CANCEL, codeName: PURCH.CANCEL, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: PURCH.NAME_DELETE, codeName: PURCH.DELETE, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: PURCH.NAME_DELETE, codeName: PURCH.DELETE, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PURCH.NAME_RECEIVE, codeName: PURCH.RECEIVE, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha }
 ];
 
 module.exports = { data };

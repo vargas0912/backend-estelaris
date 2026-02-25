@@ -1,5 +1,6 @@
 const { purchases, purchaseDetails, suppliers, branches, users, products } = require('../models/index');
 const { sequelize } = require('../models/index');
+const { updateFromPurchase } = require('./productStocks');
 
 const purchaseAttributes = [
   'id',
@@ -18,6 +19,7 @@ const purchaseAttributes = [
   'due_payment',
   'due_date',
   'notes',
+  'received_at',
   'created_at',
   'updated_at'
 ];
@@ -268,6 +270,45 @@ const deletePurchase = async (id) => {
   return result;
 };
 
+const receivePurchase = async (id, userId) => {
+  const purchase = await purchases.findOne({
+    where: { id },
+    include: [
+      {
+        model: purchaseDetails,
+        as: 'details',
+        attributes: detailAttributes
+      }
+    ]
+  });
+
+  if (!purchase) {
+    return { error: 'NOT_FOUND' };
+  }
+
+  if (purchase.status !== 'Pendiente') {
+    return { error: 'PURCHASE_CANNOT_BE_RECEIVED' };
+  }
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    purchase.status = 'Recibido';
+    purchase.received_at = new Date().toISOString().slice(0, 10);
+    await purchase.save({ transaction });
+
+    await updateFromPurchase(id, purchase.details, purchase.branch_id, userId, transaction);
+
+    await transaction.commit();
+
+    const result = await getPurchase(id);
+    return result;
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+
 module.exports = {
   getAllPurchases,
   getPurchase,
@@ -276,5 +317,6 @@ module.exports = {
   createPurchase,
   updatePurchase,
   cancelPurchase,
-  deletePurchase
+  deletePurchase,
+  receivePurchase
 };

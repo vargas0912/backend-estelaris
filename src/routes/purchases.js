@@ -6,7 +6,8 @@ const {
   validateGetBySupplier,
   validateGetByBranch,
   valiAddRecord,
-  valiUpdateRecord
+  valiUpdateRecord,
+  validateReceiveRecord
 } = require('../validators/purchases');
 
 const authMidleware = require('../middlewares/session');
@@ -21,7 +22,8 @@ const {
   addRecord,
   updateRecord,
   cancelRecord,
-  deleteRecord
+  deleteRecord,
+  receiveRecord
 } = require('../controllers/purchases');
 
 const { PURCHASE } = require('../constants/modules');
@@ -285,5 +287,37 @@ router.delete('/:id', [
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], PURCHASE.DELETE)
 ], deleteRecord);
+
+/**
+ * @openapi
+ * /purchases/{id}/receive:
+ *    patch:
+ *      tags:
+ *        - purchases
+ *      summary: Recibir compra
+ *      description: Confirma la recepción física de la mercadería, actualiza inventario y registra movimientos de stock. Solo aplica a compras en estado Pendiente.
+ *      security:
+ *        - bearerAuth: []
+ *      parameters:
+ *      - name: id
+ *        in: path
+ *        required: true
+ *        schema:
+ *          type: number
+ *      responses:
+ *        '200':
+ *          description: Compra recibida e inventario actualizado
+ *        '404':
+ *          description: Compra no encontrada
+ *        '409':
+ *          description: La compra no puede ser recibida en su estado actual
+ */
+router.patch('/:id/receive', [
+  writeLimiter,
+  authMidleware,
+  branchScope,
+  validateReceiveRecord,
+  checkRol([ROLE.USER, ROLE.ADMIN], PURCHASE.RECEIVE)
+], receiveRecord);
 
 module.exports = router;

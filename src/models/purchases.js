@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     status: {
-      type: DataTypes.ENUM('Pendiente', 'Pagado', 'Cancelado'),
+      type: DataTypes.ENUM('Pendiente', 'Recibido', 'Pagado', 'Cancelado'),
       allowNull: false,
       defaultValue: 'Pendiente'
     },
@@ -77,6 +77,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     notes: {
       type: DataTypes.TEXT,
+      allowNull: true
+    },
+    received_at: {
+      type: DataTypes.DATEONLY,
       allowNull: true
     }
   }, {

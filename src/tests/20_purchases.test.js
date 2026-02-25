@@ -11,7 +11,8 @@ const {
   purchaseCreateEmptyItems,
   purchaseCreateInvalidProduct,
   purchaseUpdate,
-  purchaseUpdateStatus
+  purchaseUpdateStatus,
+  purchaseForReceive
 } = require('./helper/purchasesData');
 
 let Token = '';
@@ -336,6 +337,104 @@ describe('[PURCHASES] Test api purchases /api/purchases/', () => {
         .delete('/api/purchases/99999')
         .auth(Token, { type: 'bearer' })
         .expect(404);
+    });
+  });
+
+  // ============================================
+  // Tests de recepción de compra
+  // ============================================
+  describe('Tests de recepción de compra', () => {
+    let receivePurchaseId = null;
+
+    test('R1. Crear compra para recibir. Expect 200', async () => {
+      const response = await api
+        .post('/api/purchases')
+        .auth(Token, { type: 'bearer' })
+        .send(purchaseForReceive)
+        .expect(200);
+
+      expect(response.body.purchase.status).toBe('Pendiente');
+      receivePurchaseId = response.body.purchase.id;
+    });
+
+    test('R2. Recibir compra (happy path). Expect 200', async () => {
+      const response = await api
+        .patch(`/api/purchases/${receivePurchaseId}/receive`)
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('purchase');
+      expect(response.body.purchase.status).toBe('Recibido');
+      expect(response.body.purchase.received_at).not.toBeNull();
+    });
+
+    test('R3. Verificar que productStock.quantity se actualizó. Expect > 0', async () => {
+      const response = await api
+        .get('/api/productStocks')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      const stocks = response.body.stocks;
+      const stockForProduct = stocks.find(s =>
+        s.product_id === purchaseForReceive.items[0].product_id &&
+        s.branch_id === purchaseForReceive.branch_id
+      );
+
+      expect(stockForProduct).toBeDefined();
+      expect(parseFloat(stockForProduct.quantity)).toBeGreaterThan(0);
+    });
+
+    test('R4. Recibir compra ya recibida. Expect 409', async () => {
+      await api
+        .patch(`/api/purchases/${receivePurchaseId}/receive`)
+        .auth(Token, { type: 'bearer' })
+        .expect(409);
+    });
+
+    test('R5. Recibir compra inexistente. Expect 404', async () => {
+      await api
+        .patch('/api/purchases/99999/receive')
+        .auth(Token, { type: 'bearer' })
+        .expect(404);
+    });
+
+    test('R6. Recibir compra cancelada. Expect 409', async () => {
+      // creditPurchaseId fue cancelado en test 10
+      await api
+        .patch(`/api/purchases/${creditPurchaseId}/cancel`)
+        .auth(Token, { type: 'bearer' });
+
+      // Crear una compra nueva para cancelar y luego intentar recibir
+      const createRes = await api
+        .post('/api/purchases')
+        .auth(Token, { type: 'bearer' })
+        .send(purchaseForReceive)
+        .expect(200);
+
+      const cancelId = createRes.body.purchase.id;
+
+      await api
+        .put(`/api/purchases/${cancelId}/cancel`)
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      await api
+        .patch(`/api/purchases/${cancelId}/receive`)
+        .auth(Token, { type: 'bearer' })
+        .expect(409);
+    });
+
+    test('R7. Recibir sin token. Expect 401', async () => {
+      await api
+        .patch(`/api/purchases/${receivePurchaseId}/receive`)
+        .expect(401);
+    });
+
+    test('R8. Recibir con ID no numérico. Expect 400', async () => {
+      await api
+        .patch('/api/purchases/abc/receive')
+        .auth(Token, { type: 'bearer' })
+        .expect(400);
     });
   });
 
