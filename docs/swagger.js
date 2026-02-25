@@ -783,6 +783,44 @@ const swaggerDefinition = {
           }
         }
       },
+      purchases: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          supplier_id: { type: 'integer' },
+          branch_id: { type: 'integer' },
+          user_id: { type: 'integer' },
+          purch_date: { type: 'string', format: 'date' },
+          invoice_number: { type: 'string' },
+          purch_type: { type: 'string', enum: ['Contado', 'Credito'] },
+          payment_method: { type: 'string', enum: ['Efectivo', 'Transferencia', 'Cheque', 'Tarjeta'] },
+          status: { type: 'string', enum: ['Pendiente', 'Pagado', 'Cancelado'] },
+          subtotal: { type: 'number', format: 'decimal' },
+          discount_amount: { type: 'number', format: 'decimal' },
+          tax_amount: { type: 'number', format: 'decimal' },
+          purch_total: { type: 'number', format: 'decimal' },
+          due_payment: { type: 'number', format: 'decimal' },
+          due_date: { type: 'string', format: 'date' },
+          notes: { type: 'string' },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      purchaseDetails: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          purch_id: { type: 'integer' },
+          product_id: { type: 'integer' },
+          qty: { type: 'number', format: 'decimal' },
+          unit_price: { type: 'number', format: 'decimal' },
+          discount: { type: 'number', format: 'decimal' },
+          tax_rate: { type: 'number', format: 'decimal' },
+          subtotal: { type: 'number', format: 'decimal' },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
       generateByProductResult: {
         type: 'object',
         description: 'Resultado de la generación masiva de precios para un producto',
