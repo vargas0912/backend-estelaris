@@ -97,7 +97,7 @@ const productCategoryCreate2 = {
 
 // Datos de prueba para products
 const productCreate = {
-  sku: 'SKU-TEST-001',
+  id: 'SKU-TEST-001',
   name: 'Producto de prueba',
   description: 'Descripción del producto de prueba',
   short_description: 'Desc corta',
@@ -109,7 +109,7 @@ const productCreate = {
 };
 
 const productCreateEmpty = {
-  sku: '',
+  id: '',
   name: '',
   base_price: ''
 };
@@ -117,21 +117,20 @@ const productCreateEmpty = {
 const productCreateInvalid = {};
 
 const productUpdate = {
-  sku: 'SKU-TEST-001-UPD',
   name: 'Producto modificado',
   description: 'Descripción modificada',
   base_price: 150.0
 };
 
 const productCreate2 = {
-  sku: 'SKU-TEST-002',
+  id: 'SKU-TEST-002',
   name: 'Segundo producto de prueba',
   description: 'Segunda descripción',
   base_price: 200.0
 };
 
 const productCreateFull = {
-  sku: 'SKU-FULL-001',
+  id: 'SKU-FULL-001',
   barcode: '7501234567890',
   name: 'Producto completo',
   description: 'Descripción completa del producto',
@@ -151,23 +150,23 @@ const productCreateFull = {
 };
 
 const productCreateNoSku = {
-  name: 'Producto sin SKU',
+  name: 'Producto sin ID',
   base_price: 100.0
 };
 
 const productCreateNoName = {
-  sku: 'SKU-NO-NAME',
+  id: 'SKU-NO-NAME',
   base_price: 100.0
 };
 
 const productCreateNoPrice = {
-  sku: 'SKU-NO-PRICE',
+  id: 'SKU-NO-PRICE',
   name: 'Producto sin precio'
 };
 
 // Datos de prueba para productStocks
 const productStockCreate = {
-  product_id: 2,
+  product_id: 'TEST-002',
   branch_id: 2,
   quantity: 100,
   min_stock: 10,
@@ -190,7 +189,7 @@ const productStockUpdate = {
 };
 
 const productStockCreate2 = {
-  product_id: 3,
+  product_id: 'TEST-003',
   branch_id: 2,
   quantity: 50,
   min_stock: 5,
@@ -198,7 +197,7 @@ const productStockCreate2 = {
 };
 
 const productStockCreateFull = {
-  product_id: 3,
+  product_id: 'TEST-003',
   branch_id: 3,
   quantity: 75.5,
   min_stock: 10.25,
@@ -213,7 +212,7 @@ const productStockCreateNoProduct = {
 };
 
 const productStockCreateNoBranch = {
-  product_id: 1,
+  product_id: 'TEST-001',
   quantity: 100
 };
 
@@ -261,7 +260,7 @@ const priceListCreateNoName = {
 
 // Datos de prueba para productPrices
 const productPriceCreate = {
-  product_id: 3,
+  product_id: 'TEST-003',
   price_list_id: 2,
   price: 100.0,
   min_quantity: 1
@@ -280,14 +279,14 @@ const productPriceUpdate = {
 };
 
 const productPriceCreate2 = {
-  product_id: 3,
+  product_id: 'TEST-003',
   price_list_id: 3,
   price: 90.0,
   min_quantity: 1
 };
 
 const productPriceCreateTiered = {
-  product_id: 2,
+  product_id: 'TEST-002',
   price_list_id: 2,
   price: 85.0,
   min_quantity: 1
@@ -299,12 +298,12 @@ const productPriceCreateNoProduct = {
 };
 
 const productPriceCreateNoPriceList = {
-  product_id: 1,
+  product_id: 'TEST-001',
   price: 100.0
 };
 
 const productPriceCreateNoPrice = {
-  product_id: 1,
+  product_id: 'TEST-001',
   price_list_id: 1
 };
 
@@ -609,7 +608,7 @@ const campaignInvalidDates = {
 // Datos de prueba para campaignProducts
 const campaignProductCreate = {
   campaign_id: 1,
-  product_id: 1,
+  product_id: 'TEST-001',
   discount_type: 'percentage',
   discount_value: 15.0,
   max_quantity: 100
@@ -632,21 +631,21 @@ const campaignProductUpdate = {
 
 const campaignProductCreate2 = {
   campaign_id: 1,
-  product_id: 2,
+  product_id: 'TEST-002',
   discount_type: 'fixed_price',
   discount_value: 99.99
 };
 
 const campaignProductInvalidDiscount = {
   campaign_id: 1,
-  product_id: 1,
+  product_id: 'TEST-001',
   discount_type: 'percentage',
   discount_value: 150
 };
 
 const campaignProductNegativeDiscount = {
   campaign_id: 1,
-  product_id: 1,
+  product_id: 'TEST-001',
   discount_type: 'percentage',
   discount_value: -10
 };

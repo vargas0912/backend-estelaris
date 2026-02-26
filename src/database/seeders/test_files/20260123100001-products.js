@@ -5,8 +5,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     const products = [
       {
-        id: 1,
-        sku: 'TEST-001',
+        id: 'TEST-001',
         barcode: '1234567890001',
         name: 'Producto Test 1',
         description: 'Descripción del producto de prueba 1',
@@ -27,8 +26,7 @@ module.exports = {
         updated_at: new Date()
       },
       {
-        id: 2,
-        sku: 'TEST-002',
+        id: 'TEST-002',
         barcode: '1234567890002',
         name: 'Producto Test 2',
         description: 'Descripción del producto de prueba 2',
@@ -49,8 +47,7 @@ module.exports = {
         updated_at: new Date()
       },
       {
-        id: 3,
-        sku: 'TEST-003',
+        id: 'TEST-003',
         barcode: '1234567890003',
         name: 'Producto Test 3',
         description: 'Descripción del producto de prueba 3',

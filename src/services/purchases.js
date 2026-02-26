@@ -38,7 +38,7 @@ const detailAttributes = [
 const supplierAttributes = ['id', 'name', 'trade_name', 'tax_id'];
 const branchAttributes = ['id', 'name'];
 const userAttributes = ['id', 'name', 'email'];
-const productAttributes = ['id', 'sku', 'name'];
+const productAttributes = ['id', 'name'];
 
 const detailIncludes = [
   {

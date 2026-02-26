@@ -16,7 +16,8 @@ const validateGetByProduct = [
   check('product_id')
     .exists().withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_IS_EMPTY).bail()
-    .isInt().withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_INVALID).bail(),
+    .isString().withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_INVALID).bail()
+    .isLength({ max: 20 }).withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_INVALID).bail(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -36,7 +37,8 @@ const valiAddRecord = [
   check('product_id')
     .exists().withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_IS_EMPTY).bail()
-    .isInt().withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_INVALID).bail(),
+    .isString().withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_INVALID).bail()
+    .isLength({ max: 20 }).withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_INVALID).bail(),
   check('branch_id')
     .exists().withMessage(PRODUCT_STOCKS_VALIDATORS.BRANCH_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(PRODUCT_STOCKS_VALIDATORS.BRANCH_ID_IS_EMPTY).bail()
@@ -65,7 +67,8 @@ const valiUpdateRecord = [
     .notEmpty().withMessage(PRODUCT_STOCKS_VALIDATORS.ID_IS_EMPTY).bail(),
   check('product_id')
     .optional()
-    .isInt().withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_INVALID).bail(),
+    .isString().withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_INVALID).bail()
+    .isLength({ max: 20 }).withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_INVALID).bail(),
   check('branch_id')
     .optional()
     .isInt().withMessage(PRODUCT_STOCKS_VALIDATORS.BRANCH_ID_INVALID).bail(),

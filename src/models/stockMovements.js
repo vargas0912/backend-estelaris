@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
 
   stockMovements.init({
     product_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING(20),
       allowNull: false
     },
     branch_id: {

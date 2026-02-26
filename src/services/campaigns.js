@@ -41,7 +41,7 @@ const getAllCampaigns = async(filters = {}) => {
           {
             model: Products,
             as: 'product',
-            attributes: ['id', 'name', 'sku', 'base_price']
+            attributes: ['id', 'name', 'base_price']
           }
         ]
       },

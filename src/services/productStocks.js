@@ -15,10 +15,10 @@ const attributes = [
   'updated_at'
 ];
 
-const productAttributes = ['id', 'sku', 'name'];
+const productAttributes = ['id', 'name'];
 const branchAttributes = ['id', 'name'];
 
-const getAllProductStocks = async(branchId = null) => {
+const getAllProductStocks = async (branchId = null) => {
   const where = branchId !== null ? { branch_id: branchId } : {};
 
   const result = await productStocks.findAll({
@@ -41,7 +41,7 @@ const getAllProductStocks = async(branchId = null) => {
   return result;
 };
 
-const getProductStock = async(id) => {
+const getProductStock = async (id) => {
   const result = await productStocks.findOne({
     attributes,
     where: {
@@ -64,7 +64,7 @@ const getProductStock = async(id) => {
   return result;
 };
 
-const getStocksByProduct = async(productId) => {
+const getStocksByProduct = async (productId) => {
   const result = await productStocks.findAll({
     attributes,
     where: {
@@ -82,7 +82,7 @@ const getStocksByProduct = async(productId) => {
   return result;
 };
 
-const getStocksByBranch = async(branchId) => {
+const getStocksByBranch = async (branchId) => {
   const result = await productStocks.findAll({
     attributes,
     where: {
@@ -100,13 +100,13 @@ const getStocksByBranch = async(branchId) => {
   return result;
 };
 
-const addNewProductStock = async(body) => {
+const addNewProductStock = async (body) => {
   const result = await productStocks.create(body);
 
   return result;
 };
 
-const updateProductStock = async(id, req) => {
+const updateProductStock = async (id, req) => {
   const {
     product_id: productId,
     branch_id: branchId,
@@ -139,7 +139,7 @@ const updateProductStock = async(id, req) => {
   return result;
 };
 
-const deleteProductStock = async(id) => {
+const deleteProductStock = async (id) => {
   const result = await productStocks.destroy({
     where: {
       id
@@ -160,8 +160,7 @@ const updateFromPurchase = async (purchaseId, details, branchId, userId, transac
 
   const today = new Date();
 
-  for (const [productIdStr, qty] of Object.entries(grouped)) {
-    const productId = parseInt(productIdStr);
+  for (const [productId, qty] of Object.entries(grouped)) {
     const barCode = `${productId}-${purchaseId}`;
     const minStock = parseFloat((qty * 0.25).toFixed(3));
     const maxStock = parseFloat((qty * 1.5).toFixed(3));

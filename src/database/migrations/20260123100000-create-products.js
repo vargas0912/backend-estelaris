@@ -5,14 +5,8 @@ module.exports = {
     await queryInterface.createTable('products', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      sku: {
-        allowNull: false,
-        unique: true,
-        type: Sequelize.STRING(50)
+        type: Sequelize.STRING(20)
       },
       barcode: {
         allowNull: true,
@@ -105,7 +99,6 @@ module.exports = {
     });
 
     // Add index for faster searches
-    await queryInterface.addIndex('products', ['sku']);
     await queryInterface.addIndex('products', ['barcode']);
     await queryInterface.addIndex('products', ['category_id']);
     await queryInterface.addIndex('products', ['is_active']);

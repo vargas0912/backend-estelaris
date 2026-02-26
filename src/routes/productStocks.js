@@ -65,7 +65,8 @@ router.get('/', [
  *        description: Identificador del producto
  *        required: true
  *        schema:
- *          type: number
+ *          type: string
+ *          maxLength: 20
  *      responses:
  *        '200':
  *          description: Arreglo de inventarios del producto
@@ -162,7 +163,8 @@ router.get('/:id', [
  *                              - branch_id
  *                          properties:
  *                              product_id:
- *                                  type: number
+ *                                  type: string
+ *                                  maxLength: 20
  *                                  description: ID del producto
  *                              branch_id:
  *                                  type: number

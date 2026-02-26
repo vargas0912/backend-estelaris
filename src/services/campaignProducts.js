@@ -12,7 +12,7 @@ const getProductsByCampaign = async(campaignId) => {
       {
         model: Products,
         as: 'product',
-        attributes: ['id', 'name', 'sku', 'base_price', 'description']
+        attributes: ['id', 'name', 'base_price', 'description']
       },
       {
         model: CampaignProductBranches,

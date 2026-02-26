@@ -11,7 +11,7 @@ const attributes = [
   'updated_at'
 ];
 
-const productAttributes = ['id', 'sku', 'name', 'base_price'];
+const productAttributes = ['id', 'name', 'base_price'];
 const priceListAttributes = ['id', 'name', 'discount_percent'];
 
 const getAllProductPrices = async () => {

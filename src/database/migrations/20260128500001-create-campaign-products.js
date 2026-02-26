@@ -21,7 +21,7 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       product_id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING(20),
         allowNull: false,
         references: {
           model: 'products',

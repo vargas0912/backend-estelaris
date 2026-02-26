@@ -3,7 +3,7 @@ module.exports = {
     {
       id: 1,
       campaign_id: 1,
-      product_id: 1,
+      product_id: 'SAL-001',
       discount_type: 'percentage',
       discount_value: 25.00,
       max_quantity: 100,
@@ -12,7 +12,7 @@ module.exports = {
     {
       id: 2,
       campaign_id: 1,
-      product_id: 2,
+      product_id: 'COM-001',
       discount_type: 'percentage',
       discount_value: 30.00,
       max_quantity: 50,
@@ -21,7 +21,7 @@ module.exports = {
     {
       id: 3,
       campaign_id: 1,
-      product_id: 3,
+      product_id: 'REC-001',
       discount_type: 'fixed_price',
       discount_value: 50.00,
       max_quantity: 25,
@@ -30,7 +30,7 @@ module.exports = {
     {
       id: 4,
       campaign_id: 2,
-      product_id: 1,
+      product_id: 'SAL-001',
       discount_type: 'percentage',
       discount_value: 35.00,
       max_quantity: 75,
@@ -39,7 +39,7 @@ module.exports = {
     {
       id: 5,
       campaign_id: 2,
-      product_id: 2,
+      product_id: 'COM-001',
       discount_type: 'percentage',
       discount_value: 20.00,
       max_quantity: null,

@@ -127,7 +127,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       product_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING(20),
         allowNull: false,
         validate: {
           notEmpty: {
