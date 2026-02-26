@@ -4,10 +4,10 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     const productStocks = [
-      // Producto 1 en sucursal 1
+      // TEST-001 en sucursal 1
       {
         id: 1,
-        product_id: 1,
+        product_id: 'TEST-001',
         branch_id: 1,
         quantity: 100,
         min_stock: 10,
@@ -17,10 +17,10 @@ module.exports = {
         created_at: new Date(),
         updated_at: new Date()
       },
-      // Producto 1 en sucursal 2
+      // TEST-001 en sucursal 2
       {
         id: 2,
-        product_id: 1,
+        product_id: 'TEST-001',
         branch_id: 2,
         quantity: 50,
         min_stock: 5,
@@ -30,10 +30,10 @@ module.exports = {
         created_at: new Date(),
         updated_at: new Date()
       },
-      // Producto 2 en sucursal 1
+      // TEST-002 en sucursal 1
       {
         id: 3,
-        product_id: 2,
+        product_id: 'TEST-002',
         branch_id: 1,
         quantity: 75,
         min_stock: 8,
@@ -43,10 +43,10 @@ module.exports = {
         created_at: new Date(),
         updated_at: new Date()
       },
-      // Producto 3 en sucursal 1
+      // TEST-003 en sucursal 1
       {
         id: 4,
-        product_id: 3,
+        product_id: 'TEST-003',
         branch_id: 1,
         quantity: 25.5,
         min_stock: 5,

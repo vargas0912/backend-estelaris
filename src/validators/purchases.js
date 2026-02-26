@@ -65,8 +65,9 @@ const valiAddRecord = [
     .exists().withMessage(PURCHASES_VALIDATORS.ITEMS_NOT_EXISTS).bail()
     .isArray({ min: 1 }).withMessage(PURCHASES_VALIDATORS.ITEMS_INVALID).bail(),
   check('items.*.product_id')
-    .isInt({ min: 1 }).withMessage(PURCHASES_VALIDATORS.ITEM_PRODUCT_ID_INVALID).bail()
-    .toInt(),
+    .isString().withMessage(PURCHASES_VALIDATORS.ITEM_PRODUCT_ID_INVALID).bail()
+    .notEmpty().withMessage(PURCHASES_VALIDATORS.ITEM_PRODUCT_ID_INVALID).bail()
+    .isLength({ max: 20 }).withMessage(PURCHASES_VALIDATORS.ITEM_PRODUCT_ID_INVALID).bail(),
   check('items.*.qty')
     .isDecimal({ decimal_digits: '0,3', force_decimal: false }).withMessage(PURCHASES_VALIDATORS.ITEM_QTY_INVALID).bail()
     .custom(val => parseFloat(val) > 0).withMessage(PURCHASES_VALIDATORS.ITEM_QTY_INVALID),

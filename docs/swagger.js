@@ -405,10 +405,9 @@ const swaggerDefinition = {
         type: 'object',
         properties: {
           id: {
-            type: 'integer'
-          },
-          sku: {
-            type: 'string'
+            type: 'string',
+            maxLength: 20,
+            description: 'Identificador único del producto (código SKU)'
           },
           barcode: {
             type: 'string'
@@ -482,7 +481,8 @@ const swaggerDefinition = {
             type: 'integer'
           },
           product_id: {
-            type: 'integer'
+            type: 'string',
+            maxLength: 20
           },
           branch_id: {
             type: 'integer'
@@ -555,7 +555,8 @@ const swaggerDefinition = {
             type: 'integer'
           },
           product_id: {
-            type: 'integer'
+            type: 'string',
+            maxLength: 20
           },
           price_list_id: {
             type: 'integer'
@@ -687,7 +688,8 @@ const swaggerDefinition = {
             type: 'integer'
           },
           product_id: {
-            type: 'integer'
+            type: 'string',
+            maxLength: 20
           },
           discount_type: {
             type: 'string',
@@ -811,7 +813,7 @@ const swaggerDefinition = {
         properties: {
           id: { type: 'integer' },
           purch_id: { type: 'integer' },
-          product_id: { type: 'integer' },
+          product_id: { type: 'string', maxLength: 20 },
           qty: { type: 'number', format: 'decimal' },
           unit_price: { type: 'number', format: 'decimal' },
           discount: { type: 'number', format: 'decimal' },
@@ -826,7 +828,8 @@ const swaggerDefinition = {
         description: 'Resultado de la generación masiva de precios para un producto',
         properties: {
           product_id: {
-            type: 'integer',
+            type: 'string',
+            maxLength: 20,
             description: 'ID del producto procesado'
           },
           created: {

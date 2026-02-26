@@ -31,7 +31,7 @@ let superadminToken = '';
 
 describe('[SECURITY] User Role Restrictions - Operations blocked for regular users', () => {
   // Setup: crear usuario de prueba y obtener tokens
-  beforeAll(async() => {
+  beforeAll(async () => {
     // Login como superadmin
     const superadminLoginResponse = await api
       .post('/api/auth/login')
@@ -68,7 +68,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
   // Tests de Products
   // ============================================
   describe('Products - User without privileges cannot manage', () => {
-    test('1. User NO puede crear producto sin privilegio ADD. Expect 403', async() => {
+    test('1. User NO puede crear producto sin privilegio ADD. Expect 403', async () => {
       if (!userToken) {
         console.log('User token not available, skipping test');
         expect(true).toBe(true);
@@ -79,7 +79,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
         .post('/api/products')
         .auth(userToken, { type: 'bearer' })
         .send({
-          sku: 'TEST-RESTRICTED',
+          id: 'TEST-RESTRICTED',
           name: 'Producto de prueba restringido',
           base_price: 100.00
         });
@@ -88,7 +88,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
       expect(response.status).toBe(403);
     });
 
-    test('2. User NO puede actualizar producto sin privilegio UPDATE. Expect 403', async() => {
+    test('2. User NO puede actualizar producto sin privilegio UPDATE. Expect 403', async () => {
       if (!userToken) {
         console.log('User token not available, skipping test');
         expect(true).toBe(true);
@@ -99,7 +99,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
         .put('/api/products/1')
         .auth(userToken, { type: 'bearer' })
         .send({
-          sku: 'MODIFIED',
+          id: 'MODIFIED',
           name: 'Intento modificar',
           base_price: 150.00
         });
@@ -107,7 +107,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
       expect(response.status).toBe(403);
     });
 
-    test('3. User NO puede eliminar producto sin privilegio DELETE. Expect 403', async() => {
+    test('3. User NO puede eliminar producto sin privilegio DELETE. Expect 403', async () => {
       if (!userToken) {
         console.log('User token not available, skipping test');
         expect(true).toBe(true);
@@ -126,7 +126,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
   // Tests de Branches
   // ============================================
   describe('Branches - User without privileges cannot manage', () => {
-    test('4. User NO puede crear sucursal sin privilegio ADD. Expect 403', async() => {
+    test('4. User NO puede crear sucursal sin privilegio ADD. Expect 403', async () => {
       if (!userToken) {
         console.log('User token not available, skipping test');
         expect(true).toBe(true);
@@ -146,7 +146,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
       expect(response.status).toBe(403);
     });
 
-    test('5. User NO puede actualizar sucursal sin privilegio UPDATE. Expect 403 o 400', async() => {
+    test('5. User NO puede actualizar sucursal sin privilegio UPDATE. Expect 403 o 400', async () => {
       if (!userToken) {
         console.log('User token not available, skipping test');
         expect(true).toBe(true);
@@ -164,7 +164,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
       expect([400, 403]).toContain(response.status);
     });
 
-    test('6. User NO puede eliminar sucursal sin privilegio DELETE. Expect 403', async() => {
+    test('6. User NO puede eliminar sucursal sin privilegio DELETE. Expect 403', async () => {
       if (!userToken) {
         console.log('User token not available, skipping test');
         expect(true).toBe(true);
@@ -183,7 +183,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
   // Tests de Employees
   // ============================================
   describe('Employees - User without privileges cannot manage', () => {
-    test('7. User NO puede crear empleado sin privilegio ADD. Expect 400 o 403', async() => {
+    test('7. User NO puede crear empleado sin privilegio ADD. Expect 400 o 403', async () => {
       if (!userToken) {
         console.log('User token not available, skipping test');
         expect(true).toBe(true);
@@ -205,7 +205,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
       expect([400, 403]).toContain(response.status);
     });
 
-    test('8. User NO puede actualizar empleado sin privilegio UPDATE. Expect 403 o 400', async() => {
+    test('8. User NO puede actualizar empleado sin privilegio UPDATE. Expect 403 o 400', async () => {
       if (!userToken) {
         console.log('User token not available, skipping test');
         expect(true).toBe(true);
@@ -223,7 +223,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
       expect([400, 403]).toContain(response.status);
     });
 
-    test('9. User NO puede eliminar empleado sin privilegio DELETE. Expect 400 o 403', async() => {
+    test('9. User NO puede eliminar empleado sin privilegio DELETE. Expect 400 o 403', async () => {
       if (!userToken) {
         console.log('User token not available, skipping test');
         expect(true).toBe(true);
@@ -243,7 +243,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
   // Tests de Campaigns
   // ============================================
   describe('Campaigns - User without privileges cannot manage', () => {
-    test('10. User NO puede crear campaña sin privilegio ADD. Expect 403', async() => {
+    test('10. User NO puede crear campaña sin privilegio ADD. Expect 403', async () => {
       if (!userToken) {
         console.log('User token not available, skipping test');
         expect(true).toBe(true);
@@ -264,7 +264,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
       expect(response.status).toBe(403);
     });
 
-    test('11. User NO puede actualizar campaña sin privilegio UPDATE. Expect 403', async() => {
+    test('11. User NO puede actualizar campaña sin privilegio UPDATE. Expect 403', async () => {
       if (!userToken) {
         console.log('User token not available, skipping test');
         expect(true).toBe(true);
@@ -281,7 +281,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
       expect(response.status).toBe(403);
     });
 
-    test('12. User NO puede activar campaña sin privilegio ACTIVATE. Expect 403', async() => {
+    test('12. User NO puede activar campaña sin privilegio ACTIVATE. Expect 403', async () => {
       if (!userToken) {
         console.log('User token not available, skipping test');
         expect(true).toBe(true);
@@ -295,7 +295,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
       expect(response.status).toBe(403);
     });
 
-    test('13. User NO puede eliminar campaña sin privilegio DELETE. Expect 403', async() => {
+    test('13. User NO puede eliminar campaña sin privilegio DELETE. Expect 403', async () => {
       if (!userToken) {
         console.log('User token not available, skipping test');
         expect(true).toBe(true);
@@ -314,7 +314,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
   // Tests de Users (ya cubierto en 12_users.test.js, pero agregamos resumen)
   // ============================================
   describe('Users - User without privileges cannot manage', () => {
-    test('14. User NO puede registrar nuevos usuarios sin privilegio ADD. Expect 403', async() => {
+    test('14. User NO puede registrar nuevos usuarios sin privilegio ADD. Expect 403', async () => {
       if (!userToken) {
         console.log('User token not available, skipping test');
         expect(true).toBe(true);
@@ -338,7 +338,7 @@ describe('[SECURITY] User Role Restrictions - Operations blocked for regular use
   // ============================================
   // Cleanup
   // ============================================
-  afterAll(async() => {
+  afterAll(async () => {
     // Eliminar usuario de prueba
     if (regularUserId && superadminToken) {
       await api

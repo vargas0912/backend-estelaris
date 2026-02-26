@@ -177,7 +177,8 @@ router.get('/:id', [
  *                      - unit_price
  *                    properties:
  *                      product_id:
- *                        type: integer
+ *                        type: string
+ *                        maxLength: 20
  *                      qty:
  *                        type: number
  *                      unit_price:

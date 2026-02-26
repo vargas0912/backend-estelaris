@@ -43,7 +43,7 @@ const testUser = {
  */
 
 describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
-  test('Login para obtener token. 200', async() => {
+  test('Login para obtener token. 200', async () => {
     await api
       .post('/api/auth/login')
       .set('Content-type', 'application/json')
@@ -55,7 +55,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       });
   });
 
-  test('1. Obtener lista de precios. Expect 200', async() => {
+  test('1. Obtener lista de precios. Expect 200', async () => {
     const response = await api
       .get('/api/productPrices')
       .auth(Token, { type: 'bearer' })
@@ -65,7 +65,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
     expect(Array.isArray(response.body.prices)).toBe(true);
   });
 
-  test('2. Crear precio con datos válidos. Expect 200', async() => {
+  test('2. Crear precio con datos válidos. Expect 200', async () => {
     const response = await api
       .post('/api/productPrices')
       .auth(Token, { type: 'bearer' })
@@ -80,7 +80,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
     createdPriceId = response.body.price.id;
   });
 
-  test('3. Crear precio con datos vacíos. Expect 400', async() => {
+  test('3. Crear precio con datos vacíos. Expect 400', async () => {
     await api
       .post('/api/productPrices')
       .auth(Token, { type: 'bearer' })
@@ -88,7 +88,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       .expect(400);
   });
 
-  test('4. Crear precio sin datos. Expect 400', async() => {
+  test('4. Crear precio sin datos. Expect 400', async () => {
     await api
       .post('/api/productPrices')
       .auth(Token, { type: 'bearer' })
@@ -96,7 +96,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       .expect(400);
   });
 
-  test('5. Obtener precio por id. Expect 200', async() => {
+  test('5. Obtener precio por id. Expect 200', async () => {
     const response = await api
       .get(`/api/productPrices/${createdPriceId}`)
       .auth(Token, { type: 'bearer' })
@@ -106,14 +106,14 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
     expect(response.body.price.id).toBe(createdPriceId);
   });
 
-  test('6. Obtener precio inexistente. Expect 404', async() => {
+  test('6. Obtener precio inexistente. Expect 404', async () => {
     await api
       .get('/api/productPrices/99999')
       .auth(Token, { type: 'bearer' })
       .expect(404);
   });
 
-  test('7. Actualizar precio. Expect 200', async() => {
+  test('7. Actualizar precio. Expect 200', async () => {
     const response = await api
       .put(`/api/productPrices/${createdPriceId}`)
       .auth(Token, { type: 'bearer' })
@@ -124,7 +124,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
     expect(response.body.price.price).toBe(productPriceUpdate.price);
   });
 
-  test('8. Eliminar precio. Expect 200', async() => {
+  test('8. Eliminar precio. Expect 200', async () => {
     const response = await api
       .delete(`/api/productPrices/${createdPriceId}`)
       .auth(Token, { type: 'bearer' })
@@ -133,7 +133,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
     expect(response.body).toHaveProperty('result');
   });
 
-  test('9. Verificar que el precio eliminado no existe. Expect 404', async() => {
+  test('9. Verificar que el precio eliminado no existe. Expect 404', async () => {
     await api
       .get(`/api/productPrices/${createdPriceId}`)
       .auth(Token, { type: 'bearer' })
@@ -144,7 +144,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
   // Tests de rutas especiales
   // ============================================
   describe('Tests de rutas especiales', () => {
-    test('10. Obtener precios por producto. Expect 200', async() => {
+    test('10. Obtener precios por producto. Expect 200', async () => {
       const response = await api
         .get('/api/productPrices/product/1')
         .auth(Token, { type: 'bearer' })
@@ -154,7 +154,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       expect(Array.isArray(response.body.prices)).toBe(true);
     });
 
-    test('11. Obtener precios por lista de precios. Expect 200', async() => {
+    test('11. Obtener precios por lista de precios. Expect 200', async () => {
       const response = await api
         .get('/api/productPrices/priceList/1')
         .auth(Token, { type: 'bearer' })
@@ -164,7 +164,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       expect(Array.isArray(response.body.prices)).toBe(true);
     });
 
-    test('12. Obtener precios de producto inexistente. Expect 200 con array vacío', async() => {
+    test('12. Obtener precios de producto inexistente. Expect 200 con array vacío', async () => {
       const response = await api
         .get('/api/productPrices/product/99999')
         .auth(Token, { type: 'bearer' })
@@ -174,7 +174,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       expect(Array.isArray(response.body.prices)).toBe(true);
     });
 
-    test('13. Obtener precios de lista inexistente. Expect 200 con array vacío', async() => {
+    test('13. Obtener precios de lista inexistente. Expect 200 con array vacío', async () => {
       const response = await api
         .get('/api/productPrices/priceList/99999')
         .auth(Token, { type: 'bearer' })
@@ -189,33 +189,33 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
   // Tests de autenticación
   // ============================================
   describe('Tests de autenticacion', () => {
-    test('14. Obtener precios sin token. Expect 401', async() => {
+    test('14. Obtener precios sin token. Expect 401', async () => {
       await api
         .get('/api/productPrices')
         .expect(401);
     });
 
-    test('15. Crear precio sin token. Expect 401', async() => {
+    test('15. Crear precio sin token. Expect 401', async () => {
       await api
         .post('/api/productPrices')
         .send(productPriceCreate)
         .expect(401);
     });
 
-    test('16. Actualizar precio sin token. Expect 401', async() => {
+    test('16. Actualizar precio sin token. Expect 401', async () => {
       await api
         .put('/api/productPrices/1')
         .send(productPriceUpdate)
         .expect(401);
     });
 
-    test('17. Eliminar precio sin token. Expect 401', async() => {
+    test('17. Eliminar precio sin token. Expect 401', async () => {
       await api
         .delete('/api/productPrices/1')
         .expect(401);
     });
 
-    test('18. Obtener precios con token inválido. Expect 401', async() => {
+    test('18. Obtener precios con token inválido. Expect 401', async () => {
       await api
         .get('/api/productPrices')
         .auth('token_invalido_123', { type: 'bearer' })
@@ -227,7 +227,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
   // Tests de validación de campos
   // ============================================
   describe('Tests de validacion de campos', () => {
-    test('19. Crear precio sin producto. Expect 400', async() => {
+    test('19. Crear precio sin producto. Expect 400', async () => {
       await api
         .post('/api/productPrices')
         .auth(Token, { type: 'bearer' })
@@ -235,7 +235,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
         .expect(400);
     });
 
-    test('20. Crear precio sin lista de precios. Expect 400', async() => {
+    test('20. Crear precio sin lista de precios. Expect 400', async () => {
       await api
         .post('/api/productPrices')
         .auth(Token, { type: 'bearer' })
@@ -243,7 +243,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
         .expect(400);
     });
 
-    test('21. Crear precio sin campo precio. Expect 400', async() => {
+    test('21. Crear precio sin campo precio. Expect 400', async () => {
       await api
         .post('/api/productPrices')
         .auth(Token, { type: 'bearer' })
@@ -251,12 +251,12 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
         .expect(400);
     });
 
-    test('22. Crear precio con producto inexistente. Expect 400 o 500', async() => {
+    test('22. Crear precio con producto inexistente. Expect 400 o 500', async () => {
       const response = await api
         .post('/api/productPrices')
         .auth(Token, { type: 'bearer' })
         .send({
-          product_id: 99999,
+          product_id: '99999',
           price_list_id: 1,
           price: 100.00
         });
@@ -264,12 +264,12 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       expect([400, 500]).toContain(response.status);
     });
 
-    test('23. Crear precio con lista inexistente. Expect 400 o 500', async() => {
+    test('23. Crear precio con lista inexistente. Expect 400 o 500', async () => {
       const response = await api
         .post('/api/productPrices')
         .auth(Token, { type: 'bearer' })
         .send({
-          product_id: 1,
+          product_id: '1',
           price_list_id: 99999,
           price: 100.00
         });
@@ -277,7 +277,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       expect([400, 500]).toContain(response.status);
     });
 
-    test('24. Actualizar precio con precio vacío. Expect 400', async() => {
+    test('24. Actualizar precio con precio vacío. Expect 400', async () => {
       // Primero crear un precio para actualizar
       const createResponse = await api
         .post('/api/productPrices')
@@ -302,14 +302,14 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
   // Tests de ID inválido
   // ============================================
   describe('Tests de ID invalido', () => {
-    test('25. Obtener precio con ID no numérico. Expect 400', async() => {
+    test('25. Obtener precio con ID no numérico. Expect 400', async () => {
       await api
         .get('/api/productPrices/abc')
         .auth(Token, { type: 'bearer' })
         .expect(400);
     });
 
-    test('26. Actualizar precio inexistente. Expect 200 con NOT_FOUND', async() => {
+    test('26. Actualizar precio inexistente. Expect 200 con NOT_FOUND', async () => {
       const response = await api
         .put('/api/productPrices/99999')
         .auth(Token, { type: 'bearer' })
@@ -318,7 +318,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       expect([200, 404]).toContain(response.status);
     });
 
-    test('27. Eliminar precio inexistente. Expect 200 con result 0', async() => {
+    test('27. Eliminar precio inexistente. Expect 200 con result 0', async () => {
       const response = await api
         .delete('/api/productPrices/99999')
         .auth(Token, { type: 'bearer' })
@@ -328,7 +328,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       expect(response.body.result).toBe(0);
     });
 
-    test('28. Eliminar precio con ID no numérico. Expect 400', async() => {
+    test('28. Eliminar precio con ID no numérico. Expect 400', async () => {
       await api
         .delete('/api/productPrices/invalid')
         .auth(Token, { type: 'bearer' })
@@ -340,7 +340,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
   // Tests de estructura de respuesta
   // ============================================
   describe('Tests de estructura de respuesta', () => {
-    test('29. Verificar estructura completa de precio creado', async() => {
+    test('29. Verificar estructura completa de precio creado', async () => {
       const response = await api
         .post('/api/productPrices')
         .auth(Token, { type: 'bearer' })
@@ -361,7 +361,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       }
     });
 
-    test('30. Verificar que lista de precios es un array', async() => {
+    test('30. Verificar que lista de precios es un array', async () => {
       const response = await api
         .get('/api/productPrices')
         .auth(Token, { type: 'bearer' })
@@ -371,9 +371,9 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       expect(Array.isArray(response.body.prices)).toBe(true);
     });
 
-    test('31. Crear precio escalonado con cantidad mínima', async() => {
+    test('31. Crear precio escalonado con cantidad mínima', async () => {
       const priceWithMinQty = {
-        product_id: 1,
+        product_id: 'TEST-001',
         price_list_id: 1,
         price: 85.00,
         min_quantity: 10
@@ -396,9 +396,9 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       }
     });
 
-    test('32. Verificar precios por producto incluyen relaciones', async() => {
+    test('32. Verificar precios por producto incluyen relaciones', async () => {
       const response = await api
-        .get('/api/productPrices/product/1')
+        .get('/api/productPrices/product/TEST-001')
         .auth(Token, { type: 'bearer' })
         .expect(200);
 
@@ -418,7 +418,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
   // Cleanup
   // ============================================
   describe('Cleanup', () => {
-    test('33. Eliminar precio secundario si existe', async() => {
+    test('33. Eliminar precio secundario si existe', async () => {
       if (secondPriceId) {
         await api
           .delete(`/api/productPrices/${secondPriceId}`)
@@ -432,20 +432,20 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
   // Tests de generación masiva de precios
   // ============================================
   describe('Tests de generacion masiva de precios', () => {
-    test('34. Generar precios por producto existente. Expect 200', async() => {
+    test('34. Generar precios por producto existente. Expect 200', async () => {
       const response = await api
-        .post('/api/productPrices/generate/product/1')
+        .post('/api/productPrices/generate/product/TEST-001')
         .auth(Token, { type: 'bearer' })
         .expect(200);
 
       expect(response.body).toHaveProperty('result');
       expect(response.body.result).toHaveProperty('product_id');
-      expect(response.body.result.product_id).toBe(1);
+      expect(response.body.result.product_id).toBe('TEST-001');
       expect(response.body.result).toHaveProperty('price_lists_processed');
       expect(response.body.result.price_lists_processed).toBeGreaterThan(0);
     });
 
-    test('35. Generar precios por producto inexistente. Expect 404', async() => {
+    test('35. Generar precios por producto inexistente. Expect 404', async () => {
       const response = await api
         .post('/api/productPrices/generate/product/99999')
         .auth(Token, { type: 'bearer' })
@@ -454,7 +454,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       expect(response.body).toHaveProperty('error');
     });
 
-    test('36. Generar precios por lista activa. Expect 200', async() => {
+    test('36. Generar precios por lista activa. Expect 200', async () => {
       const response = await api
         .post('/api/productPrices/generate/priceList/1')
         .auth(Token, { type: 'bearer' })
@@ -467,7 +467,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       expect(response.body.result.products_processed).toBeGreaterThan(0);
     });
 
-    test('37. Generar precios por lista inexistente. Expect 404', async() => {
+    test('37. Generar precios por lista inexistente. Expect 404', async () => {
       const response = await api
         .post('/api/productPrices/generate/priceList/99999')
         .auth(Token, { type: 'bearer' })
@@ -476,7 +476,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       expect(response.body).toHaveProperty('error');
     });
 
-    test('38. Generar todos los precios. Expect 200', async() => {
+    test('38. Generar todos los precios. Expect 200', async () => {
       const response = await api
         .post('/api/productPrices/generate/all')
         .auth(Token, { type: 'bearer' })
@@ -488,7 +488,7 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       expect(response.body.result).toHaveProperty('price_lists_processed');
     });
 
-    test('39. Idempotencia: llamar generate/all dos veces no genera duplicados. Expect 200', async() => {
+    test('39. Idempotencia: llamar generate/all dos veces no genera duplicados. Expect 200', async () => {
       const first = await api
         .post('/api/productPrices/generate/all')
         .auth(Token, { type: 'bearer' })
@@ -503,31 +503,31 @@ describe('[PRODUCT PRICES] Test api productPrices //api/productPrices/', () => {
       expect(second.body).toHaveProperty('result');
     });
 
-    test('40. Generar precios sin token. Expect 401', async() => {
+    test('40. Generar precios sin token. Expect 401', async () => {
       await api
         .post('/api/productPrices/generate/all')
         .expect(401);
     });
 
-    test('41. Generar precios por producto con ID no numerico. Expect 400', async() => {
+    test('41. Generar precios por producto inexistente con ID string. Expect 404', async () => {
       await api
-        .post('/api/productPrices/generate/product/abc')
+        .post('/api/productPrices/generate/product/NONEXISTENT-SKU')
         .auth(Token, { type: 'bearer' })
-        .expect(400);
+        .expect(404);
     });
 
-    test('42. Verificar matematica del precio: base_price * (1 - discount/100)', async() => {
+    test('42. Verificar matematica del precio: base_price * (1 - discount/100)', async () => {
       // Lista 2 (Mayoreo) tiene discount_percent = 10
       // Si el producto 1 tiene base_price conocido, verificar precio calculado
       const generateResponse = await api
-        .post('/api/productPrices/generate/product/1')
+        .post('/api/productPrices/generate/product/TEST-001')
         .auth(Token, { type: 'bearer' })
         .expect(200);
 
-      expect(generateResponse.body.result).toHaveProperty('product_id', 1);
+      expect(generateResponse.body.result).toHaveProperty('product_id', 'TEST-001');
 
       const pricesResponse = await api
-        .get('/api/productPrices/product/1')
+        .get('/api/productPrices/product/TEST-001')
         .auth(Token, { type: 'bearer' })
         .expect(200);
 

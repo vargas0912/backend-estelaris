@@ -7,8 +7,9 @@ const createCampaignProductValidator = [
     .toInt(),
   body('product_id')
     .exists().withMessage('El ID del producto es requerido')
-    .isInt({ min: 1 }).withMessage('El ID del producto debe ser un número entero positivo')
-    .toInt(),
+    .isString().withMessage('El ID del producto debe ser un string válido')
+    .notEmpty().withMessage('El ID del producto no puede estar vacío')
+    .isLength({ max: 20 }).withMessage('El ID del producto no puede superar 20 caracteres'),
   body('discount_type')
     .exists().withMessage('El tipo de descuento es requerido')
     .notEmpty().withMessage('El tipo de descuento no puede estar vacío')

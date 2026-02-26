@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   productStocks.init({
     product_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING(20),
       allowNull: false
     },
     branch_id: {

@@ -18,8 +18,8 @@ const validateGetByProduct = [
   check('product_id')
     .exists().withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_IS_EMPTY).bail()
-    .isInt().withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_INVALID).bail()
-    .toInt(),
+    .isString().withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_INVALID).bail()
+    .isLength({ max: 20 }).withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_INVALID).bail(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -40,8 +40,8 @@ const valiAddRecord = [
   check('product_id')
     .exists().withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_IS_EMPTY).bail()
-    .isInt().withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_INVALID).bail()
-    .toInt(),
+    .isString().withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_INVALID).bail()
+    .isLength({ max: 20 }).withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_INVALID).bail(),
   check('price_list_id')
     .exists().withMessage(PRODUCT_PRICES_VALIDATORS.PRICE_LIST_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(PRODUCT_PRICES_VALIDATORS.PRICE_LIST_ID_IS_EMPTY).bail()
@@ -67,8 +67,8 @@ const valiUpdateRecord = [
     .toInt(),
   check('product_id')
     .optional()
-    .isInt().withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_INVALID).bail()
-    .toInt(),
+    .isString().withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_INVALID).bail()
+    .isLength({ max: 20 }).withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_INVALID).bail(),
   check('price_list_id')
     .optional()
     .isInt().withMessage(PRODUCT_PRICES_VALIDATORS.PRICE_LIST_ID_INVALID).bail()

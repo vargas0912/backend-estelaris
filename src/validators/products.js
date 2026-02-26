@@ -13,9 +13,10 @@ const validateGetRecord = [
 ];
 
 const valiAddRecord = [
-  check('sku')
-    .exists().withMessage(PRODUCTS_VALIDATORS.SKU_NOT_EXISTS).bail()
-    .notEmpty().withMessage(PRODUCTS_VALIDATORS.SKU_IS_EMPTY).bail(),
+  check('id')
+    .exists().withMessage(PRODUCTS_VALIDATORS.ID_NOT_EXISTS).bail()
+    .notEmpty().withMessage(PRODUCTS_VALIDATORS.ID_IS_EMPTY).bail()
+    .isLength({ max: 20 }).withMessage(PRODUCTS_VALIDATORS.ID_TOO_LONG).bail(),
   check('barcode'),
   check('name')
     .exists().withMessage(PRODUCTS_VALIDATORS.NAME_NOT_EXISTS).bail()
@@ -54,9 +55,6 @@ const valiUpdateRecord = [
   check('id')
     .exists().withMessage(PRODUCTS_VALIDATORS.ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(PRODUCTS_VALIDATORS.ID_IS_EMPTY).bail(),
-  check('sku')
-    .exists().withMessage(PRODUCTS_VALIDATORS.SKU_NOT_EXISTS).bail()
-    .notEmpty().withMessage(PRODUCTS_VALIDATORS.SKU_IS_EMPTY).bail(),
   check('barcode'),
   check('name')
     .exists().withMessage(PRODUCTS_VALIDATORS.NAME_NOT_EXISTS).bail()

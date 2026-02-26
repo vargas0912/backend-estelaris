@@ -1,8 +1,7 @@
 module.exports = {
   data: [
     {
-      id: 1,
-      sku: 'SAL-001',
+      id: 'SAL-001',
       barcode: '7501234567001',
       name: 'Sala Esquinera Moderna',
       description: 'Sala esquinera con diseño moderno, tapizado en tela de alta calidad',
@@ -21,8 +20,7 @@ module.exports = {
       seo_keywords: 'sala, esquinera, moderna, muebles'
     },
     {
-      id: 2,
-      sku: 'COM-001',
+      id: 'COM-001',
       barcode: '7501234567002',
       name: 'Comedor 6 Sillas Madera',
       description: 'Comedor de madera maciza con 6 sillas tapizadas',
@@ -41,8 +39,7 @@ module.exports = {
       seo_keywords: 'comedor, madera, 6 sillas'
     },
     {
-      id: 3,
-      sku: 'REC-001',
+      id: 'REC-001',
       barcode: '7501234567003',
       name: 'Recámara King Size Completa',
       description: 'Recámara completa: cama king size, 2 burós, cómoda y espejo',
@@ -61,8 +58,7 @@ module.exports = {
       seo_keywords: 'recamara, king size, completa'
     },
     {
-      id: 4,
-      sku: 'COL-001',
+      id: 'COL-001',
       barcode: '7501234567004',
       name: 'Colchón Matrimonial Ortopédico',
       description: 'Colchón matrimonial con soporte ortopédico y memory foam',
@@ -81,8 +77,7 @@ module.exports = {
       seo_keywords: 'colchon, matrimonial, ortopedico'
     },
     {
-      id: 5,
-      sku: 'REF-001',
+      id: 'REF-001',
       barcode: '7501234567005',
       name: 'Refrigerador 18 Pies',
       description: 'Refrigerador de 18 pies cúbicos con dispensador de agua',
@@ -101,8 +96,7 @@ module.exports = {
       seo_keywords: 'refrigerador, 18 pies, linea blanca'
     },
     {
-      id: 6,
-      sku: 'LAV-001',
+      id: 'LAV-001',
       barcode: '7501234567006',
       name: 'Lavadora Automática 20 Kg',
       description: 'Lavadora automática de 20 kg con múltiples programas de lavado',
@@ -121,8 +115,7 @@ module.exports = {
       seo_keywords: 'lavadora, automatica, 20 kg'
     },
     {
-      id: 7,
-      sku: 'TV-001',
+      id: 'TV-001',
       barcode: '7501234567007',
       name: 'Televisor LED 55 Pulgadas Smart',
       description: 'Televisor LED 55 pulgadas con Smart TV y resolución 4K',
@@ -141,8 +134,7 @@ module.exports = {
       seo_keywords: 'television, led, 55 pulgadas, smart tv, 4k'
     },
     {
-      id: 8,
-      sku: 'BIC-001',
+      id: 'BIC-001',
       barcode: '7501234567008',
       name: 'Bicicleta Montaña R29',
       description: 'Bicicleta de montaña rodada 29, 21 velocidades, frenos de disco',
@@ -161,8 +153,7 @@ module.exports = {
       seo_keywords: 'bicicleta, montaña, r29'
     },
     {
-      id: 9,
-      sku: 'MUE-001',
+      id: 'MUE-001',
       barcode: '7501234567009',
       name: 'Ropero 3 Puertas con Espejo',
       description: 'Ropero de 3 puertas con espejo central y cajones inferiores',
@@ -181,8 +172,7 @@ module.exports = {
       seo_keywords: 'ropero, 3 puertas, espejo'
     },
     {
-      id: 10,
-      sku: 'INF-001',
+      id: 'INF-001',
       barcode: '7501234567010',
       name: 'Litera Infantil con Escritorio',
       description: 'Litera infantil con escritorio integrado y escalera lateral',

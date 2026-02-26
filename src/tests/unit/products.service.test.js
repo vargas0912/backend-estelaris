@@ -31,15 +31,13 @@ describe('Products Service - Unit Tests', () => {
     test('debe retornar lista de productos', async() => {
       const mockProducts = [
         {
-          id: 1,
-          sku: 'SKU001',
+          id: 'SKU001',
           name: 'Producto 1',
           base_price: 100.00,
           category: { id: 1, name: 'Electrónica' }
         },
         {
-          id: 2,
-          sku: 'SKU002',
+          id: 'SKU002',
           name: 'Producto 2',
           base_price: 200.00,
           category: { id: 2, name: 'Muebles' }
@@ -85,7 +83,7 @@ describe('Products Service - Unit Tests', () => {
   describe('getProduct', () => {
     test('debe retornar un producto por id', async() => {
       const mockProduct = {
-        id: 1,
+        id: 'SKU001',
         sku: 'SKU001',
         name: 'Producto Test',
         base_price: 150.00,
@@ -94,7 +92,7 @@ describe('Products Service - Unit Tests', () => {
 
       products.findOne.mockResolvedValue(mockProduct);
 
-      const result = await getProduct(1);
+      const result = await getProduct('SKU001');
 
       expect(products.findOne).toHaveBeenCalledTimes(1);
       expect(result).toEqual(mockProduct);
@@ -103,7 +101,7 @@ describe('Products Service - Unit Tests', () => {
     test('debe retornar null si el producto no existe', async() => {
       products.findOne.mockResolvedValue(null);
 
-      const result = await getProduct(999);
+      const result = await getProduct('INEXISTENTE');
 
       expect(result).toBeNull();
     });
@@ -111,11 +109,11 @@ describe('Products Service - Unit Tests', () => {
     test('debe buscar con el id correcto', async() => {
       products.findOne.mockResolvedValue(null);
 
-      await getProduct(42);
+      await getProduct('SKU-TEST');
 
       expect(products.findOne).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { id: 42 }
+          where: { id: 'SKU-TEST' }
         })
       );
     });
@@ -128,7 +126,7 @@ describe('Products Service - Unit Tests', () => {
         name: 'Nuevo Producto',
         base_price: 99.99
       };
-      const createdProduct = { id: 1, ...newProduct };
+      const createdProduct = { id: 'SKU-NEW', ...newProduct };
 
       products.create.mockResolvedValue(createdProduct);
 
@@ -159,14 +157,14 @@ describe('Products Service - Unit Tests', () => {
         seo_description: 'Descripción SEO',
         seo_keywords: 'producto, test'
       };
-      const createdProduct = { id: 1, ...fullProduct };
+      const createdProduct = { id: 'SKU-FULL', ...fullProduct };
 
       products.create.mockResolvedValue(createdProduct);
 
       const result = await addNewProduct(fullProduct);
 
       expect(products.create).toHaveBeenCalledWith(fullProduct);
-      expect(result.sku).toBe('SKU-FULL');
+      expect(result.id).toBe('SKU-FULL');
       expect(result.dimensions).toEqual({ length: 10, width: 5, height: 3 });
     });
 
@@ -176,13 +174,13 @@ describe('Products Service - Unit Tests', () => {
         name: 'Mínimo',
         base_price: 10.00
       };
-      const createdProduct = { id: 1, ...minimalProduct };
+      const createdProduct = { id: 'SKU-MIN', ...minimalProduct };
 
       products.create.mockResolvedValue(createdProduct);
 
       const result = await addNewProduct(minimalProduct);
 
-      expect(result.id).toBe(1);
+      expect(result.id).toBe('SKU-MIN');
       expect(result.name).toBe('Mínimo');
     });
   });
@@ -190,12 +188,12 @@ describe('Products Service - Unit Tests', () => {
   describe('updateProduct', () => {
     test('debe actualizar un producto existente', async() => {
       const mockProduct = {
-        id: 1,
+        id: 'SKU001',
         sku: 'SKU001',
         name: 'Producto Original',
         base_price: 100.00,
         save: jest.fn().mockResolvedValue({
-          id: 1,
+          id: 'SKU001-UPD',
           sku: 'SKU001-UPD',
           name: 'Producto Actualizado',
           base_price: 150.00
@@ -204,13 +202,13 @@ describe('Products Service - Unit Tests', () => {
 
       products.findByPk.mockResolvedValue(mockProduct);
 
-      await updateProduct(1, {
+      await updateProduct('SKU001', {
         sku: 'SKU001-UPD',
         name: 'Producto Actualizado',
         base_price: 150.00
       });
 
-      expect(products.findByPk).toHaveBeenCalledWith(1);
+      expect(products.findByPk).toHaveBeenCalledWith('SKU001');
       expect(mockProduct.save).toHaveBeenCalled();
       expect(mockProduct.name).toBe('Producto Actualizado');
     });
@@ -218,20 +216,20 @@ describe('Products Service - Unit Tests', () => {
     test('debe retornar NOT_FOUND si el producto no existe', async() => {
       products.findByPk.mockResolvedValue(null);
 
-      const result = await updateProduct(999, { name: 'Test' });
+      const result = await updateProduct('INEXISTENTE', { name: 'Test' });
 
       expect(result).toEqual({ data: { msg: 'NOT_FOUND' } });
     });
 
     test('debe mantener valores si no se proporcionan nuevos', async() => {
       const mockProduct = {
-        id: 1,
+        id: 'SKU001',
         sku: 'SKU001',
         name: 'Producto',
         base_price: 100.00,
         description: 'Descripción original',
         save: jest.fn().mockResolvedValue({
-          id: 1,
+          id: 'SKU001',
           sku: 'SKU001',
           name: 'Producto',
           base_price: 100.00,
@@ -241,20 +239,19 @@ describe('Products Service - Unit Tests', () => {
 
       products.findByPk.mockResolvedValue(mockProduct);
 
-      await updateProduct(1, {});
+      await updateProduct('SKU001', {});
 
-      expect(mockProduct.sku).toBe('SKU001');
       expect(mockProduct.name).toBe('Producto');
     });
 
     test('debe actualizar solo el nombre', async() => {
       const mockProduct = {
-        id: 1,
+        id: 'SKU001',
         sku: 'SKU001',
         name: 'Nombre Original',
         base_price: 100.00,
         save: jest.fn().mockResolvedValue({
-          id: 1,
+          id: 'SKU001',
           sku: 'SKU001',
           name: 'Nuevo Nombre',
           base_price: 100.00
@@ -263,15 +260,15 @@ describe('Products Service - Unit Tests', () => {
 
       products.findByPk.mockResolvedValue(mockProduct);
 
-      await updateProduct(1, { name: 'Nuevo Nombre' });
+      await updateProduct('SKU001', { name: 'Nuevo Nombre' });
 
       expect(mockProduct.name).toBe('Nuevo Nombre');
-      expect(mockProduct.sku).toBe('SKU001');
+      expect(mockProduct.id).toBe('SKU001');
     });
 
     test('debe actualizar campos booleanos a false', async() => {
       const mockProduct = {
-        id: 1,
+        id: 'SKU001',
         sku: 'SKU001',
         name: 'Producto',
         base_price: 100.00,
@@ -282,7 +279,7 @@ describe('Products Service - Unit Tests', () => {
 
       products.findByPk.mockResolvedValue(mockProduct);
 
-      await updateProduct(1, { is_active: false, is_featured: false });
+      await updateProduct('SKU001', { is_active: false, is_featured: false });
 
       expect(mockProduct.is_active).toBe(false);
       expect(mockProduct.is_featured).toBe(false);
@@ -290,7 +287,7 @@ describe('Products Service - Unit Tests', () => {
 
     test('debe permitir establecer barcode como null', async() => {
       const mockProduct = {
-        id: 1,
+        id: 'SKU001',
         sku: 'SKU001',
         name: 'Producto',
         base_price: 100.00,
@@ -300,14 +297,14 @@ describe('Products Service - Unit Tests', () => {
 
       products.findByPk.mockResolvedValue(mockProduct);
 
-      await updateProduct(1, { barcode: null });
+      await updateProduct('SKU001', { barcode: null });
 
       expect(mockProduct.barcode).toBeNull();
     });
 
     test('debe actualizar dimensiones JSON', async() => {
       const mockProduct = {
-        id: 1,
+        id: 'SKU001',
         sku: 'SKU001',
         name: 'Producto',
         base_price: 100.00,
@@ -318,7 +315,7 @@ describe('Products Service - Unit Tests', () => {
       products.findByPk.mockResolvedValue(mockProduct);
 
       const newDimensions = { length: 20, width: 10, height: 5 };
-      await updateProduct(1, { dimensions: newDimensions });
+      await updateProduct('SKU001', { dimensions: newDimensions });
 
       expect(mockProduct.dimensions).toEqual(newDimensions);
     });
@@ -328,17 +325,17 @@ describe('Products Service - Unit Tests', () => {
     test('debe eliminar un producto', async() => {
       products.destroy.mockResolvedValue(1);
 
-      const result = await deleteProduct(1);
+      const result = await deleteProduct('SKU001');
 
       expect(products.destroy).toHaveBeenCalledTimes(1);
-      expect(products.destroy).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(products.destroy).toHaveBeenCalledWith({ where: { id: 'SKU001' } });
       expect(result).toBe(1);
     });
 
     test('debe retornar 0 si el producto no existe', async() => {
       products.destroy.mockResolvedValue(0);
 
-      const result = await deleteProduct(999);
+      const result = await deleteProduct('INEXISTENTE');
 
       expect(result).toBe(0);
     });
@@ -346,9 +343,9 @@ describe('Products Service - Unit Tests', () => {
     test('debe llamar destroy con el id correcto', async() => {
       products.destroy.mockResolvedValue(1);
 
-      await deleteProduct(123);
+      await deleteProduct('SKU-123');
 
-      expect(products.destroy).toHaveBeenCalledWith({ where: { id: 123 } });
+      expect(products.destroy).toHaveBeenCalledWith({ where: { id: 'SKU-123' } });
     });
   });
 
@@ -420,7 +417,7 @@ describe('Products Service - Unit Tests', () => {
   describe('Casos edge', () => {
     test('getAllProducts con muchos productos', async() => {
       const manyProducts = Array.from({ length: 100 }, (_, i) => ({
-        id: i + 1,
+        id: `SKU${String(i + 1).padStart(3, '0')}`,
         sku: `SKU${String(i + 1).padStart(3, '0')}`,
         name: `Producto ${i + 1}`,
         base_price: (i + 1) * 10
@@ -431,15 +428,15 @@ describe('Products Service - Unit Tests', () => {
       const result = await getAllProducts();
 
       expect(result).toHaveLength(100);
-      expect(result[0].sku).toBe('SKU001');
-      expect(result[99].sku).toBe('SKU100');
+      expect(result[0].id).toBe('SKU001');
+      expect(result[99].id).toBe('SKU100');
     });
 
-    test('getProduct con id tipo string numérico', async() => {
-      const mockProduct = { id: 1, sku: 'SKU001', name: 'Producto' };
+    test('getProduct con id string', async() => {
+      const mockProduct = { id: 'SKU001', sku: 'SKU001', name: 'Producto' };
       products.findOne.mockResolvedValue(mockProduct);
 
-      await getProduct('1');
+      await getProduct('SKU001');
 
       expect(products.findOne).toHaveBeenCalled();
     });
@@ -460,7 +457,7 @@ describe('Products Service - Unit Tests', () => {
         cost_price: 99.99,
         base_price: 149.99
       };
-      const createdProduct = { id: 1, ...productWithDecimals };
+      const createdProduct = { id: 'SKU-DEC', ...productWithDecimals };
 
       products.create.mockResolvedValue(createdProduct);
 
@@ -472,7 +469,7 @@ describe('Products Service - Unit Tests', () => {
 
     test('updateProduct con precio cero', async() => {
       const mockProduct = {
-        id: 1,
+        id: 'SKU001',
         sku: 'SKU001',
         name: 'Producto',
         base_price: 100.00,
@@ -482,7 +479,7 @@ describe('Products Service - Unit Tests', () => {
 
       products.findByPk.mockResolvedValue(mockProduct);
 
-      await updateProduct(1, { cost_price: 0 });
+      await updateProduct('SKU001', { cost_price: 0 });
 
       expect(mockProduct.cost_price).toBe(0);
     });

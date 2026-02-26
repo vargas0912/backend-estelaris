@@ -3,7 +3,6 @@ const { Op } = require('sequelize');
 
 const attributes = [
   'id',
-  'sku',
   'barcode',
   'name',
   'description',
@@ -67,7 +66,6 @@ const addNewProduct = async(body) => {
 
 const updateProduct = async(id, req) => {
   const {
-    sku,
     barcode,
     name,
     description,
@@ -96,7 +94,6 @@ const updateProduct = async(id, req) => {
     };
   }
 
-  data.sku = sku || data.sku;
   data.barcode = barcode !== undefined ? barcode : data.barcode;
   data.name = name || data.name;
   data.description = description !== undefined ? description : data.description;

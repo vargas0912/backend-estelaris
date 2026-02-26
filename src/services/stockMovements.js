@@ -47,7 +47,7 @@ const getMovementsByBranch = async (branchId) => {
       {
         model: products,
         as: 'product',
-        attributes: ['id', 'sku', 'name']
+        attributes: ['id', 'name']
       }
     ],
     order: [['created_at', 'DESC']]

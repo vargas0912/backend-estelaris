@@ -70,7 +70,8 @@ router.get('/', [
  *        description: Identificador del producto
  *        required: true
  *        schema:
- *          type: number
+ *          type: string
+ *          maxLength: 20
  *      responses:
  *        '200':
  *          description: Arreglo de precios del producto
@@ -164,7 +165,8 @@ router.get('/:id', [
  *         description: ID del producto
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           maxLength: 20
  *     responses:
  *       '200':
  *         description: Precios generados correctamente
@@ -281,7 +283,8 @@ router.post('/generate/all', [
  *         description: ID del producto a recalcular
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           maxLength: 20
  *     responses:
  *       '200':
  *         description: Precios recalculados correctamente
@@ -294,7 +297,8 @@ router.post('/generate/all', [
  *                   type: object
  *                   properties:
  *                     product_id:
- *                       type: integer
+ *                       type: string
+ *                       maxLength: 20
  *                     updated:
  *                       type: integer
  *                     prices_processed:
@@ -332,7 +336,8 @@ router.put('/recalculate/product/:product_id', [
  *                              - price
  *                          properties:
  *                              product_id:
- *                                  type: number
+ *                                  type: string
+ *                                  maxLength: 20
  *                                  description: ID del producto
  *                              price_list_id:
  *                                  type: number

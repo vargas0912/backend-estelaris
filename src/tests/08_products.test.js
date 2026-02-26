@@ -42,7 +42,7 @@ const testUser = {
  */
 
 describe('[PRODUCTS] Test api products //api/products/', () => {
-  test('Login para obtener token. 200', async() => {
+  test('Login para obtener token. 200', async () => {
     await api
       .post('/api/auth/login')
       .set('Content-type', 'application/json')
@@ -54,7 +54,7 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
       });
   });
 
-  test('1. Obtener lista de productos. Expect 200', async() => {
+  test('1. Obtener lista de productos. Expect 200', async () => {
     const response = await api
       .get('/api/products')
       .auth(Token, { type: 'bearer' })
@@ -64,7 +64,7 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
     expect(Array.isArray(response.body.products)).toBe(true);
   });
 
-  test('2. Crear producto con datos válidos. Expect 200', async() => {
+  test('2. Crear producto con datos válidos. Expect 200', async () => {
     const response = await api
       .post('/api/products')
       .auth(Token, { type: 'bearer' })
@@ -74,12 +74,12 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
     expect(response.body).toHaveProperty('product');
     expect(response.body.product).toHaveProperty('id');
     expect(response.body.product.name).toBe(productCreate.name);
-    expect(response.body.product.sku).toBe(productCreate.sku);
+    expect(response.body.product.id).toBe(productCreate.id);
 
     createdProductId = response.body.product.id;
   });
 
-  test('3. Crear producto con datos vacíos. Expect 400', async() => {
+  test('3. Crear producto con datos vacíos. Expect 400', async () => {
     await api
       .post('/api/products')
       .auth(Token, { type: 'bearer' })
@@ -87,7 +87,7 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
       .expect(400);
   });
 
-  test('4. Crear producto sin datos. Expect 400', async() => {
+  test('4. Crear producto sin datos. Expect 400', async () => {
     await api
       .post('/api/products')
       .auth(Token, { type: 'bearer' })
@@ -95,7 +95,7 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
       .expect(400);
   });
 
-  test('5. Obtener producto por id. Expect 200', async() => {
+  test('5. Obtener producto por id. Expect 200', async () => {
     const response = await api
       .get(`/api/products/${createdProductId}`)
       .auth(Token, { type: 'bearer' })
@@ -105,14 +105,14 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
     expect(response.body.product.id).toBe(createdProductId);
   });
 
-  test('6. Obtener producto inexistente. Expect 404', async() => {
+  test('6. Obtener producto inexistente. Expect 404', async () => {
     await api
       .get('/api/products/99999')
       .auth(Token, { type: 'bearer' })
       .expect(404);
   });
 
-  test('7. Actualizar producto. Expect 200', async() => {
+  test('7. Actualizar producto. Expect 200', async () => {
     const response = await api
       .put(`/api/products/${createdProductId}`)
       .auth(Token, { type: 'bearer' })
@@ -123,7 +123,7 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
     expect(response.body.product.name).toBe(productUpdate.name);
   });
 
-  test('8. Eliminar producto. Expect 200', async() => {
+  test('8. Eliminar producto. Expect 200', async () => {
     const response = await api
       .delete(`/api/products/${createdProductId}`)
       .auth(Token, { type: 'bearer' })
@@ -132,7 +132,7 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
     expect(response.body).toHaveProperty('result');
   });
 
-  test('9. Verificar que el producto eliminado no existe. Expect 404', async() => {
+  test('9. Verificar que el producto eliminado no existe. Expect 404', async () => {
     await api
       .get(`/api/products/${createdProductId}`)
       .auth(Token, { type: 'bearer' })
@@ -143,33 +143,33 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
   // Tests de autenticación
   // ============================================
   describe('Tests de autenticacion', () => {
-    test('10. Obtener productos sin token. Expect 401', async() => {
+    test('10. Obtener productos sin token. Expect 401', async () => {
       await api
         .get('/api/products')
         .expect(401);
     });
 
-    test('11. Crear producto sin token. Expect 401', async() => {
+    test('11. Crear producto sin token. Expect 401', async () => {
       await api
         .post('/api/products')
         .send(productCreate)
         .expect(401);
     });
 
-    test('12. Actualizar producto sin token. Expect 401', async() => {
+    test('12. Actualizar producto sin token. Expect 401', async () => {
       await api
         .put('/api/products/1')
         .send(productUpdate)
         .expect(401);
     });
 
-    test('13. Eliminar producto sin token. Expect 401', async() => {
+    test('13. Eliminar producto sin token. Expect 401', async () => {
       await api
         .delete('/api/products/1')
         .expect(401);
     });
 
-    test('14. Obtener productos con token inválido. Expect 401', async() => {
+    test('14. Obtener productos con token inválido. Expect 401', async () => {
       await api
         .get('/api/products')
         .auth('token_invalido_123', { type: 'bearer' })
@@ -181,7 +181,7 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
   // Tests de validación de campos
   // ============================================
   describe('Tests de validacion de campos', () => {
-    test('15. Crear producto sin SKU. Expect 400', async() => {
+    test('15. Crear producto sin SKU. Expect 400', async () => {
       await api
         .post('/api/products')
         .auth(Token, { type: 'bearer' })
@@ -189,7 +189,7 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
         .expect(400);
     });
 
-    test('16. Crear producto sin nombre. Expect 400', async() => {
+    test('16. Crear producto sin nombre. Expect 400', async () => {
       await api
         .post('/api/products')
         .auth(Token, { type: 'bearer' })
@@ -197,7 +197,7 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
         .expect(400);
     });
 
-    test('17. Crear producto sin precio base. Expect 400', async() => {
+    test('17. Crear producto sin precio base. Expect 400', async () => {
       await api
         .post('/api/products')
         .auth(Token, { type: 'bearer' })
@@ -205,7 +205,7 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
         .expect(400);
     });
 
-    test('18. Actualizar producto con nombre vacío. Expect 400', async() => {
+    test('18. Actualizar producto con nombre vacío. Expect 400', async () => {
       // Primero crear un producto para actualizar
       const createResponse = await api
         .post('/api/products')
@@ -228,14 +228,14 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
   // Tests de ID inválido
   // ============================================
   describe('Tests de ID invalido', () => {
-    test('19. Obtener producto con ID no numérico. Expect 404', async() => {
+    test('19. Obtener producto con ID no numérico. Expect 404', async () => {
       await api
         .get('/api/products/abc')
         .auth(Token, { type: 'bearer' })
         .expect(404);
     });
 
-    test('20. Actualizar producto inexistente. Expect 200 con NOT_FOUND', async() => {
+    test('20. Actualizar producto inexistente. Expect 200 con NOT_FOUND', async () => {
       const response = await api
         .put('/api/products/99999')
         .auth(Token, { type: 'bearer' })
@@ -244,7 +244,7 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
       expect([200, 404]).toContain(response.status);
     });
 
-    test('21. Eliminar producto inexistente. Expect 200 con result 0', async() => {
+    test('21. Eliminar producto inexistente. Expect 200 con result 0', async () => {
       const response = await api
         .delete('/api/products/99999')
         .auth(Token, { type: 'bearer' })
@@ -254,11 +254,14 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
       expect(response.body.result).toBe(0);
     });
 
-    test('22. Eliminar producto con ID no numérico. Expect 400', async() => {
-      await api
-        .delete('/api/products/invalid')
+    test('22. Eliminar producto con ID string inexistente. Expect 200 con result 0', async () => {
+      const response = await api
+        .delete('/api/products/NONEXISTENT-SKU')
         .auth(Token, { type: 'bearer' })
-        .expect(400);
+        .expect(200);
+
+      expect(response.body).toHaveProperty('result');
+      expect(response.body.result).toBe(0);
     });
   });
 
@@ -266,7 +269,7 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
   // Tests de estructura de respuesta
   // ============================================
   describe('Tests de estructura de respuesta', () => {
-    test('23. Verificar estructura completa de producto creado', async() => {
+    test('23. Verificar estructura completa de producto creado', async () => {
       const response = await api
         .post('/api/products')
         .auth(Token, { type: 'bearer' })
@@ -275,7 +278,6 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
 
       expect(response.body).toHaveProperty('product');
       expect(response.body.product).toHaveProperty('id');
-      expect(response.body.product).toHaveProperty('sku');
       expect(response.body.product).toHaveProperty('name');
       expect(response.body.product).toHaveProperty('base_price');
 
@@ -287,7 +289,7 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
       }
     });
 
-    test('24. Verificar que lista de productos es un array', async() => {
+    test('24. Verificar que lista de productos es un array', async () => {
       const response = await api
         .get('/api/products')
         .auth(Token, { type: 'bearer' })
@@ -297,9 +299,9 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
       expect(Array.isArray(response.body.products)).toBe(true);
     });
 
-    test('25. Crear producto con campos opcionales', async() => {
+    test('25. Crear producto con campos opcionales', async () => {
       const productWithOptional = {
-        sku: 'SKU-OPTIONAL-001',
+        id: 'SKU-OPTIONAL-001',
         name: 'Producto con opcionales',
         base_price: 99.99,
         description: 'Descripción opcional',
@@ -328,7 +330,7 @@ describe('[PRODUCTS] Test api products //api/products/', () => {
   // Cleanup
   // ============================================
   describe('Cleanup', () => {
-    test('26. Eliminar producto secundario si existe', async() => {
+    test('26. Eliminar producto secundario si existe', async () => {
       if (secondProductId) {
         await api
           .delete(`/api/products/${secondProductId}`)
