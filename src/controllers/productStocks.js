@@ -16,7 +16,7 @@ const {
  * @param {*} req Request
  * @param {*} res Response
  */
-const getRecords = async(req, res) => {
+const getRecords = async (req, res) => {
   try {
     const stocks = await getAllProductStocks(req.branchId);
 
@@ -31,14 +31,14 @@ const getRecords = async(req, res) => {
  * @param {Request} req Request param
  * @param {Response} res Response param
  */
-const getRecord = async(req, res) => {
+const getRecord = async (req, res) => {
   try {
-    const { id } = matchedData(req);
+    const { purch_id: purchId } = matchedData(req);
 
-    const stock = await getProductStock(id);
+    const stock = await getProductStock(purchId);
 
     if (!stock) {
-      handleHttpError(res, `PRODUCT_STOCK ${id} NOT EXISTS`, 404);
+      handleHttpError(res, `PRODUCT_STOCK ${purchId} NOT EXISTS`, 404);
       return;
     }
 
@@ -53,7 +53,7 @@ const getRecord = async(req, res) => {
  * @param {Request} req Request param
  * @param {Response} res Response param
  */
-const getRecordsByProduct = async(req, res) => {
+const getRecordsByProduct = async (req, res) => {
   try {
     const { product_id: productId } = matchedData(req);
 
@@ -70,7 +70,7 @@ const getRecordsByProduct = async(req, res) => {
  * @param {Request} req Request param
  * @param {Response} res Response param
  */
-const getRecordsByBranch = async(req, res) => {
+const getRecordsByBranch = async (req, res) => {
   try {
     const { branch_id: branchId } = matchedData(req);
 
@@ -87,7 +87,7 @@ const getRecordsByBranch = async(req, res) => {
  * @param {*} req
  * @param {*} res
  */
-const addRecord = async(req, res) => {
+const addRecord = async (req, res) => {
   try {
     req = matchedData(req);
 
@@ -99,7 +99,7 @@ const addRecord = async(req, res) => {
   }
 };
 
-const updateRecord = async(req, res) => {
+const updateRecord = async (req, res) => {
   try {
     req = matchedData(req);
 
@@ -111,7 +111,7 @@ const updateRecord = async(req, res) => {
   }
 };
 
-const deleteRecord = async(req, res) => {
+const deleteRecord = async (req, res) => {
   try {
     req = matchedData(req);
 

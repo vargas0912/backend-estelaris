@@ -22,7 +22,7 @@ module.exports = {
       const purchaseDetails = [
         {
           purch_id: inserted[0].id,
-          product_id: 1,
+          product_id: 'SAL-001',
           qty: 10,
           unit_price: 100.00,
           discount: 0,
@@ -36,7 +36,7 @@ module.exports = {
       if (inserted.length >= 2) {
         purchaseDetails.push({
           purch_id: inserted[1].id,
-          product_id: 1,
+          product_id: 'SAL-001',
           qty: 25,
           unit_price: 100.00,
           discount: 0,

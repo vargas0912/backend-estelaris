@@ -114,18 +114,18 @@ router.get('/branch/:branch_id', [
 
 /**
  * @openapi
- * /productStocks/{id}:
+ * /productStocks/purchase/{purch_id}:
  *    get:
  *      tags:
  *        - productStocks
- *      summary: Inventario por identificador
- *      description: Consulta de inventario mediante el id proporcionado
+ *      summary: Inventario por orden de compra
+ *      description: Consulta de inventario mediante el id de compra
  *      security:
  *        - bearerAuth: []
  *      parameters:
- *      - name: id
+ *      - name: purch_id
  *        in: path
- *        description: Identificador del inventario
+ *        description: Identificador de la orden de compra
  *        required: true
  *        schema:
  *          type: number
@@ -135,7 +135,7 @@ router.get('/branch/:branch_id', [
  *        '422':
  *          description: Error de validacion.
  */
-router.get('/:id', [
+router.get('/purchase/:purch_id', [
   readLimiter,
   authMidleware,
   branchScope,
