@@ -51,6 +51,9 @@ const valiAddSupplier = [
   check('payment_terms')
     .optional()
     .isLength({ max: 100 }).withMessage(SUPPLIERS_VALIDATORS.PAYMENT_TERMS_TOO_LONG),
+  check('payment_days')
+    .optional({ nullable: true })
+    .isInt({ min: 0 }).withMessage(SUPPLIERS_VALIDATORS.PAYMENT_DAYS_NOT_INTEGER),
   check('credit_limit')
     .optional()
     .isDecimal().withMessage(SUPPLIERS_VALIDATORS.CREDIT_LIMIT_NOT_DECIMAL),
@@ -105,6 +108,9 @@ const valiUpdateSupplier = [
   check('payment_terms')
     .optional()
     .isLength({ max: 100 }).withMessage(SUPPLIERS_VALIDATORS.PAYMENT_TERMS_TOO_LONG),
+  check('payment_days')
+    .optional({ nullable: true })
+    .isInt({ min: 0 }).withMessage(SUPPLIERS_VALIDATORS.PAYMENT_DAYS_NOT_INTEGER),
   check('credit_limit')
     .optional()
     .isDecimal().withMessage(SUPPLIERS_VALIDATORS.CREDIT_LIMIT_NOT_DECIMAL),

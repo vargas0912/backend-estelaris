@@ -55,9 +55,6 @@ const valiAddRecord = [
     .optional()
     .isDecimal({ decimal_digits: '0,2', force_decimal: false }).withMessage(PURCHASES_VALIDATORS.DISCOUNT_AMOUNT_INVALID).bail()
     .custom(val => parseFloat(val) >= 0).withMessage(PURCHASES_VALIDATORS.DISCOUNT_AMOUNT_INVALID),
-  check('due_date')
-    .optional({ nullable: true })
-    .isDate().withMessage(PURCHASES_VALIDATORS.DUE_DATE_INVALID).bail(),
   check('notes')
     .optional({ nullable: true })
     .isString().withMessage(PURCHASES_VALIDATORS.NOTES_INVALID).bail(),

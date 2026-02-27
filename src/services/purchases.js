@@ -124,7 +124,6 @@ const createPurchase = async (body, userId) => {
     invoice_number: invoiceNumber,
     purch_type: purchType,
     payment_method: paymentMethod,
-    due_date: dueDate,
     notes,
     discount_amount: discountAmount = 0,
     items
@@ -139,6 +138,19 @@ const createPurchase = async (body, userId) => {
 
   if (foundProducts.length !== productIds.length) {
     return { error: 'SOME_PRODUCTS_NOT_FOUND_OR_INACTIVE' };
+  }
+
+  // Calcular due_date desde payment_days del proveedor
+  const supplier = await suppliers.findByPk(supplierId, {
+    attributes: ['id', 'payment_days']
+  });
+
+  let calculatedDueDate = null;
+  const effectivePurchType = purchType || 'Contado';
+  if (effectivePurchType === 'Credito' && supplier?.payment_days) {
+    const base = new Date(purchDate);
+    base.setDate(base.getDate() + supplier.payment_days);
+    calculatedDueDate = base.toISOString().split('T')[0];
   }
 
   const transaction = await sequelize.transaction();
@@ -184,7 +196,7 @@ const createPurchase = async (body, userId) => {
       tax_amount: taxAmount,
       purch_total: purchTotal,
       due_payment: purchTotal,
-      due_date: dueDate || null,
+      due_date: calculatedDueDate,
       notes: notes || null
     }, { transaction });
 

@@ -16,6 +16,7 @@ const attributes = [
   'postal_code',
   'website',
   'payment_terms',
+  'payment_days',
   'credit_limit',
   'notes',
   'is_active',
@@ -78,6 +79,7 @@ const updateSupplier = async(id, req) => {
     postal_code: postalCode,
     website,
     payment_terms: paymentTerms,
+    payment_days: paymentDays,
     credit_limit: creditLimit,
     notes,
     is_active: isActive
@@ -105,6 +107,7 @@ const updateSupplier = async(id, req) => {
   data.postal_code = postalCode !== undefined ? postalCode : data.postal_code;
   data.website = website !== undefined ? website : data.website;
   data.payment_terms = paymentTerms !== undefined ? paymentTerms : data.payment_terms;
+  data.payment_days = paymentDays !== undefined ? paymentDays : data.payment_days;
   data.credit_limit = creditLimit !== undefined ? creditLimit : data.credit_limit;
   data.notes = notes !== undefined ? notes : data.notes;
   data.is_active = isActive !== undefined ? isActive : data.is_active;

@@ -16,7 +16,7 @@ jest.mock('../../models/index', () => {
     purchaseDetails: {
       bulkCreate: jest.fn()
     },
-    suppliers: { findAll: jest.fn() },
+    suppliers: { findAll: jest.fn(), findByPk: jest.fn() },
     branches: { findAll: jest.fn() },
     users: { findAll: jest.fn() },
     products: {
@@ -27,7 +27,7 @@ jest.mock('../../models/index', () => {
   };
 });
 
-const { purchases, purchaseDetails, products, sequelize } = require('../../models/index');
+const { purchases, purchaseDetails, suppliers, products, sequelize } = require('../../models/index');
 const {
   getAllPurchases,
   getPurchase,
@@ -145,6 +145,7 @@ describe('Purchases Service - Unit Tests', () => {
 
     beforeEach(() => {
       sequelize.transaction.mockResolvedValue(mockTransaction);
+      suppliers.findByPk.mockResolvedValue({ id: 1, payment_days: null });
     });
 
     test('debe retornar error si algún producto no existe o está inactivo', async () => {

@@ -14,6 +14,7 @@ module.exports = {
       postal_code: '64550',
       website: 'https://mueblesdelnorte.com',
       payment_terms: '30 días',
+      payment_days: 30,
       credit_limit: 150000.00,
       notes: 'Proveedor principal de salas y comedores',
       is_active: true
@@ -32,6 +33,7 @@ module.exports = {
       postal_code: '06600',
       website: 'https://colchonespremium.mx',
       payment_terms: '15 días',
+      payment_days: 15,
       credit_limit: 100000.00,
       notes: 'Especialista en colchones y bases',
       is_active: true
@@ -50,6 +52,7 @@ module.exports = {
       postal_code: '45500',
       website: 'https://electronac.com',
       payment_terms: '45 días',
+      payment_days: 45,
       credit_limit: 200000.00,
       notes: 'Línea blanca y electrónicos',
       is_active: true
@@ -68,6 +71,7 @@ module.exports = {
       postal_code: '76240',
       website: 'https://imfmuebles.com',
       payment_terms: '60 días',
+      payment_days: 60,
       credit_limit: 250000.00,
       notes: 'Muebles importados de alta gama',
       is_active: true
@@ -86,6 +90,7 @@ module.exports = {
       postal_code: '72000',
       website: null,
       payment_terms: '30 días',
+      payment_days: 30,
       credit_limit: 75000.00,
       notes: 'Telas y materiales para tapicería',
       is_active: true

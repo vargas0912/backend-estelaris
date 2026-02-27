@@ -622,6 +622,10 @@ const swaggerDefinition = {
           payment_terms: {
             type: 'string'
           },
+          payment_days: {
+            type: 'integer',
+            description: 'Días de plazo de pago para calcular due_date automáticamente en compras a crédito'
+          },
           credit_limit: {
             type: 'number',
             format: 'decimal'
@@ -802,7 +806,7 @@ const swaggerDefinition = {
           tax_amount: { type: 'number', format: 'decimal' },
           purch_total: { type: 'number', format: 'decimal' },
           due_payment: { type: 'number', format: 'decimal' },
-          due_date: { type: 'string', format: 'date' },
+          due_date: { type: 'string', format: 'date', description: 'Calculado automáticamente desde payment_days del proveedor cuando purch_type es Credito' },
           notes: { type: 'string' },
           created_at: { type: 'string', format: 'date-time' },
           updated_at: { type: 'string', format: 'date-time' }

@@ -64,6 +64,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(100),
       allowNull: true
     },
+    payment_days: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
     credit_limit: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: true,
