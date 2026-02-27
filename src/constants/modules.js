@@ -101,7 +101,7 @@ const PRODUCT = Object.freeze({
 const PRODUCT_STOCK = Object.freeze({
   MODULE_NAME: 'productStocks',
   VIEW_ALL: 'view_product_stocks',
-  NAME_ALL: 'Ver inventarios de productos',
+  NAME_ALL: 'Ver inventarios y reporte de etiquetas',
   VIEW_BY_PRODUCT: 'view_stocks_by_product',
   NAME_VIEW_BY_PRODUCT: 'Ver inventario por producto',
   VIEW_BY_BRANCH: 'view_stocks_by_branch',
@@ -255,7 +255,9 @@ const PURCHASE = Object.freeze({
   DELETE: 'delete_purchase',
   NAME_DELETE: 'Eliminar compra',
   RECEIVE: 'receive_purchase',
-  NAME_RECEIVE: 'Recibir compra'
+  NAME_RECEIVE: 'Recibir compra',
+  VIEW_RPT_STOCK_LABEL: 'view_rpt_stock_label',
+  NAME_VIEW_RPT_STOCK_LABEL: 'Ver reporte de etiquetas'
 });
 
 module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE };
