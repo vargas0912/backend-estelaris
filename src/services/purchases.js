@@ -35,7 +35,7 @@ const detailAttributes = [
   'subtotal'
 ];
 
-const supplierAttributes = ['id', 'name', 'trade_name', 'tax_id'];
+const supplierAttributes = ['id', 'name', 'trade_name', 'tax_id', 'payment_days'];
 const branchAttributes = ['id', 'name'];
 const userAttributes = ['id', 'name', 'email'];
 const productAttributes = ['id', 'name'];
