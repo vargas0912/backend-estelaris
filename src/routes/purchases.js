@@ -140,7 +140,11 @@ router.get('/:id', [
  *      tags:
  *        - purchases
  *      summary: Crear compra
- *      description: Crear compra con encabezado y detalle en una sola transacción atómica
+ *      description: |
+ *        Crear compra con encabezado y detalle en una sola transacción atómica.
+ *        El campo `due_date` se calcula automáticamente: si `purch_type` es `Credito`
+ *        y el proveedor tiene `payment_days` configurado, se suma ese plazo a `purch_date`.
+ *        Para `Contado` o si el proveedor no tiene `payment_days`, `due_date` queda en `null`.
  *      security:
  *        - bearerAuth: []
  *      requestBody:
@@ -164,9 +168,16 @@ router.get('/:id', [
  *                purch_type:
  *                  type: string
  *                  enum: [Contado, Credito]
+ *                  description: Si es Credito, el due_date se calcula automáticamente desde payment_days del proveedor
  *                payment_method:
  *                  type: string
  *                  enum: [Efectivo, Transferencia, Cheque, Tarjeta]
+ *                discount_amount:
+ *                  type: number
+ *                  format: decimal
+ *                  description: Descuento global sobre el total
+ *                notes:
+ *                  type: string
  *                items:
  *                  type: array
  *                  items:
