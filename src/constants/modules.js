@@ -242,6 +242,16 @@ const USER_BRANCH = Object.freeze({
   NAME_DELETE: 'Remover sucursal de usuario'
 });
 
+const PURCH_PAYMENT = Object.freeze({
+  MODULE_NAME: 'purchPayments',
+  VIEW_ALL: 'view_purch_payments',
+  NAME_ALL: 'Ver pagos de compra',
+  ADD: 'create_purch_payment',
+  NAME_ADD: 'Registrar pago de compra',
+  DELETE: 'delete_purch_payment',
+  NAME_DELETE: 'Eliminar pago de compra'
+});
+
 const PURCHASE = Object.freeze({
   MODULE_NAME: 'purchases',
   VIEW_ALL: 'view_purchases',
@@ -260,4 +270,4 @@ const PURCHASE = Object.freeze({
   NAME_VIEW_RPT_STOCK_LABEL: 'Ver reporte de etiquetas'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE };
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE, PURCH_PAYMENT };
