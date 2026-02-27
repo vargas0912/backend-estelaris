@@ -41,11 +41,11 @@ const getAllProductStocks = async (branchId = null) => {
   return result;
 };
 
-const getProductStock = async (id) => {
-  const result = await productStocks.findOne({
+const getProductStock = async (purchId) => {
+  const result = await productStocks.findAll({
     attributes,
     where: {
-      id
+      purch_id: purchId
     },
     include: [
       {
@@ -179,7 +179,7 @@ const updateFromPurchase = async (purchaseId, details, branchId, userId, transac
     });
 
     if (!created) {
-      stock.quantity = parseFloat(stock.quantity) + qty;
+      stock.quantity = qty;
       stock.purch_id = purchaseId;
       stock.bar_code = barCode;
       stock.last_count_date = today;

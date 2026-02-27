@@ -2,7 +2,7 @@ const fecha = new Date();
 const {
   BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD,
   CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR, PRODUCT: PRD, POSITION: POS, PRICE_LIST: PL,
-  PRODUCT_PRICE: PP, PURCHASE: PURCH
+  PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP
 } = require('../../../constants/modules');
 
 const data = [
@@ -19,11 +19,11 @@ const data = [
   { name: BR.NAME_UPDATE, codeName: BR.UPDATE, module: BR.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: BR.NAME_DELETE, codeName: BR.DELETE, module: BR.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
-  // proveedores
-  { name: 'Ver proveedores', codeName: 'view_suppliers', module: 'suppliers', created_at: fecha, updated_at: fecha },
-  { name: 'Ver proveedores', codeName: 'view_suppliers', module: 'suppliers', created_at: fecha, updated_at: fecha },
-  { name: 'Ver proveedores', codeName: 'view_suppliers', module: 'suppliers', created_at: fecha, updated_at: fecha },
-  { name: 'Ver proveedores', codeName: 'view_suppliers', module: 'suppliers', created_at: fecha, updated_at: fecha },
+  // Proveedores
+  { name: SUP.NAME_ALL, codeName: SUP.VIEW_ALL, module: SUP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SUP.NAME_ADD, codeName: SUP.ADD, module: SUP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SUP.NAME_UPDATE, codeName: SUP.UPDATE, module: SUP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SUP.NAME_DELETE, codeName: SUP.DELETE, module: SUP.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Empleados
   { name: EMP.NAME_ALL, codeName: EMP.VIEW_ALL, module: EMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
@@ -73,8 +73,8 @@ const data = [
 
   // Product Price
   { name: PP.NAME_ALL, codeName: PP.VIEW_ALL, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: PP.NAME_NAME_VIEW_BY_PRODUCT, codeName: PP.VIEW_BY_PRODUCT, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: PP.NAME_NAME_VIEW_BY_PRICE_LIST, codeName: PP.VIEW_BY_PRICE_LIST, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PP.NAME_VIEW_BY_PRODUCT, codeName: PP.VIEW_BY_PRODUCT, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PP.NAME_VIEW_BY_PRICE_LIST, codeName: PP.VIEW_BY_PRICE_LIST, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: PP.NAME_ADD, codeName: PP.ADD, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: PP.NAME_UPDATE, codeName: PP.UPDATE, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: PP.NAME_DELETE, codeName: PP.DELETE, module: PP.MODULE_NAME, created_at: fecha, updated_at: fecha },
@@ -125,7 +125,15 @@ const data = [
   { name: PURCH.NAME_UPDATE, codeName: PURCH.UPDATE, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: PURCH.NAME_CANCEL, codeName: PURCH.CANCEL, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: PURCH.NAME_DELETE, codeName: PURCH.DELETE, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: PURCH.NAME_RECEIVE, codeName: PURCH.RECEIVE, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: PURCH.NAME_RECEIVE, codeName: PURCH.RECEIVE, module: PURCH.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Inventario de Productos
+  { name: PS.NAME_ALL, codeName: PS.VIEW_ALL, module: PS.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PS.NAME_VIEW_BY_PRODUCT, codeName: PS.VIEW_BY_PRODUCT, module: PS.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PS.NAME_VIEW_BY_BRANCH, codeName: PS.VIEW_BY_BRANCH, module: PS.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PS.NAME_ADD, codeName: PS.ADD, module: PS.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PS.NAME_UPDATE, codeName: PS.UPDATE, module: PS.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PS.NAME_DELETE, codeName: PS.DELETE, module: PS.MODULE_NAME, created_at: fecha, updated_at: fecha }
 ];
 
 module.exports = { data };

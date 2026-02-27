@@ -4,7 +4,7 @@ const validateResults = require('../utils/handleValidator');
 const { PRODUCT_STOCKS_VALIDATORS } = require('../constants/productStocks');
 
 const validateGetRecord = [
-  check('id')
+  check('purch_id')
     .exists().withMessage(PRODUCT_STOCKS_VALIDATORS.ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(PRODUCT_STOCKS_VALIDATORS.ID_IS_EMPTY).bail(),
   (req, res, next) => {

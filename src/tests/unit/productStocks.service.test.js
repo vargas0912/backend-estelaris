@@ -1,7 +1,6 @@
 const { productStocks, products, branches } = require('../../models/index');
 const {
   getAllProductStocks,
-  getProductStock,
   getStocksByProduct,
   getStocksByBranch,
   addNewProductStock,
@@ -34,7 +33,7 @@ describe('ProductStocks Service - Unit Tests', () => {
   });
 
   describe('getAllProductStocks', () => {
-    test('debe retornar lista de inventarios', async() => {
+    test('debe retornar lista de inventarios', async () => {
       const mockStocks = [
         {
           id: 1,
@@ -63,7 +62,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(result).toHaveLength(2);
     });
 
-    test('debe retornar array vacío si no hay inventarios', async() => {
+    test('debe retornar array vacío si no hay inventarios', async () => {
       productStocks.findAll.mockResolvedValue([]);
 
       const result = await getAllProductStocks();
@@ -72,7 +71,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(result).toHaveLength(0);
     });
 
-    test('debe incluir producto y sucursal en la consulta', async() => {
+    test('debe incluir producto y sucursal en la consulta', async () => {
       productStocks.findAll.mockResolvedValue([]);
 
       await getAllProductStocks();
@@ -94,48 +93,8 @@ describe('ProductStocks Service - Unit Tests', () => {
     });
   });
 
-  describe('getProductStock', () => {
-    test('debe retornar un inventario por id', async() => {
-      const mockStock = {
-        id: 1,
-        product_id: 1,
-        branch_id: 1,
-        quantity: 100,
-        product: { id: 1, sku: 'SKU001', name: 'Producto 1' },
-        branch: { id: 1, name: 'Sucursal 1' }
-      };
-
-      productStocks.findOne.mockResolvedValue(mockStock);
-
-      const result = await getProductStock(1);
-
-      expect(productStocks.findOne).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(mockStock);
-    });
-
-    test('debe retornar null si el inventario no existe', async() => {
-      productStocks.findOne.mockResolvedValue(null);
-
-      const result = await getProductStock(999);
-
-      expect(result).toBeNull();
-    });
-
-    test('debe buscar con el id correcto', async() => {
-      productStocks.findOne.mockResolvedValue(null);
-
-      await getProductStock(42);
-
-      expect(productStocks.findOne).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { id: 42 }
-        })
-      );
-    });
-  });
-
   describe('getStocksByProduct', () => {
-    test('debe retornar inventarios de un producto', async() => {
+    test('debe retornar inventarios de un producto', async () => {
       const mockStocks = [
         { id: 1, product_id: 1, branch_id: 1, quantity: 100, branch: { id: 1, name: 'Sucursal 1' } },
         { id: 2, product_id: 1, branch_id: 2, quantity: 50, branch: { id: 2, name: 'Sucursal 2' } }
@@ -153,7 +112,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(result).toHaveLength(2);
     });
 
-    test('debe retornar array vacío si el producto no tiene inventario', async() => {
+    test('debe retornar array vacío si el producto no tiene inventario', async () => {
       productStocks.findAll.mockResolvedValue([]);
 
       const result = await getStocksByProduct(999);
@@ -163,7 +122,7 @@ describe('ProductStocks Service - Unit Tests', () => {
   });
 
   describe('getStocksByBranch', () => {
-    test('debe retornar inventarios de una sucursal', async() => {
+    test('debe retornar inventarios de una sucursal', async () => {
       const mockStocks = [
         { id: 1, product_id: 1, branch_id: 1, quantity: 100, product: { id: 1, sku: 'SKU001', name: 'Producto 1' } },
         { id: 2, product_id: 2, branch_id: 1, quantity: 75, product: { id: 2, sku: 'SKU002', name: 'Producto 2' } }
@@ -181,7 +140,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(result).toHaveLength(2);
     });
 
-    test('debe retornar array vacío si la sucursal no tiene inventario', async() => {
+    test('debe retornar array vacío si la sucursal no tiene inventario', async () => {
       productStocks.findAll.mockResolvedValue([]);
 
       const result = await getStocksByBranch(999);
@@ -191,7 +150,7 @@ describe('ProductStocks Service - Unit Tests', () => {
   });
 
   describe('addNewProductStock', () => {
-    test('debe crear un nuevo inventario', async() => {
+    test('debe crear un nuevo inventario', async () => {
       const newStock = {
         product_id: 1,
         branch_id: 1,
@@ -208,7 +167,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(result).toEqual(createdStock);
     });
 
-    test('debe crear inventario con todos los campos', async() => {
+    test('debe crear inventario con todos los campos', async () => {
       const fullStock = {
         product_id: 1,
         branch_id: 1,
@@ -228,7 +187,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(result.location).toBe('A-01-03');
     });
 
-    test('debe crear inventario con campos mínimos', async() => {
+    test('debe crear inventario con campos mínimos', async () => {
       const minimalStock = {
         product_id: 1,
         branch_id: 1
@@ -245,7 +204,7 @@ describe('ProductStocks Service - Unit Tests', () => {
   });
 
   describe('updateProductStock', () => {
-    test('debe actualizar un inventario existente', async() => {
+    test('debe actualizar un inventario existente', async () => {
       const mockStock = {
         id: 1,
         product_id: 1,
@@ -274,7 +233,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(mockStock.min_stock).toBe(20);
     });
 
-    test('debe retornar NOT_FOUND si el inventario no existe', async() => {
+    test('debe retornar NOT_FOUND si el inventario no existe', async () => {
       productStocks.findByPk.mockResolvedValue(null);
 
       const result = await updateProductStock(999, { quantity: 100 });
@@ -282,7 +241,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(result).toEqual({ data: { msg: 'NOT_FOUND' } });
     });
 
-    test('debe mantener valores si no se proporcionan nuevos', async() => {
+    test('debe mantener valores si no se proporcionan nuevos', async () => {
       const mockStock = {
         id: 1,
         product_id: 1,
@@ -300,7 +259,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(mockStock.location).toBe('A-01-03');
     });
 
-    test('debe actualizar solo la cantidad', async() => {
+    test('debe actualizar solo la cantidad', async () => {
       const mockStock = {
         id: 1,
         product_id: 1,
@@ -318,7 +277,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(mockStock.location).toBe('A-01-03');
     });
 
-    test('debe actualizar cantidad a cero', async() => {
+    test('debe actualizar cantidad a cero', async () => {
       const mockStock = {
         id: 1,
         product_id: 1,
@@ -334,7 +293,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(mockStock.quantity).toBe(0);
     });
 
-    test('debe permitir establecer location como null', async() => {
+    test('debe permitir establecer location como null', async () => {
       const mockStock = {
         id: 1,
         product_id: 1,
@@ -353,7 +312,7 @@ describe('ProductStocks Service - Unit Tests', () => {
   });
 
   describe('deleteProductStock', () => {
-    test('debe eliminar un inventario', async() => {
+    test('debe eliminar un inventario', async () => {
       productStocks.destroy.mockResolvedValue(1);
 
       const result = await deleteProductStock(1);
@@ -363,7 +322,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(result).toBe(1);
     });
 
-    test('debe retornar 0 si el inventario no existe', async() => {
+    test('debe retornar 0 si el inventario no existe', async () => {
       productStocks.destroy.mockResolvedValue(0);
 
       const result = await deleteProductStock(999);
@@ -371,7 +330,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(result).toBe(0);
     });
 
-    test('debe llamar destroy con el id correcto', async() => {
+    test('debe llamar destroy con el id correcto', async () => {
       productStocks.destroy.mockResolvedValue(1);
 
       await deleteProductStock(123);
@@ -384,56 +343,49 @@ describe('ProductStocks Service - Unit Tests', () => {
   // Tests de manejo de errores
   // ============================================
   describe('Manejo de errores de base de datos', () => {
-    test('getAllProductStocks debe propagar error de BD', async() => {
+    test('getAllProductStocks debe propagar error de BD', async () => {
       const dbError = new Error('Database connection failed');
       productStocks.findAll.mockRejectedValue(dbError);
 
       await expect(getAllProductStocks()).rejects.toThrow('Database connection failed');
     });
 
-    test('getProductStock debe propagar error de BD', async() => {
-      const dbError = new Error('Database query failed');
-      productStocks.findOne.mockRejectedValue(dbError);
-
-      await expect(getProductStock(1)).rejects.toThrow('Database query failed');
-    });
-
-    test('getStocksByProduct debe propagar error de BD', async() => {
+    test('getStocksByProduct debe propagar error de BD', async () => {
       const dbError = new Error('Query failed');
       productStocks.findAll.mockRejectedValue(dbError);
 
       await expect(getStocksByProduct(1)).rejects.toThrow('Query failed');
     });
 
-    test('getStocksByBranch debe propagar error de BD', async() => {
+    test('getStocksByBranch debe propagar error de BD', async () => {
       const dbError = new Error('Query failed');
       productStocks.findAll.mockRejectedValue(dbError);
 
       await expect(getStocksByBranch(1)).rejects.toThrow('Query failed');
     });
 
-    test('addNewProductStock debe propagar error de BD', async() => {
+    test('addNewProductStock debe propagar error de BD', async () => {
       const dbError = new Error('Insert failed');
       productStocks.create.mockRejectedValue(dbError);
 
       await expect(addNewProductStock({ product_id: 1, branch_id: 1 })).rejects.toThrow('Insert failed');
     });
 
-    test('addNewProductStock debe propagar error de duplicado', async() => {
+    test('addNewProductStock debe propagar error de duplicado', async () => {
       const dbError = new Error('Duplicate entry for key product_branch');
       productStocks.create.mockRejectedValue(dbError);
 
       await expect(addNewProductStock({ product_id: 1, branch_id: 1 })).rejects.toThrow('Duplicate entry');
     });
 
-    test('updateProductStock debe propagar error de BD en findByPk', async() => {
+    test('updateProductStock debe propagar error de BD en findByPk', async () => {
       const dbError = new Error('FindByPk failed');
       productStocks.findByPk.mockRejectedValue(dbError);
 
       await expect(updateProductStock(1, { quantity: 100 })).rejects.toThrow('FindByPk failed');
     });
 
-    test('updateProductStock debe propagar error de BD en save', async() => {
+    test('updateProductStock debe propagar error de BD en save', async () => {
       const dbError = new Error('Save failed');
       const mockStock = {
         id: 1,
@@ -448,7 +400,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       await expect(updateProductStock(1, { quantity: 200 })).rejects.toThrow('Save failed');
     });
 
-    test('deleteProductStock debe propagar error de BD', async() => {
+    test('deleteProductStock debe propagar error de BD', async () => {
       const dbError = new Error('Delete failed');
       productStocks.destroy.mockRejectedValue(dbError);
 
@@ -460,7 +412,7 @@ describe('ProductStocks Service - Unit Tests', () => {
   // Tests de casos edge
   // ============================================
   describe('Casos edge', () => {
-    test('getAllProductStocks con muchos inventarios', async() => {
+    test('getAllProductStocks con muchos inventarios', async () => {
       const manyStocks = Array.from({ length: 100 }, (_, i) => ({
         id: i + 1,
         product_id: (i % 10) + 1,
@@ -475,16 +427,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(result).toHaveLength(100);
     });
 
-    test('getProductStock con id tipo string numérico', async() => {
-      const mockStock = { id: 1, product_id: 1, branch_id: 1, quantity: 100 };
-      productStocks.findOne.mockResolvedValue(mockStock);
-
-      await getProductStock('1');
-
-      expect(productStocks.findOne).toHaveBeenCalled();
-    });
-
-    test('deleteProductStock debe retornar número de filas eliminadas', async() => {
+    test('deleteProductStock debe retornar número de filas eliminadas', async () => {
       productStocks.destroy.mockResolvedValue(1);
 
       const result = await deleteProductStock(1);
@@ -493,7 +436,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(result).toBe(1);
     });
 
-    test('addNewProductStock con cantidades decimales', async() => {
+    test('addNewProductStock con cantidades decimales', async () => {
       const stockWithDecimals = {
         product_id: 1,
         branch_id: 1,
@@ -511,7 +454,7 @@ describe('ProductStocks Service - Unit Tests', () => {
       expect(result.min_stock).toBe(2.25);
     });
 
-    test('updateProductStock con cantidad negativa (ajuste)', async() => {
+    test('updateProductStock con cantidad negativa (ajuste)', async () => {
       const mockStock = {
         id: 1,
         product_id: 1,

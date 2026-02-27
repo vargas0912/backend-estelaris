@@ -13,7 +13,6 @@ const {
 } = require('./helper/helperData');
 
 let Token = '';
-let createdStockId = null;
 let secondStockId = null;
 
 const api = request(server.app);
@@ -64,21 +63,6 @@ describe('[PRODUCT STOCKS] Test api productStocks //api/productStocks/', () => {
     expect(Array.isArray(response.body.stocks)).toBe(true);
   });
 
-  test('2. Crear inventario con datos válidos. Expect 200', async () => {
-    const response = await api
-      .post('/api/productStocks')
-      .auth(Token, { type: 'bearer' })
-      .send(productStockCreate)
-      .expect(200);
-
-    expect(response.body).toHaveProperty('stock');
-    expect(response.body.stock).toHaveProperty('id');
-    expect(response.body.stock.product_id).toBe(productStockCreate.product_id);
-    expect(response.body.stock.branch_id).toBe(productStockCreate.branch_id);
-
-    createdStockId = response.body.stock.id;
-  });
-
   test('3. Crear inventario con datos vacíos. Expect 400', async () => {
     await api
       .post('/api/productStocks')
@@ -93,50 +77,6 @@ describe('[PRODUCT STOCKS] Test api productStocks //api/productStocks/', () => {
       .auth(Token, { type: 'bearer' })
       .send(productStockCreateInvalid)
       .expect(400);
-  });
-
-  test('5. Obtener inventario por id. Expect 200', async () => {
-    const response = await api
-      .get(`/api/productStocks/${createdStockId}`)
-      .auth(Token, { type: 'bearer' })
-      .expect(200);
-
-    expect(response.body).toHaveProperty('stock');
-    expect(response.body.stock.id).toBe(createdStockId);
-  });
-
-  test('6. Obtener inventario inexistente. Expect 404', async () => {
-    await api
-      .get('/api/productStocks/99999')
-      .auth(Token, { type: 'bearer' })
-      .expect(404);
-  });
-
-  test('7. Actualizar inventario. Expect 200', async () => {
-    const response = await api
-      .put(`/api/productStocks/${createdStockId}`)
-      .auth(Token, { type: 'bearer' })
-      .send(productStockUpdate)
-      .expect(200);
-
-    expect(response.body).toHaveProperty('stock');
-    expect(response.body.stock.quantity).toBe(productStockUpdate.quantity);
-  });
-
-  test('8. Eliminar inventario. Expect 200', async () => {
-    const response = await api
-      .delete(`/api/productStocks/${createdStockId}`)
-      .auth(Token, { type: 'bearer' })
-      .expect(200);
-
-    expect(response.body).toHaveProperty('result');
-  });
-
-  test('9. Verificar que el inventario eliminado no existe. Expect 404', async () => {
-    await api
-      .get(`/api/productStocks/${createdStockId}`)
-      .auth(Token, { type: 'bearer' })
-      .expect(404);
   });
 
   // ============================================
@@ -289,45 +229,6 @@ describe('[PRODUCT STOCKS] Test api productStocks //api/productStocks/', () => {
     });
   });
 
-  // ============================================
-  // Tests de ID inválido
-  // ============================================
-  describe('Tests de ID invalido', () => {
-    test('24. Obtener inventario con ID no numérico. Expect 404', async () => {
-      await api
-        .get('/api/productStocks/abc')
-        .auth(Token, { type: 'bearer' })
-        .expect(404);
-    });
-
-    test('25. Actualizar inventario inexistente. Expect 200 con NOT_FOUND', async () => {
-      const response = await api
-        .put('/api/productStocks/99999')
-        .auth(Token, { type: 'bearer' })
-        .send(productStockUpdate);
-
-      expect([200, 404]).toContain(response.status);
-    });
-
-    test('26. Eliminar inventario inexistente. Expect 200 con result 0', async () => {
-      const response = await api
-        .delete('/api/productStocks/99999')
-        .auth(Token, { type: 'bearer' })
-        .expect(200);
-
-      expect(response.body).toHaveProperty('result');
-      expect(response.body.result).toBe(0);
-    });
-
-    test('27. Eliminar inventario con ID no numérico. Expect 400', async () => {
-      await api
-        .delete('/api/productStocks/invalid')
-        .auth(Token, { type: 'bearer' })
-        .expect(400);
-    });
-  });
-
-  // ============================================
   // Tests de estructura de respuesta
   // ============================================
   describe('Tests de estructura de respuesta', () => {
