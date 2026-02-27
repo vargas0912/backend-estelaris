@@ -120,7 +120,11 @@ router.get('/:id', [
  *                                  description: Sitio web
  *                              payment_terms:
  *                                  type: string
- *                                  description: Condiciones de pago
+ *                                  description: Condiciones de pago (texto libre, ej. "30 días")
+ *                              payment_days:
+ *                                  type: integer
+ *                                  description: Días de plazo de pago para calcular due_date automáticamente en compras a crédito
+ *                                  example: 30
  *                              credit_limit:
  *                                  type: number
  *                                  format: decimal
@@ -192,6 +196,9 @@ router.post('/', [
  *                                  type: string
  *                              payment_terms:
  *                                  type: string
+ *                              payment_days:
+ *                                  type: integer
+ *                                  description: Días de plazo de pago para calcular due_date automáticamente en compras a crédito
  *                              credit_limit:
  *                                  type: number
  *                                  format: decimal
