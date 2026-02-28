@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: 'branch_id'
       });
       this.hasMany(models.purchases, { as: 'purchases', foreignKey: 'user_id' });
+      this.hasMany(models.purchasePayments, { as: 'purchasePayments', foreignKey: 'user_id' });
     }
   }
   users.init({

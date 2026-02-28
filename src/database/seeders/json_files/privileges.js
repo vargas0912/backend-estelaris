@@ -2,7 +2,7 @@ const fecha = new Date();
 const {
   BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD,
   CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR, PRODUCT: PRD, POSITION: POS, PRICE_LIST: PL,
-  PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP
+  PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP, PURCH_PAYMENT: PP_PAY
 } = require('../../../constants/modules');
 
 const data = [
@@ -133,7 +133,12 @@ const data = [
   { name: PS.NAME_VIEW_BY_BRANCH, codeName: PS.VIEW_BY_BRANCH, module: PS.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: PS.NAME_ADD, codeName: PS.ADD, module: PS.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: PS.NAME_UPDATE, codeName: PS.UPDATE, module: PS.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: PS.NAME_DELETE, codeName: PS.DELETE, module: PS.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: PS.NAME_DELETE, codeName: PS.DELETE, module: PS.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Pagos de Compra
+  { name: PP_PAY.NAME_ALL, codeName: PP_PAY.VIEW_ALL, module: PP_PAY.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PP_PAY.NAME_ADD, codeName: PP_PAY.ADD, module: PP_PAY.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: PP_PAY.NAME_DELETE, codeName: PP_PAY.DELETE, module: PP_PAY.MODULE_NAME, created_at: fecha, updated_at: fecha }
 ];
 
 module.exports = { data };
