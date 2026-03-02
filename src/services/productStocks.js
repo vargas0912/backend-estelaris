@@ -179,7 +179,7 @@ const updateFromPurchase = async (purchaseId, details, branchId, userId, transac
     });
 
     if (!created) {
-      stock.quantity = qty;
+      stock.quantity = parseFloat((parseFloat(stock.quantity) + qty).toFixed(3));
       stock.purch_id = purchaseId;
       stock.bar_code = barCode;
       stock.last_count_date = today;
@@ -198,6 +198,116 @@ const updateFromPurchase = async (purchaseId, details, branchId, userId, transac
   }
 };
 
+/**
+ * Descuenta stock en origen (dispatch) e ingresa en destino (receive) para transferencias.
+ *
+ * @param {string} action  'dispatch' | 'receive'
+ * @param {number} transferId
+ * @param {Array}  details  transferDetails con product_id, qty, qty_received
+ * @param {number} fromBranchId
+ * @param {number} toBranchId
+ * @param {number} userId
+ * @param {object} transaction  Sequelize transaction
+ */
+const updateFromTransfer = async (action, transferId, details, fromBranchId, toBranchId, userId, transaction) => {
+  const today = new Date();
+
+  for (const detail of details) {
+    const productId = detail.product_id;
+
+    if (action === 'dispatch') {
+      // Decrementar stock en sucursal origen (SELECT FOR UPDATE ya fue validado antes)
+      const originStock = await productStocks.findOne({
+        where: { product_id: productId, branch_id: fromBranchId },
+        transaction,
+        lock: transaction.LOCK.UPDATE
+      });
+
+      const qty = parseFloat(detail.qty);
+      originStock.quantity = parseFloat((parseFloat(originStock.quantity) - qty).toFixed(3));
+      originStock.last_count_date = today;
+      await originStock.save({ transaction });
+
+      await stockMovements.create({
+        product_id: productId,
+        branch_id: fromBranchId,
+        reference_type: 'transfer',
+        reference_id: transferId,
+        qty_change: -qty,
+        notes: `Salida por transferencia #${transferId}`,
+        created_by: userId
+      }, { transaction });
+    }
+
+    if (action === 'receive') {
+      const qtyReceived = parseFloat(detail.qty_received);
+
+      if (qtyReceived > 0) {
+        const [destStock, created] = await productStocks.findOrCreate({
+          where: { product_id: productId, branch_id: toBranchId },
+          defaults: {
+            quantity: qtyReceived,
+            min_stock: parseFloat((qtyReceived * 0.25).toFixed(3)),
+            max_stock: parseFloat((qtyReceived * 1.5).toFixed(3)),
+            last_count_date: today
+          },
+          transaction
+        });
+
+        if (!created) {
+          destStock.quantity = parseFloat((parseFloat(destStock.quantity) + qtyReceived).toFixed(3));
+          destStock.last_count_date = today;
+          await destStock.save({ transaction });
+        }
+
+        await stockMovements.create({
+          product_id: productId,
+          branch_id: toBranchId,
+          reference_type: 'transfer',
+          reference_id: transferId,
+          qty_change: qtyReceived,
+          notes: `Entrada por transferencia #${transferId}`,
+          created_by: userId
+        }, { transaction });
+      }
+    }
+  }
+};
+
+/**
+ * Revierte el descuento de stock en origen cuando se cancela una transferencia En_Transito.
+ */
+const revertFromTransfer = async (transferId, details, fromBranchId, userId, transaction) => {
+  const today = new Date();
+
+  for (const detail of details) {
+    const productId = detail.product_id;
+    const qty = parseFloat(detail.qty);
+
+    const originStock = await productStocks.findOne({
+      where: { product_id: productId, branch_id: fromBranchId },
+      transaction,
+      lock: transaction.LOCK.UPDATE
+    });
+
+    if (originStock) {
+      originStock.quantity = parseFloat((parseFloat(originStock.quantity) + qty).toFixed(3));
+      originStock.last_count_date = today;
+      await originStock.save({ transaction });
+    }
+
+    await stockMovements.create({
+      product_id: productId,
+      branch_id: fromBranchId,
+      reference_type: 'adjustment',
+      reference_id: transferId,
+      qty_change: qty,
+      notes: `Reversal por cancelación de transferencia #${transferId}`,
+      created_by: userId
+    }, { transaction });
+  }
+};
+
 module.exports = {
   getAllProductStocks,
   getProductStock,
@@ -206,5 +316,7 @@ module.exports = {
   addNewProductStock,
   updateProductStock,
   deleteProductStock,
-  updateFromPurchase
+  updateFromPurchase,
+  updateFromTransfer,
+  revertFromTransfer
 };

@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'product_id'
       });
       this.hasMany(models.purchaseDetails, { as: 'purchaseDetails', foreignKey: 'product_id' });
+      this.hasMany(models.transferDetails, { as: 'transferDetails', foreignKey: 'product_id' });
       this.hasMany(models.stockMovements, { as: 'stockMovements', foreignKey: 'product_id' });
     }
   }

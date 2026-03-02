@@ -13,6 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       });
       this.hasMany(models.purchases, { as: 'purchases', foreignKey: 'user_id' });
       this.hasMany(models.purchasePayments, { as: 'purchasePayments', foreignKey: 'user_id' });
+      this.hasMany(models.transfers, { as: 'dispatchedTransfers', foreignKey: 'user_id' });
+      this.hasMany(models.transfers, { as: 'receivedTransfers', foreignKey: 'received_by' });
     }
   }
   users.init({
