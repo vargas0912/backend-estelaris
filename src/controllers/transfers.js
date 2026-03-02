@@ -15,7 +15,7 @@ const {
 
 const getRecords = async (req, res) => {
   try {
-    const list = await getAllTransfers();
+    const list = await getAllTransfers(req.branchId);
     res.send({ transfers: list });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
@@ -25,10 +25,15 @@ const getRecords = async (req, res) => {
 const getRecord = async (req, res) => {
   try {
     const { id } = matchedData(req);
-    const transfer = await getTransfer(id);
+    const transfer = await getTransfer(id, req.branchId);
 
     if (!transfer) {
       handleHttpError(res, `TRANSFER ${id} NOT EXISTS`, 404);
+      return;
+    }
+
+    if (transfer.error === 'BRANCH_ACCESS_DENIED') {
+      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
       return;
     }
 
@@ -41,8 +46,14 @@ const getRecord = async (req, res) => {
 const getRecordsByFromBranch = async (req, res) => {
   try {
     const { branch_id: branchId } = matchedData(req);
-    const list = await getTransfersByFromBranch(branchId);
-    res.send({ transfers: list });
+    const result = await getTransfersByFromBranch(branchId, req.branchId);
+
+    if (result && result.error === 'BRANCH_ACCESS_DENIED') {
+      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
+      return;
+    }
+
+    res.send({ transfers: result });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_FROM_BRANCH -> ${error}`, 400);
   }
@@ -51,8 +62,14 @@ const getRecordsByFromBranch = async (req, res) => {
 const getRecordsByToBranch = async (req, res) => {
   try {
     const { branch_id: branchId } = matchedData(req);
-    const list = await getTransfersByToBranch(branchId);
-    res.send({ transfers: list });
+    const result = await getTransfersByToBranch(branchId, req.branchId);
+
+    if (result && result.error === 'BRANCH_ACCESS_DENIED') {
+      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
+      return;
+    }
+
+    res.send({ transfers: result });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_TO_BRANCH -> ${error}`, 400);
   }
@@ -63,7 +80,12 @@ const addRecord = async (req, res) => {
     const data = matchedData(req);
     const userId = req.user.id;
 
-    const result = await createTransfer(data, userId);
+    const result = await createTransfer(data, userId, req.branchId);
+
+    if (result && result.error === 'BRANCH_ACCESS_DENIED') {
+      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
+      return;
+    }
 
     if (result && result.error) {
       handleHttpError(res, result.error, 400);
@@ -79,10 +101,15 @@ const addRecord = async (req, res) => {
 const updateRecord = async (req, res) => {
   try {
     const data = matchedData(req);
-    const result = await updateTransfer(data.id, data);
+    const result = await updateTransfer(data.id, data, req.branchId);
 
     if (result && result.error === 'NOT_FOUND') {
       handleHttpError(res, `TRANSFER ${data.id} NOT EXISTS`, 404);
+      return;
+    }
+
+    if (result && result.error === 'BRANCH_ACCESS_DENIED') {
+      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
       return;
     }
 
@@ -102,10 +129,15 @@ const dispatchRecord = async (req, res) => {
     const { id } = matchedData(req);
     const userId = req.user.id;
 
-    const result = await dispatchTransfer(id, userId);
+    const result = await dispatchTransfer(id, userId, req.branchId);
 
     if (result && result.error === 'NOT_FOUND') {
       handleHttpError(res, `TRANSFER ${id} NOT EXISTS`, 404);
+      return;
+    }
+
+    if (result && result.error === 'BRANCH_ACCESS_DENIED') {
+      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
       return;
     }
 
@@ -130,10 +162,15 @@ const receiveRecord = async (req, res) => {
     const data = matchedData(req);
     const userId = req.user.id;
 
-    const result = await receiveTransfer(data.id, data.items, userId);
+    const result = await receiveTransfer(data.id, data.items, userId, req.branchId);
 
     if (result && result.error === 'NOT_FOUND') {
       handleHttpError(res, `TRANSFER ${data.id} NOT EXISTS`, 404);
+      return;
+    }
+
+    if (result && result.error === 'BRANCH_ACCESS_DENIED') {
+      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
       return;
     }
 
@@ -163,10 +200,15 @@ const deleteRecord = async (req, res) => {
     const { id } = matchedData(req);
     const userId = req.user.id;
 
-    const result = await deleteTransfer(id, userId);
+    const result = await deleteTransfer(id, userId, req.branchId);
 
     if (result && result.error === 'NOT_FOUND') {
       handleHttpError(res, `TRANSFER ${id} NOT EXISTS`, 404);
+      return;
+    }
+
+    if (result && result.error === 'BRANCH_ACCESS_DENIED') {
+      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
       return;
     }
 

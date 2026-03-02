@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const { transfers, transferDetails, branches, users, employees, products, productStocks, sequelize } = require('../models/index');
 const { updateFromTransfer, revertFromTransfer } = require('./productStocks');
 
@@ -30,41 +31,66 @@ const transferIncludes = [
   }
 ];
 
-const getTransfer = async (id) => {
-  return transfers.findOne({
+const getTransfer = async (id, reqBranchId) => {
+  const transfer = await transfers.findOne({
     attributes: transferAttributes,
     where: { id },
     include: transferIncludes
   });
+
+  if (!transfer) return null;
+
+  if (reqBranchId && transfer.from_branch_id !== reqBranchId && transfer.to_branch_id !== reqBranchId) {
+    return { error: 'BRANCH_ACCESS_DENIED' };
+  }
+
+  return transfer;
 };
 
-const getAllTransfers = async () => {
+const getAllTransfers = async (reqBranchId) => {
+  const where = reqBranchId
+    ? { [Op.or]: [{ from_branch_id: reqBranchId }, { to_branch_id: reqBranchId }] }
+    : {};
+
   return transfers.findAll({
     attributes: transferAttributes,
+    where,
     include: transferIncludes,
     order: [['transfer_date', 'DESC']]
   });
 };
 
-const getTransfersByFromBranch = async (branchId) => {
+const getTransfersByFromBranch = async (paramBranchId, reqBranchId) => {
+  if (reqBranchId && reqBranchId !== paramBranchId) {
+    return { error: 'BRANCH_ACCESS_DENIED' };
+  }
+
   return transfers.findAll({
     attributes: transferAttributes,
-    where: { from_branch_id: branchId },
+    where: { from_branch_id: paramBranchId },
     include: transferIncludes,
     order: [['transfer_date', 'DESC']]
   });
 };
 
-const getTransfersByToBranch = async (branchId) => {
+const getTransfersByToBranch = async (paramBranchId, reqBranchId) => {
+  if (reqBranchId && reqBranchId !== paramBranchId) {
+    return { error: 'BRANCH_ACCESS_DENIED' };
+  }
+
   return transfers.findAll({
     attributes: transferAttributes,
-    where: { to_branch_id: branchId },
+    where: { to_branch_id: paramBranchId },
     include: transferIncludes,
     order: [['transfer_date', 'DESC']]
   });
 };
 
-const createTransfer = async (body, userId) => {
+const createTransfer = async (body, userId, reqBranchId) => {
+  if (reqBranchId && body.from_branch_id !== reqBranchId) {
+    return { error: 'BRANCH_ACCESS_DENIED' };
+  }
+
   const {
     from_branch_id: fromBranchId,
     to_branch_id: toBranchId,
@@ -126,11 +152,15 @@ const createTransfer = async (body, userId) => {
   }
 };
 
-const updateTransfer = async (id, body) => {
+const updateTransfer = async (id, body, reqBranchId) => {
   const transfer = await transfers.findByPk(id);
 
   if (!transfer) {
     return { error: 'NOT_FOUND' };
+  }
+
+  if (reqBranchId && transfer.from_branch_id !== reqBranchId) {
+    return { error: 'BRANCH_ACCESS_DENIED' };
   }
 
   if (transfer.status !== 'Borrador') {
@@ -154,7 +184,7 @@ const updateTransfer = async (id, body) => {
   return getTransfer(id);
 };
 
-const dispatchTransfer = async (id, userId) => {
+const dispatchTransfer = async (id, userId, reqBranchId) => {
   const transfer = await transfers.findOne({
     where: { id },
     include: [{ model: transferDetails, as: 'details', attributes: detailAttributes }]
@@ -162,6 +192,10 @@ const dispatchTransfer = async (id, userId) => {
 
   if (!transfer) {
     return { error: 'NOT_FOUND' };
+  }
+
+  if (reqBranchId && transfer.from_branch_id !== reqBranchId) {
+    return { error: 'BRANCH_ACCESS_DENIED' };
   }
 
   if (transfer.status !== 'Borrador') {
@@ -199,7 +233,7 @@ const dispatchTransfer = async (id, userId) => {
   }
 };
 
-const receiveTransfer = async (id, receivedItems, userId) => {
+const receiveTransfer = async (id, receivedItems, userId, reqBranchId) => {
   const transfer = await transfers.findOne({
     where: { id },
     include: [{ model: transferDetails, as: 'details', attributes: detailAttributes }]
@@ -207,6 +241,10 @@ const receiveTransfer = async (id, receivedItems, userId) => {
 
   if (!transfer) {
     return { error: 'NOT_FOUND' };
+  }
+
+  if (reqBranchId && transfer.to_branch_id !== reqBranchId) {
+    return { error: 'BRANCH_ACCESS_DENIED' };
   }
 
   if (transfer.status !== 'En_Transito') {
@@ -257,7 +295,7 @@ const receiveTransfer = async (id, receivedItems, userId) => {
   }
 };
 
-const deleteTransfer = async (id, userId) => {
+const deleteTransfer = async (id, userId, reqBranchId) => {
   const transfer = await transfers.findOne({
     where: { id },
     include: [{ model: transferDetails, as: 'details', attributes: detailAttributes }]
@@ -265,6 +303,10 @@ const deleteTransfer = async (id, userId) => {
 
   if (!transfer) {
     return { error: 'NOT_FOUND' };
+  }
+
+  if (reqBranchId && transfer.from_branch_id !== reqBranchId) {
+    return { error: 'BRANCH_ACCESS_DENIED' };
   }
 
   if (!['Borrador', 'En_Transito'].includes(transfer.status)) {

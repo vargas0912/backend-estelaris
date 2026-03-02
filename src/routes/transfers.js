@@ -12,6 +12,7 @@ const {
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
+const branchScope = require('../middlewares/branchScope');
 const { readLimiter, writeLimiter, deleteLimiter, searchLimiter } = require('../middlewares/rateLimiters');
 
 const {
@@ -44,6 +45,7 @@ const { ROLE } = require('../constants/roles');
 router.get('/', [
   readLimiter,
   authMidleware,
+  branchScope,
   checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.VIEW_ALL)
 ], getRecords);
 
@@ -68,6 +70,7 @@ router.get('/', [
 router.get('/from-branch/:branch_id', [
   searchLimiter,
   authMidleware,
+  branchScope,
   validateGetByBranch,
   checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.VIEW_ALL)
 ], getRecordsByFromBranch);
@@ -93,6 +96,7 @@ router.get('/from-branch/:branch_id', [
 router.get('/to-branch/:branch_id', [
   searchLimiter,
   authMidleware,
+  branchScope,
   validateGetByBranch,
   checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.VIEW_ALL)
 ], getRecordsByToBranch);
@@ -120,6 +124,7 @@ router.get('/to-branch/:branch_id', [
 router.get('/:id', [
   readLimiter,
   authMidleware,
+  branchScope,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.VIEW_ALL)
 ], getRecord);
@@ -141,6 +146,7 @@ router.get('/:id', [
 router.post('/', [
   writeLimiter,
   authMidleware,
+  branchScope,
   valiAddRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.ADD)
 ], addRecord);
@@ -168,6 +174,7 @@ router.post('/', [
 router.put('/:id', [
   writeLimiter,
   authMidleware,
+  branchScope,
   valiUpdateRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.UPDATE)
 ], updateRecord);
@@ -198,6 +205,7 @@ router.put('/:id', [
 router.patch('/:id/dispatch', [
   writeLimiter,
   authMidleware,
+  branchScope,
   validateDispatchRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.DISPATCH)
 ], dispatchRecord);
@@ -245,6 +253,7 @@ router.patch('/:id/dispatch', [
 router.patch('/:id/receive', [
   writeLimiter,
   authMidleware,
+  branchScope,
   validateReceiveRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.RECEIVE)
 ], receiveRecord);
@@ -275,6 +284,7 @@ router.patch('/:id/receive', [
 router.delete('/:id', [
   deleteLimiter,
   authMidleware,
+  branchScope,
   validateGetRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.DELETE)
 ], deleteRecord);
