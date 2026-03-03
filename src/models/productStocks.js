@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'branch_id'
       });
       this.belongsTo(models.purchases, {
-        as: 'lastPurchase',
+        as: 'sourcePurchase',
         foreignKey: 'purch_id'
       });
     }

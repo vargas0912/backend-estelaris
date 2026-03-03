@@ -375,15 +375,16 @@ describe('[PURCHASES] Test api purchases /api/purchases/', () => {
         .expect(200);
 
       const stocks = response.body.stocks;
+      const expectedBarCode = `${purchaseForReceive.items[0].product_id}-${receivePurchaseId}`;
       const stockForProduct = stocks.find(s =>
-        s.product_id === purchaseForReceive.items[0].product_id &&
+        s.bar_code === expectedBarCode &&
         s.branch_id === purchaseForReceive.branch_id
       );
 
       expect(stockForProduct).toBeDefined();
       expect(parseFloat(stockForProduct.quantity)).toBeGreaterThan(0);
       expect(stockForProduct.purch_id).toBe(receivePurchaseId);
-      expect(stockForProduct.bar_code).toBe(`${purchaseForReceive.items[0].product_id}-${receivePurchaseId}`);
+      expect(stockForProduct.bar_code).toBe(expectedBarCode);
     });
 
     test('R4. Recibir compra ya recibida. Expect 409', async () => {

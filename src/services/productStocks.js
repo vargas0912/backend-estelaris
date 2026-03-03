@@ -166,8 +166,9 @@ const updateFromPurchase = async (purchaseId, details, branchId, userId, transac
     const maxStock = parseFloat((qty * 1.5).toFixed(3));
 
     const [stock, created] = await productStocks.findOrCreate({
-      where: { product_id: productId, branch_id: branchId },
+      where: { bar_code: barCode, branch_id: branchId },
       defaults: {
+        product_id: productId,
         quantity: qty,
         min_stock: minStock,
         max_stock: maxStock,
@@ -216,9 +217,14 @@ const updateFromTransfer = async (action, transferId, details, fromBranchId, toB
     const productId = detail.product_id;
 
     if (action === 'dispatch') {
-      // Decrementar stock en sucursal origen (SELECT FOR UPDATE ya fue validado antes)
+      // Si el ítem tiene purch_id, operar por lote (bar_code); si no, fallback a product+branch
+      const dispatchBarCode = detail.purch_id ? `${productId}-${detail.purch_id}` : null;
+      const dispatchWhere = dispatchBarCode
+        ? { bar_code: dispatchBarCode, branch_id: fromBranchId }
+        : { product_id: productId, branch_id: fromBranchId };
+
       const originStock = await productStocks.findOne({
-        where: { product_id: productId, branch_id: fromBranchId },
+        where: dispatchWhere,
         transaction,
         lock: transaction.LOCK.UPDATE
       });
@@ -243,12 +249,20 @@ const updateFromTransfer = async (action, transferId, details, fromBranchId, toB
       const qtyReceived = parseFloat(detail.qty_received);
 
       if (qtyReceived > 0) {
+        const receiveBarCode = detail.purch_id ? `${productId}-${detail.purch_id}` : null;
+        const receiveWhere = receiveBarCode
+          ? { bar_code: receiveBarCode, branch_id: toBranchId }
+          : { product_id: productId, branch_id: toBranchId };
+
         const [destStock, created] = await productStocks.findOrCreate({
-          where: { product_id: productId, branch_id: toBranchId },
+          where: receiveWhere,
           defaults: {
+            product_id: productId,
             quantity: qtyReceived,
             min_stock: parseFloat((qtyReceived * 0.25).toFixed(3)),
             max_stock: parseFloat((qtyReceived * 1.5).toFixed(3)),
+            purch_id: detail.purch_id || null,
+            bar_code: receiveBarCode,
             last_count_date: today
           },
           transaction
