@@ -15,7 +15,7 @@ const attributes = [
   'updated_at'
 ];
 
-const productAttributes = ['id', 'name'];
+const productAttributes = ['id', 'name', 'cost_price', 'unit_of_measure'];
 const branchAttributes = ['id', 'name'];
 
 const getAllProductStocks = async (branchId = null) => {
