@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.positions, { as: 'position', foreignKey: 'position_id' });
       this.belongsTo(models.branches, { as: 'branch', foreignKey: 'branch_id' });
+      this.hasMany(models.transfers, { as: 'drivenTransfers', foreignKey: 'driver_id' });
     }
   }
 

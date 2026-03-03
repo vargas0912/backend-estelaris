@@ -882,6 +882,81 @@ const swaggerDefinition = {
           }
         }
       },
+      purchasePayments: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          purch_id: { type: 'integer' },
+          payment_amount: { type: 'number', format: 'decimal' },
+          payment_date: { type: 'string', format: 'date' },
+          payment_method: { type: 'string', enum: ['Efectivo', 'Transferencia', 'Cheque', 'Tarjeta'] },
+          reference_number: { type: 'string', maxLength: 100 },
+          user_id: { type: 'integer' },
+          notes: { type: 'string' },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      stockMovements: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          product_id: { type: 'string', maxLength: 20 },
+          branch_id: { type: 'integer' },
+          reference_type: {
+            type: 'string',
+            enum: ['purchase', 'sale', 'adjustment', 'reversal', 'transfer'],
+            description: 'Tipo de operación que originó el movimiento'
+          },
+          reference_id: { type: 'integer', description: 'ID del documento origen (compra, transferencia, etc.)' },
+          qty_change: {
+            type: 'number',
+            format: 'decimal',
+            description: 'Positivo para entradas, negativo para salidas'
+          },
+          notes: { type: 'string' },
+          created_by: { type: 'integer' },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      transfers: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          from_branch_id: { type: 'integer', description: 'Sucursal origen' },
+          to_branch_id: { type: 'integer', description: 'Sucursal destino' },
+          transfer_date: { type: 'string', format: 'date' },
+          status: {
+            type: 'string',
+            enum: ['Borrador', 'En_Transito', 'Recibido', 'Cancelado'],
+            description: 'Borrador → En_Transito (dispatch) → Recibido (receive). Cancelable desde Borrador o En_Transito.'
+          },
+          user_id: { type: 'integer', description: 'Usuario que crea/despacha' },
+          received_by: { type: 'integer', nullable: true, description: 'Usuario que confirma recepción' },
+          driver_id: { type: 'integer', nullable: true, description: 'Empleado conductor' },
+          transport_plate: { type: 'string', maxLength: 20, nullable: true },
+          notes: { type: 'string', nullable: true },
+          received_at: { type: 'string', format: 'date', nullable: true },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      transferDetails: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          transfer_id: { type: 'integer' },
+          product_id: { type: 'string', maxLength: 20 },
+          qty: { type: 'number', format: 'decimal', description: 'Cantidad enviada' },
+          qty_received: { type: 'number', format: 'decimal', nullable: true, description: 'Cantidad confirmada en destino' },
+          unit_cost: { type: 'number', format: 'decimal', description: 'Costo unitario al momento del envío' },
+          purch_id: { type: 'integer', nullable: true, description: 'Compra de origen para trazabilidad' },
+          notes: { type: 'string', nullable: true, description: 'Observaciones de discrepancia' },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
       storage: {
         type: 'object',
         properties: {

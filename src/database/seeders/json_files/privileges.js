@@ -2,7 +2,7 @@ const fecha = new Date();
 const {
   BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD,
   CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR, PRODUCT: PRD, POSITION: POS, PRICE_LIST: PL,
-  PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP, PURCH_PAYMENT: PP_PAY
+  PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP, PURCH_PAYMENT: PP_PAY, TRANSFER: TRANSF
 } = require('../../../constants/modules');
 
 const data = [
@@ -138,7 +138,15 @@ const data = [
   // Pagos de Compra
   { name: PP_PAY.NAME_ALL, codeName: PP_PAY.VIEW_ALL, module: PP_PAY.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: PP_PAY.NAME_ADD, codeName: PP_PAY.ADD, module: PP_PAY.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: PP_PAY.NAME_DELETE, codeName: PP_PAY.DELETE, module: PP_PAY.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: PP_PAY.NAME_DELETE, codeName: PP_PAY.DELETE, module: PP_PAY.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Transferencias
+  { name: TRANSF.NAME_ALL, codeName: TRANSF.VIEW_ALL, module: TRANSF.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: TRANSF.NAME_ADD, codeName: TRANSF.ADD, module: TRANSF.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: TRANSF.NAME_UPDATE, codeName: TRANSF.UPDATE, module: TRANSF.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: TRANSF.NAME_DISPATCH, codeName: TRANSF.DISPATCH, module: TRANSF.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: TRANSF.NAME_RECEIVE, codeName: TRANSF.RECEIVE, module: TRANSF.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: TRANSF.NAME_DELETE, codeName: TRANSF.DELETE, module: TRANSF.MODULE_NAME, created_at: fecha, updated_at: fecha }
 ];
 
 module.exports = { data };

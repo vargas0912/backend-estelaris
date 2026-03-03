@@ -270,4 +270,20 @@ const PURCHASE = Object.freeze({
   NAME_VIEW_RPT_STOCK_LABEL: 'Ver reporte de etiquetas'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE, PURCH_PAYMENT };
+const TRANSFER = Object.freeze({
+  MODULE_NAME: 'transfers',
+  VIEW_ALL: 'view_transfers',
+  NAME_ALL: 'Ver transferencias',
+  ADD: 'create_transfer',
+  NAME_ADD: 'Registrar transferencia',
+  UPDATE: 'update_transfer',
+  NAME_UPDATE: 'Modificar transferencia',
+  DISPATCH: 'dispatch_transfer',
+  NAME_DISPATCH: 'Despachar transferencia',
+  RECEIVE: 'receive_transfer',
+  NAME_RECEIVE: 'Recibir transferencia',
+  DELETE: 'delete_transfer',
+  NAME_DELETE: 'Eliminar transferencia'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE, PURCH_PAYMENT, TRANSFER };
