@@ -171,7 +171,7 @@ router.get('/:id', [
  *                  description: Si es Credito, el due_date se calcula automáticamente desde payment_days del proveedor
  *                payment_method:
  *                  type: string
- *                  enum: [Efectivo, Transferencia, Cheque, Tarjeta]
+ *                  enum: [Efectivo, Transferencia, Vale despensa, Tarjeta]
  *                discount_amount:
  *                  type: number
  *                  format: decimal

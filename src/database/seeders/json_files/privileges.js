@@ -2,7 +2,8 @@ const fecha = new Date();
 const {
   BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD,
   CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR, PRODUCT: PRD, POSITION: POS, PRICE_LIST: PL,
-  PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP, PURCH_PAYMENT: PP_PAY, TRANSFER: TRANSF
+  PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP, PURCH_PAYMENT: PP_PAY, TRANSFER: TRANSF,
+  SALE: SL, SALE_PAYMENT: SL_PAY, SALE_DELIVERY: SL_DEL
 } = require('../../../constants/modules');
 
 const data = [
@@ -146,7 +147,26 @@ const data = [
   { name: TRANSF.NAME_UPDATE, codeName: TRANSF.UPDATE, module: TRANSF.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: TRANSF.NAME_DISPATCH, codeName: TRANSF.DISPATCH, module: TRANSF.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: TRANSF.NAME_RECEIVE, codeName: TRANSF.RECEIVE, module: TRANSF.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: TRANSF.NAME_DELETE, codeName: TRANSF.DELETE, module: TRANSF.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: TRANSF.NAME_DELETE, codeName: TRANSF.DELETE, module: TRANSF.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Ventas
+  { name: SL.NAME_ALL, codeName: SL.VIEW_ALL, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SL.NAME_ADD, codeName: SL.ADD, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SL.NAME_UPDATE, codeName: SL.UPDATE, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SL.NAME_CANCEL, codeName: SL.CANCEL, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SL.NAME_DELETE, codeName: SL.DELETE, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SL.NAME_VIEW_OVERDUE, codeName: SL.VIEW_OVERDUE, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Cobros de Venta
+  { name: SL_PAY.NAME_ALL, codeName: SL_PAY.VIEW_ALL, module: SL_PAY.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SL_PAY.NAME_ADD, codeName: SL_PAY.ADD, module: SL_PAY.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SL_PAY.NAME_DELETE, codeName: SL_PAY.DELETE, module: SL_PAY.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Entregas de Venta
+  { name: SL_DEL.NAME_ALL, codeName: SL_DEL.VIEW_ALL, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SL_DEL.NAME_ADD, codeName: SL_DEL.ADD, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SL_DEL.NAME_UPDATE, codeName: SL_DEL.UPDATE, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SL_DEL.NAME_DELETE, codeName: SL_DEL.DELETE, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha }
 ];
 
 module.exports = { data };

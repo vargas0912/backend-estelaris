@@ -799,7 +799,7 @@ const swaggerDefinition = {
           purch_date: { type: 'string', format: 'date' },
           invoice_number: { type: 'string' },
           purch_type: { type: 'string', enum: ['Contado', 'Credito'] },
-          payment_method: { type: 'string', enum: ['Efectivo', 'Transferencia', 'Cheque', 'Tarjeta'] },
+          payment_method: { type: 'string', enum: ['Efectivo', 'Transferencia', 'Vale despensa', 'Tarjeta'] },
           status: { type: 'string', enum: ['Pendiente', 'Pagado', 'Cancelado'] },
           subtotal: { type: 'number', format: 'decimal' },
           discount_amount: { type: 'number', format: 'decimal' },
@@ -889,7 +889,7 @@ const swaggerDefinition = {
           purch_id: { type: 'integer' },
           payment_amount: { type: 'number', format: 'decimal' },
           payment_date: { type: 'string', format: 'date' },
-          payment_method: { type: 'string', enum: ['Efectivo', 'Transferencia', 'Cheque', 'Tarjeta'] },
+          payment_method: { type: 'string', enum: ['Efectivo', 'Transferencia', 'Vale despensa', 'Tarjeta'] },
           reference_number: { type: 'string', maxLength: 100 },
           user_id: { type: 'integer' },
           notes: { type: 'string' },
@@ -955,6 +955,123 @@ const swaggerDefinition = {
           notes: { type: 'string', nullable: true, description: 'Observaciones de discrepancia' },
           created_at: { type: 'string', format: 'date-time' },
           updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      sales: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          branch_id: { type: 'integer' },
+          customer_id: { type: 'integer' },
+          customer_address_id: { type: 'integer' },
+          employee_id: { type: 'integer' },
+          user_id: { type: 'integer' },
+          price_list_id: { type: 'integer', nullable: true },
+          sales_date: { type: 'string', format: 'date' },
+          sales_type: { type: 'string', enum: ['Contado', 'Credito'] },
+          payment_periods: { type: 'string', enum: ['Semanal', 'Quincenal', 'Mensual'], nullable: true, description: 'Solo para ventas a crédito' },
+          total_days_term: { type: 'integer', nullable: true, description: 'Plazo total en días (solo crédito)' },
+          invoice: { type: 'string', maxLength: 50, nullable: true },
+          subtotal: { type: 'number', format: 'decimal' },
+          discount_amount: { type: 'number', format: 'decimal' },
+          tax_amount: { type: 'number', format: 'decimal' },
+          sales_total: { type: 'number', format: 'decimal' },
+          due_payment: { type: 'number', format: 'decimal', description: 'Contado=0, Crédito=sales_total inicialmente' },
+          due_date: { type: 'string', format: 'date', nullable: true, description: 'sales_date + total_days_term (solo crédito)' },
+          status: { type: 'string', enum: ['Pendiente', 'Pagado', 'Cancelado'] },
+          notes: { type: 'string', nullable: true },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      saleDetails: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          sale_id: { type: 'integer' },
+          product_id: { type: 'string', maxLength: 20 },
+          qty: { type: 'number', format: 'decimal' },
+          unit_price: { type: 'number', format: 'decimal' },
+          discount: { type: 'number', format: 'decimal', description: 'Porcentaje de descuento por línea' },
+          tax_rate: { type: 'number', format: 'decimal', description: 'Tasa de IVA (default 16)' },
+          subtotal: { type: 'number', format: 'decimal' },
+          purch_id: { type: 'integer', nullable: true, description: 'Trazabilidad al lote de compra' },
+          notes: { type: 'string', nullable: true },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      salePayments: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          sale_id: { type: 'integer' },
+          payment_amount: { type: 'number', format: 'decimal' },
+          payment_date: { type: 'string', format: 'date' },
+          payment_method: { type: 'string', enum: ['Efectivo', 'Transferencia', 'Vale despensa', 'Tarjeta'] },
+          reference_number: { type: 'string', maxLength: 100, nullable: true },
+          user_id: { type: 'integer' },
+          notes: { type: 'string', nullable: true },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      saleInstallments: {
+        type: 'object',
+        description: 'Cuotas generadas automáticamente para ventas a crédito',
+        properties: {
+          id: { type: 'integer' },
+          sale_id: { type: 'integer' },
+          installment_number: { type: 'integer', description: 'Número secuencial de la cuota (1, 2, 3...)' },
+          due_date: { type: 'string', format: 'date' },
+          amount: { type: 'number', format: 'decimal', description: 'Monto esperado de la cuota' },
+          paid_amount: { type: 'number', format: 'decimal', description: 'Monto acumulado pagado de esta cuota' },
+          status: { type: 'string', enum: ['Pendiente', 'Pagado'] },
+          paid_date: { type: 'string', format: 'date', nullable: true, description: 'Fecha en que se completó el pago' },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      saleDeliveries: {
+        type: 'object',
+        description: 'Seguimiento de entrega con máquina de estados tipo DHL',
+        properties: {
+          id: { type: 'integer' },
+          sale_id: { type: 'integer' },
+          customer_address_id: { type: 'integer' },
+          status: {
+            type: 'string',
+            enum: ['Preparando', 'Recolectado', 'En_Transito', 'En_Ruta_Entrega', 'Entregado', 'Devuelto'],
+            description: 'Preparando → Recolectado → En_Transito → En_Ruta_Entrega → Entregado. Devuelto desde cualquier estado no-final.'
+          },
+          driver_id: { type: 'integer', nullable: true },
+          transport_plate: { type: 'string', maxLength: 20, nullable: true },
+          estimated_date: { type: 'string', format: 'date', nullable: true },
+          delivered_at: { type: 'string', format: 'date', nullable: true },
+          notes: { type: 'string', nullable: true },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      saleDeliveryLogs: {
+        type: 'object',
+        description: 'Historial inmutable de cambios de estado de entregas (audit trail)',
+        properties: {
+          id: { type: 'integer' },
+          delivery_id: { type: 'integer' },
+          status: { type: 'string', enum: ['Preparando', 'Recolectado', 'En_Transito', 'En_Ruta_Entrega', 'Entregado', 'Devuelto'] },
+          location: { type: 'string', nullable: true },
+          notes: { type: 'string', nullable: true },
+          created_by: { type: 'integer' },
+          created_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      deliveryTransition: {
+        type: 'object',
+        description: 'Body para transiciones de estado de entrega',
+        properties: {
+          location: { type: 'string', description: 'Ubicación actual (ej: Almacén central, En ruta km 45)' },
+          notes: { type: 'string', description: 'Observaciones de la transición' }
         }
       },
       storage: {

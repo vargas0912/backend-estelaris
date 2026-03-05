@@ -50,7 +50,7 @@ const valiAddRecord = [
     .isIn(['Contado', 'Credito']).withMessage(PURCHASES_VALIDATORS.PURCH_TYPE_INVALID).bail(),
   check('payment_method')
     .optional({ nullable: true })
-    .isIn(['Efectivo', 'Transferencia', 'Cheque', 'Tarjeta']).withMessage(PURCHASES_VALIDATORS.PAYMENT_METHOD_INVALID).bail(),
+    .isIn(['Efectivo', 'Transferencia', 'Vale despensa', 'Tarjeta']).withMessage(PURCHASES_VALIDATORS.PAYMENT_METHOD_INVALID).bail(),
   check('discount_amount')
     .optional()
     .isDecimal({ decimal_digits: '0,2', force_decimal: false }).withMessage(PURCHASES_VALIDATORS.DISCOUNT_AMOUNT_INVALID).bail()
@@ -92,7 +92,7 @@ const valiUpdateRecord = [
     .isIn(['Pendiente', 'Pagado', 'Cancelado']).withMessage(PURCHASES_VALIDATORS.STATUS_INVALID).bail(),
   check('payment_method')
     .optional({ nullable: true })
-    .isIn(['Efectivo', 'Transferencia', 'Cheque', 'Tarjeta']).withMessage(PURCHASES_VALIDATORS.PAYMENT_METHOD_INVALID).bail(),
+    .isIn(['Efectivo', 'Transferencia', 'Vale despensa', 'Tarjeta']).withMessage(PURCHASES_VALIDATORS.PAYMENT_METHOD_INVALID).bail(),
   check('invoice_number')
     .optional({ nullable: true })
     .isString().withMessage(PURCHASES_VALIDATORS.INVOICE_NUMBER_INVALID).bail()

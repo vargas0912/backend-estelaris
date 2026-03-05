@@ -2,15 +2,15 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class purchasePayments extends Model {
+  class salePayments extends Model {
     static associate(models) {
-      this.belongsTo(models.purchases, { as: 'purchase', foreignKey: 'purch_id' });
+      this.belongsTo(models.sales, { as: 'sale', foreignKey: 'sale_id' });
       this.belongsTo(models.users, { as: 'user', foreignKey: 'user_id' });
     }
   }
 
-  purchasePayments.init({
-    purch_id: {
+  salePayments.init({
+    sale_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -41,8 +41,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     paranoid: true,
-    modelName: 'purchasePayments',
-    tableName: 'purchase_payments',
+    modelName: 'salePayments',
+    tableName: 'sale_payments',
     underscored: true,
     timestamps: true,
     createdAt: 'created_at',
@@ -50,5 +50,5 @@ module.exports = (sequelize, DataTypes) => {
     deletedAt: 'deleted_at'
   });
 
-  return purchasePayments;
+  return salePayments;
 };
