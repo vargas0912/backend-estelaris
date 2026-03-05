@@ -979,6 +979,7 @@ const swaggerDefinition = {
           due_payment: { type: 'number', format: 'decimal', description: 'Contado=0, Crédito=sales_total inicialmente' },
           due_date: { type: 'string', format: 'date', nullable: true, description: 'sales_date + total_days_term (solo crédito)' },
           status: { type: 'string', enum: ['Pendiente', 'Pagado', 'Cancelado'] },
+          delivery_status: { type: 'string', enum: ['Entregado', 'Pendiente'], default: 'Pendiente', description: 'Entregado=cliente retira en tienda, Pendiente=requiere envío posterior (saleDeliveries)' },
           notes: { type: 'string', nullable: true },
           created_at: { type: 'string', format: 'date-time' },
           updated_at: { type: 'string', format: 'date-time' }

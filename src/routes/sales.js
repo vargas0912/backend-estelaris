@@ -224,6 +224,11 @@ router.get('/:id', [
  *                  maxLength: 50
  *                notes:
  *                  type: string
+ *                delivery_status:
+ *                  type: string
+ *                  enum: [Entregado, Pendiente]
+ *                  default: Pendiente
+ *                  description: Entregado=cliente retira en tienda. Pendiente=requiere envío posterior via saleDeliveries.
  *                items:
  *                  type: array
  *                  minItems: 1

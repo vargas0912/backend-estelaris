@@ -74,7 +74,10 @@ const SALES_VALIDATORS = Object.freeze({
   ITEM_PURCH_ID_INVALID: 'El id de compra de origen debe ser un número entero',
 
   // items.*.notes
-  ITEM_NOTES_INVALID: 'Las observaciones del ítem deben ser texto'
+  ITEM_NOTES_INVALID: 'Las observaciones del ítem deben ser texto',
+
+  // delivery_status
+  DELIVERY_STATUS_INVALID: 'Estado de entrega inválido. Use: Entregado o Pendiente'
 });
 
 module.exports = { SALES_VALIDATORS };

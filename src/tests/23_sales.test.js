@@ -7,6 +7,7 @@ const {
   purchaseForSaleStock,
   saleCreateContado,
   saleCreateCredito,
+  saleCreateEntregado,
   saleCreateNoCustomer,
   saleCreateNoAddress,
   saleCreateNoEmployee,
@@ -204,7 +205,29 @@ describe('[SALES] Test api sales /api/sales/', () => {
         .expect(400);
     });
 
-    test('8. Crear venta sin token. Expect 401', async () => {
+    test('8. Crear venta con delivery_status=Entregado. Expect 200, delivery_status=Entregado', async () => {
+      const response = await api
+        .post('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(saleCreateEntregado(customerId, addressId))
+        .expect(200);
+
+      expect(response.body.sale.delivery_status).toBe('Entregado');
+    });
+
+    test('9. Crear venta sin delivery_status. Expect 200, delivery_status=Pendiente (default)', async () => {
+      const response = await api
+        .post('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(saleCreateContado(customerId, addressId))
+        .expect(200);
+
+      expect(response.body.sale.delivery_status).toBe('Pendiente');
+    });
+
+    test('10. Crear venta sin token. Expect 401', async () => {
       await api
         .post('/api/sales')
         .send(saleCreateContado(customerId, addressId))
