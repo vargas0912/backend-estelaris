@@ -22,7 +22,7 @@ const PURCH_PAYMENT_VALIDATORS = Object.freeze({
   // payment_method
   PAYMENT_METHOD_NOT_EXISTS: 'El método de pago es requerido',
   PAYMENT_METHOD_IS_EMPTY: 'El método de pago no puede estar vacío',
-  PAYMENT_METHOD_INVALID: "El método de pago debe ser 'Efectivo', 'Transferencia', 'Cheque' o 'Tarjeta'",
+  PAYMENT_METHOD_INVALID: "El método de pago debe ser 'Efectivo', 'Transferencia', 'Vale despensa' o 'Tarjeta'",
 
   // reference_number
   REFERENCE_NUMBER_INVALID: 'El número de referencia debe ser texto',

@@ -3,9 +3,9 @@ const router = express.Router();
 
 const {
   validateGetRecord,
-  validateGetByPurchase,
+  validateGetBySale,
   valiAddRecord
-} = require('../validators/purchasePayments');
+} = require('../validators/salePayments');
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
@@ -13,69 +13,67 @@ const { readLimiter, writeLimiter, deleteLimiter, searchLimiter } = require('../
 
 const {
   getRecords,
-  getRecordsByPurchase,
+  getRecordsBySale,
   getRecord,
   addRecord,
   deleteRecord
-} = require('../controllers/purchasePayments');
+} = require('../controllers/salePayments');
 
-const { PURCH_PAYMENT } = require('../constants/modules');
+const { SALE_PAYMENT } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
 
 /**
  * @openapi
- * /purch-payments:
+ * /sale-payments:
  *    get:
  *      tags:
- *        - purch-payments
- *      summary: Lista de pagos de compra
- *      description: Obtener todos los pagos de compra registrados
+ *        - sale-payments
+ *      summary: Lista de cobros de venta
  *      security:
  *        - bearerAuth: []
  *      responses:
  *        '200':
- *          description: Arreglo de pagos de compra.
+ *          description: Arreglo de cobros
  */
 router.get('/', [
   readLimiter,
   authMidleware,
-  checkRol([ROLE.USER, ROLE.ADMIN], PURCH_PAYMENT.VIEW_ALL)
+  checkRol([ROLE.USER, ROLE.ADMIN], SALE_PAYMENT.VIEW_ALL)
 ], getRecords);
 
 /**
  * @openapi
- * /purch-payments/purchase/{purch_id}:
+ * /sale-payments/sale/{sale_id}:
  *    get:
  *      tags:
- *        - purch-payments
- *      summary: Pagos por compra
- *      description: Obtener todos los pagos de una compra específica
+ *        - sale-payments
+ *      summary: Cobros por venta
  *      security:
  *        - bearerAuth: []
  *      parameters:
- *      - name: purch_id
+ *      - name: sale_id
  *        in: path
  *        required: true
  *        schema:
  *          type: number
  *      responses:
  *        '200':
- *          description: Arreglo de pagos de la compra
+ *          description: Arreglo de cobros de la venta
  */
-router.get('/purchase/:purch_id', [
+router.get('/sale/:sale_id', [
   searchLimiter,
   authMidleware,
-  validateGetByPurchase,
-  checkRol([ROLE.USER, ROLE.ADMIN], PURCH_PAYMENT.VIEW_ALL)
-], getRecordsByPurchase);
+  validateGetBySale,
+  checkRol([ROLE.USER, ROLE.ADMIN], SALE_PAYMENT.VIEW_ALL)
+], getRecordsBySale);
 
 /**
  * @openapi
- * /purch-payments/{id}:
+ * /sale-payments/{id}:
  *    get:
  *      tags:
- *        - purch-payments
- *      summary: Pago por id
+ *        - sale-payments
+ *      summary: Cobro por id
  *      security:
  *        - bearerAuth: []
  *      parameters:
@@ -86,42 +84,43 @@ router.get('/purchase/:purch_id', [
  *          type: number
  *      responses:
  *        '200':
- *          description: Objeto del pago
+ *          description: Objeto del cobro
  *        '404':
- *          description: Pago no encontrado
+ *          description: Cobro no encontrado
  */
 router.get('/:id', [
   readLimiter,
   authMidleware,
   validateGetRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], PURCH_PAYMENT.VIEW_ALL)
+  checkRol([ROLE.USER, ROLE.ADMIN], SALE_PAYMENT.VIEW_ALL)
 ], getRecord);
 
 /**
  * @openapi
- * /purch-payments:
+ * /sale-payments:
  *    post:
  *      tags:
- *        - purch-payments
- *      summary: Registrar pago de compra
+ *        - sale-payments
+ *      summary: Registrar cobro de venta
  *      description: |
- *        Registra un pago contra una compra. Reduce el `due_payment` de la compra.
- *        Si `due_payment` llega a 0, el status de la compra cambia a 'Pagado'.
- *        No se puede pagar una compra con status 'Cancelado' o 'Pagado'.
+ *        Registra un cobro contra una venta a crédito. Reduce el `due_payment`.
+ *        Auto-aplica a las cuotas pendientes más antiguas.
+ *        Si `due_payment` llega a 0, status cambia a 'Pagado'.
  *      security:
  *        - bearerAuth: []
  *      requestBody:
+ *        required: true
  *        content:
  *          application/json:
  *            schema:
  *              type: object
  *              required:
- *                - purch_id
+ *                - sale_id
  *                - payment_amount
  *                - payment_date
  *                - payment_method
  *              properties:
- *                purch_id:
+ *                sale_id:
  *                  type: integer
  *                payment_amount:
  *                  type: number
@@ -139,31 +138,32 @@ router.get('/:id', [
  *                  type: string
  *      responses:
  *        '200':
- *          description: Pago registrado correctamente
- *        '400':
- *          description: Error de validación
- *        '404':
- *          description: Compra no encontrada
+ *          description: Cobro registrado correctamente
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  payment:
+ *                    $ref: '#/components/schemas/salePayments'
  *        '422':
- *          description: La compra no es pagable o el monto excede el saldo pendiente
+ *          description: La venta no es cobrable o el monto excede el saldo
  */
 router.post('/', [
   writeLimiter,
   authMidleware,
   valiAddRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], PURCH_PAYMENT.ADD)
+  checkRol([ROLE.USER, ROLE.ADMIN], SALE_PAYMENT.ADD)
 ], addRecord);
 
 /**
  * @openapi
- * /purch-payments/{id}:
+ * /sale-payments/{id}:
  *    delete:
  *      tags:
- *        - purch-payments
- *      summary: Eliminar pago de compra
- *      description: |
- *        Soft delete del pago. Restaura el `due_payment` en la compra.
- *        Si la compra estaba en 'Pagado', revierte a 'Recibido' o 'Pendiente' según corresponda.
+ *        - sale-payments
+ *      summary: Eliminar cobro de venta
+ *      description: Soft delete. Restaura due_payment y revierte cuotas afectadas.
  *      security:
  *        - bearerAuth: []
  *      parameters:
@@ -174,15 +174,15 @@ router.post('/', [
  *          type: number
  *      responses:
  *        '200':
- *          description: Pago eliminado y saldo restaurado
+ *          description: Cobro eliminado y saldo restaurado
  *        '404':
- *          description: Pago no encontrado
+ *          description: Cobro no encontrado
  */
 router.delete('/:id', [
   deleteLimiter,
   authMidleware,
   validateGetRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], PURCH_PAYMENT.DELETE)
+  checkRol([ROLE.USER, ROLE.ADMIN], SALE_PAYMENT.DELETE)
 ], deleteRecord);
 
 module.exports = router;

@@ -23,7 +23,7 @@ const PURCHASES_VALIDATORS = Object.freeze({
   PURCH_TYPE_INVALID: "El tipo de compra debe ser 'Contado' o 'Credito'",
 
   // payment_method
-  PAYMENT_METHOD_INVALID: "El método de pago debe ser 'Efectivo', 'Transferencia', 'Cheque' o 'Tarjeta'",
+  PAYMENT_METHOD_INVALID: "El método de pago debe ser 'Efectivo', 'Transferencia', 'Vale despensa' o 'Tarjeta'",
 
   // status
   STATUS_INVALID: "El estatus debe ser 'Pendiente', 'Pagado' o 'Cancelado'",

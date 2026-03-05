@@ -2,18 +2,18 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('purchase_payments', {
+    await queryInterface.createTable('sale_payments', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      purch_id: {
+      sale_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: 'purchases',
+          model: 'sales',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -33,8 +33,7 @@ module.exports = {
       },
       reference_number: {
         allowNull: true,
-        type: Sequelize.STRING(100),
-        comment: 'Folio bancario, número de cheque u otra referencia'
+        type: Sequelize.STRING(100)
       },
       user_id: {
         allowNull: false,
@@ -64,12 +63,10 @@ module.exports = {
       }
     });
 
-    await queryInterface.addIndex('purchase_payments', ['purch_id']);
-    await queryInterface.addIndex('purchase_payments', ['user_id']);
-    await queryInterface.addIndex('purchase_payments', ['payment_date']);
+    await queryInterface.addIndex('sale_payments', ['sale_id']);
   },
 
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('purchase_payments');
+  async down(queryInterface) {
+    await queryInterface.dropTable('sale_payments');
   }
 };

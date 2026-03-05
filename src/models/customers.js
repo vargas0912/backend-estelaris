@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.branches, { as: 'branch', foreignKey: 'branch_id' });
       this.belongsTo(models.users, { as: 'user', foreignKey: 'user_id' });
       this.hasMany(models.customerAddresses, { as: 'addresses', foreignKey: 'customer_id' });
+      this.hasMany(models.sales, { as: 'sales', foreignKey: 'customer_id' });
     }
   }
 

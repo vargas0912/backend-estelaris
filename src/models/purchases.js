@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.purchaseDetails, { as: 'details', foreignKey: 'purch_id' });
       this.hasMany(models.purchasePayments, { as: 'payments', foreignKey: 'purch_id' });
       this.hasMany(models.transferDetails, { as: 'transferDetails', foreignKey: 'purch_id' });
+      this.hasMany(models.saleDetails, { as: 'saleDetails', foreignKey: 'purch_id' });
     }
   }
 
@@ -40,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'Contado'
     },
     payment_method: {
-      type: DataTypes.ENUM('Efectivo', 'Transferencia', 'Cheque', 'Tarjeta'),
+      type: DataTypes.ENUM('Efectivo', 'Transferencia', 'Vale despensa', 'Tarjeta'),
       allowNull: true
     },
     status: {

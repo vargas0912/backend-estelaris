@@ -55,7 +55,7 @@ module.exports = {
       },
       payment_method: {
         allowNull: true,
-        type: Sequelize.ENUM('Efectivo', 'Transferencia', 'Cheque', 'Tarjeta')
+        type: Sequelize.ENUM('Efectivo', 'Transferencia', 'Vale despensa', 'Tarjeta')
       },
       status: {
         allowNull: false,

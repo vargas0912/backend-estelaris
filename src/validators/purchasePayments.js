@@ -36,7 +36,7 @@ const valiAddRecord = [
   check('payment_method')
     .exists().withMessage(PURCH_PAYMENT_VALIDATORS.PAYMENT_METHOD_NOT_EXISTS).bail()
     .notEmpty().withMessage(PURCH_PAYMENT_VALIDATORS.PAYMENT_METHOD_IS_EMPTY).bail()
-    .isIn(['Efectivo', 'Transferencia', 'Cheque', 'Tarjeta']).withMessage(PURCH_PAYMENT_VALIDATORS.PAYMENT_METHOD_INVALID).bail(),
+    .isIn(['Efectivo', 'Transferencia', 'Vale despensa', 'Tarjeta']).withMessage(PURCH_PAYMENT_VALIDATORS.PAYMENT_METHOD_INVALID).bail(),
   check('reference_number')
     .optional({ nullable: true })
     .isString().withMessage(PURCH_PAYMENT_VALIDATORS.REFERENCE_NUMBER_INVALID).bail()

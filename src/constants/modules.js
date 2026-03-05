@@ -286,4 +286,42 @@ const TRANSFER = Object.freeze({
   NAME_DELETE: 'Eliminar transferencia'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE, PURCH_PAYMENT, TRANSFER };
+const SALE = Object.freeze({
+  MODULE_NAME: 'sales',
+  VIEW_ALL: 'view_sales',
+  NAME_ALL: 'Ver ventas',
+  ADD: 'create_sale',
+  NAME_ADD: 'Registrar venta',
+  UPDATE: 'update_sale',
+  NAME_UPDATE: 'Modificar venta',
+  CANCEL: 'cancel_sale',
+  NAME_CANCEL: 'Cancelar venta',
+  DELETE: 'delete_sale',
+  NAME_DELETE: 'Eliminar venta',
+  VIEW_OVERDUE: 'view_overdue_sales',
+  NAME_VIEW_OVERDUE: 'Ver ventas morosas'
+});
+
+const SALE_PAYMENT = Object.freeze({
+  MODULE_NAME: 'salePayments',
+  VIEW_ALL: 'view_sale_payments',
+  NAME_ALL: 'Ver cobros de venta',
+  ADD: 'create_sale_payment',
+  NAME_ADD: 'Registrar cobro de venta',
+  DELETE: 'delete_sale_payment',
+  NAME_DELETE: 'Eliminar cobro de venta'
+});
+
+const SALE_DELIVERY = Object.freeze({
+  MODULE_NAME: 'saleDeliveries',
+  VIEW_ALL: 'view_sale_deliveries',
+  NAME_ALL: 'Ver entregas de venta',
+  ADD: 'create_sale_delivery',
+  NAME_ADD: 'Crear entrega de venta',
+  UPDATE: 'update_sale_delivery',
+  NAME_UPDATE: 'Actualizar entrega de venta',
+  DELETE: 'delete_sale_delivery',
+  NAME_DELETE: 'Eliminar entrega de venta'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE, PURCH_PAYMENT, TRANSFER, SALE, SALE_PAYMENT, SALE_DELIVERY };
