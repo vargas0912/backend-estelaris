@@ -97,6 +97,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 'Pendiente'
     },
+    delivery_status: {
+      type: DataTypes.ENUM('Entregado', 'Pendiente'),
+      allowNull: false,
+      defaultValue: 'Pendiente'
+    },
     notes: {
       type: DataTypes.TEXT,
       allowNull: true

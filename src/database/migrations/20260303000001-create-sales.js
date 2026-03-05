@@ -124,6 +124,11 @@ module.exports = {
         type: Sequelize.ENUM('Pendiente', 'Pagado', 'Cancelado'),
         defaultValue: 'Pendiente'
       },
+      delivery_status: {
+        type: Sequelize.ENUM('Entregado', 'Pendiente'),
+        defaultValue: 'Pendiente',
+        allowNull: false
+      },
       notes: {
         allowNull: true,
         type: Sequelize.TEXT

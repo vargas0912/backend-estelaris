@@ -103,6 +103,9 @@ const valiAddRecord = [
   check('items.*.notes')
     .optional({ nullable: true })
     .isString().withMessage(SALES_VALIDATORS.ITEM_NOTES_INVALID).bail(),
+  check('delivery_status')
+    .optional()
+    .isIn(['Entregado', 'Pendiente']).withMessage(SALES_VALIDATORS.DELIVERY_STATUS_INVALID),
   (req, res, next) => validateResults(req, res, next)
 ];
 

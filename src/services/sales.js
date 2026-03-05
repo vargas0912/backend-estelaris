@@ -10,7 +10,7 @@ const saleAttributes = [
   'id', 'branch_id', 'customer_id', 'customer_address_id', 'employee_id',
   'user_id', 'price_list_id', 'sales_date', 'sales_type', 'payment_periods',
   'total_days_term', 'invoice', 'subtotal', 'discount_amount', 'tax_amount',
-  'sales_total', 'due_payment', 'due_date', 'status', 'notes',
+  'sales_total', 'due_payment', 'due_date', 'status', 'delivery_status', 'notes',
   'created_at', 'updated_at'
 ];
 
@@ -126,6 +126,7 @@ const createSale = async (body, userId) => {
     invoice,
     notes,
     discount_amount: discountAmount = 0,
+    delivery_status: deliveryStatus,
     items
   } = body;
 
@@ -242,6 +243,7 @@ const createSale = async (body, userId) => {
       due_payment: duePayment,
       due_date: calculatedDueDate,
       status,
+      delivery_status: deliveryStatus || 'Pendiente',
       notes: notes || null
     }, { transaction });
 

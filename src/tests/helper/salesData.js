@@ -103,6 +103,19 @@ const saleCreateNoItems = {
   sales_date: '2026-03-04'
 };
 
+const saleCreateEntregado = (customerId, addressId) => ({
+  branch_id: 1,
+  customer_id: customerId,
+  customer_address_id: addressId,
+  employee_id: 1,
+  sales_date: '2026-03-04',
+  sales_type: 'Contado',
+  delivery_status: 'Entregado',
+  items: [
+    { product_id: 'TEST-001', qty: 1, unit_price: 150.00, discount: 0, tax_rate: 16 }
+  ]
+});
+
 const saleUpdate = {
   invoice: 'FAC-001',
   notes: 'Nota actualizada'
@@ -114,6 +127,7 @@ module.exports = {
   purchaseForSaleStock,
   saleCreateContado,
   saleCreateCredito,
+  saleCreateEntregado,
   saleCreateNoCustomer,
   saleCreateNoAddress,
   saleCreateNoEmployee,
