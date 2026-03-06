@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.transfers, { as: 'drivenTransfers', foreignKey: 'driver_id' });
       this.hasMany(models.sales, { as: 'sales', foreignKey: 'employee_id' });
       this.hasMany(models.saleDeliveries, { as: 'drivenDeliveries', foreignKey: 'driver_id' });
+      this.belongsTo(models.users, { foreignKey: 'user_id', as: 'user' });
     }
   }
 
@@ -23,6 +24,11 @@ module.exports = (sequelize, DataTypes) => {
     active: {
       type: DataTypes.BOOLEAN,
       defaultValue: true
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      unique: true
     }
   }, {
     sequelize,

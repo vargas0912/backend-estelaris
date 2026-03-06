@@ -3,7 +3,7 @@ const {
   BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD,
   CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR, PRODUCT: PRD, POSITION: POS, PRICE_LIST: PL,
   PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP, PURCH_PAYMENT: PP_PAY, TRANSFER: TRANSF,
-  SALE: SL, SALE_PAYMENT: SL_PAY, SALE_DELIVERY: SL_DEL
+  SALE: SL, SALE_PAYMENT: SL_PAY, SALE_DELIVERY: SL_DEL, DRIVER: DRV
 } = require('../../../constants/modules');
 
 const data = [
@@ -31,6 +31,8 @@ const data = [
   { name: EMP.NAME_UPDATE, codeName: EMP.UPDATE, module: EMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: EMP.NAME_ADD, codeName: EMP.ADD, module: EMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: EMP.NAME_DELETE, codeName: EMP.DELETE, module: EMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: EMP.NAME_GRANT_ACCESS, codeName: EMP.GRANT_ACCESS, module: EMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: EMP.NAME_REVOKE_ACCESS, codeName: EMP.REVOKE_ACCESS, module: EMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Privilegios
   { name: PRV.NAME_ADD, codeName: PRV.ADD, module: PRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
@@ -166,7 +168,11 @@ const data = [
   { name: SL_DEL.NAME_ALL, codeName: SL_DEL.VIEW_ALL, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: SL_DEL.NAME_ADD, codeName: SL_DEL.ADD, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: SL_DEL.NAME_UPDATE, codeName: SL_DEL.UPDATE, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: SL_DEL.NAME_DELETE, codeName: SL_DEL.DELETE, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: SL_DEL.NAME_DELETE, codeName: SL_DEL.DELETE, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Repartidor
+  { name: DRV.NAME_VIEW_DELIVERIES, codeName: DRV.VIEW_DELIVERIES, module: DRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: DRV.NAME_UPDATE_DELIVERY, codeName: DRV.UPDATE_DELIVERY, module: DRV.MODULE_NAME, created_at: fecha, updated_at: fecha }
 ];
 
 module.exports = { data };

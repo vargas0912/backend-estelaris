@@ -1,5 +1,6 @@
+const { Op } = require('sequelize');
 const {
-  saleDeliveries, saleDeliveryLogs, sales, customerAddresses, employees, users
+  saleDeliveries, saleDeliveryLogs, sales, customers, customerAddresses, employees, users
 } = require('../models/index');
 const { sequelize } = require('../models/index');
 
@@ -142,6 +143,36 @@ const transitionDelivery = async (id, targetStatus, body, userId) => {
   }
 };
 
+const getDeliveriesAssignedToMe = async (userId) => {
+  const employee = await employees.findOne({ where: { user_id: userId }, attributes: ['id'] });
+  if (!employee) return null;
+
+  return saleDeliveries.findAll({
+    attributes: deliveryAttributes,
+    where: {
+      driver_id: employee.id,
+      status: { [Op.notIn]: ['Entregado', 'Devuelto'] }
+    },
+    include: [
+      { model: customerAddresses, as: 'customerAddress', attributes: addressAttributes },
+      {
+        model: sales,
+        as: 'sale',
+        attributes: ['id'],
+        include: [{ model: customers, as: 'customer', attributes: ['id', 'name'] }]
+      },
+      {
+        model: saleDeliveryLogs,
+        as: 'logs',
+        attributes: logAttributes,
+        include: [{ model: users, as: 'createdByUser', attributes: userAttributes }],
+        order: [['created_at', 'ASC']]
+      }
+    ],
+    order: [['created_at', 'DESC']]
+  });
+};
+
 const deleteDelivery = async (id) => {
   const delivery = await saleDeliveries.findByPk(id);
   if (!delivery) return { error: 'NOT_FOUND' };
@@ -157,6 +188,7 @@ const deleteDelivery = async (id) => {
 module.exports = {
   getDelivery,
   getDeliveriesBySale,
+  getDeliveriesAssignedToMe,
   createDelivery,
   transitionDelivery,
   deleteDelivery

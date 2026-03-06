@@ -15,6 +15,7 @@ const { readLimiter, writeLimiter, deleteLimiter, searchLimiter } = require('../
 const {
   getRecord,
   getRecordsBySale,
+  getAssignedToMe,
   addRecord,
   pickupRecord,
   shipRecord,
@@ -24,7 +25,9 @@ const {
   deleteRecord
 } = require('../controllers/saleDeliveries');
 
-const { SALE_DELIVERY } = require('../constants/modules');
+const { checkDeliveryTransitionAccess } = require('../middlewares/deliveryAccess');
+
+const { SALE_DELIVERY, DRIVER } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
 
 /**
@@ -52,6 +55,60 @@ router.get('/sale/:sale_id', [
   validateGetBySale,
   checkRol([ROLE.USER, ROLE.ADMIN], SALE_DELIVERY.VIEW_ALL)
 ], getRecordsBySale);
+
+/**
+ * @openapi
+ * /sale-deliveries/assigned-to-me:
+ *    get:
+ *      tags:
+ *        - sale-deliveries
+ *      summary: Entregas asignadas al repartidor autenticado
+ *      description: Devuelve entregas donde driver_id = employee vinculado al usuario. Excluye Entregado y Devuelto.
+ *      security:
+ *        - bearerAuth: []
+ *      responses:
+ *        '200':
+ *          description: Lista de entregas activas del repartidor (excluye Entregado y Devuelto)
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  deliveries:
+ *                    type: array
+ *                    items:
+ *                      allOf:
+ *                        - $ref: '#/components/schemas/saleDeliveries'
+ *                        - type: object
+ *                          properties:
+ *                            customerAddress:
+ *                              $ref: '#/components/schemas/customerAddresses'
+ *                            sale:
+ *                              type: object
+ *                              properties:
+ *                                id:
+ *                                  type: integer
+ *                                customer:
+ *                                  type: object
+ *                                  properties:
+ *                                    id:
+ *                                      type: integer
+ *                                    name:
+ *                                      type: string
+ *                            logs:
+ *                              type: array
+ *                              items:
+ *                                $ref: '#/components/schemas/saleDeliveryLogs'
+ *        '403':
+ *          description: Sin privilege view_driver_deliveries
+ *        '404':
+ *          description: No hay employee vinculado al usuario autenticado
+ */
+router.get('/assigned-to-me', [
+  readLimiter,
+  authMidleware,
+  checkRol([ROLE.USER, ROLE.ADMIN], DRIVER.VIEW_DELIVERIES)
+], getAssignedToMe);
 
 /**
  * @openapi
@@ -164,7 +221,7 @@ router.patch('/:id/pickup', [
   writeLimiter,
   authMidleware,
   valiTransition,
-  checkRol([ROLE.USER, ROLE.ADMIN], SALE_DELIVERY.UPDATE)
+  checkDeliveryTransitionAccess
 ], pickupRecord);
 
 /**
@@ -197,7 +254,7 @@ router.patch('/:id/ship', [
   writeLimiter,
   authMidleware,
   valiTransition,
-  checkRol([ROLE.USER, ROLE.ADMIN], SALE_DELIVERY.UPDATE)
+  checkDeliveryTransitionAccess
 ], shipRecord);
 
 /**
@@ -230,7 +287,7 @@ router.patch('/:id/out', [
   writeLimiter,
   authMidleware,
   valiTransition,
-  checkRol([ROLE.USER, ROLE.ADMIN], SALE_DELIVERY.UPDATE)
+  checkDeliveryTransitionAccess
 ], outRecord);
 
 /**
@@ -264,7 +321,7 @@ router.patch('/:id/deliver', [
   writeLimiter,
   authMidleware,
   valiTransition,
-  checkRol([ROLE.USER, ROLE.ADMIN], SALE_DELIVERY.UPDATE)
+  checkDeliveryTransitionAccess
 ], deliverRecord);
 
 /**
@@ -297,7 +354,7 @@ router.patch('/:id/return', [
   writeLimiter,
   authMidleware,
   valiTransition,
-  checkRol([ROLE.USER, ROLE.ADMIN], SALE_DELIVERY.UPDATE)
+  checkDeliveryTransitionAccess
 ], returnRecord);
 
 /**
