@@ -1,4 +1,7 @@
-const { employees, positions, branches } = require('../models/index');
+const { employees, positions, branches, users, privileges, userprivileges } = require('../models/index');
+const { sequelize } = require('../models/index');
+const { encrypt } = require('../utils/handlePassword');
+const { Op } = require('sequelize');
 
 const attributes = ['id', 'name', 'email', 'phone', 'hire_date', 'active', 'created_at', 'updated_at'];
 const positionAttributes = ['id', 'name'];
@@ -95,4 +98,71 @@ const deleteEmployee = async(id) => {
   return result;
 };
 
-module.exports = { getAllEmployees, getEmployee, addNewEmployee, updateEmployee, deleteEmployee };
+const grantEmployeeAccess = async (id, email, password, privilegeCodenames) => {
+  const employee = await employees.findByPk(id);
+  if (!employee) return { error: 'EMPLOYEE_NOT_FOUND' };
+  if (employee.user_id) return { error: 'EMPLOYEE_ALREADY_HAS_ACCESS' };
+
+  const existingUser = await users.findOne({ where: { email } });
+  if (existingUser) return { error: 'EMAIL_ALREADY_IN_USE' };
+
+  const matchedPrivileges = await privileges.findAll({
+    where: { codename: { [Op.in]: privilegeCodenames } },
+    attributes: ['id', 'codename']
+  });
+
+  if (matchedPrivileges.length !== privilegeCodenames.length) {
+    return { error: 'INVALID_PRIVILEGES' };
+  }
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    const hashedPassword = await encrypt(password);
+
+    const user = await users.create(
+      { name: employee.name, email, password: hashedPassword, role: 'user' },
+      { transaction }
+    );
+
+    await userprivileges.bulkCreate(
+      matchedPrivileges.map(p => ({ user_id: user.id, privilege_id: p.id })),
+      { transaction }
+    );
+
+    await employee.update({ user_id: user.id }, { transaction });
+
+    await transaction.commit();
+
+    return {
+      employee: { id: employee.id, name: employee.name, user_id: user.id },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      privileges: matchedPrivileges.map(p => p.codename)
+    };
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+
+const revokeEmployeeAccess = async (id) => {
+  const employee = await employees.findByPk(id);
+  if (!employee) return { error: 'EMPLOYEE_NOT_FOUND' };
+  if (!employee.user_id) return { error: 'EMPLOYEE_HAS_NO_ACCESS' };
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    await userprivileges.destroy({ where: { user_id: employee.user_id }, transaction });
+    await users.destroy({ where: { id: employee.user_id }, transaction });
+    await employee.update({ user_id: null }, { transaction });
+
+    await transaction.commit();
+    return { revoked: true };
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+
+module.exports = { getAllEmployees, getEmployee, addNewEmployee, updateEmployee, deleteEmployee, grantEmployeeAccess, revokeEmployeeAccess };

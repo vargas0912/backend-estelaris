@@ -1,7 +1,7 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
 
-const { getAllEmployees, getEmployee, addNewEmployee, updateEmployee, deleteEmployee } = require('../services/employees');
+const { getAllEmployees, getEmployee, addNewEmployee, updateEmployee, deleteEmployee, grantEmployeeAccess, revokeEmployeeAccess } = require('../services/employees');
 
 /**
  * Obtener lista de registros
@@ -80,4 +80,46 @@ const deleteRecord = async(req, res) => {
   }
 };
 
-module.exports = { getRecord, getRecords, addRecord, updateRecord, deleteRecord };
+const grantAccess = async (req, res) => {
+  try {
+    const { id, email, password, privileges } = matchedData(req);
+    const result = await grantEmployeeAccess(id, email, password, privileges);
+
+    if (result.error === 'EMPLOYEE_NOT_FOUND') {
+      handleHttpError(res, result.error, 404);
+      return;
+    }
+
+    if (result.error) {
+      handleHttpError(res, result.error, 422);
+      return;
+    }
+
+    res.status(201).send(result);
+  } catch (error) {
+    handleHttpError(res, `ERROR_GRANT_ACCESS --> ${error}`, 400);
+  }
+};
+
+const revokeAccess = async (req, res) => {
+  try {
+    const { id } = matchedData(req);
+    const result = await revokeEmployeeAccess(id);
+
+    if (result.error === 'EMPLOYEE_NOT_FOUND') {
+      handleHttpError(res, result.error, 404);
+      return;
+    }
+
+    if (result.error) {
+      handleHttpError(res, result.error, 422);
+      return;
+    }
+
+    res.send(result);
+  } catch (error) {
+    handleHttpError(res, `ERROR_REVOKE_ACCESS --> ${error}`, 400);
+  }
+};
+
+module.exports = { getRecord, getRecords, addRecord, updateRecord, deleteRecord, grantAccess, revokeAccess };

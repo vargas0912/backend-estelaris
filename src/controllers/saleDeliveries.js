@@ -4,6 +4,7 @@ const { handleHttpError } = require('../utils/handleErorr');
 const {
   getDelivery,
   getDeliveriesBySale,
+  getDeliveriesAssignedToMe,
   createDelivery,
   transitionDelivery,
   deleteDelivery
@@ -32,6 +33,21 @@ const getRecordsBySale = async (req, res) => {
     res.send({ deliveries });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_SALE -> ${error}`, 400);
+  }
+};
+
+const getAssignedToMe = async (req, res) => {
+  try {
+    const deliveries = await getDeliveriesAssignedToMe(req.user.id);
+
+    if (deliveries === null) {
+      handleHttpError(res, 'EMPLOYEE_NOT_LINKED_TO_USER', 404);
+      return;
+    }
+
+    res.send({ deliveries });
+  } catch (error) {
+    handleHttpError(res, `ERROR_GET_ASSIGNED_TO_ME -> ${error}`, 400);
   }
 };
 
@@ -101,6 +117,7 @@ const deleteRecord = async (req, res) => {
 module.exports = {
   getRecord,
   getRecordsBySale,
+  getAssignedToMe,
   addRecord,
   pickupRecord: makeTransition('Recolectado'),
   shipRecord: makeTransition('En_Transito'),

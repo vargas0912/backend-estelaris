@@ -266,6 +266,11 @@ const swaggerDefinition = {
           branch_id: {
             type: 'integer'
           },
+          user_id: {
+            type: 'integer',
+            nullable: true,
+            description: 'ID del usuario de sistema vinculado. NULL si el empleado no tiene acceso.'
+          },
           signature: {
             type: 'string'
           },
@@ -276,6 +281,58 @@ const swaggerDefinition = {
           updated_at: {
             type: 'string',
             format: 'date-time'
+          }
+        }
+      },
+      grantEmployeeAccessRequest: {
+        type: 'object',
+        required: ['email', 'password', 'privileges'],
+        properties: {
+          email: {
+            type: 'string',
+            format: 'email',
+            description: 'Email del usuario a crear. Debe ser único en el sistema.'
+          },
+          password: {
+            type: 'string',
+            minLength: 8,
+            description: 'Contraseña del usuario. Mínimo 8 caracteres.'
+          },
+          privileges: {
+            type: 'array',
+            minItems: 1,
+            items: { type: 'string' },
+            description: 'Codenames de privileges a asignar.',
+            example: ['view_driver_deliveries', 'update_driver_delivery']
+          }
+        }
+      },
+      grantEmployeeAccessResponse: {
+        type: 'object',
+        description: 'Resultado de habilitar acceso a un empleado',
+        properties: {
+          employee: {
+            type: 'object',
+            properties: {
+              id: { type: 'integer' },
+              name: { type: 'string' },
+              user_id: { type: 'integer', description: 'ID del user recién creado y vinculado' }
+            }
+          },
+          user: {
+            type: 'object',
+            properties: {
+              id: { type: 'integer' },
+              name: { type: 'string' },
+              email: { type: 'string', format: 'email' },
+              role: { type: 'string', example: 'user' }
+            }
+          },
+          privileges: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Codenames de los privileges asignados',
+            example: ['view_driver_deliveries', 'update_driver_delivery']
           }
         }
       },

@@ -19,7 +19,11 @@ const EMPlOYEE = Object.freeze({
   UPDATE: 'update_employee',
   NAME_UPDATE: 'Modificar empleados',
   DELETE: 'delete_employee',
-  NAME_DELETE: 'Eliminar empleados'
+  NAME_DELETE: 'Eliminar empleados',
+  GRANT_ACCESS: 'grant_employee_access',
+  NAME_GRANT_ACCESS: 'Habilitar acceso de empleado',
+  REVOKE_ACCESS: 'revoke_employee_access',
+  NAME_REVOKE_ACCESS: 'Revocar acceso de empleado'
 });
 
 const PRIVILEGE = Object.freeze({
@@ -324,4 +328,12 @@ const SALE_DELIVERY = Object.freeze({
   NAME_DELETE: 'Eliminar entrega de venta'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE, PURCH_PAYMENT, TRANSFER, SALE, SALE_PAYMENT, SALE_DELIVERY };
+const DRIVER = Object.freeze({
+  MODULE_NAME: 'driver',
+  VIEW_DELIVERIES: 'view_driver_deliveries',
+  NAME_VIEW_DELIVERIES: 'Ver mis entregas',
+  UPDATE_DELIVERY: 'update_driver_delivery',
+  NAME_UPDATE_DELIVERY: 'Actualizar entrega asignada'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE, PURCH_PAYMENT, TRANSFER, SALE, SALE_PAYMENT, SALE_DELIVERY, DRIVER };
