@@ -9,7 +9,7 @@ const createConditionalLimiter = (limiterConfig) => {
 
   return (req, res, next) => {
     // Bypass en entorno de test
-    if (process.env.NODE_ENV === 'test') {
+    if (process.env.DISABLE_RATE_LIMIT) {
       return next();
     }
     // Aplicar rate limiter en otros entornos
