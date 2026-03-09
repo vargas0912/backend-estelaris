@@ -1,4 +1,4 @@
-const { campaigns: Campaigns, campaignProducts: CampaignProducts, campaignBranches: CampaignBranches, products: Products, branches: Branches } = require('../models');
+const { sequelize, campaigns: Campaigns, campaignProducts: CampaignProducts, campaignBranches: CampaignBranches, products: Products, branches: Branches, campaignProductBranches: ProductBranches } = require('../models');
 const { Op } = require('sequelize');
 
 /**
@@ -6,7 +6,7 @@ const { Op } = require('sequelize');
  * @param {Object} filters - Filtros opcionales (status: active/upcoming/finished/inactive)
  * @returns {Promise<Array>}
  */
-const getAllCampaigns = async(filters = {}) => {
+const getAllCampaigns = async (filters = {}) => {
   const where = {};
   const now = new Date();
 
@@ -62,7 +62,7 @@ const getAllCampaigns = async(filters = {}) => {
  * Obtiene solo las campañas activas y vigentes
  * @returns {Promise<Array>}
  */
-const getActiveCampaigns = async() => {
+const getActiveCampaigns = async () => {
   const now = new Date();
 
   const campaigns = await Campaigns.findAll({
@@ -99,7 +99,7 @@ const getActiveCampaigns = async() => {
  * @param {number} id - ID de la campaña
  * @returns {Promise<Object|null>}
  */
-const getCampaign = async(id) => {
+const getCampaign = async (id) => {
   const campaign = await Campaigns.findByPk(id, {
     include: [
       {
@@ -128,7 +128,7 @@ const getCampaign = async(id) => {
  * @param {Object} body - Datos de la campaña
  * @returns {Promise<Object>}
  */
-const addNewCampaign = async(body) => {
+const addNewCampaign = async (body) => {
   const campaign = await Campaigns.create(body);
   return campaign;
 };
@@ -139,7 +139,7 @@ const addNewCampaign = async(body) => {
  * @param {Object} body - Datos a actualizar
  * @returns {Promise<Object>}
  */
-const updateCampaign = async(id, body) => {
+const updateCampaign = async (id, body) => {
   const campaign = await Campaigns.findByPk(id);
 
   if (!campaign) {
@@ -155,7 +155,7 @@ const updateCampaign = async(id, body) => {
  * @param {number} id - ID de la campaña
  * @returns {Promise<Object>}
  */
-const activateCampaign = async(id) => {
+const activateCampaign = async (id) => {
   const campaign = await Campaigns.findByPk(id);
 
   if (!campaign) {
@@ -171,7 +171,7 @@ const activateCampaign = async(id) => {
  * @param {number} id - ID de la campaña
  * @returns {Promise<Object>}
  */
-const deactivateCampaign = async(id) => {
+const deactivateCampaign = async (id) => {
   const campaign = await Campaigns.findByPk(id);
 
   if (!campaign) {
@@ -187,7 +187,7 @@ const deactivateCampaign = async(id) => {
  * @param {number} id - ID de la campaña
  * @returns {Promise<boolean>}
  */
-const deleteCampaign = async(id) => {
+const deleteCampaign = async (id) => {
   const campaign = await Campaigns.findByPk(id);
 
   if (!campaign) {
@@ -203,7 +203,7 @@ const deleteCampaign = async(id) => {
  * @param {number} campaignId - ID de la campaña
  * @returns {Promise<Array>}
  */
-const getCampaignBranches = async(campaignId) => {
+const getCampaignBranches = async (campaignId) => {
   const campaign = await Campaigns.findByPk(campaignId, {
     include: [
       {
@@ -227,7 +227,7 @@ const getCampaignBranches = async(campaignId) => {
  * @param {Array<number>} branchIds - Array de IDs de sucursales
  * @returns {Promise<Array>}
  */
-const addCampaignBranches = async(campaignId, branchIds) => {
+const addCampaignBranches = async (campaignId, branchIds) => {
   const campaign = await Campaigns.findByPk(campaignId);
 
   if (!campaign) {
@@ -270,20 +270,42 @@ const addCampaignBranches = async(campaignId, branchIds) => {
  * @param {number} branchId - ID de la sucursal
  * @returns {Promise<boolean>}
  */
-const removeCampaignBranch = async(campaignId, branchId) => {
-  const record = await CampaignBranches.findOne({
-    where: {
-      campaign_id: campaignId,
-      branch_id: branchId
+const removeCampaignBranch = async (campaignId, branchId) => {
+  const t = await sequelize.transaction();
+  try {
+    const record = await CampaignBranches.findOne({
+      where: { campaign_id: campaignId, branch_id: branchId },
+      transaction: t
+    });
+
+    if (!record) {
+      await t.rollback();
+      return false;
     }
-  });
 
-  if (!record) {
-    return false;
+    // Cascade: limpiar overrides de esta sucursal en todos los productos de la campaña
+    const campaignProducts = await CampaignProducts.findAll({
+      attributes: ['id'],
+      where: { campaign_id: campaignId },
+      transaction: t
+    });
+    await ProductBranches.destroy({
+      where: {
+        campaign_product_id: { [Op.in]: campaignProducts.map((p) => p.id) },
+        branch_id: branchId
+      },
+      transaction: t,
+      force: true
+    });
+
+    await record.destroy({ transaction: t, force: true });
+    await t.commit();
+    return true;
+  } catch (error) {
+    await t.rollback();
+    console.error('❌ removeCampaignBranch error:', error); // temporal
+    throw error;
   }
-
-  await record.destroy();
-  return true;
 };
 
 module.exports = {
