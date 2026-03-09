@@ -248,17 +248,31 @@ const addCampaignBranches = async (campaignId, branchIds) => {
   // Agregar sucursales (evita duplicados automáticamente)
   const records = [];
   for (const branchId of branchIds) {
-    const [record] = await CampaignBranches.findOrCreate({
+    const existing = await CampaignBranches.findOne({
       where: {
         campaign_id: campaignId,
         branch_id: branchId
       },
-      defaults: {
+      paranoid: false
+    });
+
+    if (existing) {
+      if (!existing.deleted_at) {
+        // Ya existe y no está eliminada — evitar duplicado
+        records.push(existing);
+        continue;
+      }
+      // Fue eliminada antes — restaurar
+      await existing.restore();
+      records.push(existing);
+    } else {
+      // Crear nuevo registro
+      const record = await CampaignBranches.create({
         campaign_id: campaignId,
         branch_id: branchId
-      }
-    });
-    records.push(record);
+      });
+      records.push(record);
+    }
   }
 
   return records;

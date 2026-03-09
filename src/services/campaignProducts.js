@@ -78,7 +78,7 @@ const addProductToCampaign = async(body) => {
   });
 
   if (existing) {
-    if (!existing.deletedAt) {
+    if (!existing.deleted_at) {
       throw new Error('El producto ya está en esta campaña');
     }
     // Producto fue eliminado antes — restaurar con los nuevos parámetros
