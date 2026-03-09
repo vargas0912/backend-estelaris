@@ -69,16 +69,22 @@ const getCampaignProduct = async(id) => {
  * @returns {Promise<Object>}
  */
 const addProductToCampaign = async(body) => {
-  // Verificar que el producto no esté ya en la campaña
   const existing = await CampaignProducts.findOne({
     where: {
       campaign_id: body.campaign_id,
       product_id: body.product_id
-    }
+    },
+    paranoid: false
   });
 
   if (existing) {
-    throw new Error('El producto ya está en esta campaña');
+    if (!existing.deleted_at) {
+      throw new Error('El producto ya está en esta campaña');
+    }
+    // Producto fue eliminado antes — restaurar con los nuevos parámetros
+    await existing.restore();
+    await existing.update({ ...body, sold_quantity: 0 });
+    return existing;
   }
 
   const product = await CampaignProducts.create(body);
@@ -114,7 +120,7 @@ const removeProductFromCampaign = async(id) => {
     return false;
   }
 
-  await product.destroy();
+  await product.destroy(); // soft delete — conserva historial
   return true;
 };
 
@@ -221,7 +227,6 @@ const getBranchOverrides = async(campaignProductId) => {
  * @returns {Promise<Object>}
  */
 const createBranchOverride = async(campaignProductId, branchId, discountValueOverride) => {
-  // Verificar que no exista ya un override
   const existing = await CampaignProductBranches.findOne({
     where: {
       campaign_product_id: campaignProductId,
@@ -272,19 +277,15 @@ const updateBranchOverride = async(campaignProductId, branchId, discountValueOve
  * @returns {Promise<boolean>}
  */
 const deleteBranchOverride = async(campaignProductId, branchId) => {
-  const override = await CampaignProductBranches.findOne({
+  const result = await CampaignProductBranches.destroy({
     where: {
       campaign_product_id: campaignProductId,
       branch_id: branchId
-    }
+    },
+    force: true
   });
 
-  if (!override) {
-    return false;
-  }
-
-  await override.destroy();
-  return true;
+  return result > 0;
 };
 
 module.exports = {

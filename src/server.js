@@ -53,7 +53,7 @@ class Server {
     this.app.use(compression());
 
     // Rate limiting - DESHABILITADO EN TESTS
-    if (process.env.NODE_ENV !== 'test') {
+    if (!process.env.DISABLE_RATE_LIMIT) {
       // Rate limiting global - 100 requests por 15 minutos
       const globalLimiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutos

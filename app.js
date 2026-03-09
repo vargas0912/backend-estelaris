@@ -4,8 +4,8 @@ const Server = require('./src/server');
 
 const server = new Server();
 
-// No iniciar el servidor en modo test (supertest no lo necesita)
-if (process.env.NODE_ENV !== 'test') {
+// No iniciar el servidor cuando Jest está corriendo (supertest no lo necesita)
+if (!process.env.DISABLE_RATE_LIMIT) {
   server.listen();
 }
 

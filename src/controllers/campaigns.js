@@ -20,7 +20,7 @@ const {
 /**
  * Obtiene todas las campañas con filtros opcionales
  */
-const getCampaigns = async(req, res) => {
+const getCampaigns = async (req, res) => {
   try {
     const data = matchedData(req);
     const campaigns = await campaignsService.getAllCampaigns(data);
@@ -37,7 +37,7 @@ const getCampaigns = async(req, res) => {
 /**
  * Obtiene solo las campañas activas
  */
-const getActiveCampaigns = async(req, res) => {
+const getActiveCampaigns = async (req, res) => {
   try {
     const campaigns = await campaignsService.getActiveCampaigns();
 
@@ -53,7 +53,7 @@ const getActiveCampaigns = async(req, res) => {
 /**
  * Obtiene una campaña por ID
  */
-const getCampaign = async(req, res) => {
+const getCampaign = async (req, res) => {
   try {
     const { id } = matchedData(req);
     const campaign = await campaignsService.getCampaign(id);
@@ -74,7 +74,7 @@ const getCampaign = async(req, res) => {
 /**
  * Crea una nueva campaña
  */
-const createCampaign = async(req, res) => {
+const createCampaign = async (req, res) => {
   try {
     const data = matchedData(req);
     const campaign = await campaignsService.addNewCampaign(data);
@@ -94,7 +94,7 @@ const createCampaign = async(req, res) => {
 /**
  * Actualiza una campaña
  */
-const updateCampaign = async(req, res) => {
+const updateCampaign = async (req, res) => {
   try {
     const { id, ...data } = matchedData(req);
     const campaign = await campaignsService.updateCampaign(id, data);
@@ -118,7 +118,7 @@ const updateCampaign = async(req, res) => {
 /**
  * Activa una campaña
  */
-const activateCampaign = async(req, res) => {
+const activateCampaign = async (req, res) => {
   try {
     const { id } = matchedData(req);
     const campaign = await campaignsService.activateCampaign(id);
@@ -139,7 +139,7 @@ const activateCampaign = async(req, res) => {
 /**
  * Desactiva una campaña
  */
-const deactivateCampaign = async(req, res) => {
+const deactivateCampaign = async (req, res) => {
   try {
     const { id } = matchedData(req);
     const campaign = await campaignsService.deactivateCampaign(id);
@@ -160,7 +160,7 @@ const deactivateCampaign = async(req, res) => {
 /**
  * Elimina una campaña
  */
-const deleteCampaign = async(req, res) => {
+const deleteCampaign = async (req, res) => {
   try {
     const { id } = matchedData(req);
     const deleted = await campaignsService.deleteCampaign(id);
@@ -181,7 +181,7 @@ const deleteCampaign = async(req, res) => {
 /**
  * Obtiene las sucursales de una campaña
  */
-const getCampaignBranches = async(req, res) => {
+const getCampaignBranches = async (req, res) => {
   try {
     const { id } = matchedData(req);
     const branches = await campaignsService.getCampaignBranches(id);
@@ -202,7 +202,7 @@ const getCampaignBranches = async(req, res) => {
 /**
  * Agrega sucursales a una campaña
  */
-const addCampaignBranches = async(req, res) => {
+const addCampaignBranches = async (req, res) => {
   try {
     // eslint-disable-next-line camelcase
     const { id, branch_ids } = matchedData(req);
@@ -227,7 +227,7 @@ const addCampaignBranches = async(req, res) => {
 /**
  * Remueve una sucursal de una campaña
  */
-const removeCampaignBranch = async(req, res) => {
+const removeCampaignBranch = async (req, res) => {
   try {
     // eslint-disable-next-line camelcase
     const { id, branch_id } = matchedData(req);
