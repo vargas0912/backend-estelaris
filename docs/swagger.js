@@ -1132,6 +1132,42 @@ const swaggerDefinition = {
           notes: { type: 'string', description: 'Observaciones de la transición' }
         }
       },
+      companyInfo: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          company_name: { type: 'string', maxLength: 150 },
+          trade_name: { type: 'string', maxLength: 150, nullable: true },
+          rfc: { type: 'string', minLength: 12, maxLength: 13 },
+          fiscal_regime: { type: 'string', maxLength: 100 },
+          fiscal_address: { type: 'string' },
+          zip_code: { type: 'string', maxLength: 10 },
+          fiscal_email: { type: 'string', format: 'email', nullable: true },
+          phone: { type: 'string', maxLength: 20, nullable: true },
+          logo_url: { type: 'string', format: 'uri', nullable: true },
+          website: { type: 'string', format: 'uri', nullable: true },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      systemSettings: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          category: { type: 'string', maxLength: 50, description: 'Agrupación lógica (ej: formats, inventory)' },
+          key: { type: 'string', maxLength: 100, description: 'Clave única de la configuración' },
+          value: { type: 'string', description: 'Valor almacenado como texto' },
+          label: { type: 'string', maxLength: 150, description: 'Etiqueta legible para el frontend' },
+          description: { type: 'string', nullable: true },
+          data_type: {
+            type: 'string',
+            enum: ['string', 'integer', 'decimal', 'boolean'],
+            description: 'Tipo de dato para que el frontend haga el cast correcto'
+          },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
       storage: {
         type: 'object',
         properties: {

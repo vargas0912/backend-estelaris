@@ -336,4 +336,20 @@ const DRIVER = Object.freeze({
   NAME_UPDATE_DELIVERY: 'Actualizar entrega asignada'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE, PURCH_PAYMENT, TRANSFER, SALE, SALE_PAYMENT, SALE_DELIVERY, DRIVER };
+const COMPANY_INFO = Object.freeze({
+  MODULE_NAME: 'companyInfo',
+  VIEW: 'view_company_info',
+  NAME_VIEW: 'Ver información fiscal de la empresa',
+  UPDATE: 'update_company_info',
+  NAME_UPDATE: 'Modificar información fiscal de la empresa'
+});
+
+const SYSTEM_SETTINGS = Object.freeze({
+  MODULE_NAME: 'systemSettings',
+  VIEW_ALL: 'view_system_settings',
+  NAME_ALL: 'Ver configuraciones del sistema',
+  UPDATE: 'update_system_setting',
+  NAME_UPDATE: 'Modificar configuración del sistema'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE, PURCH_PAYMENT, TRANSFER, SALE, SALE_PAYMENT, SALE_DELIVERY, DRIVER, COMPANY_INFO, SYSTEM_SETTINGS };
