@@ -20,6 +20,14 @@ module.exports = {
 
   async down(queryInterface) {
     const codeNames = privileges.map(p => p.codeName);
+    const [rows] = await queryInterface.sequelize.query(
+      `SELECT id FROM privileges WHERE codeName IN (${codeNames.map(() => '?').join(',')})`,
+      { replacements: codeNames }
+    );
+    if (rows.length) {
+      const ids = rows.map(r => r.id);
+      await queryInterface.bulkDelete('userprivileges', { privilege_id: ids });
+    }
     await queryInterface.bulkDelete('privileges', { codeName: codeNames });
   }
 };

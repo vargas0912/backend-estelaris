@@ -2,7 +2,8 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface) {
+  async up(queryInterface, Sequelize) {
+    const now = new Date();
     await queryInterface.bulkInsert('company_info', [
       {
         company_name: 'Estelaris S.A. de C.V.',
@@ -15,13 +16,13 @@ module.exports = {
         phone: null,
         logo_url: null,
         website: null,
-        created_at: new Date(),
-        updated_at: new Date()
+        created_at: now,
+        updated_at: now
       }
-    ]);
+    ], {});
   },
 
-  async down(queryInterface) {
+  async down(queryInterface, Sequelize) {
     await queryInterface.bulkDelete('company_info', null, {});
   }
 };
