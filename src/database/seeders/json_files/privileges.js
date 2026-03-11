@@ -3,7 +3,7 @@ const {
   BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD,
   CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR, PRODUCT: PRD, POSITION: POS, PRICE_LIST: PL,
   PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP, PURCH_PAYMENT: PP_PAY, TRANSFER: TRANSF,
-  SALE: SL, SALE_PAYMENT: SL_PAY, SALE_DELIVERY: SL_DEL, DRIVER: DRV
+  SALE: SL, SALE_PAYMENT: SL_PAY, SALE_DELIVERY: SL_DEL, DRIVER: DRV, DASHBOARD: DASH
 } = require('../../../constants/modules');
 
 const data = [
@@ -172,7 +172,10 @@ const data = [
 
   // Repartidor
   { name: DRV.NAME_VIEW_DELIVERIES, codeName: DRV.VIEW_DELIVERIES, module: DRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: DRV.NAME_UPDATE_DELIVERY, codeName: DRV.UPDATE_DELIVERY, module: DRV.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: DRV.NAME_UPDATE_DELIVERY, codeName: DRV.UPDATE_DELIVERY, module: DRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Dashboard
+  { name: DASH.NAME_VIEW, codeName: DASH.VIEW, module: DASH.MODULE_NAME, created_at: fecha, updated_at: fecha }
 ];
 
 module.exports = { data };
