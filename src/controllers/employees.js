@@ -1,7 +1,7 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
 
-const { getAllEmployees, getEmployee, addNewEmployee, updateEmployee, deleteEmployee, grantEmployeeAccess, revokeEmployeeAccess } = require('../services/employees');
+const { getAllEmployees, getEmployee, getEmployeesByBranch, addNewEmployee, updateEmployee, deleteEmployee, grantEmployeeAccess, revokeEmployeeAccess } = require('../services/employees');
 
 /**
  * Obtener lista de registros
@@ -37,6 +37,23 @@ const getRecord = async(req, res) => {
     res.send({ employee });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORD -> ${error}`, 400);
+  }
+};
+
+/**
+ * Obtener empleados por sucursal
+ * @param {Request} req Request param con branch_id en params
+ * @param {Response} res Response param
+ */
+const getRecordsByBranch = async (req, res) => {
+  try {
+    const { branch_id: branchId } = matchedData(req);
+
+    const employees = await getEmployeesByBranch(branchId);
+
+    res.send({ employees });
+  } catch (error) {
+    handleHttpError(res, `ERROR_GET_RECORDS_BY_BRANCH -> ${error}`);
   }
 };
 
@@ -122,4 +139,4 @@ const revokeAccess = async (req, res) => {
   }
 };
 
-module.exports = { getRecord, getRecords, addRecord, updateRecord, deleteRecord, grantAccess, revokeAccess };
+module.exports = { getRecord, getRecords, getRecordsByBranch, addRecord, updateRecord, deleteRecord, grantAccess, revokeAccess };

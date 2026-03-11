@@ -28,6 +28,7 @@ const data = [
 
   // Empleados
   { name: EMP.NAME_ALL, codeName: EMP.VIEW_ALL, module: EMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: EMP.NAME_VIEW_BY_BRANCH, codeName: EMP.VIEW_BY_BRANCH, module: EMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: EMP.NAME_UPDATE, codeName: EMP.UPDATE, module: EMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: EMP.NAME_ADD, codeName: EMP.ADD, module: EMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: EMP.NAME_DELETE, codeName: EMP.DELETE, module: EMP.MODULE_NAME, created_at: fecha, updated_at: fecha },

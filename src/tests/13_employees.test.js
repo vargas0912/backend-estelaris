@@ -141,6 +141,57 @@ describe('[EMPLOYEES] Test api employees //api/employees/', () => {
   });
 
   // ============================================
+  // Tests de employees por sucursal
+  // ============================================
+  describe('Tests de empleados por sucursal', () => {
+    test('A1. Obtener empleados por sucursal válida. Expect 200', async() => {
+      const response = await api
+        .get('/api/employees/branch/1')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('employees');
+      expect(Array.isArray(response.body.employees)).toBe(true);
+    });
+
+    test('A2. Todos los empleados retornados pertenecen a la sucursal. Expect branch_id === 1', async() => {
+      const response = await api
+        .get('/api/employees/branch/1')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      const { employees } = response.body;
+      employees.forEach(emp => {
+        expect(emp.branch_id).toBe(1);
+      });
+    });
+
+    test('A3. Sucursal sin empleados retorna array vacío. Expect 200', async() => {
+      const response = await api
+        .get('/api/employees/branch/99999')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('employees');
+      expect(Array.isArray(response.body.employees)).toBe(true);
+      expect(response.body.employees.length).toBe(0);
+    });
+
+    test('A4. branch_id no numérico. Expect 400', async() => {
+      await api
+        .get('/api/employees/branch/abc')
+        .auth(Token, { type: 'bearer' })
+        .expect(400);
+    });
+
+    test('A5. Sin token. Expect 401', async() => {
+      await api
+        .get('/api/employees/branch/1')
+        .expect(401);
+    });
+  });
+
+  // ============================================
   // Tests de autenticación
   // ============================================
   describe('Tests de autenticacion', () => {

@@ -3,11 +3,11 @@ const { sequelize } = require('../models/index');
 const { encrypt } = require('../utils/handlePassword');
 const { Op } = require('sequelize');
 
-const attributes = ['id', 'name', 'email', 'phone', 'hire_date', 'active', 'created_at', 'updated_at'];
+const attributes = ['id', 'name', 'email', 'phone', 'hire_date', 'active', 'user_id', 'created_at', 'updated_at'];
 const positionAttributes = ['id', 'name'];
 const branchAttributes = ['id', 'name'];
 
-const getAllEmployees = async(branchId = null) => {
+const getAllEmployees = async (branchId = null) => {
   const where = branchId !== null ? { branch_id: branchId } : {};
 
   const result = await employees.findAll({
@@ -32,7 +32,7 @@ const getAllEmployees = async(branchId = null) => {
   return result;
 };
 
-const getEmployee = async(id) => {
+const getEmployee = async (id) => {
   const result = await employees.findOne({
     attributes,
     where: {
@@ -57,13 +57,36 @@ const getEmployee = async(id) => {
   return result;
 };
 
-const addNewEmployee = async(body) => {
+const getEmployeesByBranch = async (branchId) => {
+  const result = await employees.findAll({
+    attributes,
+    where: { branch_id: branchId },
+    include: [
+      {
+        model: positions,
+        as: 'position',
+        attributes: positionAttributes,
+        required: true
+      },
+      {
+        model: branches,
+        as: 'branch',
+        attributes: branchAttributes,
+        required: true
+      }
+    ]
+  });
+
+  return result;
+};
+
+const addNewEmployee = async (body) => {
   const result = await employees.create(body);
 
   return result;
 };
 
-const updateEmployee = async(id, req) => {
+const updateEmployee = async (id, req) => {
   const { name, email, phone, hire_date: hireDate, position_id: positionId, branch_id: branchId, active } = req;
 
   const data = await employees.findByPk(id);
@@ -88,7 +111,7 @@ const updateEmployee = async(id, req) => {
   return result;
 };
 
-const deleteEmployee = async(id) => {
+const deleteEmployee = async (id) => {
   const result = await employees.destroy({
     where: {
       id
@@ -165,4 +188,4 @@ const revokeEmployeeAccess = async (id) => {
   }
 };
 
-module.exports = { getAllEmployees, getEmployee, addNewEmployee, updateEmployee, deleteEmployee, grantEmployeeAccess, revokeEmployeeAccess };
+module.exports = { getAllEmployees, getEmployee, getEmployeesByBranch, addNewEmployee, updateEmployee, deleteEmployee, grantEmployeeAccess, revokeEmployeeAccess };

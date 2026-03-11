@@ -12,6 +12,16 @@ const validateGetRecord = [
   }
 ];
 
+const validateGetByBranch = [
+  check('branch_id')
+    .exists().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_NOT_EXISTS).bail()
+    .notEmpty().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_IS_EMPTY).bail()
+    .isInt().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_INVALID).bail(),
+  (req, res, next) => {
+    return validateResults(req, res, next);
+  }
+];
+
 const valiAddRecord = [
   check('name')
     .exists().withMessage(EMPLOYEES_VALIDATORS.NAME_NOT_EXISTS).bail()
@@ -85,4 +95,4 @@ const valiGrantAccess = [
   }
 ];
 
-module.exports = { validateGetRecord, valiAddRecord, valiUpdateRecord, valiGrantAccess };
+module.exports = { validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord, valiGrantAccess };
