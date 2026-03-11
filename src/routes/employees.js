@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord, valiAddRecord, valiUpdateRecord, valiGrantAccess } = require('../validators/employees');
+const { validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord, valiGrantAccess } = require('../validators/employees');
 
 const authMidleware = require('../middlewares/session');
 const branchScope = require('../middlewares/branchScope');
 const checkRol = require('../middlewares/rol');
-const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
+const { readLimiter, writeLimiter, deleteLimiter, searchLimiter } = require('../middlewares/rateLimiters');
 
-const { getRecord, getRecords, addRecord, updateRecord, deleteRecord, grantAccess, revokeAccess } = require('../controllers/employees');
+const { getRecord, getRecords, getRecordsByBranch, addRecord, updateRecord, deleteRecord, grantAccess, revokeAccess } = require('../controllers/employees');
 const { EMPlOYEE } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
 
@@ -116,6 +116,45 @@ router.delete('/:id/revoke-access', [
   validateGetRecord,
   checkRol([ROLE.ADMIN], EMPlOYEE.REVOKE_ACCESS)
 ], revokeAccess);
+
+/**
+ * @openapi
+ * /employees/branch/{branch_id}:
+ *    get:
+ *      tags:
+ *        - employees
+ *      summary: Empleados por sucursal
+ *      description: Retorna todos los empleados activos de una sucursal específica.
+ *      security:
+ *        - bearerAuth: []
+ *      parameters:
+ *      - name: branch_id
+ *        in: path
+ *        required: true
+ *        schema:
+ *          type: integer
+ *      responses:
+ *        '200':
+ *          description: Arreglo de empleados de la sucursal
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  employees:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/employees'
+ *        '400':
+ *          description: branch_id inválido
+ */
+router.get('/branch/:branch_id', [
+  searchLimiter,
+  authMidleware,
+  branchScope,
+  validateGetByBranch,
+  checkRol([ROLE.USER, ROLE.ADMIN], EMPlOYEE.VIEW_BY_BRANCH)
+], getRecordsByBranch);
 
 /**
  * @openapi

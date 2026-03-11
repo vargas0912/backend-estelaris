@@ -14,6 +14,8 @@ const EMPlOYEE = Object.freeze({
   MODULE_NAME: 'employees',
   VIEW_ALL: 'view_employees',
   NAME_ALL: 'Ver empleados',
+  VIEW_BY_BRANCH: 'view_employees_by_branch',
+  NAME_VIEW_BY_BRANCH: 'Ver empleados por sucursal',
   ADD: 'create_employee',
   NAME_ADD: 'Crear empleados',
   UPDATE: 'update_employee',
