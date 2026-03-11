@@ -1178,6 +1178,42 @@ const swaggerDefinition = {
             type: 'string'
           }
         }
+      },
+      dashboardKpis: {
+        type: 'object',
+        description: 'KPIs generales de ventas calculados sobre todas las sucursales',
+        properties: {
+          ventas_saldadas: { type: 'integer', description: 'Cantidad de ventas con status Pagado' },
+          ventas_pendientes: { type: 'integer', description: 'Cantidad de ventas con status Pendiente' },
+          ventas_canceladas: { type: 'integer', description: 'Cantidad de ventas con status Cancelado' },
+          ingreso_total: { type: 'number', format: 'decimal', description: 'Suma de sales_total de ventas Pagadas' },
+          cartera_pendiente: { type: 'number', format: 'decimal', description: 'Suma de due_payment de ventas Pendientes' },
+          ventas_morosas: { type: 'integer', description: 'Ventas a crédito Pendientes con due_date < hoy' },
+          monto_moroso: { type: 'number', format: 'decimal', description: 'Suma de due_payment de ventas morosas' },
+          clientes_activos: { type: 'integer', description: 'Clientes con is_active = 1' }
+        }
+      },
+      dashboardTrend: {
+        type: 'object',
+        description: 'Totales mensuales de ventas para el período solicitado',
+        properties: {
+          mes: { type: 'string', example: '2025-11', description: 'Mes en formato YYYY-MM' },
+          ventas_nuevas: { type: 'integer', description: 'Ventas no canceladas creadas en el mes' },
+          ventas_saldadas: { type: 'integer', description: 'Ventas con status Pagado en el mes' },
+          ventas_canceladas: { type: 'integer', description: 'Ventas con status Cancelado en el mes' },
+          ingreso_mensual: { type: 'number', format: 'decimal', description: 'Suma de sales_total de ventas Pagadas en el mes' }
+        }
+      },
+      dashboardTopProduct: {
+        type: 'object',
+        description: 'Producto con mayor ingreso en el período solicitado',
+        properties: {
+          product_id: { type: 'string', maxLength: 20 },
+          product_name: { type: 'string' },
+          unidades_vendidas: { type: 'number', format: 'decimal', description: 'Suma de qty en sale_details' },
+          ingreso_total: { type: 'number', format: 'decimal', description: 'Suma de subtotal en sale_details' },
+          cantidad_ventas: { type: 'integer', description: 'Cantidad de ventas distintas donde aparece el producto' }
+        }
       }
     }
   }
