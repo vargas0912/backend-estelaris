@@ -1,0 +1,42 @@
+const fecha = new Date();
+
+const data = [
+  { name: 'Nómina', created_at: fecha, updated_at: fecha },
+  { name: 'Renta', created_at: fecha, updated_at: fecha },
+  { name: 'Teléfono', created_at: fecha, updated_at: fecha },
+  { name: 'Internet', created_at: fecha, updated_at: fecha },
+  { name: 'Papelería', created_at: fecha, updated_at: fecha },
+  { name: 'Artículos de Limpieza', created_at: fecha, updated_at: fecha },
+  { name: 'Comisión', created_at: fecha, updated_at: fecha },
+  { name: 'Viáticos', created_at: fecha, updated_at: fecha },
+  { name: 'Servicios', created_at: fecha, updated_at: fecha },
+  { name: 'Cancelación de Cuenta', created_at: fecha, updated_at: fecha },
+  { name: 'Préstamos', created_at: fecha, updated_at: fecha },
+  { name: 'Mercancía Maltratada', created_at: fecha, updated_at: fecha },
+  { name: 'Infracción', created_at: fecha, updated_at: fecha },
+  { name: 'Afinación de Camioneta', created_at: fecha, updated_at: fecha },
+  { name: 'Reparación de Camioneta', created_at: fecha, updated_at: fecha },
+  { name: 'Reparación de Motos', created_at: fecha, updated_at: fecha },
+  { name: 'Reparación de Aparatos', created_at: fecha, updated_at: fecha },
+  { name: 'Diésel', created_at: fecha, updated_at: fecha },
+  { name: 'Gasolina', created_at: fecha, updated_at: fecha },
+  { name: 'Recibo de Luz', created_at: fecha, updated_at: fecha },
+  { name: 'Recibo de Agua', created_at: fecha, updated_at: fecha },
+  { name: 'Fletes', created_at: fecha, updated_at: fecha },
+  { name: 'Publicidad', created_at: fecha, updated_at: fecha },
+  { name: 'Uniformes', created_at: fecha, updated_at: fecha },
+  { name: 'Herramientas', created_at: fecha, updated_at: fecha },
+  { name: 'Equipo de Cómputo', created_at: fecha, updated_at: fecha },
+  { name: 'Muebles y Enseres', created_at: fecha, updated_at: fecha },
+  { name: 'Seguros', created_at: fecha, updated_at: fecha },
+  { name: 'Impuestos', created_at: fecha, updated_at: fecha },
+  { name: 'Honorarios', created_at: fecha, updated_at: fecha },
+  { name: 'Capacitación', created_at: fecha, updated_at: fecha },
+  { name: 'Mantenimiento', created_at: fecha, updated_at: fecha },
+  { name: 'Materiales de Construcción', created_at: fecha, updated_at: fecha },
+  { name: 'Gastos Médicos', created_at: fecha, updated_at: fecha },
+  { name: 'Donaciones', created_at: fecha, updated_at: fecha },
+  { name: 'Otros', created_at: fecha, updated_at: fecha }
+];
+
+module.exports = { data };

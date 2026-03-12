@@ -360,4 +360,30 @@ const DASHBOARD = Object.freeze({
   NAME_VIEW: 'Ver dashboard de ventas'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE, PURCH_PAYMENT, TRANSFER, SALE, SALE_PAYMENT, SALE_DELIVERY, DRIVER, COMPANY_INFO, SYSTEM_SETTINGS, DASHBOARD };
+const EXPENSE_TYPE = Object.freeze({
+  MODULE_NAME: 'expense-types',
+  VIEW_ALL: 'view_expense_types',
+  NAME_ALL: 'Ver tipos de gastos',
+  ADD: 'create_expense_type',
+  NAME_ADD: 'Crear tipo de gasto',
+  UPDATE: 'update_expense_type',
+  NAME_UPDATE: 'Modificar tipo de gasto',
+  DELETE: 'delete_expense_type',
+  NAME_DELETE: 'Eliminar tipo de gasto'
+});
+
+const EXPENSE = Object.freeze({
+  MODULE_NAME: 'expenses',
+  VIEW_ALL: 'view_expenses',
+  NAME_ALL: 'Ver gastos',
+  VIEW_BY_BRANCH: 'view_expenses_by_branch',
+  NAME_VIEW_BY_BRANCH: 'Ver gastos por sucursal',
+  ADD: 'create_expense',
+  NAME_ADD: 'Registrar gasto',
+  UPDATE: 'update_expense',
+  NAME_UPDATE: 'Modificar gasto',
+  DELETE: 'delete_expense',
+  NAME_DELETE: 'Eliminar gasto'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE, PURCH_PAYMENT, TRANSFER, SALE, SALE_PAYMENT, SALE_DELIVERY, DRIVER, COMPANY_INFO, SYSTEM_SETTINGS, DASHBOARD, EXPENSE_TYPE, EXPENSE };

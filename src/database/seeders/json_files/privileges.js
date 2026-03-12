@@ -3,7 +3,7 @@ const {
   BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD,
   CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR, PRODUCT: PRD, POSITION: POS, PRICE_LIST: PL,
   PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP, PURCH_PAYMENT: PP_PAY, TRANSFER: TRANSF,
-  SALE: SL, SALE_PAYMENT: SL_PAY, SALE_DELIVERY: SL_DEL, DRIVER: DRV, DASHBOARD: DASH
+  SALE: SL, SALE_PAYMENT: SL_PAY, SALE_DELIVERY: SL_DEL, DRIVER: DRV, DASHBOARD: DASH, EXPENSE_TYPE: EXT, EXPENSE: EXP
 } = require('../../../constants/modules');
 
 const data = [
@@ -176,7 +176,20 @@ const data = [
   { name: DRV.NAME_UPDATE_DELIVERY, codeName: DRV.UPDATE_DELIVERY, module: DRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Dashboard
-  { name: DASH.NAME_VIEW, codeName: DASH.VIEW, module: DASH.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: DASH.NAME_VIEW, codeName: DASH.VIEW, module: DASH.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Tipos de Gastos
+  { name: EXT.NAME_ALL, codeName: EXT.VIEW_ALL, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: EXT.NAME_ADD, codeName: EXT.ADD, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: EXT.NAME_UPDATE, codeName: EXT.UPDATE, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: EXT.NAME_DELETE, codeName: EXT.DELETE, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Gastos
+  { name: EXP.NAME_ALL, codeName: EXP.VIEW_ALL, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: EXP.NAME_VIEW_BY_BRANCH, codeName: EXP.VIEW_BY_BRANCH, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: EXP.NAME_ADD, codeName: EXP.ADD, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: EXP.NAME_UPDATE, codeName: EXP.UPDATE, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: EXP.NAME_DELETE, codeName: EXP.DELETE, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha }
 ];
 
 module.exports = { data };
