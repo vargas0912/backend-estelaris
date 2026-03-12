@@ -757,6 +757,19 @@ const customerAddressCreateNoCustomer = {
   postal_code: '06000'
 };
 
+const expenseTypeCreate = { name: 'Tipo de gasto de prueba' };
+const expenseTypeCreateEmpty = { name: '' };
+const expenseTypeCreateInvalid = {};
+const expenseTypeUpdate = { name: 'Tipo de gasto modificado' };
+
+const expenseCreate = { expense_type_id: 1, trans_date: '2026-03-11', expense_amount: '500.00' };
+const expenseCreateEmpty = { expense_type_id: '', trans_date: '', expense_amount: '' };
+const expenseCreateInvalid = {};
+const expenseCreateNoType = { trans_date: '2026-03-11', expense_amount: '500.00' };
+const expenseCreateNoDate = { expense_type_id: 1, expense_amount: '500.00' };
+const expenseCreateNoAmount = { expense_type_id: 1, trans_date: '2026-03-11' };
+const expenseUpdate = { expense_type_id: 2, expense_amount: '750.00', notes: 'Gasto modificado' };
+
 module.exports = {
   testAuthRegister,
   testAuthLogin,
@@ -877,5 +890,16 @@ module.exports = {
   customerAddressCreateInvalid,
   customerAddressUpdate,
   customerAddressCreate2,
-  customerAddressCreateNoCustomer
+  customerAddressCreateNoCustomer,
+  expenseTypeCreate,
+  expenseTypeCreateEmpty,
+  expenseTypeCreateInvalid,
+  expenseTypeUpdate,
+  expenseCreate,
+  expenseCreateEmpty,
+  expenseCreateInvalid,
+  expenseCreateNoType,
+  expenseCreateNoDate,
+  expenseCreateNoAmount,
+  expenseUpdate
 };
