@@ -1,10 +1,11 @@
-const { products, productCategories } = require('../../models/index');
+const { products, productCategories, campaigns: Campaigns } = require('../../models/index');
 const {
   getAllProducts,
   getProduct,
   addNewProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getProductWithActiveOffer
 } = require('../../services/products');
 
 // Mock del modelo
@@ -19,6 +20,18 @@ jest.mock('../../models/index', () => ({
   productCategories: {
     findAll: jest.fn(),
     findOne: jest.fn()
+  },
+  campaigns: {
+    findAll: jest.fn()
+  },
+  campaignProducts: {
+    findAll: jest.fn()
+  },
+  campaignProductBranches: {
+    findAll: jest.fn()
+  },
+  branches: {
+    findAll: jest.fn()
   }
 }));
 
@@ -482,6 +495,226 @@ describe('Products Service - Unit Tests', () => {
       await updateProduct('SKU001', { cost_price: 0 });
 
       expect(mockProduct.cost_price).toBe(0);
+    });
+  });
+
+  describe('getProductWithActiveOffer', () => {
+    const mockProductData = {
+      id: 1,
+      name: 'Producto Test',
+      base_price: '100.00',
+      toJSON: function() { return this; }
+    };
+
+    test('debe retornar producto sin oferta si no hay campañas activas', async() => {
+      products.findByPk.mockResolvedValue(mockProductData);
+      Campaigns.findAll.mockResolvedValue([]);
+
+      const result = await getProductWithActiveOffer(1);
+
+      expect(result.has_active_campaign).toBe(false);
+      expect(result.campaign).toBeNull();
+      expect(result.original_price).toBe(100);
+      expect(result.final_price).toBe(100);
+    });
+
+    test('debe retornar null si el producto no existe', async() => {
+      products.findByPk.mockResolvedValue(null);
+
+      const result = await getProductWithActiveOffer(999);
+
+      expect(result).toBeNull();
+    });
+
+    test('debe aplicar descuento porcentual correctamente', async() => {
+      const mockCampaignProduct = {
+        discount_type: 'percentage',
+        discount_value: '20',
+        hasAvailableStock: jest.fn().mockReturnValue(true),
+        getRemainingStock: jest.fn().mockReturnValue(50),
+        branchOverrides: []
+      };
+
+      const mockCampaign = {
+        id: 1,
+        name: 'Campaña 20% off',
+        description: 'Descuento del 20%',
+        start_date: new Date('2025-01-01'),
+        end_date: new Date('2025-12-31'),
+        priority: 1,
+        branches: [],
+        campaignProducts: [mockCampaignProduct]
+      };
+
+      products.findByPk.mockResolvedValue(mockProductData);
+      Campaigns.findAll.mockResolvedValue([mockCampaign]);
+
+      const result = await getProductWithActiveOffer(1);
+
+      expect(result.has_active_campaign).toBe(true);
+      expect(result.original_price).toBe(100);
+      expect(result.offer_price).toBe(80);
+      expect(result.discount_amount).toBe(20);
+      expect(result.discount_percentage).toBe('20.00');
+      expect(result.final_price).toBe(80);
+    });
+
+    test('debe aplicar precio fijo correctamente', async() => {
+      const mockCampaignProduct = {
+        discount_type: 'fixed_price',
+        discount_value: '75',
+        hasAvailableStock: jest.fn().mockReturnValue(true),
+        getRemainingStock: jest.fn().mockReturnValue(30),
+        branchOverrides: []
+      };
+
+      const mockCampaign = {
+        id: 2,
+        name: 'Precio Fijo $75',
+        description: 'Precio especial',
+        start_date: new Date('2025-01-01'),
+        end_date: new Date('2025-12-31'),
+        priority: 1,
+        branches: [],
+        campaignProducts: [mockCampaignProduct]
+      };
+
+      products.findByPk.mockResolvedValue(mockProductData);
+      Campaigns.findAll.mockResolvedValue([mockCampaign]);
+
+      const result = await getProductWithActiveOffer(1);
+
+      expect(result.has_active_campaign).toBe(true);
+      expect(result.original_price).toBe(100);
+      expect(result.offer_price).toBe(75);
+      expect(result.discount_amount).toBe(25);
+      expect(result.final_price).toBe(75);
+    });
+
+    test('debe ignorar campaña si no hay stock disponible', async() => {
+      const mockCampaignProduct = {
+        discount_type: 'percentage',
+        discount_value: '10',
+        hasAvailableStock: jest.fn().mockReturnValue(false),
+        getRemainingStock: jest.fn().mockReturnValue(0),
+        branchOverrides: []
+      };
+
+      const mockCampaign = {
+        id: 1,
+        name: 'Sin Stock',
+        campaignProducts: [mockCampaignProduct],
+        branches: []
+      };
+
+      products.findByPk.mockResolvedValue(mockProductData);
+      Campaigns.findAll.mockResolvedValue([mockCampaign]);
+
+      const result = await getProductWithActiveOffer(1);
+
+      expect(result.has_active_campaign).toBe(false);
+    });
+
+    test('debe filtrar campaña por sucursal si se proporciona branchId', async() => {
+      const mockCampaignProduct = {
+        discount_type: 'percentage',
+        discount_value: '15',
+        hasAvailableStock: jest.fn().mockReturnValue(true),
+        getRemainingStock: jest.fn().mockReturnValue(100),
+        branchOverrides: []
+      };
+
+      const mockCampaign = {
+        id: 1,
+        name: 'Solo Sucursal 1',
+        campaignProducts: [mockCampaignProduct],
+        branches: [{ id: 1, name: 'Sucursal 1' }]
+      };
+
+      products.findByPk.mockResolvedValue(mockProductData);
+      Campaigns.findAll.mockResolvedValue([mockCampaign]);
+
+      const result = await getProductWithActiveOffer(1, 2);
+
+      expect(result.has_active_campaign).toBe(false);
+    });
+
+    test('debe aplicar override de descuento por sucursal', async() => {
+      const mockOverride = {
+        branch_id: 1,
+        discount_value_override: '30'
+      };
+
+      const mockCampaignProduct = {
+        discount_type: 'percentage',
+        discount_value: '10',
+        hasAvailableStock: jest.fn().mockReturnValue(true),
+        getRemainingStock: jest.fn().mockReturnValue(100),
+        branchOverrides: [mockOverride]
+      };
+
+      const mockCampaign = {
+        id: 1,
+        name: 'Campaña con Override',
+        description: 'Override para sucursal',
+        start_date: new Date('2025-01-01'),
+        end_date: new Date('2025-12-31'),
+        priority: 1,
+        branches: [{ id: 1, name: 'Sucursal 1' }],
+        campaignProducts: [mockCampaignProduct]
+      };
+
+      products.findByPk.mockResolvedValue(mockProductData);
+      Campaigns.findAll.mockResolvedValue([mockCampaign]);
+
+      const result = await getProductWithActiveOffer(1, 1);
+
+      expect(result.has_active_campaign).toBe(true);
+      expect(result.campaign.discount_value).toBe(30);
+    });
+
+    test('debe seleccionar campaña con mayor prioridad', async() => {
+      const mockCampaignProduct1 = {
+        discount_type: 'percentage',
+        discount_value: '5',
+        hasAvailableStock: jest.fn().mockReturnValue(true),
+        getRemainingStock: jest.fn().mockReturnValue(100),
+        branchOverrides: []
+      };
+
+      const mockCampaignProduct2 = {
+        discount_type: 'percentage',
+        discount_value: '25',
+        hasAvailableStock: jest.fn().mockReturnValue(true),
+        getRemainingStock: jest.fn().mockReturnValue(100),
+        branchOverrides: []
+      };
+
+      const lowPriorityCampaign = {
+        id: 1,
+        name: 'Campaña Baja',
+        campaignProducts: [mockCampaignProduct1],
+        branches: [],
+        priority: 1
+      };
+
+      const highPriorityCampaign = {
+        id: 2,
+        name: 'Campaña Alta',
+        campaignProducts: [mockCampaignProduct2],
+        branches: [],
+        priority: 10
+      };
+
+      products.findByPk.mockResolvedValue(mockProductData);
+      Campaigns.findAll.mockResolvedValue([highPriorityCampaign, lowPriorityCampaign]);
+
+      const result = await getProductWithActiveOffer(1);
+
+      expect(result.has_active_campaign).toBe(true);
+      expect(result.campaign.id).toBe(2);
+      expect(result.campaign.name).toBe('Campaña Alta');
+      expect(result.offer_price).toBe(75);
     });
   });
 });
