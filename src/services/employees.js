@@ -3,7 +3,7 @@ const { sequelize } = require('../models/index');
 const { encrypt } = require('../utils/handlePassword');
 const { Op } = require('sequelize');
 
-const attributes = ['id', 'name', 'email', 'phone', 'hire_date', 'active', 'user_id', 'created_at', 'updated_at'];
+const attributes = ['id', 'name', 'email', 'phone', 'hire_date', 'active', 'user_id', 'branch_id', 'created_at', 'updated_at'];
 const positionAttributes = ['id', 'name'];
 const branchAttributes = ['id', 'name'];
 
