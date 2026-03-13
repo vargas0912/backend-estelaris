@@ -12,4 +12,9 @@ const validateTopProducts = [
   (req, res, next) => validateResults(req, res, next)
 ];
 
-module.exports = { validateTrends, validateTopProducts };
+const validateExpensesByMonth = [
+  query('months').optional().isInt({ min: 1, max: 60 }).toInt(),
+  (req, res, next) => validateResults(req, res, next)
+];
+
+module.exports = { validateTrends, validateTopProducts, validateExpensesByMonth };

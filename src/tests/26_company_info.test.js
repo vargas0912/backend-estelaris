@@ -34,12 +34,29 @@ const regularUserData = {
 
 describe('[COMPANY_INFO] Test api company-info /api/company-info', () => {
   beforeAll(async () => {
-    // Login como superadmin
-    const loginRes = await api
+    // Intentar login primero
+    let loginRes = await api
       .post('/api/auth/login')
       .set('Content-type', 'application/json')
-      .send(superadminLogin)
-      .expect(200);
+      .send(superadminLogin);
+
+    // Si no existe el usuario, crear el superadmin
+    if (loginRes.status !== 200) {
+      await api
+        .post('/api/auth/registerSuperUser')
+        .send({
+          name: 'Super admin',
+          email: 'superadmin@estelaris.com',
+          role: 'superadmin',
+          password: 'Admin123'
+        });
+    }
+
+    // Obtener token
+    loginRes = await api
+      .post('/api/auth/login')
+      .set('Content-type', 'application/json')
+      .send(superadminLogin);
 
     superadminToken = loginRes.body.sesion.token;
 

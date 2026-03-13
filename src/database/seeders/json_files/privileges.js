@@ -3,7 +3,7 @@ const {
   BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD,
   CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR, PRODUCT: PRD, POSITION: POS, PRICE_LIST: PL,
   PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP, PURCH_PAYMENT: PP_PAY, TRANSFER: TRANSF,
-  SALE: SL, SALE_PAYMENT: SL_PAY, SALE_DELIVERY: SL_DEL, DRIVER: DRV, DASHBOARD: DASH, EXPENSE_TYPE: EXT, EXPENSE: EXP
+  SALE_PAYMENT: SL_PAY, DRIVER: DRV
 } = require('../../../constants/modules');
 
 const data = [
@@ -153,12 +153,12 @@ const data = [
   { name: TRANSF.NAME_DELETE, codeName: TRANSF.DELETE, module: TRANSF.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Ventas
-  { name: SL.NAME_ALL, codeName: SL.VIEW_ALL, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: SL.NAME_ADD, codeName: SL.ADD, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: SL.NAME_UPDATE, codeName: SL.UPDATE, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: SL.NAME_CANCEL, codeName: SL.CANCEL, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: SL.NAME_DELETE, codeName: SL.DELETE, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: SL.NAME_VIEW_OVERDUE, codeName: SL.VIEW_OVERDUE, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: SL.NAME_ALL, codeName: SL.VIEW_ALL, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: SL.NAME_ADD, codeName: SL.ADD, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: SL.NAME_UPDATE, codeName: SL.UPDATE, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: SL.NAME_CANCEL, codeName: SL.CANCEL, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: SL.NAME_DELETE, codeName: SL.DELETE, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: SL.NAME_VIEW_OVERDUE, codeName: SL.VIEW_OVERDUE, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Cobros de Venta
   { name: SL_PAY.NAME_ALL, codeName: SL_PAY.VIEW_ALL, module: SL_PAY.MODULE_NAME, created_at: fecha, updated_at: fecha },
@@ -166,30 +166,27 @@ const data = [
   { name: SL_PAY.NAME_DELETE, codeName: SL_PAY.DELETE, module: SL_PAY.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Entregas de Venta
-  { name: SL_DEL.NAME_ALL, codeName: SL_DEL.VIEW_ALL, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: SL_DEL.NAME_ADD, codeName: SL_DEL.ADD, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: SL_DEL.NAME_UPDATE, codeName: SL_DEL.UPDATE, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: SL_DEL.NAME_DELETE, codeName: SL_DEL.DELETE, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: SL_DEL.NAME_ALL, codeName: SL_DEL.VIEW_ALL, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: SL_DEL.NAME_ADD, codeName: SL_DEL.ADD, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: SL_DEL.NAME_UPDATE, codeName: SL_DEL.UPDATE, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: SL_DEL.NAME_DELETE, codeName: SL_DEL.DELETE, module: SL_DEL.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Repartidor
   { name: DRV.NAME_VIEW_DELIVERIES, codeName: DRV.VIEW_DELIVERIES, module: DRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: DRV.NAME_UPDATE_DELIVERY, codeName: DRV.UPDATE_DELIVERY, module: DRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: DRV.NAME_UPDATE_DELIVERY, codeName: DRV.UPDATE_DELIVERY, module: DRV.MODULE_NAME, created_at: fecha, updated_at: fecha }
 
-  // Dashboard
-  { name: DASH.NAME_VIEW, codeName: DASH.VIEW, module: DASH.MODULE_NAME, created_at: fecha, updated_at: fecha },
-
-  // Tipos de Gastos
-  { name: EXT.NAME_ALL, codeName: EXT.VIEW_ALL, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: EXT.NAME_ADD, codeName: EXT.ADD, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: EXT.NAME_UPDATE, codeName: EXT.UPDATE, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: EXT.NAME_DELETE, codeName: EXT.DELETE, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // // Tipos de Gastos
+  // { name: EXT.NAME_ALL, codeName: EXT.VIEW_ALL, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: EXT.NAME_ADD, codeName: EXT.ADD, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: EXT.NAME_UPDATE, codeName: EXT.UPDATE, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: EXT.NAME_DELETE, codeName: EXT.DELETE, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Gastos
-  { name: EXP.NAME_ALL, codeName: EXP.VIEW_ALL, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: EXP.NAME_VIEW_BY_BRANCH, codeName: EXP.VIEW_BY_BRANCH, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: EXP.NAME_ADD, codeName: EXP.ADD, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: EXP.NAME_UPDATE, codeName: EXP.UPDATE, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: EXP.NAME_DELETE, codeName: EXP.DELETE, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  // { name: EXP.NAME_ALL, codeName: EXP.VIEW_ALL, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: EXP.NAME_VIEW_BY_BRANCH, codeName: EXP.VIEW_BY_BRANCH, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: EXP.NAME_ADD, codeName: EXP.ADD, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: EXP.NAME_UPDATE, codeName: EXP.UPDATE, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // { name: EXP.NAME_DELETE, codeName: EXP.DELETE, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha }
 ];
 
 module.exports = { data };

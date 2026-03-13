@@ -1,6 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
-const { getDashboardKpis, getDashboardTrends, getTopProducts } = require('../services/dashboard');
+const { getDashboardKpis, getDashboardTrends, getTopProducts, getExpensesByMonth, getExpensesByBranch } = require('../services/dashboard');
 
 const getKpis = async (req, res) => {
   try {
@@ -31,4 +31,24 @@ const getTopProductsHandler = async (req, res) => {
   }
 };
 
-module.exports = { getKpis, getTrends, getTopProductsHandler };
+const getExpensesByMonthHandler = async (req, res) => {
+  try {
+    const { months = 6 } = matchedData(req);
+    const expensesByMonth = await getExpensesByMonth(months);
+    res.send({ expensesByMonth });
+  } catch (error) {
+    handleHttpError(res, `ERROR_GET_EXPENSES_BY_MONTH -> ${error}`);
+  }
+};
+
+const getExpensesByBranchHandler = async (req, res) => {
+  try {
+    const { months = 6 } = matchedData(req);
+    const expensesByBranch = await getExpensesByBranch(months);
+    res.send({ expensesByBranch });
+  } catch (error) {
+    handleHttpError(res, `ERROR_GET_EXPENSES_BY_BRANCH -> ${error}`);
+  }
+};
+
+module.exports = { getKpis, getTrends, getTopProductsHandler, getExpensesByMonthHandler, getExpensesByBranchHandler };

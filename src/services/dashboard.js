@@ -55,4 +55,36 @@ const getTopProducts = async (limit = 10, months = 3) => {
   return results;
 };
 
-module.exports = { getDashboardKpis, getDashboardTrends, getTopProducts };
+const getExpensesByMonth = async (months = 6) => {
+  const [results] = await sequelize.query(`
+    SELECT
+      DATE_FORMAT(trans_date, '%Y-%m') AS mes,
+      COALESCE(SUM(expense_amount), 0) AS total_gastos,
+      COUNT(*) AS cantidad_gastos
+    FROM expenses
+    WHERE deleted_at IS NULL
+      AND trans_date >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL :months MONTH), '%Y-%m-01')
+    GROUP BY DATE_FORMAT(trans_date, '%Y-%m')
+    ORDER BY mes ASC
+  `, { replacements: { months } });
+  return results;
+};
+
+const getExpensesByBranch = async (months = 6) => {
+  const [results] = await sequelize.query(`
+    SELECT
+      b.id AS branch_id,
+      b.name AS sucursal,
+      COALESCE(SUM(e.expense_amount), 0) AS total_gastos,
+      COUNT(e.id) AS cantidad_gastos
+    FROM branches b
+    LEFT JOIN expenses e ON e.branch_id = b.id AND e.deleted_at IS NULL
+    WHERE b.deleted_at IS NULL
+      AND e.trans_date >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL :months MONTH), '%Y-%m-01')
+    GROUP BY b.id, b.name
+    ORDER BY total_gastos DESC
+  `, { replacements: { months } });
+  return results;
+};
+
+module.exports = { getDashboardKpis, getDashboardTrends, getTopProducts, getExpensesByMonth, getExpensesByBranch };
