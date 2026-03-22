@@ -770,34 +770,6 @@ const expenseCreateNoDate = { expense_type_id: 1, expense_amount: '500.00' };
 const expenseCreateNoAmount = { expense_type_id: 1, trans_date: '2026-03-11' };
 const expenseUpdate = { expense_type_id: 2, expense_amount: '750.00', notes: 'Gasto modificado' };
 
-// Accounting Accounts
-const accountCreate = {
-  code: 'TEST-001',
-  name: 'Cuenta de prueba',
-  type: 'activo',
-  nature: 'deudora',
-  level: 1,
-  allows_movements: false,
-  is_system: false,
-  active: true
-};
-const accountCreateChild = {
-  code: 'TEST-001-01',
-  name: 'Subcuenta de prueba',
-  type: 'activo',
-  nature: 'deudora',
-  level: 2,
-  allows_movements: false,
-  is_system: false,
-  active: true
-};
-const accountCreateNoCode = { name: 'Sin código', type: 'activo', nature: 'deudora', level: 1 };
-const accountCreateNoName = { code: 'TEST-002', type: 'activo', nature: 'deudora', level: 1 };
-const accountCreateNoType = { code: 'TEST-003', name: 'Sin tipo', nature: 'deudora', level: 1 };
-const accountCreateInvalidType = { code: 'TEST-004', name: 'Tipo inválido', type: 'invalido', nature: 'deudora', level: 1 };
-const accountCreateInvalidNature = { code: 'TEST-005', name: 'Naturaleza inválida', type: 'activo', nature: 'invalida', level: 1 };
-const accountUpdate = { name: 'Cuenta de prueba modificada', active: false };
-
 module.exports = {
   testAuthRegister,
   testAuthLogin,
@@ -929,13 +901,5 @@ module.exports = {
   expenseCreateNoType,
   expenseCreateNoDate,
   expenseCreateNoAmount,
-  expenseUpdate,
-  accountCreate,
-  accountCreateChild,
-  accountCreateNoCode,
-  accountCreateNoName,
-  accountCreateNoType,
-  accountCreateInvalidType,
-  accountCreateInvalidNature,
-  accountUpdate
+  expenseUpdate
 };

@@ -1259,42 +1259,6 @@ const swaggerDefinition = {
           created_at: { type: 'string', format: 'date-time' },
           updated_at: { type: 'string', format: 'date-time' }
         }
-      },
-      accountingAccounts: {
-        type: 'object',
-        description: 'Cuenta del catálogo contable (Plan de Cuentas)',
-        properties: {
-          id: { type: 'integer' },
-          code: { type: 'string', maxLength: 20, description: 'Código único de la cuenta (ej: 111, 210.01)' },
-          name: { type: 'string', maxLength: 120, description: 'Nombre de la cuenta' },
-          type: {
-            type: 'string',
-            enum: ['activo', 'pasivo', 'capital', 'ingreso', 'egreso', 'costo'],
-            description: 'Tipo contable de la cuenta'
-          },
-          nature: {
-            type: 'string',
-            enum: ['deudora', 'acreedora'],
-            description: 'Naturaleza de la cuenta. Activo/costo/egreso → deudora; pasivo/capital/ingreso → acreedora'
-          },
-          level: { type: 'integer', minimum: 1, maximum: 3, description: '1=grupo, 2=subcuenta, 3=cuenta detalle' },
-          parent_id: { type: 'integer', nullable: true, description: 'ID de la cuenta padre (árbol jerárquico)' },
-          allows_movements: { type: 'boolean', description: 'Solo cuentas nivel 3 aceptan cargos/abonos en pólizas' },
-          is_system: { type: 'boolean', description: 'Cuenta del catálogo SAT, no puede eliminarse' },
-          active: { type: 'boolean', description: 'Estado activo/inactivo de la cuenta' },
-          parent: {
-            nullable: true,
-            description: 'Cuenta padre (solo en GET individual y lista)',
-            type: 'object',
-            properties: {
-              id: { type: 'integer' },
-              code: { type: 'string' },
-              name: { type: 'string' }
-            }
-          },
-          created_at: { type: 'string', format: 'date-time' },
-          updated_at: { type: 'string', format: 'date-time' }
-        }
       }
     }
   }
@@ -1306,8 +1270,7 @@ const swaggerDefinition = {
 const options = {
   swaggerDefinition,
   apis: [
-    './src/routes/*.js',
-    './src/routes/**/*.js'
+    './src/routes/*.js'
   ]
 };
 
