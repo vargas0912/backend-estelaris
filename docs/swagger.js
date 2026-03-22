@@ -1214,6 +1214,31 @@ const swaggerDefinition = {
           ingreso_total: { type: 'number', format: 'decimal', description: 'Suma de subtotal en sale_details' },
           cantidad_ventas: { type: 'integer', description: 'Cantidad de ventas distintas donde aparece el producto' }
         }
+      },
+      expenseTypes: {
+        type: 'object',
+        description: 'Catálogo de tipos de gastos (caja chica, servicios, etc.)',
+        properties: {
+          id: { type: 'integer' },
+          name: { type: 'string', description: 'Nombre del tipo de gasto' },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      expenses: {
+        type: 'object',
+        description: 'Registro de gasto operativo de una sucursal',
+        properties: {
+          id: { type: 'integer' },
+          branch_id: { type: 'integer', description: 'Sucursal donde se realizó el gasto' },
+          user_id: { type: 'integer', description: 'Usuario que registró el gasto' },
+          expense_type_id: { type: 'integer', description: 'Tipo de gasto (FK a expense_types)' },
+          trans_date: { type: 'string', format: 'date', description: 'Fecha de la transacción del gasto' },
+          expense_amount: { type: 'number', format: 'decimal', description: 'Importe del gasto' },
+          notes: { type: 'string', nullable: true, description: 'Observaciones adicionales' },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
       }
     }
   }
