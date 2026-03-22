@@ -37,6 +37,18 @@ module.exports = (sequelize, DataTypes) => {
     closed_by_user_id: {
       type: DataTypes.INTEGER,
       allowNull: true
+    },
+    sat_catalog_xml: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    sat_vouchers_xml: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    sat_submitted_at: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     sequelize,
