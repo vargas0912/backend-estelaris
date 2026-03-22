@@ -1259,6 +1259,39 @@ const swaggerDefinition = {
           created_at: { type: 'string', format: 'date-time' },
           updated_at: { type: 'string', format: 'date-time' }
         }
+      },
+      accountingPeriods: {
+        type: 'object',
+        description: 'Período contable mensual',
+        properties: {
+          id: { type: 'integer' },
+          name: { type: 'string', maxLength: 50, example: 'Enero 2026' },
+          year: { type: 'integer', example: 2026 },
+          month: { type: 'integer', minimum: 1, maximum: 12, example: 1 },
+          status: {
+            type: 'string',
+            enum: ['abierto', 'cerrado', 'bloqueado'],
+            description: 'abierto: acepta pólizas | cerrado: solo lectura, reapertura posible | bloqueado: definitivo'
+          },
+          balance_snapshot: {
+            type: 'object',
+            nullable: true,
+            description: 'Snapshot del balance al momento del cierre'
+          },
+          closed_at: { type: 'string', format: 'date-time', nullable: true },
+          closed_by_user_id: { type: 'integer', nullable: true },
+          closedBy: {
+            nullable: true,
+            type: 'object',
+            properties: {
+              id: { type: 'integer' },
+              name: { type: 'string' },
+              email: { type: 'string', format: 'email' }
+            }
+          },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
       }
     }
   }
@@ -1270,7 +1303,8 @@ const swaggerDefinition = {
 const options = {
   swaggerDefinition,
   apis: [
-    './src/routes/*.js'
+    './src/routes/*.js',
+    './src/routes/**/*.js'
   ]
 };
 

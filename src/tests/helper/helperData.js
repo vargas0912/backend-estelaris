@@ -770,6 +770,15 @@ const expenseCreateNoDate = { expense_type_id: 1, expense_amount: '500.00' };
 const expenseCreateNoAmount = { expense_type_id: 1, trans_date: '2026-03-11' };
 const expenseUpdate = { expense_type_id: 2, expense_amount: '750.00', notes: 'Gasto modificado' };
 
+// Accounting Periods
+const periodCreate = { name: 'Enero 2026', year: 2026, month: 1 };
+const periodCreateDuplicate = { name: 'Enero 2026 dup', year: 2026, month: 1 };
+const periodCreateNoName = { year: 2026, month: 2 };
+const periodCreateNoYear = { name: 'Sin año', month: 2 };
+const periodCreateNoMonth = { name: 'Sin mes', year: 2026 };
+const periodCreateInvalidMonth = { name: 'Mes inválido', year: 2026, month: 13 };
+const periodCreate2 = { name: 'Febrero 2026', year: 2026, month: 2 };
+
 module.exports = {
   testAuthRegister,
   testAuthLogin,
@@ -901,5 +910,12 @@ module.exports = {
   expenseCreateNoType,
   expenseCreateNoDate,
   expenseCreateNoAmount,
-  expenseUpdate
+  expenseUpdate,
+  periodCreate,
+  periodCreateDuplicate,
+  periodCreateNoName,
+  periodCreateNoYear,
+  periodCreateNoMonth,
+  periodCreateInvalidMonth,
+  periodCreate2
 };
