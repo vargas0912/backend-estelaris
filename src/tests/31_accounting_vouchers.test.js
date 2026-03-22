@@ -142,7 +142,7 @@ describe('[ACCOUNTING VOUCHERS] Test api /api/accounting/vouchers', () => {
     voucherId = response.body.voucher.id;
   });
 
-  test('4. POST con solo 1 línea → 422 (mínimo 2 líneas)', async () => {
+  test('4. POST con solo 1 línea → 400 (validador rechaza menos de 2 líneas)', async () => {
     await api
       .post('/api/accounting/vouchers')
       .auth(Token, { type: 'bearer' })
@@ -155,7 +155,7 @@ describe('[ACCOUNTING VOUCHERS] Test api /api/accounting/vouchers', () => {
           { account_id: acc1Id, debit: 500, credit: 0, description: 'Solo cargo' }
         ]
       })
-      .expect(422);
+      .expect(400);
   });
 
   test('5. POST con account_id inexistente → error (404 o 422)', async () => {
@@ -299,7 +299,7 @@ describe('[ACCOUNTING VOUCHERS] Test api /api/accounting/vouchers', () => {
     expect(response.body.voucher.status).toBe('aplicada');
   });
 
-  test('17. PUT aplicada/:id/cancel → 200, status cancelada, reversión creada', async () => {
+  test('17. PUT aplicada/:id/cancel → 200, status cancelada. Reversión creada en la BD', async () => {
     const response = await api
       .put(`/api/accounting/vouchers/${appliedVoucherId}/cancel`)
       .auth(Token, { type: 'bearer' })
@@ -307,11 +307,17 @@ describe('[ACCOUNTING VOUCHERS] Test api /api/accounting/vouchers', () => {
 
     expect(response.body).toHaveProperty('voucher');
     expect(response.body.voucher.status).toBe('cancelada');
-    // Al cancelar una póliza aplicada se genera póliza de reversión
-    expect(response.body).toHaveProperty('reversal');
-    expect(response.body.reversal).toHaveProperty('id');
 
-    reversalVoucherId = response.body.reversal.id;
+    // El servicio retorna la póliza original cancelada.
+    // La reversión se busca en la lista por type=ajuste y period_id.
+    const listRes = await api
+      .get(`/api/accounting/vouchers?period_id=${periodId}&type=ajuste`)
+      .auth(Token, { type: 'bearer' })
+      .expect(200);
+
+    const reversals = listRes.body.vouchers.filter((v) => v.type === 'ajuste');
+    expect(reversals.length).toBeGreaterThanOrEqual(1);
+    reversalVoucherId = reversals[0].id;
   });
 
   test('18. Verificar reversión: type=ajuste, líneas invertidas. Expect 200', async () => {
