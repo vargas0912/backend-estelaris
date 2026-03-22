@@ -971,6 +971,13 @@
           "updated_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "items": {
+            "type": "array",
+            "description": "Líneas de detalle de la compra",
+            "items": {
+              "$ref": "#/components/schemas/purchaseDetails"
+            }
           }
         }
       },
@@ -1230,6 +1237,13 @@
           "updated_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "items": {
+            "type": "array",
+            "description": "Líneas de detalle de la transferencia",
+            "items": {
+              "$ref": "#/components/schemas/transferDetails"
+            }
           }
         }
       },
@@ -1393,6 +1407,20 @@
           "updated_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "items": {
+            "type": "array",
+            "description": "Líneas de detalle de la venta",
+            "items": {
+              "$ref": "#/components/schemas/saleDetails"
+            }
+          },
+          "installments": {
+            "type": "array",
+            "description": "Cuotas generadas (solo ventas a crédito)",
+            "items": {
+              "$ref": "#/components/schemas/saleInstallments"
+            }
           }
         }
       },
@@ -1659,6 +1687,116 @@
           }
         }
       },
+      "companyInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "company_name": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "trade_name": {
+            "type": "string",
+            "maxLength": 150,
+            "nullable": true
+          },
+          "rfc": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 13
+          },
+          "fiscal_regime": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "fiscal_address": {
+            "type": "string"
+          },
+          "zip_code": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "fiscal_email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 20,
+            "nullable": true
+          },
+          "logo_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "website": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "systemSettings": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 50,
+            "description": "Agrupación lógica (ej: formats, inventory)"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Clave única de la configuración"
+          },
+          "value": {
+            "type": "string",
+            "description": "Valor almacenado como texto"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 150,
+            "description": "Etiqueta legible para el frontend"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "data_type": {
+            "type": "string",
+            "enum": [
+              "string",
+              "integer",
+              "decimal",
+              "boolean"
+            ],
+            "description": "Tipo de dato para que el frontend haga el cast correcto"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "storage": {
         "type": "object",
         "properties": {
@@ -1667,6 +1805,167 @@
           },
           "filename": {
             "type": "string"
+          }
+        }
+      },
+      "dashboardKpis": {
+        "type": "object",
+        "description": "KPIs generales de ventas calculados sobre todas las sucursales",
+        "properties": {
+          "ventas_saldadas": {
+            "type": "integer",
+            "description": "Cantidad de ventas con status Pagado"
+          },
+          "ventas_pendientes": {
+            "type": "integer",
+            "description": "Cantidad de ventas con status Pendiente"
+          },
+          "ventas_canceladas": {
+            "type": "integer",
+            "description": "Cantidad de ventas con status Cancelado"
+          },
+          "ingreso_total": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Suma de sales_total de ventas Pagadas"
+          },
+          "cartera_pendiente": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Suma de due_payment de ventas Pendientes"
+          },
+          "ventas_morosas": {
+            "type": "integer",
+            "description": "Ventas a crédito Pendientes con due_date < hoy"
+          },
+          "monto_moroso": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Suma de due_payment de ventas morosas"
+          },
+          "clientes_activos": {
+            "type": "integer",
+            "description": "Clientes con is_active = 1"
+          }
+        }
+      },
+      "dashboardTrend": {
+        "type": "object",
+        "description": "Totales mensuales de ventas para el período solicitado",
+        "properties": {
+          "mes": {
+            "type": "string",
+            "example": "2025-11",
+            "description": "Mes en formato YYYY-MM"
+          },
+          "ventas_nuevas": {
+            "type": "integer",
+            "description": "Ventas no canceladas creadas en el mes"
+          },
+          "ventas_saldadas": {
+            "type": "integer",
+            "description": "Ventas con status Pagado en el mes"
+          },
+          "ventas_canceladas": {
+            "type": "integer",
+            "description": "Ventas con status Cancelado en el mes"
+          },
+          "ingreso_mensual": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Suma de sales_total de ventas Pagadas en el mes"
+          }
+        }
+      },
+      "dashboardTopProduct": {
+        "type": "object",
+        "description": "Producto con mayor ingreso en el período solicitado",
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "product_name": {
+            "type": "string"
+          },
+          "unidades_vendidas": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Suma de qty en sale_details"
+          },
+          "ingreso_total": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Suma de subtotal en sale_details"
+          },
+          "cantidad_ventas": {
+            "type": "integer",
+            "description": "Cantidad de ventas distintas donde aparece el producto"
+          }
+        }
+      },
+      "expenseTypes": {
+        "type": "object",
+        "description": "Catálogo de tipos de gastos (caja chica, servicios, etc.)",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nombre del tipo de gasto"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "expenses": {
+        "type": "object",
+        "description": "Registro de gasto operativo de una sucursal",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "branch_id": {
+            "type": "integer",
+            "description": "Sucursal donde se realizó el gasto"
+          },
+          "user_id": {
+            "type": "integer",
+            "description": "Usuario que registró el gasto"
+          },
+          "expense_type_id": {
+            "type": "integer",
+            "description": "Tipo de gasto (FK a expense_types)"
+          },
+          "trans_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha de la transacción del gasto"
+          },
+          "expense_amount": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Importe del gasto"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "description": "Observaciones adicionales"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       }
@@ -2024,7 +2323,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Productos obtenidos correctamente"
+            "description": "Productos obtenidos correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/campaignProducts"
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "No autorizado"
@@ -2056,7 +2365,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Producto obtenido correctamente"
+            "description": "Producto obtenido correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/campaignProducts"
+                }
+              }
+            }
           },
           "404": {
             "description": "Producto no encontrado"
@@ -2095,7 +2411,14 @@
         },
         "responses": {
           "200": {
-            "description": "Producto actualizado correctamente"
+            "description": "Producto actualizado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/campaignProducts"
+                }
+              }
+            }
           },
           "404": {
             "description": "Producto no encontrado"
@@ -2182,7 +2505,14 @@
         },
         "responses": {
           "201": {
-            "description": "Producto agregado correctamente"
+            "description": "Producto agregado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/campaignProducts"
+                }
+              }
+            }
           },
           "400": {
             "description": "Datos inválidos"
@@ -2213,7 +2543,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Overrides obtenidos correctamente"
+            "description": "Overrides obtenidos correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/campaignProductBranches"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -2263,7 +2603,14 @@
         },
         "responses": {
           "201": {
-            "description": "Override creado correctamente"
+            "description": "Override creado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/campaignProductBranches"
+                }
+              }
+            }
           },
           "400": {
             "description": "Override ya existe"
@@ -2320,7 +2667,14 @@
         },
         "responses": {
           "200": {
-            "description": "Override actualizado correctamente"
+            "description": "Override actualizado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/campaignProductBranches"
+                }
+              }
+            }
           },
           "404": {
             "description": "Override no encontrado"
@@ -2394,7 +2748,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Lista de campañas obtenida correctamente"
+            "description": "Lista de campañas obtenida correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/campaigns"
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "No autorizado"
@@ -2450,7 +2814,14 @@
         },
         "responses": {
           "201": {
-            "description": "Campaña creada correctamente"
+            "description": "Campaña creada correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/campaigns"
+                }
+              }
+            }
           },
           "400": {
             "description": "Datos inválidos"
@@ -2471,7 +2842,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Campañas activas obtenidas correctamente"
+            "description": "Campañas activas obtenidas correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/campaigns"
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "No autorizado"
@@ -2503,7 +2884,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Campaña obtenida correctamente"
+            "description": "Campaña obtenida correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/campaigns"
+                }
+              }
+            }
           },
           "404": {
             "description": "Campaña no encontrada"
@@ -2542,7 +2930,14 @@
         },
         "responses": {
           "200": {
-            "description": "Campaña actualizada correctamente"
+            "description": "Campaña actualizada correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/campaigns"
+                }
+              }
+            }
           },
           "404": {
             "description": "Campaña no encontrada"
@@ -2664,7 +3059,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Sucursales obtenidas correctamente"
+            "description": "Sucursales obtenidas correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/campaignBranches"
+                  }
+                }
+              }
+            }
           },
           "404": {
             "description": "Campaña no encontrada"
@@ -2757,6 +3162,115 @@
           },
           "404": {
             "description": "Sucursal no encontrada en la campaña"
+          }
+        }
+      }
+    },
+    "/company-info": {
+      "get": {
+        "tags": [
+          "company-info"
+        ],
+        "summary": "Información fiscal de la empresa",
+        "description": "Obtiene el registro singleton con los datos fiscales de la empresa",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Objeto con la información fiscal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/companyInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "company-info"
+        ],
+        "summary": "Actualizar información fiscal de la empresa",
+        "description": "Actualización parcial del registro de información fiscal.\nSolo se modifican los campos enviados en el body.\nRequiere rol superadmin o privilegio update_company_info.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "company_name": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "trade_name": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "rfc": {
+                    "type": "string",
+                    "minLength": 12,
+                    "maxLength": 13
+                  },
+                  "fiscal_regime": {
+                    "type": "string"
+                  },
+                  "fiscal_address": {
+                    "type": "string"
+                  },
+                  "zip_code": {
+                    "type": "string",
+                    "maxLength": 10
+                  },
+                  "fiscal_email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "maxLength": 20
+                  },
+                  "logo_url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "website": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registro actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/companyInfo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación"
+          },
+          "404": {
+            "description": "Registro no encontrado"
           }
         }
       }
@@ -3298,6 +3812,279 @@
         }
       }
     },
+    "/dashboard/kpis": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "KPIs generales de ventas",
+        "description": "Retorna métricas globales calculadas sobre todas las sucursales:\nconteos por status, ingreso total, cartera pendiente, ventas morosas y clientes activos.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "KPIs calculados correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "kpis": {
+                      "$ref": "#/components/schemas/dashboardKpis"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno al calcular los KPIs"
+          }
+        }
+      }
+    },
+    "/dashboard/trends": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Tendencias mensuales de ventas",
+        "description": "Retorna totales agrupados por mes para los últimos N meses (default 6).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "months",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 24,
+              "default": 6
+            },
+            "description": "Cantidad de meses hacia atrás a incluir"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arreglo de totales mensuales ordenado por mes ASC",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "trends": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/dashboardTrend"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Parámetro months inválido"
+          }
+        }
+      }
+    },
+    "/dashboard/top-products": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Top productos por ingreso",
+        "description": "Retorna los N productos con mayor ingreso total en los últimos M meses,\ncalculado sobre ventas no canceladas. Ordenado por ingreso_total DESC.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10
+            },
+            "description": "Cantidad máxima de productos a retornar"
+          },
+          {
+            "name": "months",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 24,
+              "default": 3
+            },
+            "description": "Cantidad de meses hacia atrás a considerar"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arreglo de productos ordenado por ingreso DESC",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/dashboardTopProduct"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Parámetros inválidos"
+          }
+        }
+      }
+    },
+    "/dashboard/expenses-by-month": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Gastos totales por mes",
+        "description": "Retorna el total de gastos agrupados por mes para los últimos N meses (default 12).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "months",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60,
+              "default": 12
+            },
+            "description": "Cantidad de meses hacia atrás a incluir"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arreglo de totales de gastos por mes ordenado por mes ASC",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "expensesByMonth": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "mes": {
+                            "type": "string",
+                            "example": "2026-01"
+                          },
+                          "total_gastos": {
+                            "type": "number"
+                          },
+                          "cantidad_gastos": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Parámetro months inválido"
+          }
+        }
+      }
+    },
+    "/dashboard/expenses-by-branch": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Gastos totales por sucursal",
+        "description": "Retorna el total de gastos agrupados por sucursal con nombre y monto.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "months",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60,
+              "default": 12
+            },
+            "description": "Cantidad de meses hacia atrás a incluir"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arreglo de totales de gastos por sucursal ordenado por monto DESC",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "expensesByBranch": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "branch_id": {
+                            "type": "integer"
+                          },
+                          "sucursal": {
+                            "type": "string"
+                          },
+                          "total_gastos": {
+                            "type": "number"
+                          },
+                          "cantidad_gastos": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/employees": {
       "get": {
         "tags": [
@@ -3476,6 +4263,53 @@
         }
       }
     },
+    "/employees/branch/{branch_id}": {
+      "get": {
+        "tags": [
+          "employees"
+        ],
+        "summary": "Empleados por sucursal",
+        "description": "Retorna todos los empleados activos de una sucursal específica.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "branch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arreglo de empleados de la sucursal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "employees": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/employees"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "branch_id inválido"
+          }
+        }
+      }
+    },
     "/employees/{id}": {
       "get": {
         "tags": [
@@ -3607,6 +4441,489 @@
         }
       }
     },
+    "/expense-types": {
+      "get": {
+        "tags": [
+          "expense-types"
+        ],
+        "summary": "Lista de tipos de gastos",
+        "description": "Obtener toda la lista de tipos de gastos",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arreglo de objetos de todos los tipos de gastos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/expenseTypes"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error de validacion."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "expense-types"
+        ],
+        "summary": "Crear nuevo tipo de gasto",
+        "description": "Crear nuevo tipo de gasto previo inicio de sesion",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tipo de gasto creado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/expenseTypes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error al crear el tipo de gasto"
+          }
+        }
+      }
+    },
+    "/expense-types/{id}": {
+      "get": {
+        "tags": [
+          "expense-types"
+        ],
+        "summary": "Tipo de gasto por identificador",
+        "description": "Consulta de tipo de gasto mediante el id proporcionado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identificador del tipo de gasto",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retorna el objeto del tipo de gasto consultado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/expenseTypes"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tipo de gasto no encontrado"
+          },
+          "422": {
+            "description": "Error de validacion."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "expense-types"
+        ],
+        "summary": "Actualizar tipo de gasto",
+        "description": "Actualizar datos de tipo de gasto previo inicio de sesion",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identificador del tipo de gasto",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tipo de gasto modificado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/expenseTypes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error al actualizar el tipo de gasto"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "expense-types"
+        ],
+        "summary": "Eliminacion de tipo de gasto",
+        "description": "Eliminacion de un tipo de gasto (hard delete)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identificador del tipo de gasto",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "El tipo de gasto se ha eliminado satisfactoriamente"
+          },
+          "400": {
+            "description": "Id de tipo de gasto invalido"
+          },
+          "404": {
+            "description": "Tipo de gasto no encontrado"
+          }
+        }
+      }
+    },
+    "/expenses/branch/{branch_id}": {
+      "get": {
+        "tags": [
+          "expenses"
+        ],
+        "summary": "Gastos por sucursal",
+        "description": "Obtener todos los gastos filtrados por sucursal",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "branch_id",
+            "in": "path",
+            "description": "Identificador de la sucursal",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arreglo de gastos de la sucursal indicada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/expenses"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validacion."
+          }
+        }
+      }
+    },
+    "/expenses": {
+      "get": {
+        "tags": [
+          "expenses"
+        ],
+        "summary": "Lista de todos los gastos",
+        "description": "Obtener todos los gastos registrados en el sistema",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arreglo de todos los gastos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/expenses"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error de validacion."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "expenses"
+        ],
+        "summary": "Registrar nuevo gasto",
+        "description": "Registrar un nuevo gasto. Requiere header X-Branch-ID con el id de la sucursal.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Branch-ID",
+            "in": "header",
+            "description": "Identificador de la sucursal",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "expense_type_id",
+                  "trans_date",
+                  "expense_amount"
+                ],
+                "properties": {
+                  "expense_type_id": {
+                    "type": "integer"
+                  },
+                  "trans_date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "expense_amount": {
+                    "type": "number"
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gasto registrado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/expenses"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error al registrar el gasto"
+          }
+        }
+      }
+    },
+    "/expenses/{id}": {
+      "get": {
+        "tags": [
+          "expenses"
+        ],
+        "summary": "Gasto por identificador",
+        "description": "Consulta de gasto mediante el id proporcionado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identificador del gasto",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retorna el objeto del gasto consultado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/expenses"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Gasto no encontrado"
+          },
+          "422": {
+            "description": "Error de validacion."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "expenses"
+        ],
+        "summary": "Actualizar gasto",
+        "description": "Actualizar datos de un gasto existente",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identificador del gasto",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "expense_type_id": {
+                    "type": "integer"
+                  },
+                  "trans_date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "expense_amount": {
+                    "type": "number"
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gasto modificado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/expenses"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error al actualizar el gasto"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "expenses"
+        ],
+        "summary": "Eliminacion de gasto",
+        "description": "Eliminacion logica (soft delete) de un gasto",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identificador del gasto",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "El gasto se ha eliminado satisfactoriamente"
+          },
+          "400": {
+            "description": "Id de gasto invalido"
+          },
+          "404": {
+            "description": "Gasto no encontrado"
+          }
+        }
+      }
+    },
     "/municipalities/{id}": {
       "get": {
         "tags": [
@@ -3701,7 +5018,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de objetos de todos los puestos."
+            "description": "Arreglo de objetos de todos los puestos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/positions"
+                  }
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -3735,7 +5062,14 @@
         },
         "responses": {
           "201": {
-            "description": "Puesto creado correctamente"
+            "description": "Puesto creado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/positions"
+                }
+              }
+            }
           },
           "403": {
             "description": "Error al crear el nuevo puesto"
@@ -3768,7 +5102,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Retorna el objecto del puesto consultado"
+            "description": "Retorna el objecto del puesto consultado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/positions"
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -3813,7 +5154,14 @@
         },
         "responses": {
           "201": {
-            "description": "Puesto modificado correctamente"
+            "description": "Puesto modificado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/positions"
+                }
+              }
+            }
           },
           "403": {
             "description": "Error al actualizar el puesto"
@@ -3869,7 +5217,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de listas de precios."
+            "description": "Arreglo de listas de precios.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/priceLists"
+                  }
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -3924,7 +5282,14 @@
         },
         "responses": {
           "201": {
-            "description": "Lista de precios creada correctamente"
+            "description": "Lista de precios creada correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/priceLists"
+                }
+              }
+            }
           },
           "403": {
             "description": "Error al crear la lista de precios"
@@ -3957,7 +5322,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Retorna el objecto de la lista de precios consultada"
+            "description": "Retorna el objecto de la lista de precios consultada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/priceLists"
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -4018,7 +5390,14 @@
         },
         "responses": {
           "201": {
-            "description": "Lista de precios modificada correctamente"
+            "description": "Lista de precios modificada correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/priceLists"
+                }
+              }
+            }
           },
           "403": {
             "description": "Error al actualizar la lista de precios"
@@ -4489,7 +5868,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de objetos de todas las categorías."
+            "description": "Arreglo de objetos de todas las categorías.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/productCategories"
+                  }
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -4526,7 +5915,14 @@
         },
         "responses": {
           "201": {
-            "description": "Categoría creada correctamente"
+            "description": "Categoría creada correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/productCategories"
+                }
+              }
+            }
           },
           "403": {
             "description": "Error al crear la nueva categoría"
@@ -4559,7 +5955,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Retorna el objeto de la categoría consultada"
+            "description": "Retorna el objeto de la categoría consultada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/productCategories"
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -4607,7 +6010,14 @@
         },
         "responses": {
           "201": {
-            "description": "Categoría modificada correctamente"
+            "description": "Categoría modificada correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/productCategories"
+                }
+              }
+            }
           },
           "403": {
             "description": "Error al actualizar la categoría"
@@ -4663,7 +6073,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de precios de productos."
+            "description": "Arreglo de precios de productos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/productPrices"
+                  }
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -4718,7 +6138,14 @@
         },
         "responses": {
           "201": {
-            "description": "Precio creado correctamente"
+            "description": "Precio creado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/productPrices"
+                }
+              }
+            }
           },
           "403": {
             "description": "Error al crear el precio"
@@ -4752,7 +6179,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de precios del producto"
+            "description": "Arreglo de precios del producto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/productPrices"
+                  }
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -4785,7 +6222,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de precios de la lista"
+            "description": "Arreglo de precios de la lista",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/productPrices"
+                  }
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -4818,7 +6265,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Retorna el objecto del precio consultado"
+            "description": "Retorna el objecto del precio consultado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/productPrices"
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -4868,7 +6322,14 @@
         },
         "responses": {
           "201": {
-            "description": "Precio modificado correctamente"
+            "description": "Precio modificado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/productPrices"
+                }
+              }
+            }
           },
           "403": {
             "description": "Error al actualizar el precio"
@@ -5047,7 +6508,7 @@
           "productPrices"
         ],
         "summary": "Recalcular precios existentes de un producto",
-        "description": "Actualiza el precio de todos los registros existentes en product_prices para un producto dado, aplicando la fórmula `base_price * (1 - discount_percent / 100)` con el base_price actual del producto. A diferencia de generate, este endpoint NO borra ni recrea registros — actualiza los existentes, incluyendo precios escalonados (min_quantity \u003E 1). Útil cuando cambia el base_price del producto.\n",
+        "description": "Actualiza el precio de todos los registros existentes en product_prices para un producto dado, aplicando la fórmula `base_price * (1 - discount_percent / 100)` con el base_price actual del producto. A diferencia de generate, este endpoint NO borra ni recrea registros — actualiza los existentes, incluyendo precios escalonados (min_quantity > 1). Útil cuando cambia el base_price del producto.\n",
         "security": [
           {
             "bearerAuth": []
@@ -5116,7 +6577,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de objetos de todos los productos."
+            "description": "Arreglo de objetos de todos los productos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/products"
+                  }
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -5230,7 +6701,14 @@
         },
         "responses": {
           "201": {
-            "description": "Producto creado correctamente"
+            "description": "Producto creado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/products"
+                }
+              }
+            }
           },
           "403": {
             "description": "Error al crear el nuevo producto"
@@ -5263,7 +6741,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Retorna el objecto del producto consultado"
+            "description": "Retorna el objecto del producto consultado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/products"
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -5371,7 +6856,14 @@
         },
         "responses": {
           "201": {
-            "description": "Producto modificado correctamente"
+            "description": "Producto modificado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/products"
+                }
+              }
+            }
           },
           "403": {
             "description": "Error al actualizar el producto"
@@ -5427,7 +6919,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de objetos de todos los inventarios."
+            "description": "Arreglo de objetos de todos los inventarios.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/productStocks"
+                  }
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -5495,7 +6997,14 @@
         },
         "responses": {
           "201": {
-            "description": "Inventario creado correctamente"
+            "description": "Inventario creado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/productStocks"
+                }
+              }
+            }
           },
           "403": {
             "description": "Error al crear el inventario"
@@ -5529,7 +7038,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de inventarios del producto"
+            "description": "Arreglo de inventarios del producto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/productStocks"
+                  }
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -5562,7 +7081,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de inventarios de la sucursal"
+            "description": "Arreglo de inventarios de la sucursal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/productStocks"
+                  }
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -5595,7 +7124,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Retorna el objecto del inventario consultado"
+            "description": "Retorna el objecto del inventario consultado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/productStocks"
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -5658,7 +7194,14 @@
         },
         "responses": {
           "201": {
-            "description": "Inventario modificado correctamente"
+            "description": "Inventario modificado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/productStocks"
+                }
+              }
+            }
           },
           "403": {
             "description": "Error al actualizar el inventario"
@@ -5714,7 +7257,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de pagos de compra."
+            "description": "Arreglo de pagos de compra.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/purchasePayments"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -5775,7 +7328,14 @@
         },
         "responses": {
           "200": {
-            "description": "Pago registrado correctamente"
+            "description": "Pago registrado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/purchasePayments"
+                }
+              }
+            }
           },
           "400": {
             "description": "Error de validación"
@@ -5813,7 +7373,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de pagos de la compra"
+            "description": "Arreglo de pagos de la compra",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/purchasePayments"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -5841,7 +7411,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Objeto del pago"
+            "description": "Objeto del pago",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/purchasePayments"
+                }
+              }
+            }
           },
           "404": {
             "description": "Pago no encontrado"
@@ -5893,7 +7470,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de compras."
+            "description": "Arreglo de compras.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/purchases"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -5991,7 +7578,14 @@
         },
         "responses": {
           "200": {
-            "description": "Compra creada correctamente"
+            "description": "Compra creada correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/purchases"
+                }
+              }
+            }
           },
           "400": {
             "description": "Error de validación o productos inválidos"
@@ -6022,7 +7616,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de compras del proveedor"
+            "description": "Arreglo de compras del proveedor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/purchases"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -6050,7 +7654,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de compras de la sucursal"
+            "description": "Arreglo de compras de la sucursal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/purchases"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -6078,7 +7692,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Objeto de la compra"
+            "description": "Objeto de la compra",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/purchases"
+                }
+              }
+            }
           },
           "404": {
             "description": "Compra no encontrada"
@@ -6107,7 +7728,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Compra actualizada"
+            "description": "Compra actualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/purchases"
+                }
+              }
+            }
           },
           "404": {
             "description": "Compra no encontrada"
@@ -6206,7 +7834,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Compra recibida e inventario actualizado"
+            "description": "Compra recibida e inventario actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/purchases"
+                }
+              }
+            }
           },
           "404": {
             "description": "Compra no encontrada"
@@ -7052,7 +8687,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de ventas del cliente"
+            "description": "Arreglo de ventas del cliente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/sales"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -7080,7 +8725,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de ventas de la sucursal"
+            "description": "Arreglo de ventas de la sucursal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/sales"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -7099,7 +8754,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de ventas morosas con cuotas vencidas"
+            "description": "Arreglo de ventas morosas con cuotas vencidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/sales"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -7127,7 +8792,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Objeto de la venta con detalles e installments"
+            "description": "Objeto de la venta con detalles e installments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/sales"
+                }
+              }
+            }
           },
           "404": {
             "description": "Venta no encontrada"
@@ -7156,7 +8828,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Venta actualizada"
+            "description": "Venta actualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/sales"
+                }
+              }
+            }
           }
         }
       },
@@ -7303,7 +8982,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de objetos de todos los proveedores."
+            "description": "Arreglo de objetos de todos los proveedores.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/suppliers"
+                  }
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -7405,7 +9094,14 @@
         },
         "responses": {
           "201": {
-            "description": "Proveedor creado correctamente"
+            "description": "Proveedor creado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/suppliers"
+                }
+              }
+            }
           },
           "403": {
             "description": "Error al crear el nuevo proveedor"
@@ -7438,7 +9134,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Retorna el objeto del proveedor consultado"
+            "description": "Retorna el objeto del proveedor consultado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/suppliers"
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion."
@@ -7531,7 +9234,14 @@
         },
         "responses": {
           "201": {
-            "description": "Proveedor modificado correctamente"
+            "description": "Proveedor modificado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/suppliers"
+                }
+              }
+            }
           },
           "403": {
             "description": "Error al actualizar el proveedor"
@@ -7573,6 +9283,140 @@
         }
       }
     },
+    "/system-settings": {
+      "get": {
+        "tags": [
+          "system-settings"
+        ],
+        "summary": "Lista de configuraciones del sistema",
+        "description": "Obtiene todas las configuraciones. Acepta ?category= para filtrar por categoría.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arreglo de configuraciones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/systemSettings"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system-settings/{key}": {
+      "get": {
+        "tags": [
+          "system-settings"
+        ],
+        "summary": "Configuración por clave",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Objeto de la configuración",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/systemSettings"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Configuración no encontrada"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "system-settings"
+        ],
+        "summary": "Actualizar valor de configuración",
+        "description": "Actualiza el valor de una configuración identificada por su clave.\nRequiere rol superadmin o privilegio update_system_setting.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "value"
+                ],
+                "properties": {
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Configuración actualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/systemSettings"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación"
+          },
+          "404": {
+            "description": "Configuración no encontrada"
+          }
+        }
+      }
+    },
     "/transfers": {
       "get": {
         "tags": [
@@ -7586,7 +9430,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de transferencias"
+            "description": "Arreglo de transferencias",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/transfers"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -7602,7 +9456,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Transferencia creada en estado Borrador"
+            "description": "Transferencia creada en estado Borrador",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/transfers"
+                }
+              }
+            }
           },
           "400": {
             "description": "Error de validación"
@@ -7633,7 +9494,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de transferencias de la sucursal origen"
+            "description": "Arreglo de transferencias de la sucursal origen",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/transfers"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -7661,7 +9532,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de transferencias de la sucursal destino"
+            "description": "Arreglo de transferencias de la sucursal destino",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/transfers"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -7689,7 +9570,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Objeto transferencia"
+            "description": "Objeto transferencia",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/transfers"
+                }
+              }
+            }
           },
           "404": {
             "description": "Transferencia no encontrada"
@@ -7718,7 +9606,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Transferencia actualizada"
+            "description": "Transferencia actualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/transfers"
+                }
+              }
+            }
           },
           "409": {
             "description": "La transferencia no puede modificarse en su estado actual"
@@ -7780,7 +9675,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Transferencia despachada"
+            "description": "Transferencia despachada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/transfers"
+                }
+              }
+            }
           },
           "409": {
             "description": "Estado incorrecto para despachar"
@@ -7847,7 +9749,14 @@
         },
         "responses": {
           "200": {
-            "description": "Transferencia recibida e inventario actualizado"
+            "description": "Transferencia recibida e inventario actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/transfers"
+                }
+              }
+            }
           },
           "409": {
             "description": "Estado incorrecto para recibir"
@@ -7883,7 +9792,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de asignaciones usuario-sucursal"
+            "description": "Arreglo de asignaciones usuario-sucursal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/userBranches"
+                  }
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion"
@@ -7916,7 +9835,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Arreglo de asignaciones sucursal-usuario"
+            "description": "Arreglo de asignaciones sucursal-usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/userBranches"
+                  }
+                }
+              }
+            }
           },
           "422": {
             "description": "Error de validacion"
@@ -7949,7 +9878,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Objeto de asignación"
+            "description": "Objeto de asignación",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/userBranches"
+                }
+              }
+            }
           },
           "404": {
             "description": "Asignación no encontrada"
@@ -8025,7 +9961,14 @@
         },
         "responses": {
           "200": {
-            "description": "Asignación creada correctamente"
+            "description": "Asignación creada correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/userBranches"
+                }
+              }
+            }
           },
           "403": {
             "description": "Sin permisos"
