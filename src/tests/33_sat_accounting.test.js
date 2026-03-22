@@ -11,6 +11,10 @@ const testUser = {
 let Token = '';
 let openPeriodId = null;
 let closedPeriodId = null;
+let openPeriodMes = null;
+let openPeriodAnio = null;
+let closedPeriodMes = null;
+let closedPeriodAnio = null;
 
 /**
  * Tests para SAT Accounting — /api/accounting/sat
@@ -45,36 +49,44 @@ describe('[SAT ACCOUNTING] Test api /api/accounting/sat', () => {
       .expect(200);
     Token = loginRes.body.sesion.token;
 
-    // Crear período abierto para catálogo
-    const openRes = await api
-      .post('/api/accounting/periods')
+    // Obtener lista de períodos existentes (tests previos los crean)
+    const listRes = await api
+      .get('/api/accounting/periods')
       .auth(Token, { type: 'bearer' })
-      .send({ name: 'Agosto 2025 SAT', year: 2025, month: 8 })
       .expect(200);
-    openPeriodId = openRes.body.period.id;
+    const periods = listRes.body.periods;
 
-    // Crear y cerrar período para vouchers
-    const closedRes = await api
-      .post('/api/accounting/periods')
-      .auth(Token, { type: 'bearer' })
-      .send({ name: 'Julio 2025 SAT', year: 2025, month: 7 });
-    // Puede fallar si ya existe, tomamos el id que devuelva
-    if (closedRes.status === 200) {
-      closedPeriodId = closedRes.body.period.id;
+    // Usar un período abierto existente (test 31 deja 2025/06 abierto)
+    const openPeriod = periods.find(p => p.status === 'abierto');
+    if (openPeriod) {
+      openPeriodId = openPeriod.id;
+      openPeriodMes = String(openPeriod.month).padStart(2, '0');
+      openPeriodAnio = String(openPeriod.year);
     } else {
-      // Buscar el período existente
-      const listRes = await api
-        .get('/api/accounting/periods')
-        .auth(Token, { type: 'bearer' });
-      const found = listRes.body.periods.find(p => p.year === 2025 && p.month === 7);
-      closedPeriodId = found?.id;
+      // Fallback: crear uno nuevo solo si no hay ninguno abierto
+      const createRes = await api
+        .post('/api/accounting/periods')
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'SAT Test Open', year: 2024, month: 1 });
+      openPeriodId = createRes.body.period?.id;
+      openPeriodMes = '01';
+      openPeriodAnio = '2024';
     }
 
-    // Cerrar el período (si no está ya cerrado)
-    if (closedPeriodId) {
+    // Usar un período cerrado/bloqueado existente (test 30 deja 2026/02 bloqueado)
+    const closedPeriod = periods.find(p => p.status === 'cerrado' || p.status === 'bloqueado');
+    if (closedPeriod) {
+      closedPeriodId = closedPeriod.id;
+      closedPeriodMes = String(closedPeriod.month).padStart(2, '0');
+      closedPeriodAnio = String(closedPeriod.year);
+    } else {
+      // Fallback: cerrar el período abierto que encontramos
       await api
-        .put(`/api/accounting/periods/${closedPeriodId}/close`)
+        .put(`/api/accounting/periods/${openPeriodId}/close`)
         .auth(Token, { type: 'bearer' });
+      closedPeriodId = openPeriodId;
+      closedPeriodMes = openPeriodMes;
+      closedPeriodAnio = openPeriodAnio;
     }
   });
 
@@ -144,8 +156,8 @@ describe('[SAT ACCOUNTING] Test api /api/accounting/sat', () => {
       .auth(Token, { type: 'bearer' })
       .expect(200);
 
-    expect(response.text).toContain('Mes="08"');
-    expect(response.text).toContain('Anio="2025"');
+    expect(response.text).toContain(`Mes="${openPeriodMes}"`);
+    expect(response.text).toContain(`Anio="${openPeriodAnio}"`);
   });
 
   test('8. XML catálogo mapea correctamente la naturaleza (Natur D/A)', async () => {
@@ -220,8 +232,8 @@ describe('[SAT ACCOUNTING] Test api /api/accounting/sat', () => {
       .auth(Token, { type: 'bearer' })
       .expect(200);
 
-    expect(response.text).toContain('Mes="07"');
-    expect(response.text).toContain('Anio="2025"');
+    expect(response.text).toContain(`Mes="${closedPeriodMes}"`);
+    expect(response.text).toContain(`Anio="${closedPeriodAnio}"`);
   });
 
   test('16. Período queda bloqueado tras generar XML de pólizas', async () => {

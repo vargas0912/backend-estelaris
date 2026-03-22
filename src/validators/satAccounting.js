@@ -1,5 +1,5 @@
 const { param } = require('express-validator');
-const { validateResults } = require('../utils/handleValidator');
+const validateResults = require('../utils/handleValidator');
 
 const validatePeriodId = [
   param('periodId')
