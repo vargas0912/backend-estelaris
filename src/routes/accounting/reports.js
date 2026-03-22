@@ -6,7 +6,7 @@ const authMiddleware = require('../../middlewares/session');
 const checkRol = require('../../middlewares/rol');
 const { readLimiter } = require('../../middlewares/rateLimiters');
 const { getJournal, getLedger, getTrialBalance, getBalanceSheet, getIncomeStatement } = require('../../controllers/accountingReports');
-const { ACCOUNTING_VOUCHER } = require('../../constants/modules');
+const { ACCOUNTING_REPORT } = require('../../constants/modules');
 const { ROLE } = require('../../constants/roles');
 
 /**
@@ -59,7 +59,7 @@ router.get('/journal', [
   readLimiter,
   authMiddleware,
   validateJournal,
-  checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_VOUCHER.VIEW_ALL)
+  checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_REPORT.VIEW_ALL)
 ], getJournal);
 
 /**
@@ -119,7 +119,7 @@ router.get('/ledger', [
   readLimiter,
   authMiddleware,
   validateLedger,
-  checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_VOUCHER.VIEW_ALL)
+  checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_REPORT.VIEW_ALL)
 ], getLedger);
 
 /**
@@ -165,7 +165,7 @@ router.get('/trial-balance', [
   readLimiter,
   authMiddleware,
   validatePeriod,
-  checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_VOUCHER.VIEW_ALL)
+  checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_REPORT.VIEW_ALL)
 ], getTrialBalance);
 
 /**
@@ -213,7 +213,7 @@ router.get('/balance-sheet', [
   readLimiter,
   authMiddleware,
   validatePeriod,
-  checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_VOUCHER.VIEW_ALL)
+  checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_REPORT.VIEW_ALL)
 ], getBalanceSheet);
 
 /**
@@ -274,7 +274,7 @@ router.get('/income-statement', [
   readLimiter,
   authMiddleware,
   validateIncomeStatement,
-  checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_VOUCHER.VIEW_ALL)
+  checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_REPORT.VIEW_ALL)
 ], getIncomeStatement);
 
 module.exports = router;
