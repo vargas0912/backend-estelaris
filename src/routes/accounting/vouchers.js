@@ -5,7 +5,7 @@ const { validateGetRecord, validateListFilters, valiAddRecord, valiUpdateRecord 
 const authMiddleware = require('../../middlewares/session');
 const checkRol = require('../../middlewares/rol');
 const { readLimiter, writeLimiter } = require('../../middlewares/rateLimiters');
-const { getAll, getById, create, update, apply, cancel, remove } = require('../../controllers/accountingVouchers');
+const { getAll, getById, create, update, apply, cancel, remove, generate } = require('../../controllers/accountingVouchers');
 const { ACCOUNTING_VOUCHER } = require('../../constants/modules');
 const { ROLE } = require('../../constants/roles');
 
@@ -62,6 +62,52 @@ router.get('/', [
   validateListFilters,
   checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_VOUCHER.VIEW_ALL)
 ], getAll);
+
+/**
+ * @openapi
+ * /accounting/vouchers/generate/{reference_type}/{reference_id}:
+ *   post:
+ *     tags:
+ *       - accounting-vouchers
+ *     summary: Generar póliza automática desde documento origen
+ *     description: |
+ *       Genera una póliza contable aplicada automáticamente a partir de un documento origen.
+ *       Tipos soportados: sale, purchase, expense, sale-payment, purch-payment.
+ *       La póliza nace directamente en estado 'aplicada'.
+ *       Requiere que exista un período contable abierto para la fecha del documento.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: reference_type
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [sale, purchase, expense, sale-payment, purch-payment]
+ *       - name: reference_id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Póliza generada y aplicada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/accountingVouchers'
+ *       '400':
+ *         description: Tipo de referencia inválido o error inesperado
+ *       '404':
+ *         description: Documento origen o cuenta contable no encontrada
+ *       '422':
+ *         description: No existe período abierto para la fecha o la compra no está recibida
+ */
+router.post('/generate/:reference_type/:reference_id', [
+  writeLimiter,
+  authMiddleware,
+  checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_VOUCHER.ADD)
+], generate);
 
 /**
  * @openapi

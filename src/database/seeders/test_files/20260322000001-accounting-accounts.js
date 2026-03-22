@@ -8,9 +8,9 @@ module.exports = {
     const level2 = data.filter(a => a.level === 2);
     const level3 = data.filter(a => a.level === 3);
 
-    await queryInterface.bulkInsert('accounting_accounts', level1);
-    await queryInterface.bulkInsert('accounting_accounts', level2);
-    await queryInterface.bulkInsert('accounting_accounts', level3);
+    await queryInterface.bulkInsert('accounting_accounts', level1, { ignoreDuplicates: true });
+    await queryInterface.bulkInsert('accounting_accounts', level2, { ignoreDuplicates: true });
+    await queryInterface.bulkInsert('accounting_accounts', level3, { ignoreDuplicates: true });
 
     const allCodes = [...new Set([...Object.keys(parentCodeMap), ...Object.values(parentCodeMap)])];
     const [rows] = await queryInterface.sequelize.query(

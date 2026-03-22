@@ -34,6 +34,7 @@ const data = [
   { code: '112', name: 'Bancos', type: 'activo', nature: 'deudora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
   { code: '113', name: 'Clientes', type: 'activo', nature: 'deudora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
   { code: '114', name: 'IVA Acreditable', type: 'activo', nature: 'deudora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
+  { code: '115', name: 'Inventario de Mercancías', type: 'activo', nature: 'deudora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
   // Activo Fijo
   { code: '121', name: 'Mobiliario y Equipo', type: 'activo', nature: 'deudora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
   { code: '122', name: 'Equipo de Transporte', type: 'activo', nature: 'deudora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
@@ -56,6 +57,7 @@ const data = [
   { code: '611', name: 'Sueldos y Salarios', type: 'egreso', nature: 'deudora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
   { code: '612', name: 'Renta de Local', type: 'egreso', nature: 'deudora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
   { code: '613', name: 'Servicios (Luz, Agua, Tel)', type: 'egreso', nature: 'deudora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
+  { code: '614', name: 'Gastos Generales', type: 'egreso', nature: 'deudora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
   // Gastos Financieros
   { code: '621', name: 'Intereses Pagados', type: 'egreso', nature: 'deudora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha }
 ];
@@ -76,6 +78,7 @@ const parentCodeMap = {
   112: '110',
   113: '110',
   114: '110',
+  115: '110',
   121: '120',
   122: '120',
   211: '210',
@@ -91,6 +94,7 @@ const parentCodeMap = {
   611: '610',
   612: '610',
   613: '610',
+  614: '610',
   621: '620'
 };
 

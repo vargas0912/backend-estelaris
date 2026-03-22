@@ -11,6 +11,14 @@ const {
   deleteVoucher
 } = require('../services/accountingVouchers');
 
+const {
+  generateFromSale,
+  generateFromPurchase,
+  generateFromExpense,
+  generateFromSalePayment,
+  generateFromPurchasePayment
+} = require('../services/accountingEngine.service');
+
 // Mapeo de códigos de error del servicio → HTTP status codes
 const ERROR_STATUS_MAP = {
   NOT_FOUND: 404,
@@ -140,4 +148,37 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, create, update, apply, cancel, remove };
+const generate = async (req, res) => {
+  try {
+    // eslint-disable-next-line camelcase
+    const { reference_type: referenceType, reference_id: referenceId } = req.params;
+    const id = parseInt(referenceId, 10);
+
+    let result;
+    switch (referenceType) {
+      case 'sale': result = await generateFromSale(id); break;
+      case 'purchase': result = await generateFromPurchase(id); break;
+      case 'expense': result = await generateFromExpense(id); break;
+      case 'sale-payment': result = await generateFromSalePayment(id); break;
+      case 'purch-payment': result = await generateFromPurchasePayment(id); break;
+      default:
+        handleHttpError(res, 'INVALID_REFERENCE_TYPE', 400);
+        return;
+    }
+
+    res.send({ voucher: result });
+  } catch (error) {
+    const knownErrors = ['NO_OPEN_PERIOD_FOR_DATE', 'PURCHASE_NOT_RECEIVED'];
+    if (knownErrors.some(e => error.message?.startsWith(e))) {
+      handleHttpError(res, error.message, 422);
+    } else if (error.message?.startsWith('ACCOUNT_NOT_FOUND')) {
+      handleHttpError(res, error.message, 404);
+    } else if (error.message === 'NOT_FOUND') {
+      handleHttpError(res, 'NOT_FOUND', 404);
+    } else {
+      handleHttpError(res, `ERROR_GENERATE_VOUCHER -> ${error}`, 400);
+    }
+  }
+};
+
+module.exports = { getAll, getById, create, update, apply, cancel, remove, generate };

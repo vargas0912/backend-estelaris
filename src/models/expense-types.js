@@ -9,7 +9,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   // eslint-disable-next-line camelcase
   expense_types.init({
-    name: DataTypes.STRING
+    name: DataTypes.STRING,
+    accounting_account_code: {
+      type: DataTypes.STRING(20),
+      allowNull: true
+    }
   }, {
     sequelize,
     paranoid: false,
