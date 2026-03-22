@@ -798,6 +798,15 @@ const accountCreateInvalidType = { code: 'TEST-004', name: 'Tipo inválido', typ
 const accountCreateInvalidNature = { code: 'TEST-005', name: 'Naturaleza inválida', type: 'activo', nature: 'invalida', level: 1 };
 const accountUpdate = { name: 'Cuenta de prueba modificada', active: false };
 
+// Accounting Periods
+const periodCreate = { name: 'Enero 2026', year: 2026, month: 1 };
+const periodCreateDuplicate = { name: 'Enero 2026 dup', year: 2026, month: 1 };
+const periodCreateNoName = { year: 2026, month: 2 };
+const periodCreateNoYear = { name: 'Sin año', month: 2 };
+const periodCreateNoMonth = { name: 'Sin mes', year: 2026 };
+const periodCreateInvalidMonth = { name: 'Mes inválido', year: 2026, month: 13 };
+const periodCreate2 = { name: 'Febrero 2026', year: 2026, month: 2 };
+
 module.exports = {
   testAuthRegister,
   testAuthLogin,
@@ -937,5 +946,12 @@ module.exports = {
   accountCreateNoType,
   accountCreateInvalidType,
   accountCreateInvalidNature,
-  accountUpdate
+  accountUpdate,
+  periodCreate,
+  periodCreateDuplicate,
+  periodCreateNoName,
+  periodCreateNoYear,
+  periodCreateNoMonth,
+  periodCreateInvalidMonth,
+  periodCreate2
 };
