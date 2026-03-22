@@ -866,7 +866,12 @@ const swaggerDefinition = {
           due_date: { type: 'string', format: 'date', description: 'Calculado automáticamente desde payment_days del proveedor cuando purch_type es Credito' },
           notes: { type: 'string' },
           created_at: { type: 'string', format: 'date-time' },
-          updated_at: { type: 'string', format: 'date-time' }
+          updated_at: { type: 'string', format: 'date-time' },
+          items: {
+            type: 'array',
+            description: 'Líneas de detalle de la compra',
+            items: { $ref: '#/components/schemas/purchaseDetails' }
+          }
         }
       },
       purchaseDetails: {
@@ -996,7 +1001,12 @@ const swaggerDefinition = {
           notes: { type: 'string', nullable: true },
           received_at: { type: 'string', format: 'date', nullable: true },
           created_at: { type: 'string', format: 'date-time' },
-          updated_at: { type: 'string', format: 'date-time' }
+          updated_at: { type: 'string', format: 'date-time' },
+          items: {
+            type: 'array',
+            description: 'Líneas de detalle de la transferencia',
+            items: { $ref: '#/components/schemas/transferDetails' }
+          }
         }
       },
       transferDetails: {
@@ -1039,7 +1049,17 @@ const swaggerDefinition = {
           delivery_status: { type: 'string', enum: ['Entregado', 'Pendiente'], default: 'Pendiente', description: 'Entregado=cliente retira en tienda, Pendiente=requiere envío posterior (saleDeliveries)' },
           notes: { type: 'string', nullable: true },
           created_at: { type: 'string', format: 'date-time' },
-          updated_at: { type: 'string', format: 'date-time' }
+          updated_at: { type: 'string', format: 'date-time' },
+          items: {
+            type: 'array',
+            description: 'Líneas de detalle de la venta',
+            items: { $ref: '#/components/schemas/saleDetails' }
+          },
+          installments: {
+            type: 'array',
+            description: 'Cuotas generadas (solo ventas a crédito)',
+            items: { $ref: '#/components/schemas/saleInstallments' }
+          }
         }
       },
       saleDetails: {
@@ -1213,6 +1233,31 @@ const swaggerDefinition = {
           unidades_vendidas: { type: 'number', format: 'decimal', description: 'Suma de qty en sale_details' },
           ingreso_total: { type: 'number', format: 'decimal', description: 'Suma de subtotal en sale_details' },
           cantidad_ventas: { type: 'integer', description: 'Cantidad de ventas distintas donde aparece el producto' }
+        }
+      },
+      expenseTypes: {
+        type: 'object',
+        description: 'Catálogo de tipos de gastos (caja chica, servicios, etc.)',
+        properties: {
+          id: { type: 'integer' },
+          name: { type: 'string', description: 'Nombre del tipo de gasto' },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      expenses: {
+        type: 'object',
+        description: 'Registro de gasto operativo de una sucursal',
+        properties: {
+          id: { type: 'integer' },
+          branch_id: { type: 'integer', description: 'Sucursal donde se realizó el gasto' },
+          user_id: { type: 'integer', description: 'Usuario que registró el gasto' },
+          expense_type_id: { type: 'integer', description: 'Tipo de gasto (FK a expense_types)' },
+          trans_date: { type: 'string', format: 'date', description: 'Fecha de la transacción del gasto' },
+          expense_amount: { type: 'number', format: 'decimal', description: 'Importe del gasto' },
+          notes: { type: 'string', nullable: true, description: 'Observaciones adicionales' },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
         }
       }
     }

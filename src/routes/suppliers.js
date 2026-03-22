@@ -26,6 +26,12 @@ const { ROLE } = require('../constants/roles');
  *      responses:
  *        '200':
  *          description: Arreglo de objetos de todos los proveedores.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/suppliers'
  *        '422':
  *          description: Error de validacion.
  */
@@ -55,6 +61,10 @@ router.get('/', [
  *      responses:
  *        '200':
  *          description: Retorna el objeto del proveedor consultado
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/suppliers'
  *        '422':
  *          description: Error de validacion.
  */
@@ -138,6 +148,10 @@ router.get('/:id', [
  *          responses:
  *              '201':
  *                  description: Proveedor creado correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/suppliers'
  *              '403':
  *                  description: Error al crear el nuevo proveedor
  */
@@ -209,6 +223,10 @@ router.post('/', [
  *          responses:
  *              '201':
  *                  description: Proveedor modificado correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/suppliers'
  *              '403':
  *                  description: Error al actualizar el proveedor
  */

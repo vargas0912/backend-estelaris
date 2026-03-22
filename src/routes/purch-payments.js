@@ -35,6 +35,12 @@ const { ROLE } = require('../constants/roles');
  *      responses:
  *        '200':
  *          description: Arreglo de pagos de compra.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/purchasePayments'
  */
 router.get('/', [
   readLimiter,
@@ -61,6 +67,12 @@ router.get('/', [
  *      responses:
  *        '200':
  *          description: Arreglo de pagos de la compra
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/purchasePayments'
  */
 router.get('/purchase/:purch_id', [
   searchLimiter,
@@ -87,6 +99,10 @@ router.get('/purchase/:purch_id', [
  *      responses:
  *        '200':
  *          description: Objeto del pago
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/purchasePayments'
  *        '404':
  *          description: Pago no encontrado
  */
@@ -140,6 +156,10 @@ router.get('/:id', [
  *      responses:
  *        '200':
  *          description: Pago registrado correctamente
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/purchasePayments'
  *        '400':
  *          description: Error de validación
  *        '404':

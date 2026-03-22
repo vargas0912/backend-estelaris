@@ -31,6 +31,12 @@ const { ROLE } = require('../constants/roles');
  *      responses:
  *        '200':
  *          description: Arreglo de configuraciones
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/systemSettings'
  */
 router.get('/', [
   readLimiter,
@@ -56,6 +62,10 @@ router.get('/', [
  *      responses:
  *        '200':
  *          description: Objeto de la configuración
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/systemSettings'
  *        '404':
  *          description: Configuración no encontrada
  */
@@ -96,6 +106,10 @@ router.get('/:key', [
  *      responses:
  *        '200':
  *          description: Configuración actualizada
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/systemSettings'
  *        '400':
  *          description: Error de validación
  *        '404':

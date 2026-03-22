@@ -25,6 +25,10 @@ const { ROLE } = require('../constants/roles');
  *      responses:
  *        '200':
  *          description: Objeto con la información fiscal
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/companyInfo'
  *        '404':
  *          description: Registro no encontrado
  */
@@ -84,6 +88,10 @@ router.get('/', [
  *      responses:
  *        '200':
  *          description: Registro actualizado
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/companyInfo'
  *        '400':
  *          description: Error de validación
  *        '404':

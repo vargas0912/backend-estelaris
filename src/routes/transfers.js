@@ -41,6 +41,12 @@ const { ROLE } = require('../constants/roles');
  *      responses:
  *        '200':
  *          description: Arreglo de transferencias
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/transfers'
  */
 router.get('/', [
   readLimiter,
@@ -66,6 +72,12 @@ router.get('/', [
  *      responses:
  *        '200':
  *          description: Arreglo de transferencias de la sucursal origen
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/transfers'
  */
 router.get('/from-branch/:branch_id', [
   searchLimiter,
@@ -92,6 +104,12 @@ router.get('/from-branch/:branch_id', [
  *      responses:
  *        '200':
  *          description: Arreglo de transferencias de la sucursal destino
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/transfers'
  */
 router.get('/to-branch/:branch_id', [
   searchLimiter,
@@ -118,6 +136,10 @@ router.get('/to-branch/:branch_id', [
  *      responses:
  *        '200':
  *          description: Objeto transferencia
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/transfers'
  *        '404':
  *          description: Transferencia no encontrada
  */
@@ -140,6 +162,10 @@ router.get('/:id', [
  *      responses:
  *        '200':
  *          description: Transferencia creada en estado Borrador
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/transfers'
  *        '400':
  *          description: Error de validación
  */
@@ -168,6 +194,10 @@ router.post('/', [
  *      responses:
  *        '200':
  *          description: Transferencia actualizada
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/transfers'
  *        '409':
  *          description: La transferencia no puede modificarse en su estado actual
  */
@@ -197,6 +227,10 @@ router.put('/:id', [
  *      responses:
  *        '200':
  *          description: Transferencia despachada
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/transfers'
  *        '409':
  *          description: Estado incorrecto para despachar
  *        '422':
@@ -245,6 +279,10 @@ router.patch('/:id/dispatch', [
  *      responses:
  *        '200':
  *          description: Transferencia recibida e inventario actualizado
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/transfers'
  *        '409':
  *          description: Estado incorrecto para recibir
  *        '422':

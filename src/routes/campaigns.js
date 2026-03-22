@@ -64,6 +64,12 @@ const handleValidationErrors = (req, res, next) => {
  *     responses:
  *       200:
  *         description: Lista de campañas obtenida correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/campaigns'
  *       401:
  *         description: No autorizado
  */
@@ -87,6 +93,12 @@ router.get(
  *     responses:
  *       200:
  *         description: Campañas activas obtenidas correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/campaigns'
  *       401:
  *         description: No autorizado
  */
@@ -115,6 +127,10 @@ router.get(
  *     responses:
  *       200:
  *         description: Campaña obtenida correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/campaigns'
  *       404:
  *         description: Campaña no encontrada
  */
@@ -163,6 +179,10 @@ router.get(
  *     responses:
  *       201:
  *         description: Campaña creada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/campaigns'
  *       400:
  *         description: Datos inválidos
  */
@@ -198,6 +218,10 @@ router.post(
  *     responses:
  *       200:
  *         description: Campaña actualizada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/campaigns'
  *       404:
  *         description: Campaña no encontrada
  */
@@ -314,6 +338,12 @@ router.delete(
  *     responses:
  *       200:
  *         description: Sucursales obtenidas correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/campaignBranches'
  *       404:
  *         description: Campaña no encontrada
  */

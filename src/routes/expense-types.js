@@ -24,6 +24,12 @@ const { ROLE } = require('../constants/roles');
  *      responses:
  *        '200':
  *          description: Arreglo de objetos de todos los tipos de gastos.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/expenseTypes'
  *        '422':
  *          description: Error de validacion.
  */
@@ -53,6 +59,10 @@ router.get('/', [
  *      responses:
  *        '200':
  *          description: Retorna el objeto del tipo de gasto consultado
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/expenseTypes'
  *        '404':
  *          description: Tipo de gasto no encontrado
  *        '422':
@@ -86,6 +96,10 @@ router.get('/:id', [
  *          responses:
  *              '200':
  *                  description: Tipo de gasto creado correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/expenseTypes'
  *              '400':
  *                  description: Error al crear el tipo de gasto
  */
@@ -124,6 +138,10 @@ router.post('/', [
  *          responses:
  *              '200':
  *                  description: Tipo de gasto modificado correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/expenseTypes'
  *              '400':
  *                  description: Error al actualizar el tipo de gasto
  */

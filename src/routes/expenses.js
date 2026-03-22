@@ -32,6 +32,12 @@ const { ROLE } = require('../constants/roles');
  *      responses:
  *        '200':
  *          description: Arreglo de gastos de la sucursal indicada.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/expenses'
  *        '400':
  *          description: Error de validacion.
  */
@@ -55,6 +61,12 @@ router.get('/branch/:branch_id', [
  *      responses:
  *        '200':
  *          description: Arreglo de todos los gastos.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/expenses'
  *        '422':
  *          description: Error de validacion.
  */
@@ -84,6 +96,10 @@ router.get('/', [
  *      responses:
  *        '200':
  *          description: Retorna el objeto del gasto consultado
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/expenses'
  *        '404':
  *          description: Gasto no encontrado
  *        '422':
@@ -135,6 +151,10 @@ router.get('/:id', [
  *          responses:
  *              '200':
  *                  description: Gasto registrado correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/expenses'
  *              '400':
  *                  description: Error al registrar el gasto
  */
@@ -181,6 +201,10 @@ router.post('/', [
  *          responses:
  *              '200':
  *                  description: Gasto modificado correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/expenses'
  *              '400':
  *                  description: Error al actualizar el gasto
  */

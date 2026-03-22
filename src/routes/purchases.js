@@ -43,6 +43,12 @@ const branchScope = require('../middlewares/branchScope');
  *      responses:
  *        '200':
  *          description: Arreglo de compras.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/purchases'
  */
 router.get('/', [
   readLimiter,
@@ -69,6 +75,12 @@ router.get('/', [
  *      responses:
  *        '200':
  *          description: Arreglo de compras del proveedor
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/purchases'
  */
 router.get('/supplier/:supplier_id', [
   searchLimiter,
@@ -95,6 +107,12 @@ router.get('/supplier/:supplier_id', [
  *      responses:
  *        '200':
  *          description: Arreglo de compras de la sucursal
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/purchases'
  */
 router.get('/branch/:branch_id', [
   searchLimiter,
@@ -122,6 +140,10 @@ router.get('/branch/:branch_id', [
  *      responses:
  *        '200':
  *          description: Objeto de la compra
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/purchases'
  *        '404':
  *          description: Compra no encontrada
  */
@@ -201,6 +223,10 @@ router.get('/:id', [
  *      responses:
  *        '200':
  *          description: Compra creada correctamente
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/purchases'
  *        '400':
  *          description: Error de validación o productos inválidos
  */
@@ -229,6 +255,10 @@ router.post('/', [
  *      responses:
  *        '200':
  *          description: Compra actualizada
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/purchases'
  *        '404':
  *          description: Compra no encontrada
  */
@@ -319,6 +349,10 @@ router.delete('/:id', [
  *      responses:
  *        '200':
  *          description: Compra recibida e inventario actualizado
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/purchases'
  *        '404':
  *          description: Compra no encontrada
  *        '409':
