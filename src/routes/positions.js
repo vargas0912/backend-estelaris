@@ -24,6 +24,12 @@ const { ROLE } = require('../constants/roles');
  *      responses:
  *        '200':
  *          description: Arreglo de objetos de todos los puestos.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/positions'
  *        '422':
  *          description: Error de validacion.
  */
@@ -53,6 +59,10 @@ router.get('/', [
  *      responses:
  *        '200':
  *          description: Retorna el objecto del puesto consultado
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/positions'
  *        '422':
  *          description: Error de validacion.
  */
@@ -84,6 +94,10 @@ router.get('/:id', [
  *          responses:
  *              '201':
  *                  description: Puesto creado correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/positions'
  *              '403':
  *                  description: Error al crear el nuevo puesto
  */
@@ -122,6 +136,10 @@ router.post('/', [
  *          responses:
  *              '201':
  *                  description: Puesto modificado correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/positions'
  *              '403':
  *                  description: Error al actualizar el puesto
  */

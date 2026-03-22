@@ -24,6 +24,12 @@ const { ROLE } = require('../constants/roles');
  *      responses:
  *        '200':
  *          description: Arreglo de objetos de todas las categorías.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/productCategories'
  *        '422':
  *          description: Error de validacion.
  */
@@ -53,6 +59,10 @@ router.get('/', [
  *      responses:
  *        '200':
  *          description: Retorna el objeto de la categoría consultada
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/productCategories'
  *        '422':
  *          description: Error de validacion.
  */
@@ -86,6 +96,10 @@ router.get('/:id', [
  *          responses:
  *              '201':
  *                  description: Categoría creada correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/productCategories'
  *              '403':
  *                  description: Error al crear la nueva categoría
  */
@@ -126,6 +140,10 @@ router.post('/', [
  *          responses:
  *              '201':
  *                  description: Categoría modificada correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/productCategories'
  *              '403':
  *                  description: Error al actualizar la categoría
  */

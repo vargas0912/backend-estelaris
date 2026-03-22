@@ -45,6 +45,12 @@ const { ROLE } = require('../constants/roles');
  *      responses:
  *        '200':
  *          description: Arreglo de precios de productos.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/productPrices'
  *        '422':
  *          description: Error de validacion.
  */
@@ -75,6 +81,12 @@ router.get('/', [
  *      responses:
  *        '200':
  *          description: Arreglo de precios del producto
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/productPrices'
  *        '422':
  *          description: Error de validacion.
  */
@@ -105,6 +117,12 @@ router.get('/product/:product_id', [
  *      responses:
  *        '200':
  *          description: Arreglo de precios de la lista
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/productPrices'
  *        '422':
  *          description: Error de validacion.
  */
@@ -135,6 +153,10 @@ router.get('/priceList/:price_list_id', [
  *      responses:
  *        '200':
  *          description: Retorna el objecto del precio consultado
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/productPrices'
  *        '422':
  *          description: Error de validacion.
  */
@@ -353,6 +375,10 @@ router.put('/recalculate/product/:product_id', [
  *          responses:
  *              '201':
  *                  description: Precio creado correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/productPrices'
  *              '403':
  *                  description: Error al crear el precio
  */
@@ -395,6 +421,10 @@ router.post('/', [
  *          responses:
  *              '201':
  *                  description: Precio modificado correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/productPrices'
  *              '403':
  *                  description: Error al actualizar el precio
  */

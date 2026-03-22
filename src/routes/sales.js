@@ -78,6 +78,12 @@ router.get('/', [
  *      responses:
  *        '200':
  *          description: Arreglo de ventas del cliente
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/sales'
  */
 router.get('/customer/:customer_id', [
   searchLimiter,
@@ -104,6 +110,12 @@ router.get('/customer/:customer_id', [
  *      responses:
  *        '200':
  *          description: Arreglo de ventas de la sucursal
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/sales'
  */
 router.get('/branch/:branch_id', [
   searchLimiter,
@@ -126,6 +138,12 @@ router.get('/branch/:branch_id', [
  *      responses:
  *        '200':
  *          description: Arreglo de ventas morosas con cuotas vencidas
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/sales'
  */
 router.get('/overdue', [
   readLimiter,
@@ -151,6 +169,10 @@ router.get('/overdue', [
  *      responses:
  *        '200':
  *          description: Objeto de la venta con detalles e installments
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/sales'
  *        '404':
  *          description: Venta no encontrada
  */
@@ -298,6 +320,10 @@ router.post('/', [
  *      responses:
  *        '200':
  *          description: Venta actualizada
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/sales'
  */
 router.put('/:id', [
   writeLimiter,

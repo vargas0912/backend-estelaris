@@ -31,6 +31,12 @@ const { ROLE } = require('../constants/roles');
  *      responses:
  *        '200':
  *          description: Arreglo de asignaciones usuario-sucursal
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/userBranches'
  *        '422':
  *          description: Error de validacion
  */
@@ -61,6 +67,12 @@ router.get('/user/:user_id', [
  *      responses:
  *        '200':
  *          description: Arreglo de asignaciones sucursal-usuario
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/userBranches'
  *        '422':
  *          description: Error de validacion
  */
@@ -91,6 +103,10 @@ router.get('/branch/:branch_id', [
  *      responses:
  *        '200':
  *          description: Objeto de asignación
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/userBranches'
  *        '404':
  *          description: Asignación no encontrada
  */
@@ -129,6 +145,10 @@ router.get('/:id', [
  *          responses:
  *              '200':
  *                  description: Asignación creada correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/userBranches'
  *              '409':
  *                  description: La asignación ya existe
  *              '403':

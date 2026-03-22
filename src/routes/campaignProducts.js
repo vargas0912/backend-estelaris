@@ -63,6 +63,12 @@ const handleValidationErrors = (req, res, next) => {
  *     responses:
  *       200:
  *         description: Productos obtenidos correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/campaignProducts'
  *       401:
  *         description: No autorizado
  */
@@ -93,6 +99,10 @@ router.get(
  *     responses:
  *       200:
  *         description: Producto obtenido correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/campaignProducts'
  *       404:
  *         description: Producto no encontrado
  */
@@ -139,6 +149,10 @@ router.get(
  *     responses:
  *       201:
  *         description: Producto agregado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/campaignProducts'
  *       400:
  *         description: Datos inválidos
  */
@@ -174,6 +188,10 @@ router.post(
  *     responses:
  *       200:
  *         description: Producto actualizado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/campaignProducts'
  *       404:
  *         description: Producto no encontrado
  */
@@ -232,6 +250,12 @@ router.delete(
  *     responses:
  *       200:
  *         description: Overrides obtenidos correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/campaignProductBranches'
  */
 router.get(
   '/:id/branches',
@@ -273,6 +297,10 @@ router.get(
  *     responses:
  *       201:
  *         description: Override creado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/campaignProductBranches'
  *       400:
  *         description: Override ya existe
  */
@@ -318,6 +346,10 @@ router.post(
  *     responses:
  *       200:
  *         description: Override actualizado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/campaignProductBranches'
  *       404:
  *         description: Override no encontrado
  */

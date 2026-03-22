@@ -39,6 +39,12 @@ const { ROLE } = require('../constants/roles');
  *      responses:
  *        '200':
  *          description: Arreglo de objetos de todos los inventarios.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/productStocks'
  *        '422':
  *          description: Error de validacion.
  */
@@ -70,6 +76,12 @@ router.get('/', [
  *      responses:
  *        '200':
  *          description: Arreglo de inventarios del producto
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/productStocks'
  *        '422':
  *          description: Error de validacion.
  */
@@ -101,6 +113,12 @@ router.get('/product/:product_id', [
  *      responses:
  *        '200':
  *          description: Arreglo de inventarios de la sucursal
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/productStocks'
  *        '422':
  *          description: Error de validacion.
  */
@@ -132,6 +150,10 @@ router.get('/branch/:branch_id', [
  *      responses:
  *        '200':
  *          description: Retorna el objecto del inventario consultado
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/productStocks'
  *        '422':
  *          description: Error de validacion.
  */
@@ -191,6 +213,10 @@ router.get('/purchase/:purch_id', [
  *          responses:
  *              '201':
  *                  description: Inventario creado correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/productStocks'
  *              '403':
  *                  description: Error al crear el inventario
  */
@@ -242,6 +268,10 @@ router.post('/', [
  *          responses:
  *              '201':
  *                  description: Inventario modificado correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/productStocks'
  *              '403':
  *                  description: Error al actualizar el inventario
  */

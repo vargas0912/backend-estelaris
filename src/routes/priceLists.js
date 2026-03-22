@@ -24,6 +24,12 @@ const { ROLE } = require('../constants/roles');
  *      responses:
  *        '200':
  *          description: Arreglo de listas de precios.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/priceLists'
  *        '422':
  *          description: Error de validacion.
  */
@@ -53,6 +59,10 @@ router.get('/', [
  *      responses:
  *        '200':
  *          description: Retorna el objecto de la lista de precios consultada
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/priceLists'
  *        '422':
  *          description: Error de validacion.
  */
@@ -100,6 +110,10 @@ router.get('/:id', [
  *          responses:
  *              '201':
  *                  description: Lista de precios creada correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/priceLists'
  *              '403':
  *                  description: Error al crear la lista de precios
  */
@@ -149,6 +163,10 @@ router.post('/', [
  *          responses:
  *              '201':
  *                  description: Lista de precios modificada correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/priceLists'
  *              '403':
  *                  description: Error al actualizar la lista de precios
  */
