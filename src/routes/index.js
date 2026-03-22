@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require('fs'); // Filesystem
+const path = require('path');
 const router = express.Router();
 
 const PATH_ROUTES = __dirname; // Ruta de la aplicacion
@@ -16,6 +17,9 @@ const removeExtension = (fileName) => {
  */
 // eslint-disable-next-line no-unused-vars, array-callback-return
 const a = fs.readdirSync(PATH_ROUTES).filter((file) => {
+  const filePath = path.join(PATH_ROUTES, file);
+  if (fs.statSync(filePath).isDirectory()) return false;
+
   const fileName = removeExtension(file); // 'users', 'products', etc
 
   if (fileName !== 'index') {
