@@ -1,5 +1,6 @@
 // eslint-disable-next-line camelcase
 const { expenses, branches, users, expense_types } = require('../models/index');
+const accountingEngine = require('./accountingEngine.service');
 
 // eslint-disable-next-line camelcase
 const attributes = ['id', 'branch_id', 'user_id', 'expense_type_id', 'trans_date', 'expense_amount', 'notes', 'created_at', 'updated_at'];
@@ -46,6 +47,11 @@ const addExpense = async(body, branchId, userId) => {
     branch_id: branchId,
     user_id: userId
   });
+
+  // Fire and forget — no bloquea, no lanza si falla
+  accountingEngine.generateFromExpense(result.id).catch(err =>
+    console.error('[AccountingEngine] Error generando póliza:', err.message)
+  );
 
   return result;
 };

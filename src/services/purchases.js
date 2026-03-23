@@ -1,6 +1,7 @@
 const { purchases, purchaseDetails, suppliers, branches, users, products } = require('../models/index');
 const { sequelize } = require('../models/index');
 const { updateFromPurchase } = require('./productStocks');
+const accountingEngine = require('./accountingEngine.service');
 
 const purchaseAttributes = [
   'id',
@@ -314,6 +315,12 @@ const receivePurchase = async (id, userId) => {
     await transaction.commit();
 
     const result = await getPurchase(id);
+
+    // Fire and forget — no bloquea, no lanza si falla
+    accountingEngine.generateFromPurchase(id).catch(err =>
+      console.error('[AccountingEngine] Error generando póliza:', err.message)
+    );
+
     return result;
   } catch (error) {
     await transaction.rollback();

@@ -177,6 +177,11 @@ const createVoucherWithLines = async ({
  *   Cargo  412 (Descuentos s/Ventas)  → sale.discount_amount  [si > 0]
  */
 const generateFromSale = async (saleId) => {
+  const existing = await accountingVouchers.findOne({
+    where: { reference_type: 'sale', reference_id: saleId }
+  });
+  if (existing) return existing;
+
   const sale = await sales.findByPk(saleId);
 
   if (!sale) {
@@ -251,6 +256,11 @@ const generateFromSale = async (saleId) => {
  *   Abono  211 (Proveedores)           → purchase.purch_total
  */
 const generateFromPurchase = async (purchaseId) => {
+  const existing = await accountingVouchers.findOne({
+    where: { reference_type: 'purchase', reference_id: purchaseId }
+  });
+  if (existing) return existing;
+
   const purchase = await purchases.findByPk(purchaseId);
 
   if (!purchase) {
@@ -319,6 +329,11 @@ const generateFromPurchase = async (purchaseId) => {
  *   Abono  '213' (Acreedores Diversos)     → expense.expense_amount
  */
 const generateFromExpense = async (expenseId) => {
+  const existing = await accountingVouchers.findOne({
+    where: { reference_type: 'expense', reference_id: expenseId }
+  });
+  if (existing) return existing;
+
   const expense = await expenses.findOne({
     where: { id: expenseId },
     include: [
@@ -381,6 +396,11 @@ const generateFromExpense = async (expenseId) => {
  *   Abono  113 (Clientes)           → payment.payment_amount
  */
 const generateFromSalePayment = async (paymentId) => {
+  const existing = await accountingVouchers.findOne({
+    where: { reference_type: 'sale-payment', reference_id: paymentId }
+  });
+  if (existing) return existing;
+
   const payment = await salePayments.findOne({
     where: { id: paymentId },
     include: [
@@ -443,6 +463,11 @@ const generateFromSalePayment = async (paymentId) => {
  *   Abono  [111 Caja | 112 Bancos]       → payment.payment_amount
  */
 const generateFromPurchasePayment = async (paymentId) => {
+  const existing = await accountingVouchers.findOne({
+    where: { reference_type: 'purch-payment', reference_id: paymentId }
+  });
+  if (existing) return existing;
+
   const payment = await purchasePayments.findOne({
     where: { id: paymentId },
     include: [

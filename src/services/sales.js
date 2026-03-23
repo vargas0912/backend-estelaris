@@ -5,6 +5,7 @@ const {
 } = require('../models/index');
 const { sequelize } = require('../models/index');
 const { Op } = require('sequelize');
+const accountingEngine = require('./accountingEngine.service');
 
 const saleAttributes = [
   'id', 'branch_id', 'customer_id', 'customer_address_id', 'employee_id',
@@ -301,7 +302,14 @@ const createSale = async (body, userId) => {
     }
 
     await transaction.commit();
-    return getSale(sale.id);
+    const result = await getSale(sale.id);
+
+    // Fire and forget — no bloquea, no lanza si falla
+    accountingEngine.generateFromSale(sale.id).catch(err =>
+      console.error('[AccountingEngine] Error generando póliza:', err.message)
+    );
+
+    return result;
   } catch (error) {
     await transaction.rollback();
     throw error;
