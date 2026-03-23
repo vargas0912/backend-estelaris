@@ -63,7 +63,6 @@ module.exports = {
       }
     });
 
-    await queryInterface.addIndex('accounting_accounts', ['code'], { unique: true });
     await queryInterface.addIndex('accounting_accounts', ['parent_id']);
     await queryInterface.addIndex('accounting_accounts', ['type']);
     await queryInterface.addIndex('accounting_accounts', ['level']);
