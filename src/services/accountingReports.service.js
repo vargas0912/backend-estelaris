@@ -209,8 +209,8 @@ const getTrialBalance = async (filters) => {
       aa.level,
       SUM(avl.debit)  AS total_debit,
       SUM(avl.credit) AS total_credit,
-      GREATEST(SUM(avl.debit) - SUM(avl.credit), 0) AS debit_balance,
-      GREATEST(SUM(avl.credit) - SUM(avl.debit), 0) AS credit_balance
+      CASE WHEN aa.nature = 'deudora'   THEN GREATEST(SUM(avl.debit)  - SUM(avl.credit), 0) ELSE 0 END AS debit_balance,
+      CASE WHEN aa.nature = 'acreedora' THEN GREATEST(SUM(avl.credit) - SUM(avl.debit),  0) ELSE 0 END AS credit_balance
     FROM accounting_voucher_lines avl
     INNER JOIN accounting_vouchers av ON av.id = avl.voucher_id AND av.deleted_at IS NULL AND av.status = 'aplicada'
     INNER JOIN accounting_accounts aa ON aa.id = avl.account_id
@@ -251,7 +251,10 @@ const getBalanceSheet = async (filters) => {
       aa.nature,
       aa.level,
       aa.parent_id,
-      SUM(avl.debit) - SUM(avl.credit) AS balance
+      CASE
+        WHEN aa.nature = 'acreedora' THEN SUM(avl.credit) - SUM(avl.debit)
+        ELSE                              SUM(avl.debit)  - SUM(avl.credit)
+      END AS balance
     FROM accounting_voucher_lines avl
     INNER JOIN accounting_vouchers av ON av.id = avl.voucher_id AND av.deleted_at IS NULL AND av.status = 'aplicada'
     INNER JOIN accounting_accounts aa ON aa.id = avl.account_id
