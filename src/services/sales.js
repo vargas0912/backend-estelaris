@@ -91,8 +91,8 @@ const getOverdueSales = async () => {
     attributes: saleAttributes,
     where: {
       sales_type: 'Credito',
-      status: 'Pendiente',
-      due_date: { [Op.lt]: today }
+      status: 'Pendiente'
+      // due_date: { [Op.lt]: today }
     },
     include: [
       { model: customers, as: 'customer', attributes: customerAttributes },
