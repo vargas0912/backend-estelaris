@@ -7,11 +7,18 @@ const getDashboardKpis = async () => {
       COUNT(CASE WHEN status = 'Pendiente' AND deleted_at IS NULL THEN 1 END) AS ventas_pendientes,
       COUNT(CASE WHEN status = 'Cancelado' AND deleted_at IS NULL THEN 1 END) AS ventas_canceladas,
       COALESCE(SUM(CASE WHEN status = 'Pagado'    AND deleted_at IS NULL THEN sales_total ELSE 0 END), 0) AS ingreso_total,
-      COALESCE(SUM(CASE WHEN status = 'Pendiente' AND deleted_at IS NULL THEN due_payment  ELSE 0 END), 0) AS cartera_pendiente,
-      COUNT(CASE WHEN status = 'Pendiente' AND deleted_at IS NULL
-                 AND due_date < CURDATE() AND sales_type = 'Credito' THEN 1 END) AS ventas_morosas,
-      COALESCE(SUM(CASE WHEN status = 'Pendiente' AND deleted_at IS NULL
-                        AND due_date < CURDATE() AND sales_type = 'Credito' THEN due_payment ELSE 0 END), 0) AS monto_moroso,
+      (SELECT COALESCE(SUM(si.amount - si.paid_amount), 0)
+       FROM sale_installments si
+       INNER JOIN sales s2 ON s2.id = si.sale_id AND s2.deleted_at IS NULL AND s2.status = 'Pendiente'
+       WHERE si.status = 'Pendiente') AS cartera_pendiente,
+      (SELECT COUNT(DISTINCT si.sale_id)
+       FROM sale_installments si
+       INNER JOIN sales s4 ON s4.id = si.sale_id AND s4.deleted_at IS NULL AND s4.status = 'Pendiente'
+       WHERE si.status = 'Pendiente' AND si.due_date < CURDATE()) AS ventas_morosas,
+      (SELECT COALESCE(SUM(si.amount - si.paid_amount), 0)
+       FROM sale_installments si
+       INNER JOIN sales s3 ON s3.id = si.sale_id AND s3.deleted_at IS NULL AND s3.status = 'Pendiente'
+       WHERE si.status = 'Pendiente' AND si.due_date < CURDATE()) AS monto_moroso,
       (SELECT COUNT(*) FROM customers WHERE is_active = 1 AND deleted_at IS NULL) AS clientes_activos
     FROM sales
   `);
