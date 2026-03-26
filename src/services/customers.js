@@ -12,8 +12,9 @@ const municipalityAttributes = ['id', 'name'];
 const branchAttributes = ['id', 'name'];
 const userAttributes = ['id', 'email', 'role'];
 
-const getAllCustomers = async() => {
-  const result = await customers.findAll({
+const getAllCustomers = async(page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await customers.findAndCountAll({
     attributes,
     include: [
       {
@@ -31,10 +32,13 @@ const getAllCustomers = async() => {
         as: 'user',
         attributes: userAttributes
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
 
-  return result;
+  return { customers: rows, total: count };
 };
 
 const getCustomer = async(id) => {
@@ -71,8 +75,9 @@ const getCustomer = async(id) => {
   return result;
 };
 
-const getCustomersByBranch = async(branchId) => {
-  const result = await customers.findAll({
+const getCustomersByBranch = async(branchId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await customers.findAndCountAll({
     attributes,
     where: { branch_id: branchId },
     include: [
@@ -87,14 +92,18 @@ const getCustomersByBranch = async(branchId) => {
         attributes: branchAttributes,
         required: true
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
 
-  return result;
+  return { customers: rows, total: count };
 };
 
-const getCustomersByMunicipality = async(municipalityId) => {
-  const result = await customers.findAll({
+const getCustomersByMunicipality = async(municipalityId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await customers.findAndCountAll({
     attributes,
     where: { municipality_id: municipalityId },
     include: [
@@ -109,10 +118,13 @@ const getCustomersByMunicipality = async(municipalityId) => {
         as: 'branch',
         attributes: branchAttributes
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
 
-  return result;
+  return { customers: rows, total: count };
 };
 
 const addNewCustomer = async(body) => {

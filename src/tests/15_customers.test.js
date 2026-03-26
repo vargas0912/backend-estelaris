@@ -55,6 +55,32 @@ describe('[CUSTOMERS] Test api customers //api/customers/', () => {
 
     expect(response.body).toHaveProperty('customers');
     expect(Array.isArray(response.body.customers)).toBe(true);
+    expect(response.body).toHaveProperty('pagination');
+    expect(response.body.pagination).toHaveProperty('total');
+    expect(response.body.pagination).toHaveProperty('page');
+    expect(response.body.pagination).toHaveProperty('limit');
+    expect(response.body.pagination).toHaveProperty('totalPages');
+    expect(response.body.pagination.page).toBe(1);
+    expect(response.body.pagination.limit).toBe(20);
+  });
+
+  test('1b. Obtener lista de clientes con paginación. Expect 200', async() => {
+    const response = await api
+      .get('/api/customers?page=1&limit=5')
+      .auth(Token, { type: 'bearer' })
+      .expect(200);
+
+    expect(response.body).toHaveProperty('customers');
+    expect(response.body.customers.length).toBeLessThanOrEqual(5);
+    expect(response.body.pagination.page).toBe(1);
+    expect(response.body.pagination.limit).toBe(5);
+  });
+
+  test('1c. Obtener clientes con limit inválido. Expect 400', async() => {
+    await api
+      .get('/api/customers?limit=101')
+      .auth(Token, { type: 'bearer' })
+      .expect(400);
   });
 
   test('2. Crear cliente con datos válidos. Expect 200', async() => {
@@ -171,6 +197,8 @@ describe('[CUSTOMERS] Test api customers //api/customers/', () => {
 
     expect(response.body).toHaveProperty('customers');
     expect(Array.isArray(response.body.customers)).toBe(true);
+    expect(response.body).toHaveProperty('pagination');
+    expect(response.body.pagination).toHaveProperty('total');
   });
 
   test('13. Obtener clientes por municipio. Expect 200', async() => {
@@ -181,6 +209,8 @@ describe('[CUSTOMERS] Test api customers //api/customers/', () => {
 
     expect(response.body).toHaveProperty('customers');
     expect(Array.isArray(response.body.customers)).toBe(true);
+    expect(response.body).toHaveProperty('pagination');
+    expect(response.body.pagination).toHaveProperty('total');
   });
 
   test('14. Eliminar cliente. Expect 200', async() => {

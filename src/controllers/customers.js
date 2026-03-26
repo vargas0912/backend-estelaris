@@ -19,8 +19,14 @@ const {
  */
 const getRecords = async(req, res) => {
   try {
-    const customers = await getAllCustomers();
-    res.send({ customers });
+    const { page = 1, limit = 20 } = matchedData(req);
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const { customers, total } = await getAllCustomers(pageNum, limitNum);
+    res.send({
+      customers,
+      pagination: { total, page: pageNum, limit: limitNum, totalPages: Math.ceil(total / limitNum) }
+    });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }
@@ -54,9 +60,14 @@ const getRecord = async(req, res) => {
  */
 const getRecordsByBranch = async(req, res) => {
   try {
-    const { branchId } = matchedData(req);
-    const customers = await getCustomersByBranch(branchId);
-    res.send({ customers });
+    const { branchId, page = 1, limit = 20 } = matchedData(req);
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const { customers, total } = await getCustomersByBranch(branchId, pageNum, limitNum);
+    res.send({
+      customers,
+      pagination: { total, page: pageNum, limit: limitNum, totalPages: Math.ceil(total / limitNum) }
+    });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_BRANCH -> ${error}`, 400);
   }
@@ -69,9 +80,14 @@ const getRecordsByBranch = async(req, res) => {
  */
 const getRecordsByMunicipality = async(req, res) => {
   try {
-    const { municipalityId } = matchedData(req);
-    const customers = await getCustomersByMunicipality(municipalityId);
-    res.send({ customers });
+    const { municipalityId, page = 1, limit = 20 } = matchedData(req);
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const { customers, total } = await getCustomersByMunicipality(municipalityId, pageNum, limitNum);
+    res.send({
+      customers,
+      pagination: { total, page: pageNum, limit: limitNum, totalPages: Math.ceil(total / limitNum) }
+    });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_MUNICIPALITY -> ${error}`, 400);
   }

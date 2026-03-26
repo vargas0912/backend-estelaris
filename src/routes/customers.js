@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {
+  validateGetAll,
   validateGetRecord,
   validateCreate,
   validateUpdate,
@@ -36,24 +37,43 @@ const { ROLE } = require('../constants/roles');
  *      tags:
  *        - customers
  *      summary: Lista de clientes
- *      description: Obtener toda la lista de clientes activos
+ *      description: Obtener la lista de clientes con paginación. Por defecto devuelve 20 registros por página.
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - name: page
+ *          in: query
+ *          description: Número de página (por defecto 1)
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *        - name: limit
+ *          in: query
+ *          description: Registros por página (por defecto 20, máximo 100)
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
  *      responses:
  *        '200':
- *          description: Arreglo de objetos de todos los clientes.
+ *          description: Lista paginada de clientes.
  *          content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/customers'
- *        '422':
- *          description: Error de validacion.
+ *               $ref: '#/components/schemas/customersPaginated'
+ *        '400':
+ *          description: Parámetros de paginación inválidos.
+ *        '401':
+ *          description: No autorizado.
  */
 router.get('/', [
   readLimiter,
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], CUSTOMER.VIEW_ALL)
 ], getRecords);
 
@@ -100,25 +120,44 @@ router.get('/:id', [
  *      tags:
  *        - customers
  *      summary: Clientes por sucursal
- *      description: Obtener clientes de una sucursal específica
+ *      description: Obtener clientes de una sucursal específica con paginación.
  *      security:
  *        - bearerAuth: []
  *      parameters:
- *      - name: branchId
- *        in: path
- *        description: Identificador de la sucursal
- *        required: true
- *        schema:
- *          type: number
+ *        - name: branchId
+ *          in: path
+ *          description: Identificador de la sucursal
+ *          required: true
+ *          schema:
+ *            type: integer
+ *        - name: page
+ *          in: query
+ *          description: Número de página (por defecto 1)
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *        - name: limit
+ *          in: query
+ *          description: Registros por página (por defecto 20, máximo 100)
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
  *      responses:
  *        '200':
- *          description: Arreglo de clientes de la sucursal
+ *          description: Lista paginada de clientes de la sucursal.
  *          content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/customers'
+ *               $ref: '#/components/schemas/customersPaginated'
+ *        '400':
+ *          description: Parámetros inválidos.
+ *        '401':
+ *          description: No autorizado.
  */
 router.get('/branch/:branchId', [
   readLimiter,
@@ -135,25 +174,44 @@ router.get('/branch/:branchId', [
  *      tags:
  *        - customers
  *      summary: Clientes por municipio
- *      description: Obtener clientes de un municipio específico
+ *      description: Obtener clientes de un municipio específico con paginación.
  *      security:
  *        - bearerAuth: []
  *      parameters:
- *      - name: municipalityId
- *        in: path
- *        description: Identificador del municipio
- *        required: true
- *        schema:
- *          type: number
+ *        - name: municipalityId
+ *          in: path
+ *          description: Identificador del municipio
+ *          required: true
+ *          schema:
+ *            type: integer
+ *        - name: page
+ *          in: query
+ *          description: Número de página (por defecto 1)
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *        - name: limit
+ *          in: query
+ *          description: Registros por página (por defecto 20, máximo 100)
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
  *      responses:
  *        '200':
- *          description: Arreglo de clientes del municipio
+ *          description: Lista paginada de clientes del municipio.
  *          content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/customers'
+ *               $ref: '#/components/schemas/customersPaginated'
+ *        '400':
+ *          description: Parámetros inválidos.
+ *        '401':
+ *          description: No autorizado.
  */
 router.get('/municipality/:municipalityId', [
   readLimiter,

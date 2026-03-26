@@ -336,6 +336,41 @@ const swaggerDefinition = {
           }
         }
       },
+      pagination: {
+        type: 'object',
+        properties: {
+          total: {
+            type: 'integer',
+            description: 'Total de registros que coinciden con el filtro'
+          },
+          page: {
+            type: 'integer',
+            description: 'Página actual'
+          },
+          limit: {
+            type: 'integer',
+            description: 'Registros por página'
+          },
+          totalPages: {
+            type: 'integer',
+            description: 'Total de páginas disponibles'
+          }
+        }
+      },
+      customersPaginated: {
+        type: 'object',
+        properties: {
+          customers: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/customers'
+            }
+          },
+          pagination: {
+            $ref: '#/components/schemas/pagination'
+          }
+        }
+      },
       customers: {
         type: 'object',
         properties: {
