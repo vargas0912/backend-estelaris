@@ -17,4 +17,14 @@ const validateExpensesByMonth = [
   (req, res, next) => validateResults(req, res, next)
 ];
 
-module.exports = { validateTrends, validateTopProducts, validateExpensesByMonth };
+const validateRecentSales = [
+  query('limit').optional().isInt({ min: 1, max: 100 }).toInt(),
+  (req, res, next) => validateResults(req, res, next)
+];
+
+const validateSalesByBranch = [
+  query('months').optional().isInt({ min: 1, max: 24 }).toInt(),
+  (req, res, next) => validateResults(req, res, next)
+];
+
+module.exports = { validateTrends, validateTopProducts, validateExpensesByMonth, validateRecentSales, validateSalesByBranch };

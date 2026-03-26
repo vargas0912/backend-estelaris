@@ -1,6 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
-const { getDashboardKpis, getDashboardTrends, getTopProducts, getExpensesByMonth, getExpensesByBranch } = require('../services/dashboard');
+const { getDashboardKpis, getDashboardTrends, getTopProducts, getExpensesByMonth, getExpensesByBranch, getRecentSales, getSalesByBranch } = require('../services/dashboard');
 
 const getKpis = async (req, res) => {
   try {
@@ -51,4 +51,24 @@ const getExpensesByBranchHandler = async (req, res) => {
   }
 };
 
-module.exports = { getKpis, getTrends, getTopProductsHandler, getExpensesByMonthHandler, getExpensesByBranchHandler };
+const getRecentSalesHandler = async (req, res) => {
+  try {
+    const { limit = 25 } = matchedData(req);
+    const recentSales = await getRecentSales(limit);
+    res.send({ recentSales });
+  } catch (error) {
+    handleHttpError(res, `ERROR_GET_RECENT_SALES -> ${error}`);
+  }
+};
+
+const getSalesByBranchHandler = async (req, res) => {
+  try {
+    const { months = 6 } = matchedData(req);
+    const salesByBranch = await getSalesByBranch(months);
+    res.send({ salesByBranch });
+  } catch (error) {
+    handleHttpError(res, `ERROR_GET_SALES_BY_BRANCH -> ${error}`);
+  }
+};
+
+module.exports = { getKpis, getTrends, getTopProductsHandler, getExpensesByMonthHandler, getExpensesByBranchHandler, getRecentSalesHandler, getSalesByBranchHandler };

@@ -1235,6 +1235,30 @@ const swaggerDefinition = {
           cantidad_ventas: { type: 'integer', description: 'Cantidad de ventas distintas donde aparece el producto' }
         }
       },
+      dashboardSalesByBranch: {
+        type: 'object',
+        description: 'Sumatoria de ventas por sucursal en el período solicitado',
+        properties: {
+          branch_id: { type: 'integer', description: 'ID de la sucursal' },
+          branch_name: { type: 'string', description: 'Nombre de la sucursal' },
+          total_ventas: { type: 'integer', description: 'Cantidad de ventas no canceladas' },
+          ingreso_total: { type: 'number', format: 'decimal', description: 'Suma de sales_total de ventas no canceladas' },
+          ventas_saldadas: { type: 'integer', description: 'Cantidad de ventas con status Pagado' },
+          ventas_pendientes: { type: 'integer', description: 'Cantidad de ventas con status Pendiente' },
+          ventas_canceladas: { type: 'integer', description: 'Cantidad de ventas con status Cancelado' }
+        }
+      },
+      dashboardRecentSale: {
+        type: 'object',
+        description: 'Venta reciente con datos clave para KPIs',
+        properties: {
+          id: { type: 'integer', description: 'ID de la venta' },
+          sales_date: { type: 'string', format: 'date', example: '2026-03-25', description: 'Fecha de la venta' },
+          branch_name: { type: 'string', description: 'Nombre de la sucursal donde se realizó la venta' },
+          sales_total: { type: 'number', format: 'decimal', description: 'Monto total de la venta' },
+          status: { type: 'string', enum: ['Pagado', 'Pendiente', 'Cancelado'], description: 'Estado de la venta' }
+        }
+      },
       expenseTypes: {
         type: 'object',
         description: 'Catálogo de tipos de gastos (caja chica, servicios, etc.)',
