@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateTrends, validateTopProducts, validateExpensesByMonth } = require('../validators/dashboard');
+const { validateTrends, validateTopProducts, validateExpensesByMonth, validateRecentSales, validateSalesByBranch } = require('../validators/dashboard');
 const authMiddleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 const { readLimiter } = require('../middlewares/rateLimiters');
-const { getKpis, getTrends, getTopProductsHandler, getExpensesByMonthHandler, getExpensesByBranchHandler } = require('../controllers/dashboard');
+const { getKpis, getTrends, getTopProductsHandler, getExpensesByMonthHandler, getExpensesByBranchHandler, getRecentSalesHandler, getSalesByBranchHandler } = require('../controllers/dashboard');
 const { DASHBOARD } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
 
@@ -237,6 +237,92 @@ router.get('/expenses-by-branch',
   validateExpensesByMonth,
   checkRol([ROLE.ADMIN], DASHBOARD.VIEW),
   getExpensesByBranchHandler
+);
+
+/**
+ * @openapi
+ * /dashboard/recent-sales:
+ *   get:
+ *     tags:
+ *       - dashboard
+ *     summary: Últimas ventas del sistema
+ *     description: Retorna las N ventas más recientes con datos clave para KPIs de ventas (id, fecha, sucursal, total, status).
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: limit
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 25
+ *         description: Cantidad de ventas a retornar
+ *     responses:
+ *       '200':
+ *         description: Arreglo de ventas recientes ordenado por fecha DESC
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 recentSales:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/dashboardRecentSale'
+ *       '422':
+ *         description: Parámetro limit inválido
+ */
+router.get('/recent-sales',
+  readLimiter,
+  authMiddleware,
+  validateRecentSales,
+  checkRol([ROLE.ADMIN], DASHBOARD.VIEW),
+  getRecentSalesHandler
+);
+
+/**
+ * @openapi
+ * /dashboard/sales-by-branch:
+ *   get:
+ *     tags:
+ *       - dashboard
+ *     summary: Sumatoria de ventas por sucursal
+ *     description: Retorna el resumen de ventas agrupado por sucursal para los últimos N meses, ordenado por ingreso total DESC.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: months
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 24
+ *           default: 6
+ *         description: Cantidad de meses hacia atrás a incluir
+ *     responses:
+ *       '200':
+ *         description: Arreglo de sucursales con sus totales de ventas ordenado por ingreso DESC
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 salesByBranch:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/dashboardSalesByBranch'
+ *       '422':
+ *         description: Parámetro months inválido
+ */
+router.get('/sales-by-branch',
+  readLimiter,
+  authMiddleware,
+  validateSalesByBranch,
+  checkRol([ROLE.ADMIN], DASHBOARD.VIEW),
+  getSalesByBranchHandler
 );
 
 module.exports = router;

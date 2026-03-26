@@ -94,4 +94,42 @@ const getExpensesByBranch = async (months = 6) => {
   return results;
 };
 
-module.exports = { getDashboardKpis, getDashboardTrends, getTopProducts, getExpensesByMonth, getExpensesByBranch };
+const getRecentSales = async (limit = 25) => {
+  const [results] = await sequelize.query(`
+    SELECT
+      s.id,
+      s.sales_date,
+      b.name AS branch_name,
+      s.sales_total,
+      s.status
+    FROM sales s
+    INNER JOIN branches b ON b.id = s.branch_id AND b.deleted_at IS NULL
+    WHERE s.deleted_at IS NULL
+    ORDER BY s.sales_date DESC, s.id DESC
+    LIMIT :limit
+  `, { replacements: { limit } });
+  return results;
+};
+
+const getSalesByBranch = async (months = 6) => {
+  const [results] = await sequelize.query(`
+    SELECT
+      b.id AS branch_id,
+      b.name AS branch_name,
+      COUNT(CASE WHEN s.status != 'Cancelado' THEN 1 END) AS total_ventas,
+      COALESCE(SUM(CASE WHEN s.status != 'Cancelado' THEN s.sales_total ELSE 0 END), 0) AS ingreso_total,
+      COUNT(CASE WHEN s.status = 'Pagado'    THEN 1 END) AS ventas_saldadas,
+      COUNT(CASE WHEN s.status = 'Pendiente' THEN 1 END) AS ventas_pendientes,
+      COUNT(CASE WHEN s.status = 'Cancelado' THEN 1 END) AS ventas_canceladas
+    FROM branches b
+    LEFT JOIN sales s ON s.branch_id = b.id
+      AND s.deleted_at IS NULL
+      AND s.sales_date >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL :months MONTH), '%Y-%m-01')
+    WHERE b.deleted_at IS NULL
+    GROUP BY b.id, b.name
+    ORDER BY ingreso_total DESC
+  `, { replacements: { months } });
+  return results;
+};
+
+module.exports = { getDashboardKpis, getDashboardTrends, getTopProducts, getExpensesByMonth, getExpensesByBranch, getRecentSales, getSalesByBranch };
