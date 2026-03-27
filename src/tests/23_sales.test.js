@@ -127,6 +127,7 @@ describe('[SALES] Test api sales /api/sales/', () => {
       expect(parseFloat(response.body.sale.due_payment)).toBe(0);
       expect(response.body.sale.sales_type).toBe('Contado');
       expect(response.body.sale.details.length).toBe(1);
+      expect(response.body.sale.ticket).toMatch(/^[A-Z0-9]+-\d{2}-\d{6}$/);
 
       contadoSaleId = response.body.sale.id;
     });
@@ -146,6 +147,7 @@ describe('[SALES] Test api sales /api/sales/', () => {
       expect(parseFloat(response.body.sale.due_payment)).toBe(parseFloat(response.body.sale.sales_total));
       expect(response.body.sale.due_date).not.toBeNull();
       expect(response.body.sale.payment_periods).toBe('Quincenal');
+      expect(response.body.sale.ticket).toMatch(/^[A-Z0-9]+-\d{2}-\d{6}$/);
 
       // Verify installments generated
       expect(response.body.sale.installments).toBeDefined();
