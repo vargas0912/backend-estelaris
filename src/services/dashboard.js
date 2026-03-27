@@ -14,11 +14,11 @@ const getDashboardKpis = async () => {
       (SELECT COUNT(DISTINCT si.sale_id)
        FROM sale_installments si
        INNER JOIN sales s4 ON s4.id = si.sale_id AND s4.deleted_at IS NULL AND s4.status = 'Pendiente'
-       WHERE si.status = 'Pendiente' AND si.due_date < CURDATE()) AS ventas_morosas,
+       WHERE si.status = 'Pendiente' AND si.due_date < CURDATE() AND (si.amount - si.paid_amount) > 0) AS ventas_morosas,
       (SELECT COALESCE(SUM(si.amount - si.paid_amount), 0)
        FROM sale_installments si
        INNER JOIN sales s3 ON s3.id = si.sale_id AND s3.deleted_at IS NULL AND s3.status = 'Pendiente'
-       WHERE si.status = 'Pendiente' AND si.due_date < CURDATE()) AS monto_moroso,
+       WHERE si.status = 'Pendiente' AND si.due_date < CURDATE() AND (si.amount - si.paid_amount) > 0) AS monto_moroso,
       (SELECT COUNT(*) FROM customers WHERE is_active = 1 AND deleted_at IS NULL) AS clientes_activos
     FROM sales
   `);
