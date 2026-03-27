@@ -63,6 +63,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(50),
       allowNull: true
     },
+    ticket: {
+      type: DataTypes.STRING(20),
+      allowNull: true
+    },
     subtotal: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: false,

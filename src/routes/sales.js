@@ -195,6 +195,7 @@ router.get('/:id', [
  *        Contado: status=Pagado, due_payment=0.
  *        Crédito: genera installments automáticamente según payment_periods y total_days_term.
  *        Decrementa stock y genera stockMovements.
+ *        El campo `ticket` es auto-generado con formato {PREFIX}-{YY}-{SALE_ID} (ej. MTY-26-000042) y no se envía en el request.
  *      security:
  *        - bearerAuth: []
  *        - branchHeader: []
@@ -308,7 +309,7 @@ router.post('/', [
  *    put:
  *      tags:
  *        - sales
- *      summary: Actualizar venta (solo invoice y notes)
+ *      summary: Actualizar venta (solo invoice y notes). El campo ticket es de solo lectura.
  *      security:
  *        - bearerAuth: []
  *      parameters:

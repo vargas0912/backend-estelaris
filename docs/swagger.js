@@ -216,6 +216,12 @@ const swaggerDefinition = {
             type: 'string',
             format: 'date'
           },
+          ticket_prefix: {
+            type: 'string',
+            maxLength: 5,
+            nullable: true,
+            description: 'Prefijo corto para el ticket de venta (ej. MTY, GDL). Si no se configura, se usa el id de la sucursal con padding (001).'
+          },
           created_at: {
             type: 'string',
             format: 'date-time'
@@ -1073,7 +1079,8 @@ const swaggerDefinition = {
           sales_type: { type: 'string', enum: ['Contado', 'Credito'] },
           payment_periods: { type: 'string', enum: ['Semanal', 'Quincenal', 'Mensual'], nullable: true, description: 'Solo para ventas a crédito' },
           total_days_term: { type: 'integer', nullable: true, description: 'Plazo total en días (solo crédito)' },
-          invoice: { type: 'string', maxLength: 50, nullable: true },
+          ticket: { type: 'string', maxLength: 20, nullable: true, readOnly: true, description: 'Folio de ticket auto-generado. Formato: {PREFIX}-{YY}-{NNNNNN} (ej. MTY-26-000042). Solo lectura.' },
+          invoice: { type: 'string', maxLength: 50, nullable: true, description: 'Número de factura fiscal (SAT). Se asigna manualmente en la facturación.' },
           subtotal: { type: 'number', format: 'decimal' },
           discount_amount: { type: 'number', format: 'decimal' },
           tax_amount: { type: 'number', format: 'decimal' },

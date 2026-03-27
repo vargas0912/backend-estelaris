@@ -80,4 +80,9 @@ const SALES_VALIDATORS = Object.freeze({
   DELIVERY_STATUS_INVALID: 'Estado de entrega inválido. Use: Entregado o Pendiente'
 });
 
-module.exports = { SALES_VALIDATORS };
+const TICKET_CONFIG = Object.freeze({
+  ID_PADDING: 6,
+  PREFIX_FALLBACK_PADDING: 3
+});
+
+module.exports = { SALES_VALIDATORS, TICKET_CONFIG };

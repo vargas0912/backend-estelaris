@@ -6,11 +6,21 @@ const {
 const { sequelize } = require('../models/index');
 const { Op } = require('sequelize');
 const accountingEngine = require('./accountingEngine.service');
+const { TICKET_CONFIG } = require('../constants/sales');
+
+const generateTicket = (branchId, branchTicketPrefix, salesDate, saleId) => {
+  const yy = salesDate.substring(2, 4);
+  const prefix = branchTicketPrefix
+    ? branchTicketPrefix.toUpperCase()
+    : String(branchId).padStart(TICKET_CONFIG.PREFIX_FALLBACK_PADDING, '0');
+  const seq = String(saleId).padStart(TICKET_CONFIG.ID_PADDING, '0');
+  return `${prefix}-${yy}-${seq}`;
+};
 
 const saleAttributes = [
   'id', 'branch_id', 'customer_id', 'customer_address_id', 'employee_id',
   'user_id', 'price_list_id', 'sales_date', 'sales_type', 'payment_periods',
-  'total_days_term', 'invoice', 'subtotal', 'discount_amount', 'tax_amount',
+  'total_days_term', 'ticket', 'invoice', 'subtotal', 'discount_amount', 'tax_amount',
   'sales_total', 'due_payment', 'due_date', 'status', 'delivery_status', 'notes',
   'created_at', 'updated_at'
 ];
@@ -144,7 +154,7 @@ const createSale = async (body, userId) => {
   const employee = await employees.findByPk(employeeId, { attributes: ['id'] });
   if (!employee) return { error: 'EMPLOYEE_NOT_FOUND' };
 
-  const branch = await branches.findByPk(branchId, { attributes: ['id'] });
+  const branch = await branches.findByPk(branchId, { attributes: ['id', 'ticket_prefix'] });
   if (!branch) return { error: 'BRANCH_NOT_FOUND' };
 
   // Validar productos
@@ -247,6 +257,10 @@ const createSale = async (body, userId) => {
       delivery_status: deliveryStatus || 'Pendiente',
       notes: notes || null
     }, { transaction });
+
+    // Generar ticket usando el sale.id asignado por el DB
+    const ticket = generateTicket(branchId, branch.ticket_prefix, salesDate, sale.id);
+    await sale.update({ ticket }, { transaction });
 
     // Crear detalles
     const detailRecords = details.map(d => ({
@@ -442,5 +456,6 @@ module.exports = {
   createSale,
   updateSale,
   cancelSale,
-  deleteSale
+  deleteSale,
+  generateTicket
 };

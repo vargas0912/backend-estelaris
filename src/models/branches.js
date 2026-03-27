@@ -39,7 +39,11 @@ module.exports = (sequelize, DataTypes) => {
       name: DataTypes.STRING,
       address: DataTypes.STRING,
       phone: DataTypes.STRING,
-      opening_date: DataTypes.DATE
+      opening_date: DataTypes.DATE,
+      ticket_prefix: {
+        type: DataTypes.STRING(5),
+        allowNull: true
+      }
     },
     {
       sequelize,
