@@ -2,6 +2,18 @@ const { check, body } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
 const { CUSTOMERS_VALIDATORS } = require('../constants/errors');
 
+const validateGetAll = [
+  check('page')
+    .optional()
+    .isInt({ min: 1 }).withMessage('page debe ser un entero mayor a 0'),
+  check('limit')
+    .optional()
+    .isInt({ min: 1, max: 100 }).withMessage('limit debe ser un entero entre 1 y 100'),
+  (req, res, next) => {
+    return validateResults(req, res, next);
+  }
+];
+
 const validateGetRecord = [
   check('id')
     .exists().withMessage('El ID es requerido').bail()
@@ -114,6 +126,12 @@ const validateGetByBranch = [
     .exists().withMessage('El ID de sucursal es requerido').bail()
     .notEmpty().withMessage('El ID de sucursal no puede estar vacío').bail()
     .isNumeric().withMessage('El ID de sucursal debe ser numérico'),
+  check('page')
+    .optional()
+    .isInt({ min: 1 }).withMessage('page debe ser un entero mayor a 0'),
+  check('limit')
+    .optional()
+    .isInt({ min: 1, max: 100 }).withMessage('limit debe ser un entero entre 1 y 100'),
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -124,6 +142,12 @@ const validateGetByMunicipality = [
     .exists().withMessage('El ID de municipio es requerido').bail()
     .notEmpty().withMessage('El ID de municipio no puede estar vacío').bail()
     .isNumeric().withMessage('El ID de municipio debe ser numérico'),
+  check('page')
+    .optional()
+    .isInt({ min: 1 }).withMessage('page debe ser un entero mayor a 0'),
+  check('limit')
+    .optional()
+    .isInt({ min: 1, max: 100 }).withMessage('limit debe ser un entero entre 1 y 100'),
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -143,6 +167,7 @@ const validateActivatePortal = [
 ];
 
 module.exports = {
+  validateGetAll,
   validateGetRecord,
   validateCreate,
   validateUpdate,
