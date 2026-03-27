@@ -386,4 +386,54 @@ const EXPENSE = Object.freeze({
   NAME_DELETE: 'Eliminar gasto'
 });
 
-module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE, PURCH_PAYMENT, TRANSFER, SALE, SALE_PAYMENT, SALE_DELIVERY, DRIVER, COMPANY_INFO, SYSTEM_SETTINGS, DASHBOARD, EXPENSE_TYPE, EXPENSE };
+const ACCOUNTING_ACCOUNT = Object.freeze({
+  MODULE_NAME: 'accounting-accounts',
+  VIEW_ALL: 'view_accounting_accounts',
+  NAME_ALL: 'Ver catálogo de cuentas contables',
+  VIEW_TREE: 'view_accounting_accounts_tree',
+  NAME_VIEW_TREE: 'Ver árbol de catálogo de cuentas',
+  ADD: 'create_accounting_account',
+  NAME_ADD: 'Crear cuenta contable',
+  UPDATE: 'update_accounting_account',
+  NAME_UPDATE: 'Modificar cuenta contable',
+  DELETE: 'delete_accounting_account',
+  NAME_DELETE: 'Eliminar cuenta contable'
+});
+
+const ACCOUNTING_PERIOD = Object.freeze({
+  MODULE_NAME: 'accounting-periods',
+  VIEW_ALL: 'view_accounting_periods',
+  NAME_ALL: 'Ver períodos contables',
+  ADD: 'create_accounting_period',
+  NAME_ADD: 'Crear período contable',
+  CLOSE: 'close_accounting_period',
+  NAME_CLOSE: 'Cerrar período contable',
+  REOPEN: 'reopen_accounting_period',
+  NAME_REOPEN: 'Reabrir período contable',
+  LOCK: 'lock_accounting_period',
+  NAME_LOCK: 'Bloquear período contable'
+});
+
+const ACCOUNTING_VOUCHER = Object.freeze({
+  MODULE_NAME: 'accounting-vouchers',
+  VIEW_ALL: 'view_accounting_vouchers',
+  NAME_ALL: 'Ver pólizas contables',
+  ADD: 'create_accounting_voucher',
+  NAME_ADD: 'Crear póliza contable',
+  UPDATE: 'update_accounting_voucher',
+  NAME_UPDATE: 'Modificar póliza contable',
+  APPLY: 'apply_accounting_voucher',
+  NAME_APPLY: 'Aplicar póliza contable',
+  CANCEL: 'cancel_accounting_voucher',
+  NAME_CANCEL: 'Cancelar póliza contable',
+  DELETE: 'delete_accounting_voucher',
+  NAME_DELETE: 'Eliminar póliza contable'
+});
+
+const ACCOUNTING_REPORT = Object.freeze({
+  MODULE_NAME: 'accounting-reports',
+  VIEW_ALL: 'view_accounting_reports',
+  NAME_ALL: 'Ver reportes contables'
+});
+
+module.exports = { BRANCH, EMPlOYEE, PRIVILEGE, USERS, MUNICIPALITIES, POSITION, PRODUCT_CATEGORY, PRODUCT, PRODUCT_STOCK, PRICE_LIST, PRODUCT_PRICE, SUPPLIER, CAMPAIGN, CAMPAIGN_PRODUCT, STATES, CUSTOMER, CUSTOMER_ADDRESS, USER_BRANCH, PURCHASE, PURCH_PAYMENT, TRANSFER, SALE, SALE_PAYMENT, SALE_DELIVERY, DRIVER, COMPANY_INFO, SYSTEM_SETTINGS, DASHBOARD, EXPENSE_TYPE, EXPENSE, ACCOUNTING_ACCOUNT, ACCOUNTING_PERIOD, ACCOUNTING_VOUCHER, ACCOUNTING_REPORT };

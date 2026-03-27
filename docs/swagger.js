@@ -1318,6 +1318,166 @@ const swaggerDefinition = {
           created_at: { type: 'string', format: 'date-time' },
           updated_at: { type: 'string', format: 'date-time' }
         }
+      },
+      accountingAccounts: {
+        type: 'object',
+        description: 'Cuenta del catálogo contable (Plan de Cuentas)',
+        properties: {
+          id: { type: 'integer' },
+          code: { type: 'string', maxLength: 20, description: 'Código único de la cuenta (ej: 111, 210.01)' },
+          name: { type: 'string', maxLength: 120, description: 'Nombre de la cuenta' },
+          type: {
+            type: 'string',
+            enum: ['activo', 'pasivo', 'capital', 'ingreso', 'egreso', 'costo'],
+            description: 'Tipo contable de la cuenta'
+          },
+          nature: {
+            type: 'string',
+            enum: ['deudora', 'acreedora'],
+            description: 'Naturaleza de la cuenta. Activo/costo/egreso → deudora; pasivo/capital/ingreso → acreedora'
+          },
+          level: { type: 'integer', minimum: 1, maximum: 3, description: '1=grupo, 2=subcuenta, 3=cuenta detalle' },
+          parent_id: { type: 'integer', nullable: true, description: 'ID de la cuenta padre (árbol jerárquico)' },
+          allows_movements: { type: 'boolean', description: 'Solo cuentas nivel 3 aceptan cargos/abonos en pólizas' },
+          is_system: { type: 'boolean', description: 'Cuenta del catálogo SAT, no puede eliminarse' },
+          active: { type: 'boolean', description: 'Estado activo/inactivo de la cuenta' },
+          parent: {
+            nullable: true,
+            description: 'Cuenta padre (solo en GET individual y lista)',
+            type: 'object',
+            properties: {
+              id: { type: 'integer' },
+              code: { type: 'string' },
+              name: { type: 'string' }
+            }
+          },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      accountingPeriods: {
+        type: 'object',
+        description: 'Período contable mensual',
+        properties: {
+          id: { type: 'integer' },
+          name: { type: 'string', maxLength: 50, example: 'Enero 2026' },
+          year: { type: 'integer', example: 2026 },
+          month: { type: 'integer', minimum: 1, maximum: 12, example: 1 },
+          status: {
+            type: 'string',
+            enum: ['abierto', 'cerrado', 'bloqueado'],
+            description: 'abierto: acepta pólizas | cerrado: solo lectura, reapertura posible | bloqueado: definitivo'
+          },
+          balance_snapshot: {
+            type: 'object',
+            nullable: true,
+            description: 'Snapshot del balance al momento del cierre'
+          },
+          closed_at: { type: 'string', format: 'date-time', nullable: true },
+          closed_by_user_id: { type: 'integer', nullable: true },
+          closedBy: {
+            nullable: true,
+            type: 'object',
+            properties: {
+              id: { type: 'integer' },
+              name: { type: 'string' },
+              email: { type: 'string', format: 'email' }
+            }
+          },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      accountingVoucherLines: {
+        type: 'object',
+        description: 'Línea de cargo/abono de una póliza contable',
+        properties: {
+          id: { type: 'integer' },
+          voucher_id: { type: 'integer' },
+          account_id: { type: 'integer' },
+          debit: { type: 'number', format: 'decimal', description: 'Cargo (debe)' },
+          credit: { type: 'number', format: 'decimal', description: 'Abono (haber)' },
+          description: { type: 'string', maxLength: 255, nullable: true },
+          order: { type: 'integer', description: 'Orden de presentación dentro de la póliza' },
+          account: {
+            nullable: true,
+            type: 'object',
+            description: 'Cuenta contable asociada',
+            properties: {
+              id: { type: 'integer' },
+              code: { type: 'string' },
+              name: { type: 'string' },
+              type: { type: 'string', enum: ['activo', 'pasivo', 'capital', 'ingreso', 'egreso', 'costo'] },
+              nature: { type: 'string', enum: ['deudora', 'acreedora'] }
+            }
+          },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      accountingVouchers: {
+        type: 'object',
+        description: 'Póliza contable',
+        properties: {
+          id: { type: 'integer' },
+          folio: { type: 'string', maxLength: 20, example: 'POL-2026-03-001', description: 'Folio generado automáticamente' },
+          type: {
+            type: 'string',
+            enum: ['ingreso', 'egreso', 'diario', 'ajuste'],
+            description: 'Tipo de póliza contable'
+          },
+          period_id: { type: 'integer' },
+          branch_id: { type: 'integer', nullable: true },
+          date: { type: 'string', format: 'date' },
+          description: { type: 'string', maxLength: 255 },
+          status: {
+            type: 'string',
+            enum: ['borrador', 'aplicada', 'cancelada'],
+            description: 'borrador: editable | aplicada: definitiva | cancelada: anulada'
+          },
+          reference_type: { type: 'string', maxLength: 50, nullable: true, description: 'Tipo del documento origen (ej: purchase, sale)' },
+          reference_id: { type: 'integer', nullable: true, description: 'ID del documento origen' },
+          created_by_user_id: { type: 'integer' },
+          applied_at: { type: 'string', format: 'date-time', nullable: true },
+          period: {
+            nullable: true,
+            type: 'object',
+            properties: {
+              id: { type: 'integer' },
+              name: { type: 'string' },
+              year: { type: 'integer' },
+              month: { type: 'integer' },
+              status: { type: 'string' }
+            }
+          },
+          branch: {
+            nullable: true,
+            type: 'object',
+            properties: {
+              id: { type: 'integer' },
+              name: { type: 'string' }
+            }
+          },
+          createdBy: {
+            nullable: true,
+            type: 'object',
+            properties: {
+              id: { type: 'integer' },
+              name: { type: 'string' },
+              email: { type: 'string', format: 'email' }
+            }
+          },
+          lines: {
+            type: 'array',
+            description: 'Líneas contables (solo en GET individual)',
+            items: {
+              $ref: '#/components/schemas/accountingVoucherLines'
+            }
+          },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' },
+          deleted_at: { type: 'string', format: 'date-time', nullable: true }
+        }
       }
     }
   }

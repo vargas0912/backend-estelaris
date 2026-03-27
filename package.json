@@ -31,7 +31,8 @@
     "sequelize": "^6.37.7",
     "swagger-jsdoc": "6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "winston": "^3.19.0"
+    "winston": "^3.19.0",
+    "xmlbuilder2": "^4.0.3"
   },
   "devDependencies": {
     "@commitlint/cli": "19.5.0",
