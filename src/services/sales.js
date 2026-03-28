@@ -116,7 +116,7 @@ const getOverdueSales = async () => {
           status: 'Pendiente',
           due_date: { [Op.lt]: today }
         },
-        required: false
+        required: true
       }
     ],
     order: [['due_date', 'ASC']]
