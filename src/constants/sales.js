@@ -77,7 +77,13 @@ const SALES_VALIDATORS = Object.freeze({
   ITEM_NOTES_INVALID: 'Las observaciones del ítem deben ser texto',
 
   // delivery_status
-  DELIVERY_STATUS_INVALID: 'Estado de entrega inválido. Use: Entregado o Pendiente'
+  DELIVERY_STATUS_INVALID: 'Estado de entrega inválido. Use: Entregado o Pendiente',
+
+  // anticipo
+  ANTICIPO_AMOUNT_INVALID: 'El anticipo debe ser un número decimal mayor o igual a 0',
+  ANTICIPO_EXCEEDS_TOTAL: 'El anticipo no puede ser mayor al total de la venta',
+  ANTICIPO_PAYMENT_METHOD_REQUIRED: 'El método de pago del anticipo es requerido cuando el anticipo es mayor a 0',
+  ANTICIPO_PAYMENT_METHOD_INVALID: "El método de pago del anticipo debe ser: 'Efectivo', 'Transferencia', 'Vale despensa' o 'Tarjeta'"
 });
 
 const TICKET_CONFIG = Object.freeze({
