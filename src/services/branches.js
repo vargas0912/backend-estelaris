@@ -6,8 +6,11 @@ const attributes = [
   'address',
   'phone',
   'opening_date',
-  'created_at',
-  'updated_at'
+  'ticket_prefix',
+  'createdAt',
+  'updatedAt',
+  'deletedAt',
+  'municipality_id'
 ];
 
 const municipalityAttributes = ['id', 'name'];
@@ -59,7 +62,8 @@ const updateBranch = async(branchId, req) => {
     address,
     municipality_id: municipalityId,
     phone,
-    opening_date: openingDate
+    opening_date: openingDate,
+    ticket_prefix: ticketPrefix
   } = req;
 
   const data = await branches.findByPk(branchId);
@@ -77,6 +81,7 @@ const updateBranch = async(branchId, req) => {
   data.municipality_id = municipalityId || data.municipality_id;
   data.phone = phone || data.phone;
   data.opening_date = openingDate || data.opening_date;
+  data.ticket_prefix = ticketPrefix !== undefined ? ticketPrefix : data.ticket_prefix;
 
   const result = await data.save();
   return result;

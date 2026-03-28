@@ -40,6 +40,10 @@ const valiAddRecord = [
     .bail(),
   check('phone'),
   check('opening_date'),
+  check('ticket_prefix')
+    .optional({ nullable: true })
+    .isString().withMessage(BRANCH_VALIDATORS.TICKET_PREFIX_INVALID).bail()
+    .isLength({ max: 5 }).withMessage(BRANCH_VALIDATORS.TICKET_PREFIX_TOO_LONG).bail(),
 
   (req, res, next) => {
     return validateResults(req, res, next);
@@ -77,6 +81,10 @@ const valiUpdateRecord = [
     .bail(),
   check('phone'),
   check('opening_date').optional(),
+  check('ticket_prefix')
+    .optional({ nullable: true })
+    .isString().withMessage(BRANCH_VALIDATORS.TICKET_PREFIX_INVALID).bail()
+    .isLength({ max: 5 }).withMessage(BRANCH_VALIDATORS.TICKET_PREFIX_TOO_LONG).bail(),
 
   (req, res, next) => {
     return validateResults(req, res, next);
