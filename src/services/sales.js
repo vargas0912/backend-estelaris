@@ -20,8 +20,8 @@ const generateTicket = (branchId, branchTicketPrefix, salesDate, saleId) => {
 const saleAttributes = [
   'id', 'branch_id', 'customer_id', 'customer_address_id', 'employee_id',
   'user_id', 'price_list_id', 'sales_date', 'sales_type', 'payment_periods',
-  'total_days_term', 'ticket', 'invoice', 'subtotal', 'discount_amount', 'tax_amount',
-  'sales_total', 'due_payment', 'due_date', 'status', 'delivery_status', 'notes',
+  'total_days_term', 'ticket', 'invoice', 'subtotal', 'discount_amount', 'anticipo_amount',
+  'tax_amount', 'sales_total', 'due_payment', 'due_date', 'status', 'delivery_status', 'notes',
   'created_at', 'updated_at'
 ];
 
@@ -137,6 +137,8 @@ const createSale = async (body, userId) => {
     invoice,
     notes,
     discount_amount: discountAmount = 0,
+    anticipo_amount: antizipoAmount = 0,
+    anticipo_payment_method: antizipoPaymentMethod,
     delivery_status: deliveryStatus,
     items
   } = body;
@@ -205,10 +207,18 @@ const createSale = async (body, userId) => {
     }, 0).toFixed(2));
     const salesTotal = parseFloat((subtotal + taxAmount - parseFloat(discountAmount)).toFixed(2));
 
+    // Validar anticipo
+    const parsedAnticipo = parseFloat(antizipoAmount);
+    if (parsedAnticipo > salesTotal) {
+      await transaction.rollback();
+      return { error: 'ANTICIPO_EXCEEDS_TOTAL' };
+    }
+
     // Determinar due_payment y status
     const isContado = salesType === 'Contado';
-    const duePayment = isContado ? 0 : salesTotal;
-    const status = isContado ? 'Pagado' : 'Pendiente';
+    const remainingBalance = parseFloat((salesTotal - parsedAnticipo).toFixed(2));
+    const duePayment = isContado ? 0 : remainingBalance;
+    const status = (isContado || remainingBalance === 0) ? 'Pagado' : 'Pendiente';
 
     // Validar y decrementar stock
     for (const item of details) {
@@ -249,6 +259,7 @@ const createSale = async (body, userId) => {
       invoice: invoice || null,
       subtotal,
       discount_amount: parseFloat(discountAmount),
+      anticipo_amount: parsedAnticipo,
       tax_amount: taxAmount,
       sales_total: salesTotal,
       due_payment: duePayment,
@@ -284,11 +295,11 @@ const createSale = async (body, userId) => {
       }, { transaction });
     }
 
-    // Generar installments si es crédito
-    if (salesType === 'Credito' && paymentPeriods && totalDaysTerm) {
+    // Generar installments si es crédito y queda saldo por financiar
+    if (salesType === 'Credito' && paymentPeriods && totalDaysTerm && remainingBalance > 0) {
       const periodDays = PERIOD_DAYS[paymentPeriods];
       const numInstallments = Math.ceil(parseInt(totalDaysTerm) / periodDays);
-      const baseAmount = parseFloat((salesTotal / numInstallments).toFixed(2));
+      const baseAmount = parseFloat((remainingBalance / numInstallments).toFixed(2));
       const installments = [];
 
       for (let i = 1; i <= numInstallments; i++) {
@@ -297,7 +308,7 @@ const createSale = async (body, userId) => {
 
         // Última cuota absorbe redondeo
         const amount = i === numInstallments
-          ? parseFloat((salesTotal - baseAmount * (numInstallments - 1)).toFixed(2))
+          ? parseFloat((remainingBalance - baseAmount * (numInstallments - 1)).toFixed(2))
           : baseAmount;
 
         installments.push({
@@ -315,13 +326,33 @@ const createSale = async (body, userId) => {
       await saleInstallments.bulkCreate(installments, { transaction });
     }
 
+    // Registrar pago del anticipo si aplica
+    let anticipoPayment = null;
+    if (parsedAnticipo > 0) {
+      anticipoPayment = await salePayments.create({
+        sale_id: sale.id,
+        payment_amount: parsedAnticipo,
+        payment_date: salesDate,
+        payment_method: antizipoPaymentMethod,
+        notes: 'Anticipo',
+        user_id: userId
+      }, { transaction });
+    }
+
     await transaction.commit();
     const result = await getSale(sale.id);
 
-    // Fire and forget — no bloquea, no lanza si falla
-    accountingEngine.generateFromSale(sale.id).catch(err =>
-      console.error('[AccountingEngine] Error generando póliza:', err.message)
-    );
+    // Fire and forget — secuencial para evitar colisión de folios
+    const anticipoPaymentId = anticipoPayment?.id || null;
+    accountingEngine.generateFromSale(sale.id)
+      .then(() => {
+        if (anticipoPaymentId) {
+          return accountingEngine.generateFromSalePayment(anticipoPaymentId);
+        }
+      })
+      .catch(err =>
+        console.error('[AccountingEngine] Error generando póliza:', err.message)
+      );
 
     return result;
   } catch (error) {

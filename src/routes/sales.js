@@ -193,7 +193,9 @@ router.get('/:id', [
  *      description: |
  *        Crea venta con encabezado y detalle en transacción atómica.
  *        Contado: status=Pagado, due_payment=0.
- *        Crédito: genera installments automáticamente según payment_periods y total_days_term.
+ *        Crédito: genera installments automáticamente sobre el saldo remanente (total - anticipo_amount).
+ *        Si anticipo_amount > 0 se registra automáticamente un pago con notes='Anticipo'.
+ *        Si anticipo_amount = total, la venta queda como status=Pagado sin cuotas.
  *        Decrementa stock y genera stockMovements.
  *        El campo `ticket` es auto-generado con formato {PREFIX}-{YY}-{SALE_ID} (ej. MTY-26-000042) y no se envía en el request.
  *      security:
@@ -242,6 +244,15 @@ router.get('/:id', [
  *                  type: number
  *                  format: decimal
  *                  default: 0
+ *                anticipo_amount:
+ *                  type: number
+ *                  format: decimal
+ *                  default: 0
+ *                  description: Pago inicial al crear venta a crédito. Reduce el saldo financiado. Puede ser 0.
+ *                anticipo_payment_method:
+ *                  type: string
+ *                  enum: [Efectivo, Transferencia, Vale despensa, Tarjeta]
+ *                  description: Requerido cuando anticipo_amount > 0.
  *                invoice:
  *                  type: string
  *                  maxLength: 50
