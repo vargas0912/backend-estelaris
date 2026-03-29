@@ -327,8 +327,9 @@ const createSale = async (body, userId) => {
     }
 
     // Registrar pago del anticipo si aplica
+    let anticipoPayment = null;
     if (parsedAnticipo > 0) {
-      await salePayments.create({
+      anticipoPayment = await salePayments.create({
         sale_id: sale.id,
         payment_amount: parsedAnticipo,
         payment_date: salesDate,
@@ -341,10 +342,17 @@ const createSale = async (body, userId) => {
     await transaction.commit();
     const result = await getSale(sale.id);
 
-    // Fire and forget — no bloquea, no lanza si falla
-    accountingEngine.generateFromSale(sale.id).catch(err =>
-      console.error('[AccountingEngine] Error generando póliza:', err.message)
-    );
+    // Fire and forget — secuencial para evitar colisión de folios
+    const anticipoPaymentId = anticipoPayment?.id || null;
+    accountingEngine.generateFromSale(sale.id)
+      .then(() => {
+        if (anticipoPaymentId) {
+          return accountingEngine.generateFromSalePayment(anticipoPaymentId);
+        }
+      })
+      .catch(err =>
+        console.error('[AccountingEngine] Error generando póliza:', err.message)
+      );
 
     return result;
   } catch (error) {
