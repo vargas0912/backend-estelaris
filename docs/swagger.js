@@ -1084,6 +1084,9 @@ const swaggerDefinition = {
           subtotal: { type: 'number', format: 'decimal' },
           discount_amount: { type: 'number', format: 'decimal' },
           anticipo_amount: { type: 'number', format: 'decimal', description: 'Pago inicial registrado al crear la venta a crédito. Resta del saldo financiado.' },
+          points_redeemed: { type: 'number', format: 'decimal', default: 0, description: 'Puntos canjeados al crear la venta.' },
+          points_discount: { type: 'number', format: 'decimal', default: 0, description: 'Valor monetario de los puntos canjeados ($MXN). Reduce el due_payment.' },
+          points_earned: { type: 'number', format: 'decimal', default: 0, description: 'Puntos acreditados al cliente por esta venta.' },
           tax_amount: { type: 'number', format: 'decimal' },
           sales_total: { type: 'number', format: 'decimal' },
           due_payment: { type: 'number', format: 'decimal', description: 'Contado=0. Crédito=(sales_total - anticipo_amount) inicialmente.' },
@@ -1482,6 +1485,63 @@ const swaggerDefinition = {
               $ref: '#/components/schemas/accountingVoucherLines'
             }
           },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' },
+          deleted_at: { type: 'string', format: 'date-time', nullable: true }
+        }
+      },
+      loyaltyConfig: {
+        type: 'object',
+        description: 'Configuración del programa de puntos de lealtad. Una fila por sucursal; branch_id=null es la config global.',
+        properties: {
+          id: { type: 'integer' },
+          branch_id: { type: 'integer', nullable: true, description: 'null = configuración global (fallback para todas las sucursales)' },
+          is_active: { type: 'boolean', default: true },
+          points_per_peso: { type: 'number', format: 'decimal', default: 0.1, description: 'Puntos ganados por cada $1 gastado. Ej: 0.1 = 1 punto cada $10.' },
+          earn_on_tax: { type: 'boolean', default: false, description: '¿Se acumulan puntos sobre el IVA?' },
+          earn_on_discount: { type: 'boolean', default: false, description: '¿Se acumulan sobre el precio antes del descuento?' },
+          earn_on_credit: { type: 'boolean', default: true, description: '¿Las ventas a crédito generan puntos?' },
+          earn_on_credit_when: { type: 'string', enum: ['sale', 'paid'], default: 'paid', description: 'sale=al crear la venta | paid=al liquidar el saldo completo' },
+          peso_per_point: { type: 'number', format: 'decimal', default: 0.10, description: 'Valor monetario de 1 punto al canjear ($MXN).' },
+          min_points_redeem: { type: 'integer', default: 100, description: 'Mínimo de puntos requeridos para poder canjear.' },
+          max_redeem_pct: { type: 'number', format: 'decimal', default: 20.00, description: 'Porcentaje máximo del total de la venta pagable con puntos.' },
+          max_redeem_points: { type: 'integer', nullable: true, description: 'Límite absoluto de puntos canjeables por venta. null = sin límite.' },
+          points_expiry_days: { type: 'integer', nullable: true, description: 'Días hasta que vencen los puntos acumulados. null = nunca vencen.' },
+          rounding_strategy: { type: 'string', enum: ['floor', 'round', 'ceil'], default: 'floor', description: 'Estrategia de redondeo al calcular puntos fraccionarios.' },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' },
+          deleted_at: { type: 'string', format: 'date-time', nullable: true }
+        }
+      },
+      customerPoints: {
+        type: 'object',
+        description: 'Saldo de puntos de lealtad de un cliente (una fila por cliente).',
+        properties: {
+          id: { type: 'integer' },
+          customer_id: { type: 'integer' },
+          total_points: { type: 'number', format: 'decimal', description: 'Saldo actual de puntos disponibles para canje.' },
+          lifetime_points: { type: 'number', format: 'decimal', description: 'Total de puntos acumulados históricamente (nunca decrece por canje).' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      pointTransactions: {
+        type: 'object',
+        description: 'Bitácora inmutable de cada movimiento de puntos de un cliente.',
+        properties: {
+          id: { type: 'integer' },
+          customer_id: { type: 'integer' },
+          type: {
+            type: 'string',
+            enum: ['earn', 'redeem', 'expire', 'adjust', 'void'],
+            description: 'earn=acumulación | redeem=canje | expire=vencimiento | adjust=ajuste manual | void=reversión'
+          },
+          points: { type: 'number', format: 'decimal', description: 'Positivo=ingreso de puntos, negativo=egreso.' },
+          balance_after: { type: 'number', format: 'decimal', description: 'Saldo del cliente después de esta transacción.' },
+          reference_type: { type: 'string', enum: ['sale', 'payment', 'admin', 'expiry'], description: 'Origen del movimiento.' },
+          reference_id: { type: 'integer', nullable: true, description: 'ID del documento origen (sale_id, payment_id, etc.).' },
+          expires_at: { type: 'string', format: 'date-time', nullable: true, description: 'Fecha de vencimiento de los puntos ganados en esta tx (solo type=earn).' },
+          user_id: { type: 'integer', description: 'Usuario que procesó el movimiento.' },
+          notes: { type: 'string', nullable: true },
           created_at: { type: 'string', format: 'date-time' },
           updated_at: { type: 'string', format: 'date-time' },
           deleted_at: { type: 'string', format: 'date-time', nullable: true }

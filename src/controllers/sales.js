@@ -75,7 +75,8 @@ const addRecord = async (req, res) => {
     const sale = await createSale(data, userId);
 
     if (sale && sale.error) {
-      const status = sale.error.startsWith('INSUFFICIENT_STOCK') ? 422 : 400;
+      const is422 = sale.error.startsWith('INSUFFICIENT_') || sale.error.startsWith('POINTS_');
+      const status = is422 ? 422 : 400;
       handleHttpError(res, sale.error, status);
       return;
     }

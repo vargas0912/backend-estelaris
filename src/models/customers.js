@@ -10,6 +10,8 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.users, { as: 'user', foreignKey: 'user_id' });
       this.hasMany(models.customerAddresses, { as: 'addresses', foreignKey: 'customer_id' });
       this.hasMany(models.sales, { as: 'sales', foreignKey: 'customer_id' });
+      this.hasOne(models.customerPoints, { foreignKey: 'customer_id', as: 'points' });
+      this.hasMany(models.pointTransactions, { foreignKey: 'customer_id', as: 'pointTransactions' });
     }
   }
 

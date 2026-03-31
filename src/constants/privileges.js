@@ -43,4 +43,12 @@ const FIELDS = {
 
 };
 
-module.exports = { PRIVILEGES, USERS, USER_VALIDATORS, FIELDS };
+const LOYALTY = Object.freeze({
+  VIEW_LOYALTY_CONFIG: 'view_loyalty_config',
+  CREATE_LOYALTY_CONFIG: 'create_loyalty_config',
+  EDIT_LOYALTY_CONFIG: 'edit_loyalty_config',
+  VIEW_LOYALTY_POINTS: 'view_loyalty_points',
+  ADJUST_LOYALTY_POINTS: 'adjust_loyalty_points'
+});
+
+module.exports = { PRIVILEGES, USERS, USER_VALIDATORS, FIELDS, LOYALTY };
