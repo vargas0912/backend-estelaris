@@ -7,6 +7,17 @@ const { sequelize } = require('../models/index');
 const { Op } = require('sequelize');
 const accountingEngine = require('./accountingEngine.service');
 const { TICKET_CONFIG } = require('../constants/sales');
+const {
+  getActiveConfig,
+  getOrCreateCustomerPoints,
+  calculateEarnedPoints,
+  validateRedeem,
+  redeemPoints,
+  earnPoints,
+  voidRedeemPoints,
+  voidEarnPoints
+} = require('./loyaltyPoints');
+const { LOYALTY_ERRORS } = require('../constants/loyaltyPoints');
 
 const generateTicket = (branchId, branchTicketPrefix, salesDate, saleId) => {
   const yy = salesDate.substring(2, 4);
@@ -21,6 +32,7 @@ const saleAttributes = [
   'id', 'branch_id', 'customer_id', 'customer_address_id', 'employee_id',
   'user_id', 'price_list_id', 'sales_date', 'sales_type', 'payment_periods',
   'total_days_term', 'ticket', 'invoice', 'subtotal', 'discount_amount', 'anticipo_amount',
+  'points_redeemed', 'points_discount', 'points_earned',
   'tax_amount', 'sales_total', 'due_payment', 'due_date', 'status', 'delivery_status', 'notes',
   'created_at', 'updated_at'
 ];
@@ -143,6 +155,8 @@ const createSale = async (body, userId) => {
     items
   } = body;
 
+  const pointsRedeemed = parseFloat(body.points_redeemed || 0);
+
   // Validar entidades
   const customer = await customers.findByPk(customerId, { attributes: ['id'] });
   if (!customer) return { error: 'CUSTOMER_NOT_FOUND' };
@@ -207,6 +221,37 @@ const createSale = async (body, userId) => {
     }, 0).toFixed(2));
     const salesTotal = parseFloat((subtotal + taxAmount - parseFloat(discountAmount)).toFixed(2));
 
+    // Lógica de lealtad: validar y calcular puntos
+    const loyaltyConfig = await getActiveConfig(branchId);
+    let pointsDiscount = 0;
+    let pointsEarned = 0;
+
+    if (pointsRedeemed > 0) {
+      if (!loyaltyConfig) {
+        await transaction.rollback();
+        return { error: LOYALTY_ERRORS.LOYALTY_CONFIG_NOT_FOUND };
+      }
+
+      const customerPointsRecord = await getOrCreateCustomerPoints(customerId, transaction);
+      const redeemResult = validateRedeem(loyaltyConfig, customerPointsRecord, pointsRedeemed, salesTotal);
+      if (redeemResult.error) {
+        await transaction.rollback();
+        return { error: redeemResult.error };
+      }
+
+      pointsDiscount = redeemResult.pointsDiscount;
+    }
+
+    // Calcular puntos a ganar (si hay config activa)
+    const isCredit = salesType === 'Credito';
+    if (loyaltyConfig) {
+      const shouldEarn = !isCredit || loyaltyConfig.earn_on_credit;
+
+      if (shouldEarn) {
+        pointsEarned = calculateEarnedPoints(loyaltyConfig, subtotal, taxAmount, parseFloat(discountAmount));
+      }
+    }
+
     // Validar anticipo
     const parsedAnticipo = parseFloat(antizipoAmount);
     if (parsedAnticipo > salesTotal) {
@@ -216,7 +261,7 @@ const createSale = async (body, userId) => {
 
     // Determinar due_payment y status
     const isContado = salesType === 'Contado';
-    const remainingBalance = parseFloat((salesTotal - parsedAnticipo).toFixed(2));
+    const remainingBalance = parseFloat((salesTotal - parsedAnticipo - pointsDiscount).toFixed(2));
     const duePayment = isContado ? 0 : remainingBalance;
     const status = (isContado || remainingBalance === 0) ? 'Pagado' : 'Pendiente';
 
@@ -260,6 +305,9 @@ const createSale = async (body, userId) => {
       subtotal,
       discount_amount: parseFloat(discountAmount),
       anticipo_amount: parsedAnticipo,
+      points_redeemed: pointsRedeemed,
+      points_discount: pointsDiscount,
+      points_earned: pointsEarned,
       tax_amount: taxAmount,
       sales_total: salesTotal,
       due_payment: duePayment,
@@ -293,6 +341,23 @@ const createSale = async (body, userId) => {
         notes: `Venta #${sale.id}`,
         created_by: userId
       }, { transaction });
+    }
+
+    // Procesar puntos de lealtad dentro de la transacción
+    if (loyaltyConfig) {
+      // Canjear puntos si el cliente eligió hacerlo
+      if (pointsRedeemed > 0) {
+        await redeemPoints(customerId, pointsRedeemed, pointsDiscount, sale.id, userId, transaction);
+      }
+
+      // Acreditar puntos ganados si aplica en este momento
+      if (pointsEarned > 0) {
+        const earnNow = !isCredit || loyaltyConfig.earn_on_credit_when === 'sale';
+
+        if (earnNow) {
+          await earnPoints(customerId, pointsEarned, sale.id, userId, loyaltyConfig.points_expiry_days, transaction);
+        }
+      }
     }
 
     // Generar installments si es crédito y queda saldo por financiar
@@ -439,6 +504,14 @@ const cancelSale = async (id, userId) => {
         notes: `Reversal por cancelación de venta #${id}`,
         created_by: userId
       }, { transaction });
+    }
+
+    // Revertir puntos de lealtad si aplica
+    if (parseFloat(sale.points_redeemed) > 0) {
+      await voidRedeemPoints(sale.customer_id, id, userId, transaction);
+    }
+    if (parseFloat(sale.points_earned) > 0) {
+      await voidEarnPoints(sale.customer_id, id, userId, transaction);
     }
 
     // Eliminar installments pendientes si es crédito

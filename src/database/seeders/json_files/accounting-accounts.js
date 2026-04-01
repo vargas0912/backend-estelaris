@@ -42,6 +42,7 @@ const data = [
   { code: '211', name: 'Proveedores', type: 'pasivo', nature: 'acreedora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
   { code: '212', name: 'IVA por Pagar', type: 'pasivo', nature: 'acreedora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
   { code: '213', name: 'Acreedores Diversos', type: 'pasivo', nature: 'acreedora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
+  { code: '214', name: 'Pasivo por Puntos de Lealtad', type: 'pasivo', nature: 'acreedora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
   // Pasivo Largo Plazo
   { code: '221', name: 'Préstamos Bancarios L.P.', type: 'pasivo', nature: 'acreedora', level: 3, parent_id: null, allows_movements: true, is_system: true, active: true, created_at: fecha, updated_at: fecha },
   // Capital
@@ -84,6 +85,7 @@ const parentCodeMap = {
   211: '210',
   212: '210',
   213: '210',
+  214: '210',
   221: '220',
   311: '310',
   321: '320',
