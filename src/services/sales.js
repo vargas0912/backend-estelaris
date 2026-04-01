@@ -17,6 +17,7 @@ const {
   voidRedeemPoints,
   voidEarnPoints
 } = require('./loyaltyPoints');
+const { LOYALTY_ERRORS } = require('../constants/loyaltyPoints');
 
 const generateTicket = (branchId, branchTicketPrefix, salesDate, saleId) => {
   const yy = salesDate.substring(2, 4);
@@ -221,19 +222,14 @@ const createSale = async (body, userId) => {
     const salesTotal = parseFloat((subtotal + taxAmount - parseFloat(discountAmount)).toFixed(2));
 
     // Lógica de lealtad: validar y calcular puntos
-    let loyaltyConfig = null;
+    const loyaltyConfig = await getActiveConfig(branchId);
     let pointsDiscount = 0;
     let pointsEarned = 0;
 
     if (pointsRedeemed > 0) {
-      loyaltyConfig = await getActiveConfig(branchId);
       if (!loyaltyConfig) {
         await transaction.rollback();
-        return { error: 'LOYALTY_CONFIG_NOT_FOUND' };
-      }
-      if (!loyaltyConfig.is_active) {
-        await transaction.rollback();
-        return { error: 'LOYALTY_CONFIG_INACTIVE' };
+        return { error: LOYALTY_ERRORS.LOYALTY_CONFIG_NOT_FOUND };
       }
 
       const customerPointsRecord = await getOrCreateCustomerPoints(customerId, transaction);
@@ -247,12 +243,8 @@ const createSale = async (body, userId) => {
     }
 
     // Calcular puntos a ganar (si hay config activa)
-    if (!loyaltyConfig) {
-      loyaltyConfig = await getActiveConfig(branchId);
-    }
-
-    if (loyaltyConfig && loyaltyConfig.is_active) {
-      const isCredit = salesType === 'Credito';
+    const isCredit = salesType === 'Credito';
+    if (loyaltyConfig) {
       const shouldEarn = !isCredit || loyaltyConfig.earn_on_credit;
 
       if (shouldEarn) {
@@ -352,7 +344,7 @@ const createSale = async (body, userId) => {
     }
 
     // Procesar puntos de lealtad dentro de la transacción
-    if (loyaltyConfig && loyaltyConfig.is_active) {
+    if (loyaltyConfig) {
       // Canjear puntos si el cliente eligió hacerlo
       if (pointsRedeemed > 0) {
         await redeemPoints(customerId, pointsRedeemed, pointsDiscount, sale.id, userId, transaction);
@@ -360,7 +352,6 @@ const createSale = async (body, userId) => {
 
       // Acreditar puntos ganados si aplica en este momento
       if (pointsEarned > 0) {
-        const isCredit = salesType === 'Credito';
         const earnNow = !isCredit || loyaltyConfig.earn_on_credit_when === 'sale';
 
         if (earnNow) {

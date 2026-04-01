@@ -122,6 +122,31 @@ const validateRedeem = (config, customerPointsRecord, pointsToRedeem, salesTotal
 };
 
 /**
+ * Obtiene el registro de puntos con bloqueo para escritura. Crea el registro si no existe.
+ * @param {number} customerId
+ * @param {object} transaction
+ * @returns {customerPoints}
+ */
+const getLockedCustomerPoints = async (customerId, transaction) => {
+  await customerPoints.findOrCreate({
+    where: { customer_id: customerId },
+    defaults: {
+      customer_id: customerId,
+      total_points: 0,
+      lifetime_points: 0,
+      updated_at: new Date()
+    },
+    transaction
+  });
+
+  return customerPoints.findOne({
+    where: { customer_id: customerId },
+    lock: transaction.LOCK.UPDATE,
+    transaction
+  });
+};
+
+/**
  * Canjea puntos de un cliente como parte de una venta.
  * Debe ejecutarse dentro de una transacción existente.
  * @param {number} customerId
@@ -132,11 +157,7 @@ const validateRedeem = (config, customerPointsRecord, pointsToRedeem, salesTotal
  * @param {object} transaction
  */
 const redeemPoints = async (customerId, pointsToRedeem, pointsDiscount, saleId, userId, transaction) => {
-  const record = await customerPoints.findOne({
-    where: { customer_id: customerId },
-    lock: transaction.LOCK.UPDATE,
-    transaction
-  });
+  const record = await getLockedCustomerPoints(customerId, transaction);
 
   const currentBalance = parseFloat(record.total_points);
   const newBalance = parseFloat((currentBalance - pointsToRedeem).toFixed(2));
@@ -168,23 +189,7 @@ const redeemPoints = async (customerId, pointsToRedeem, pointsDiscount, saleId, 
  * @param {object} transaction
  */
 const earnPoints = async (customerId, points, saleId, userId, expiryDays, transaction) => {
-  // Ensure record exists before locking (first-time earn for this customer)
-  await customerPoints.findOrCreate({
-    where: { customer_id: customerId },
-    defaults: {
-      customer_id: customerId,
-      total_points: 0,
-      lifetime_points: 0,
-      updated_at: new Date()
-    },
-    transaction
-  });
-
-  const record = await customerPoints.findOne({
-    where: { customer_id: customerId },
-    lock: transaction.LOCK.UPDATE,
-    transaction
-  });
+  const record = await getLockedCustomerPoints(customerId, transaction);
 
   const currentBalance = parseFloat(record.total_points);
   const currentLifetime = parseFloat(record.lifetime_points);
@@ -233,12 +238,7 @@ const voidRedeemPoints = async (customerId, saleId, userId, transaction) => {
 
   if (!originalTx) return;
 
-  const record = await customerPoints.findOne({
-    where: { customer_id: customerId },
-    lock: transaction.LOCK.UPDATE,
-    transaction
-  });
-
+  const record = await getLockedCustomerPoints(customerId, transaction);
   const pointsToRestore = Math.abs(parseFloat(originalTx.points));
   const newBalance = parseFloat((parseFloat(record.total_points) + pointsToRestore).toFixed(2));
 
@@ -278,12 +278,7 @@ const voidEarnPoints = async (customerId, saleId, userId, transaction) => {
 
   if (!originalTx) return;
 
-  const record = await customerPoints.findOne({
-    where: { customer_id: customerId },
-    lock: transaction.LOCK.UPDATE,
-    transaction
-  });
-
+  const record = await getLockedCustomerPoints(customerId, transaction);
   const earnedPoints = parseFloat(originalTx.points);
   const currentBalance = parseFloat(record.total_points);
   const currentLifetime = parseFloat(record.lifetime_points);
@@ -320,7 +315,7 @@ const getCustomerPointsSummary = async (customerId) => {
     where: { customer_id: customerId }
   });
 
-  return record || null;
+  return record || { customer_id: customerId, total_points: 0, lifetime_points: 0 };
 };
 
 /**
@@ -335,6 +330,7 @@ const getCustomerTransactions = async (customerId, { page = 1, limit = 20 } = {}
   return pointTransactions.findAndCountAll({
     where: { customer_id: customerId },
     order: [['created_at', 'DESC']],
+    paranoid: false,
     limit,
     offset
   });
@@ -349,7 +345,7 @@ const getCustomerTransactions = async (customerId, { page = 1, limit = 20 } = {}
  * @returns {{ success: true }|{ error: string }}
  */
 const adjustPoints = async (customerId, amount, notes, userId) => {
-  if (!amount || amount === 0) {
+  if (!amount) {
     return { error: LOYALTY_ERRORS.INVALID_ADJUST_AMOUNT };
   }
 
