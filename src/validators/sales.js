@@ -116,11 +116,10 @@ const valiAddRecord = [
     .isIn(['Efectivo', 'Transferencia', 'Vale despensa', 'Tarjeta']).withMessage(SALES_VALIDATORS.ANTICIPO_PAYMENT_METHOD_INVALID),
   check('points_redeemed')
     .optional({ nullable: true })
-    .isDecimal({ decimal_digits: '0,2', force_decimal: false })
+    .isInt({ min: 0 })
     .withMessage('POINTS_REDEEMED_INVALID')
     .bail()
-    .custom(val => parseFloat(val) >= 0)
-    .withMessage('POINTS_REDEEMED_INVALID'),
+    .toInt(),
   (req, res, next) => validateResults(req, res, next)
 ];
 

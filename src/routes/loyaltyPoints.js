@@ -353,6 +353,8 @@ router.get('/customer/:customerId/transactions', [
  *                properties:
  *                  success:
  *                    type: boolean
+ *                  points:
+ *                    $ref: '#/components/schemas/customerPoints'
  *        '422':
  *          description: Saldo insuficiente o cantidad inválida
  *        '401':

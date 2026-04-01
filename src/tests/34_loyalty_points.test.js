@@ -452,11 +452,8 @@ describe('[LOYALTY POINTS] Test api loyalty /api/loyaltyPoints/', () => {
         .expect(200);
 
       expect(response.body.success).toBe(true);
-
-      const updated = await api
-        .get(`/api/loyaltyPoints/customer/${customerId}`)
-        .auth(Token, { type: 'bearer' });
-      expect(parseFloat(updated.body.points.total_points)).toBe(balanceBefore + 10);
+      expect(response.body).toHaveProperty('points');
+      expect(parseFloat(response.body.points.total_points)).toBe(balanceBefore + 10);
     });
 
     test('16. Ajuste negativo de 5 puntos. Expect 200', async () => {
@@ -467,11 +464,8 @@ describe('[LOYALTY POINTS] Test api loyalty /api/loyaltyPoints/', () => {
         .expect(200);
 
       expect(response.body.success).toBe(true);
-
-      const updated = await api
-        .get(`/api/loyaltyPoints/customer/${customerId}`)
-        .auth(Token, { type: 'bearer' });
-      expect(parseFloat(updated.body.points.total_points)).toBe(balanceBefore + 10 - 5);
+      expect(response.body).toHaveProperty('points');
+      expect(parseFloat(response.body.points.total_points)).toBe(balanceBefore + 10 - 5);
     });
 
     test('17. Ajuste negativo mayor al saldo. Expect 422', async () => {

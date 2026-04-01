@@ -139,7 +139,8 @@ const adjustPoints = async (req, res) => {
       return;
     }
 
-    res.send({ success: true });
+    const points = await getCustomerPointsSummary(customerId);
+    res.send({ success: true, points });
   } catch (error) {
     handleHttpError(res, `ERROR_ADJUST_POINTS -> ${error}`, 400);
   }
