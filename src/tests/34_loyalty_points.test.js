@@ -238,6 +238,44 @@ describe('[LOYALTY POINTS] Test api loyalty /api/loyaltyPoints/', () => {
   });
 
   // ============================================================
+  // GET /api/loyaltyPoints/configs
+  // ============================================================
+  describe('GET /api/loyaltyPoints/configs', () => {
+    test('3b. Listar todas las configs → 200, array con la config creada', async () => {
+      const response = await api
+        .get('/api/loyaltyPoints/configs')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('configs');
+      expect(Array.isArray(response.body.configs)).toBe(true);
+      expect(response.body.configs.length).toBeGreaterThanOrEqual(1);
+
+      const global = response.body.configs.find(c => c.id === configId);
+      expect(global).toBeDefined();
+      expect(global.branch_id ?? null).toBeNull();
+    });
+
+    test('3c. Filtrar por branch_id=1 → incluye config global', async () => {
+      const response = await api
+        .get('/api/loyaltyPoints/configs?branch_id=1')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('configs');
+      // la config global (branch_id=null) debe aparecer
+      const global = response.body.configs.find(c => (c.branch_id ?? null) === null);
+      expect(global).toBeDefined();
+    });
+
+    test('3d. Sin token → 401', async () => {
+      await api
+        .get('/api/loyaltyPoints/configs')
+        .expect(401);
+    });
+  });
+
+  // ============================================================
   // PUT /api/loyaltyPoints/config/:id
   // ============================================================
   describe('PUT /api/loyaltyPoints/config/:id', () => {

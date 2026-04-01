@@ -4,6 +4,7 @@ const { loyaltyConfig } = require('../models/index');
 
 const {
   getActiveConfig,
+  listConfigs,
   getCustomerPointsSummary,
   getCustomerTransactions: getTransactionsService,
   adjustPoints: adjustPointsService,
@@ -26,6 +27,19 @@ const getConfig = async (req, res) => {
     res.send({ config });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_LOYALTY_CONFIG -> ${error}`, 400);
+  }
+};
+
+/**
+ * Lista todas las configuraciones de lealtad (con filtro opcional por branch_id).
+ */
+const listAllConfigs = async (req, res) => {
+  try {
+    const { branch_id: branchId } = matchedData(req);
+    const configs = await listConfigs(branchId ?? null);
+    res.send({ configs });
+  } catch (error) {
+    handleHttpError(res, `ERROR_LIST_LOYALTY_CONFIGS -> ${error}`, 400);
   }
 };
 
@@ -146,6 +160,7 @@ const processExpired = async (req, res) => {
 
 module.exports = {
   getConfig,
+  listAllConfigs,
   createConfig,
   updateConfig,
   getCustomerPoints,

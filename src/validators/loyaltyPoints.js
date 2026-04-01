@@ -132,6 +132,14 @@ const validateUpdateConfig = [
   (req, res, next) => validateResults(req, res, next)
 ];
 
+const validateListConfigs = [
+  check('branch_id')
+    .optional({ nullable: true })
+    .isInt({ min: 1 }).withMessage('BRANCH_ID_INVALID').bail()
+    .toInt(),
+  (req, res, next) => validateResults(req, res, next)
+];
+
 const validateAdjustPoints = [
   check('customerId')
     .exists().withMessage('CUSTOMER_ID_NOT_EXISTS').bail()
@@ -153,6 +161,7 @@ const validateAdjustPoints = [
 module.exports = {
   validateGetCustomer,
   validateGetTransactions,
+  validateListConfigs,
   validateCreateConfig,
   validateUpdateConfig,
   validateAdjustPoints

@@ -306,6 +306,28 @@ const voidEarnPoints = async (customerId, saleId, userId, transaction) => {
 };
 
 /**
+ * Lista todas las configuraciones de lealtad, con filtro opcional por branch_id.
+ * Devuelve primero la config global (branch_id=null) y luego las de sucursal por id.
+ * @param {number|null} branchId - null devuelve todas
+ * @returns {loyaltyConfig[]}
+ */
+const listConfigs = async (branchId) => {
+  const where = branchId != null
+    ? {
+        [Op.or]: [{ branch_id: branchId }, { branch_id: null }]
+      }
+    : {};
+
+  return loyaltyConfig.findAll({
+    where,
+    order: [
+      [loyaltyConfig.sequelize.literal('CASE WHEN branch_id IS NULL THEN 0 ELSE 1 END'), 'ASC'],
+      ['id', 'ASC']
+    ]
+  });
+};
+
+/**
  * Devuelve el resumen de puntos de un cliente.
  * @param {number} customerId
  * @returns {customerPoints|null}
@@ -448,6 +470,7 @@ const processExpiredPoints = async (userId) => {
 
 module.exports = {
   getActiveConfig,
+  listConfigs,
   getOrCreateCustomerPoints,
   calculateEarnedPoints,
   validateRedeem,

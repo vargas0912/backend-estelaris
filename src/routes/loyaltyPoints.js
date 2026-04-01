@@ -8,6 +8,7 @@ const { readLimiter, writeLimiter } = require('../middlewares/rateLimiters');
 const {
   validateGetCustomer,
   validateGetTransactions,
+  validateListConfigs,
   validateCreateConfig,
   validateUpdateConfig,
   validateAdjustPoints
@@ -15,6 +16,7 @@ const {
 
 const {
   getConfig,
+  listAllConfigs,
   createConfig,
   updateConfig,
   getCustomerPoints,
@@ -25,6 +27,52 @@ const {
 
 const { LOYALTY } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
+
+/**
+ * List all loyalty configs
+ * @openapi
+ * /loyaltyPoints/configs:
+ *    get:
+ *      tags:
+ *        - loyaltyPoints
+ *      summary: Listar todas las configuraciones de lealtad
+ *      description: >
+ *        Devuelve todas las configuraciones del programa de puntos. Si se filtra
+ *        por branch_id, incluye la config específica de esa sucursal más la global
+ *        (branch_id=null). Sin filtro devuelve todas. La config global aparece
+ *        siempre primero en el resultado.
+ *      security:
+ *        - bearerAuth: []
+ *      parameters:
+ *        - name: branch_id
+ *          in: query
+ *          description: Filtrar por sucursal (incluye también la config global)
+ *          required: false
+ *          schema:
+ *            type: integer
+ *      responses:
+ *        '200':
+ *          description: Lista de configuraciones de lealtad
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  configs:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/loyaltyConfig'
+ *        '401':
+ *          description: No autorizado
+ *        '403':
+ *          description: Sin privilegio view_loyalty_config
+ */
+router.get('/configs', [
+  readLimiter,
+  authMidleware,
+  validateListConfigs,
+  checkRol([ROLE.USER, ROLE.ADMIN], LOYALTY.VIEW_CONFIG)
+], listAllConfigs);
 
 /**
  * Get active loyalty config
