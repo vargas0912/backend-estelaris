@@ -193,7 +193,8 @@ GET /api/loyaltyPoints/expire  [solo superadmin]
 
 | Método | Ruta | Descripción | Privilegio |
 |--------|------|-------------|------------|
-| `GET` | `/api/loyaltyPoints/config` | Obtener config vigente (global o por branch) | `view_loyalty_config` |
+| `GET` | `/api/loyaltyPoints/configs` | Listar todas las configs (global + por sucursal) | `view_loyalty_config` |
+| `GET` | `/api/loyaltyPoints/config` | Obtener config activa para la sucursal del usuario | `view_loyalty_config` |
 | `POST` | `/api/loyaltyPoints/config` | Crear configuración | `create_loyalty_config` |
 | `PUT` | `/api/loyaltyPoints/config/:id` | Actualizar configuración | `edit_loyalty_config` |
 
@@ -278,16 +279,51 @@ ADJUST_WOULD_NEGATIVE_BALANCE: 'ADJUST_WOULD_NEGATIVE_BALANCE'
 
 ---
 
+## Detalles del endpoint `GET /api/loyaltyPoints/configs`
+
+Diseñado para que el frontend pueda construir la pantalla de administración de configuraciones.
+
+### Query params
+
+| Parámetro | Tipo | Descripción |
+|-----------|------|-------------|
+| `branch_id` | `integer` (opcional) | Si se envía, devuelve la config de esa sucursal **más** la global (`branch_id=null`). Sin filtro devuelve todas. |
+
+### Orden de respuesta
+
+La config global (`branch_id = null`) aparece siempre primero; las configs de sucursal van a continuación ordenadas por `id` ascendente.
+
+### Ejemplo de respuesta
+
+```json
+{
+  "configs": [
+    { "id": 1, "branch_id": null, "is_active": true, "points_per_peso": "0.1000", ... },
+    { "id": 2, "branch_id": 3,    "is_active": true, "points_per_peso": "0.2000", ... }
+  ]
+}
+```
+
+### Diferencia con `GET /api/loyaltyPoints/config`
+
+| Endpoint | Propósito |
+|----------|-----------|
+| `GET /configs` | Listado completo para administración (tabla + selector de sucursal) |
+| `GET /config` | Config activa que se usará en una operación de venta (prioriza sucursal > global) |
+
+---
+
 ## Verificación
 
-1. `npm test` — tests existentes de sales deben pasar sin cambios
-2. Crear loyalty_config global → `GET /api/loyaltyPoints/config` debe devolverla
-3. `POST /api/sales` con `points_redeemed: 100`:
+1. `npm test` — todos los tests pasan (26/26 en suite de lealtad)
+2. Crear loyalty_config global → `GET /api/loyaltyPoints/configs` devuelve array con la config
+3. `GET /api/loyaltyPoints/configs?branch_id=1` devuelve config de sucursal 1 (si existe) + global
+4. `POST /api/sales` con `points_redeemed: 100`:
    - `points_discount` = 100 × `peso_per_point`
    - `due_payment` = `sales_total - anticipo - points_discount`
    - Existe `point_transaction` tipo `redeem` para el cliente
    - `customer_points.total_points` decrementó
-4. Si `earn_on_credit_when='sale'`: tras la venta el cliente tiene puntos acreditados
-5. Si `earn_on_credit_when='paid'`: puntos aparecen solo al liquidar el saldo
-6. Cancelar venta con puntos canjeados → puntos devueltos al cliente
-7. Cancelar venta con puntos ganados ya acreditados → puntos retirados del cliente
+5. Si `earn_on_credit_when='sale'`: tras la venta el cliente tiene puntos acreditados
+6. Si `earn_on_credit_when='paid'`: puntos aparecen solo al liquidar el saldo
+7. Cancelar venta con puntos canjeados → puntos devueltos al cliente
+8. Cancelar venta con puntos ganados ya acreditados → puntos retirados del cliente

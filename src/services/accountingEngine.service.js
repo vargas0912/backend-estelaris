@@ -12,8 +12,11 @@ const {
   purchasePayments,
   branches,
   users,
+  pointTransactions,
   sequelize
 } = db;
+
+const { getActiveConfig } = require('./loyaltyPoints');
 
 // El modelo expense_types usa underscore en su nombre (modelName definido así en el archivo)
 // eslint-disable-next-line camelcase
@@ -170,11 +173,17 @@ const createVoucherWithLines = async ({
 /**
  * Genera póliza contable a partir de una venta.
  *
- * Asientos:
+ * Asientos base:
  *   Cargo  113 (Clientes)             → sale.sales_total
  *   Abono  411 (Ventas)               → sale.subtotal
  *   Abono  212 (IVA por Pagar)        → sale.tax_amount
- *   Cargo  412 (Descuentos s/Ventas)  → sale.discount_amount  [si > 0]
+ *   Cargo  412 (Descuentos s/Ventas)  → sale.discount_amount        [si > 0]
+ *
+ * Asientos de lealtad (cuando aplican):
+ *   Cargo  214 (Pasivo Puntos Lealtad) → sale.points_discount        [canje: liquida el pasivo]
+ *   Abono  113 (Clientes)              → sale.points_discount        [canje: reduce la c×c]
+ *   Cargo  412 (Descuentos s/Ventas)   → valor monetario de puntos   [earn: reconoce el costo]
+ *   Abono  214 (Pasivo Puntos Lealtad) → valor monetario de puntos   [earn: crea el pasivo]
  */
 const generateFromSale = async (saleId) => {
   const existing = await accountingVouchers.findOne({
@@ -191,36 +200,60 @@ const generateFromSale = async (saleId) => {
   const date = sale.sales_date;
   const period = await findOpenPeriod(date);
 
-  // Validar cuentas necesarias
-  const [acc113, acc411, acc212] = await Promise.all([
-    findAccount('113'),
-    findAccount('411'),
-    findAccount('212')
-  ]);
-
   const total = parseFloat(sale.sales_total);
   const subtotal = parseFloat(sale.subtotal);
   const taxAmount = parseFloat(sale.tax_amount);
   const discountAmount = parseFloat(sale.discount_amount || 0);
+  const pointsDiscount = parseFloat(sale.points_discount || 0);
+  const pointsEarned = parseFloat(sale.points_earned || 0);
+
+  // Verificar si los puntos se acreditaron en esta venta (no diferidos a pago)
+  let earnedValue = 0;
+  if (pointsEarned > 0) {
+    const earnTx = await pointTransactions.findOne({
+      where: { type: 'earn', reference_type: 'sale', reference_id: saleId }
+    });
+
+    if (earnTx) {
+      const loyaltyConf = await getActiveConfig(sale.branch_id);
+      if (loyaltyConf) {
+        earnedValue = parseFloat(
+          (pointsEarned * parseFloat(loyaltyConf.peso_per_point)).toFixed(2)
+        );
+      }
+    }
+  }
+
+  // Cargar cuentas necesarias
+  const needsAcc412 = discountAmount > 0 || earnedValue > 0;
+  const needsAcc214 = pointsDiscount > 0 || earnedValue > 0;
+
+  const [acc113, acc411, acc212, acc412, acc214] = await Promise.all([
+    findAccount('113'),
+    findAccount('411'),
+    findAccount('212'),
+    needsAcc412 ? findAccount('412') : null,
+    needsAcc214 ? findAccount('214') : null
+  ]);
 
   const lines = [
-    // Cargo: Clientes por el total de la venta
     { account_id: acc113.id, debit: total, credit: 0, description: 'Clientes' },
-    // Abono: Ventas por el subtotal
     { account_id: acc411.id, debit: 0, credit: subtotal, description: 'Ventas' },
-    // Abono: IVA por pagar
     { account_id: acc212.id, debit: 0, credit: taxAmount, description: 'IVA por Pagar' }
   ];
 
-  // Si hay descuento, agregar línea de cargo
   if (discountAmount > 0) {
-    const acc412 = await findAccount('412');
-    lines.push({
-      account_id: acc412.id,
-      debit: discountAmount,
-      credit: 0,
-      description: 'Descuentos sobre Ventas'
-    });
+    lines.push({ account_id: acc412.id, debit: discountAmount, credit: 0, description: 'Descuentos sobre Ventas' });
+  }
+
+  if (pointsDiscount > 0) {
+    lines.push({ account_id: acc214.id, debit: pointsDiscount, credit: 0, description: 'Puntos de Lealtad Canjeados' });
+    lines.push({ account_id: acc113.id, debit: 0, credit: pointsDiscount, description: 'Clientes — Descuento por Puntos' });
+  }
+
+  if (earnedValue > 0) {
+    lines.push({ account_id: acc412.id, debit: earnedValue, credit: 0, description: 'Costo Estimado de Puntos Otorgados' });
+    lines.push({ account_id: acc214.id, debit: 0, credit: earnedValue, description: 'Pasivo por Puntos de Lealtad' });
   }
 
   const t = await sequelize.transaction();
