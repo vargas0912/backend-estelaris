@@ -437,7 +437,7 @@ const generateFromSalePayment = async (paymentId) => {
   const payment = await salePayments.findOne({
     where: { id: paymentId },
     include: [
-      { model: sales, as: 'sale', attributes: ['id', 'branch_id', 'sales_date'] }
+      { model: sales, as: 'sale', attributes: ['id', 'sales_date'] }
     ]
   });
 
@@ -463,7 +463,7 @@ const generateFromSalePayment = async (paymentId) => {
     { account_id: acc113.id, debit: 0, credit: amount, description: 'Clientes' }
   ];
 
-  const branchId = payment.sale?.branch_id || null;
+  const branchId = payment.branch_id || null;
 
   const t = await sequelize.transaction();
 

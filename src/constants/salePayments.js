@@ -28,6 +28,11 @@ const SALE_PAYMENT_VALIDATORS = Object.freeze({
   REFERENCE_NUMBER_INVALID: 'El número de referencia debe ser texto',
   REFERENCE_NUMBER_TOO_LONG: 'El número de referencia no puede exceder 100 caracteres',
 
+  // branch_id
+  BRANCH_ID_NOT_EXISTS: 'El id de sucursal es requerido',
+  BRANCH_ID_IS_EMPTY: 'El id de sucursal no puede estar vacío',
+  BRANCH_ID_INVALID: 'El id de sucursal debe ser un número entero',
+
   // notes
   NOTES_INVALID: 'Las observaciones deben ser texto'
 });

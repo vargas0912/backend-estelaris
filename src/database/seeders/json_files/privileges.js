@@ -3,7 +3,7 @@ const {
   BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD,
   CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR, PRODUCT: PRD, POSITION: POS, PRICE_LIST: PL,
   PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP, PURCH_PAYMENT: PP_PAY, TRANSFER: TRANSF,
-  SALE_PAYMENT: SL_PAY, DRIVER: DRV
+  SALE_PAYMENT: SL_PAY, DRIVER: DRV, LOYALTY: LY, ACCOUNTING_REPORT: AC_RPT, ACCOUNTING_ACCOUNT: AC_AC
 } = require('../../../constants/modules');
 
 const data = [
@@ -173,20 +173,24 @@ const data = [
 
   // Repartidor
   { name: DRV.NAME_VIEW_DELIVERIES, codeName: DRV.VIEW_DELIVERIES, module: DRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: DRV.NAME_UPDATE_DELIVERY, codeName: DRV.UPDATE_DELIVERY, module: DRV.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: DRV.NAME_UPDATE_DELIVERY, codeName: DRV.UPDATE_DELIVERY, module: DRV.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
-  // // Tipos de Gastos
-  // { name: EXT.NAME_ALL, codeName: EXT.VIEW_ALL, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  // { name: EXT.NAME_ADD, codeName: EXT.ADD, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  // { name: EXT.NAME_UPDATE, codeName: EXT.UPDATE, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  // { name: EXT.NAME_DELETE, codeName: EXT.DELETE, module: EXT.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  // accounting-accounts
+  { name: AC_AC.NAME_ALL, codeName: AC_AC.VIEW_ALL, module: AC_AC.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: AC_AC.NAME_VIEW_TREE, codeName: AC_AC.VIEW_TREE, module: AC_AC.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: AC_AC.NAME_ADD, codeName: AC_AC.ADD, module: AC_AC.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: AC_AC.NAME_UPDATE, codeName: AC_AC.UPDATE, module: AC_AC.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: AC_AC.NAME_DELETE, codeName: AC_AC.DELETE, module: AC_AC.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
-  // Gastos
-  // { name: EXP.NAME_ALL, codeName: EXP.VIEW_ALL, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  // { name: EXP.NAME_VIEW_BY_BRANCH, codeName: EXP.VIEW_BY_BRANCH, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  // { name: EXP.NAME_ADD, codeName: EXP.ADD, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  // { name: EXP.NAME_UPDATE, codeName: EXP.UPDATE, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  // { name: EXP.NAME_DELETE, codeName: EXP.DELETE, module: EXP.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  // Accounting reports
+  { name: AC_RPT.NAME_ALL, codeName: AC_RPT.VIEW_ALL, module: AC_RPT.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Programa de fidelidad con puntos
+  { name: LY.NAME_VIEW_CONFIG, codeName: LY.VIEW_CONFIG, module: LY.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: LY.NAME_VIEW_POINTS, codeName: LY.VIEW_POINTS, module: LY.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: LY.NAME_CREATE_CONFIG, codeName: LY.CREATE_CONFIG, module: LY.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: LY.NAME_EDIT_CONFIG, codeName: LY.EDIT_CONFIG, module: LY.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: LY.NAME_ADD_USER_PRIVILEGE, codeName: LY.ADJUST_POINTS, module: LY.MODULE_NAME, created_at: fecha, updated_at: fecha }
 ];
 
 module.exports = { data };

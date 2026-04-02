@@ -5,6 +5,7 @@ const { saleCustomerCreate, saleAddressCreate, purchaseForSaleStock, saleCreateC
 const {
   paymentCreate,
   paymentCreateFull,
+  paymentNoBranchId,
   paymentNoSaleId,
   paymentNoAmount,
   paymentNoDate,
@@ -41,17 +42,19 @@ const testUser = {
  *   8. Cobro a venta Cancelada → 422
  *   9. Cobro a venta Pagada → 422
  *  10. Sin token → 401
+ *  11. Sin branch_id → 400
+ *  12. Cobro en sucursal diferente → 200, branch_id registrado
  *
  * GET /api/sale-payments
- *  11. Listar todos → 200
- *  12. Por venta → 200
- *  13. Por id → 200
- *  14. Por id inexistente → 404
+ *  13. Listar todos → 200
+ *  14. Por venta → 200
+ *  15. Por id → 200
+ *  16. Por id inexistente → 404
  *
  * DELETE /api/sale-payments/:id
- *  15. Eliminar cobro → 200, due_payment restaurado
- *  16. Eliminar cobro que revierte status Pagado → 200
- *  17. Eliminar inexistente → 404
+ *  17. Eliminar cobro → 200, due_payment restaurado
+ *  18. Eliminar cobro que revierte status Pagado → 200
+ *  19. Eliminar inexistente → 404
  */
 
 describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
@@ -247,13 +250,39 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
         .send(paymentCreate(creditoSaleId))
         .expect(401);
     });
+
+    test('11. Sin branch_id. Expect 400', async () => {
+      await api
+        .post('/api/sale-payments')
+        .auth(Token, { type: 'bearer' })
+        .send(paymentNoBranchId(creditoSaleId))
+        .expect(400);
+    });
+
+    test('12. Cobro en sucursal diferente a la de la venta. Expect 200, branch_id registrado', async () => {
+      const newSaleRes = await api
+        .post('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(saleCreateCredito(customerId, addressId))
+        .expect(200);
+
+      const response = await api
+        .post('/api/sale-payments')
+        .auth(Token, { type: 'bearer' })
+        .send(paymentCreate(newSaleRes.body.sale.id, 2))
+        .expect(200);
+
+      expect(response.body.payment.branch_id).toBe(2);
+      expect(response.body.payment.branch).toHaveProperty('id', 2);
+    });
   });
 
   // ============================================
   // GET /api/sale-payments
   // ============================================
   describe('GET /api/sale-payments', () => {
-    test('11. Listar todos. Expect 200', async () => {
+    test('13. Listar todos. Expect 200', async () => {
       const response = await api
         .get('/api/sale-payments')
         .auth(Token, { type: 'bearer' })
@@ -263,7 +292,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       expect(Array.isArray(response.body.payments)).toBe(true);
     });
 
-    test('12. Por venta. Expect 200', async () => {
+    test('14. Por venta. Expect 200', async () => {
       const response = await api
         .get(`/api/sale-payments/sale/${creditoSaleId}`)
         .auth(Token, { type: 'bearer' })
@@ -272,7 +301,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       expect(response.body).toHaveProperty('payments');
     });
 
-    test('13. Por id. Expect 200', async () => {
+    test('15. Por id. Expect 200', async () => {
       const response = await api
         .get(`/api/sale-payments/${createdPaymentId}`)
         .auth(Token, { type: 'bearer' })
@@ -282,7 +311,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       expect(response.body.payment.id).toBe(createdPaymentId);
     });
 
-    test('14. Por id inexistente. Expect 404', async () => {
+    test('16. Por id inexistente. Expect 404', async () => {
       await api
         .get('/api/sale-payments/99999')
         .auth(Token, { type: 'bearer' })
@@ -294,7 +323,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
   // DELETE /api/sale-payments/:id
   // ============================================
   describe('DELETE /api/sale-payments/:id', () => {
-    test('15. Eliminar cobro. Expect 200, due_payment restaurado', async () => {
+    test('17. Eliminar cobro. Expect 200, due_payment restaurado', async () => {
       const beforeRes = await api
         .get(`/api/sales/${creditoSaleId}`)
         .auth(Token, { type: 'bearer' })
@@ -315,7 +344,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       expect(parseFloat(afterRes.body.sale.due_payment)).toBeCloseTo(dueBefore + 100, 2);
     });
 
-    test('16. Eliminar cobro que revierte status Pagado. Expect 200', async () => {
+    test('18. Eliminar cobro que revierte status Pagado. Expect 200', async () => {
       const paymentsRes = await api
         .get(`/api/sale-payments/sale/${fullPaymentSaleId}`)
         .auth(Token, { type: 'bearer' })
@@ -337,7 +366,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       expect(parseFloat(saleRes.body.sale.due_payment)).toBeGreaterThan(0);
     });
 
-    test('17. Eliminar inexistente. Expect 404', async () => {
+    test('19. Eliminar inexistente. Expect 404', async () => {
       await api
         .delete('/api/sale-payments/99999')
         .auth(Token, { type: 'bearer' })
