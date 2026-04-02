@@ -19,6 +19,8 @@ const {
   deleteRecord
 } = require('../controllers/salePayments');
 
+const branchScope = require('../middlewares/branchScope');
+
 const { SALE_PAYMENT } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
 
@@ -108,6 +110,13 @@ router.get('/:id', [
  *        Si `due_payment` llega a 0, status cambia a 'Pagado'.
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - name: X-Branch-ID
+ *          in: header
+ *          required: true
+ *          schema:
+ *            type: integer
+ *          description: ID de la sucursal que recibe el pago
  *      requestBody:
  *        required: true
  *        content:
@@ -119,7 +128,6 @@ router.get('/:id', [
  *                - payment_amount
  *                - payment_date
  *                - payment_method
- *                - branch_id
  *              properties:
  *                sale_id:
  *                  type: integer
@@ -132,9 +140,6 @@ router.get('/:id', [
  *                payment_method:
  *                  type: string
  *                  enum: [Efectivo, Transferencia, Vale despensa, Tarjeta]
- *                branch_id:
- *                  type: integer
- *                  description: Sucursal donde se recibe el pago
  *                reference_number:
  *                  type: string
  *                  maxLength: 100
@@ -156,6 +161,7 @@ router.get('/:id', [
 router.post('/', [
   writeLimiter,
   authMidleware,
+  branchScope,
   valiAddRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], SALE_PAYMENT.ADD)
 ], addRecord);

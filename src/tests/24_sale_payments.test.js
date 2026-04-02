@@ -5,7 +5,6 @@ const { saleCustomerCreate, saleAddressCreate, purchaseForSaleStock, saleCreateC
 const {
   paymentCreate,
   paymentCreateFull,
-  paymentNoBranchId,
   paymentNoSaleId,
   paymentNoAmount,
   paymentNoDate,
@@ -42,7 +41,7 @@ const testUser = {
  *   8. Cobro a venta Cancelada → 422
  *   9. Cobro a venta Pagada → 422
  *  10. Sin token → 401
- *  11. Sin branch_id → 400
+ *  11. Sin header X-Branch-ID → 400
  *  12. Cobro en sucursal diferente → 200, branch_id registrado
  *
  * GET /api/sale-payments
@@ -132,6 +131,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       const response = await api
         .post('/api/sale-payments')
         .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
         .send(paymentCreate(creditoSaleId))
         .expect(200);
 
@@ -164,6 +164,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       await api
         .post('/api/sale-payments')
         .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
         .send(paymentCreateFull(fullPaymentSaleId, duePayment))
         .expect(200);
 
@@ -185,6 +186,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       await api
         .post('/api/sale-payments')
         .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
         .send(paymentNoSaleId)
         .expect(400);
     });
@@ -193,6 +195,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       await api
         .post('/api/sale-payments')
         .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
         .send(paymentNoAmount(creditoSaleId))
         .expect(400);
     });
@@ -201,6 +204,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       await api
         .post('/api/sale-payments')
         .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
         .send(paymentNoDate(creditoSaleId))
         .expect(400);
     });
@@ -209,6 +213,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       await api
         .post('/api/sale-payments')
         .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
         .send(paymentNoMethod(creditoSaleId))
         .expect(400);
     });
@@ -224,6 +229,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       await api
         .post('/api/sale-payments')
         .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
         .send(paymentExceedsDue(creditoSaleId, currentDue))
         .expect(422);
     });
@@ -232,6 +238,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       await api
         .post('/api/sale-payments')
         .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
         .send(paymentCreate(cancelledSaleId))
         .expect(422);
     });
@@ -240,6 +247,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       await api
         .post('/api/sale-payments')
         .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
         .send(paymentCreate(fullPaymentSaleId))
         .expect(422);
     });
@@ -251,11 +259,11 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
         .expect(401);
     });
 
-    test('11. Sin branch_id. Expect 400', async () => {
+    test('11. Sin header X-Branch-ID. Expect 400', async () => {
       await api
         .post('/api/sale-payments')
         .auth(Token, { type: 'bearer' })
-        .send(paymentNoBranchId(creditoSaleId))
+        .send(paymentCreate(creditoSaleId))
         .expect(400);
     });
 
@@ -270,7 +278,8 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       const response = await api
         .post('/api/sale-payments')
         .auth(Token, { type: 'bearer' })
-        .send(paymentCreate(newSaleRes.body.sale.id, 2))
+        .set('x-branch-id', '2')
+        .send(paymentCreate(newSaleRes.body.sale.id))
         .expect(200);
 
       expect(response.body.payment.branch_id).toBe(2);

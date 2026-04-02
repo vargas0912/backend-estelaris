@@ -41,11 +41,6 @@ const valiAddRecord = [
     .optional({ nullable: true })
     .isString().withMessage(SALE_PAYMENT_VALIDATORS.REFERENCE_NUMBER_INVALID).bail()
     .isLength({ max: 100 }).withMessage(SALE_PAYMENT_VALIDATORS.REFERENCE_NUMBER_TOO_LONG).bail(),
-  check('branch_id')
-    .exists().withMessage(SALE_PAYMENT_VALIDATORS.BRANCH_ID_NOT_EXISTS).bail()
-    .notEmpty().withMessage(SALE_PAYMENT_VALIDATORS.BRANCH_ID_IS_EMPTY).bail()
-    .isInt().withMessage(SALE_PAYMENT_VALIDATORS.BRANCH_ID_INVALID).bail()
-    .toInt(),
   check('notes')
     .optional({ nullable: true })
     .isString().withMessage(SALE_PAYMENT_VALIDATORS.NOTES_INVALID).bail(),

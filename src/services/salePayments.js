@@ -107,14 +107,13 @@ const revertPaymentFromInstallments = async (saleId, amount, transaction) => {
   }
 };
 
-const createPayment = async (body, userId) => {
+const createPayment = async (body, userId, branchId) => {
   const {
     sale_id: saleId,
     payment_amount: paymentAmount,
     payment_date: paymentDate,
     payment_method: paymentMethod,
     reference_number: referenceNumber,
-    branch_id: branchId,
     notes
   } = body;
 

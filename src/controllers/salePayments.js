@@ -48,8 +48,14 @@ const addRecord = async (req, res) => {
   try {
     const data = matchedData(req);
     const userId = req.user.id;
+    const branchId = req.branchId || parseInt(req.headers['x-branch-id'], 10);
 
-    const payment = await createPayment(data, userId);
+    if (!branchId || isNaN(branchId)) {
+      handleHttpError(res, 'BRANCH_ID_REQUIRED', 400);
+      return;
+    }
+
+    const payment = await createPayment(data, userId, branchId);
 
     if (payment && payment.error === 'NOT_FOUND') {
       handleHttpError(res, `SALE ${data.sale_id} NOT EXISTS`, 404);
