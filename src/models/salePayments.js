@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.sales, { as: 'sale', foreignKey: 'sale_id' });
       this.belongsTo(models.users, { as: 'user', foreignKey: 'user_id' });
+      this.belongsTo(models.branches, { as: 'branch', foreignKey: 'branch_id' });
     }
   }
 
@@ -31,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    branch_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },

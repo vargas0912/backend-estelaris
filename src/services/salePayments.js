@@ -1,10 +1,10 @@
-const { salePayments, sales, saleInstallments, users } = require('../models/index');
+const { salePayments, sales, saleInstallments, users, branches } = require('../models/index');
 const { sequelize } = require('../models/index');
 const accountingEngine = require('./accountingEngine.service');
 
 const paymentAttributes = [
   'id', 'sale_id', 'payment_amount', 'payment_date', 'payment_method',
-  'reference_number', 'user_id', 'notes', 'created_at', 'updated_at'
+  'reference_number', 'user_id', 'branch_id', 'notes', 'created_at', 'updated_at'
 ];
 
 const userAttributes = ['id', 'name', 'email'];
@@ -14,9 +14,12 @@ const saleAttributes = [
   'due_payment', 'sales_type'
 ];
 
+const branchAttributes = ['id', 'name'];
+
 const paymentIncludes = [
   { model: sales, as: 'sale', attributes: saleAttributes },
-  { model: users, as: 'user', attributes: userAttributes }
+  { model: users, as: 'user', attributes: userAttributes },
+  { model: branches, as: 'branch', attributes: branchAttributes }
 ];
 
 const getAllPayments = async () => {
@@ -111,6 +114,7 @@ const createPayment = async (body, userId) => {
     payment_date: paymentDate,
     payment_method: paymentMethod,
     reference_number: referenceNumber,
+    branch_id: branchId,
     notes
   } = body;
 
@@ -146,6 +150,7 @@ const createPayment = async (body, userId) => {
       payment_method: paymentMethod,
       reference_number: referenceNumber || null,
       user_id: userId,
+      branch_id: branchId,
       notes: notes || null
     }, { transaction });
 

@@ -119,6 +119,7 @@ router.get('/:id', [
  *                - payment_amount
  *                - payment_date
  *                - payment_method
+ *                - branch_id
  *              properties:
  *                sale_id:
  *                  type: integer
@@ -131,6 +132,9 @@ router.get('/:id', [
  *                payment_method:
  *                  type: string
  *                  enum: [Efectivo, Transferencia, Vale despensa, Tarjeta]
+ *                branch_id:
+ *                  type: integer
+ *                  description: Sucursal donde se recibe el pago
  *                reference_number:
  *                  type: string
  *                  maxLength: 100
