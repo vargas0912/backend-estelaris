@@ -10,7 +10,7 @@ Los pagos de venta (`sale_payments`) no registraban en qué sucursal se recibía
 
 ## Solución
 
-Agregar `branch_id` a la tabla `sale_payments`, independiente del `branch_id` de la venta.
+Agregar `branch_id` a la tabla `sale_payments`, tomado del header `X-Branch-ID` vía middleware `branchScope` — consistente con el resto del sistema (gastos, compras, transferencias). No se expone en el body del request.
 
 ```
 sale_payments.branch_id  →  branches.id   (sucursal que recibió el pago)
@@ -33,12 +33,21 @@ sales.branch_id          →  branches.id   (sucursal donde se originó la venta
   - Asociación `belongsTo(branches, { as: 'branch', foreignKey: 'branch_id' })`
 
 ### Validación
-- **`src/constants/salePayments.js`** — mensajes de error para `branch_id`
-- **`src/validators/salePayments.js`** — `branch_id` requerido en `valiAddRecord` (entero, no nulo)
+- **`src/validators/salePayments.js`** — `branch_id` **no** se valida en el body; lo provee el middleware `branchScope` desde el header `X-Branch-ID`
+
+### Ruta
+- **`src/routes/sale-payments.js`**
+  - Middleware `branchScope` agregado al stack del `POST /sale-payments`
+  - `branch_id` documentado en el OpenAPI como header `X-Branch-ID` (no en el requestBody)
+
+### Controlador
+- **`src/controllers/salePayments.js`** — `addRecord`
+  - `branchId = req.branchId || parseInt(req.headers['x-branch-id'], 10)`
+  - El fallback al header cubre el caso superadmin donde `branchScope` pone `req.branchId = null`
 
 ### Servicio
 - **`src/services/salePayments.js`**
-  - `branch_id` agregado a `createPayment(body, userId)`
+  - `createPayment(body, userId, branchId)` — `branchId` como tercer argumento, ya no se lee del body
   - `'branch_id'` incluido en `paymentAttributes`
   - `paymentIncludes` incluye `{ model: branches, as: 'branch', attributes: ['id', 'name'] }`
 
@@ -47,27 +56,28 @@ sales.branch_id          →  branches.id   (sucursal donde se originó la venta
   - Corregido: `branchId = payment.branch_id` (antes usaba `payment.sale?.branch_id`)
   - El include del sale ya no necesita `branch_id`
 
-### API
-- **`src/routes/sale-payments.js`** — `branch_id` documentado en el OpenAPI del `POST /sale-payments`
-
 ### Tests
-- **`src/tests/helper/salePaymentsData.js`** — `branch_id: 1` en todos los fixtures, nuevo helper `paymentNoBranchId`
-- **`src/tests/24_sale_payments.test.js`** — 2 casos nuevos:
-  - Test 11: sin `branch_id` → 400
-  - Test 12: pago en sucursal diferente a la de la venta → 200, `branch_id` registrado correctamente
+- **`src/tests/helper/salePaymentsData.js`** — eliminado `branch_id` de todos los fixtures y el helper `paymentNoBranchId`
+- **`src/tests/24_sale_payments.test.js`** — todos los `POST` usan `.set('x-branch-id', ...)`:
+  - Test 11: sin header `X-Branch-ID` → 400 (desde `branchScope`)
+  - Test 12: cobro con `x-branch-id: 2` en venta de sucursal 1 → 200, `branch_id` registrado correctamente
 
 ---
 
 ## Flujo POST /sale-payments
 
-**Request body:**
-```json
+**Request:**
+```http
+POST /api/sale-payments
+Authorization: Bearer <token>
+X-Branch-ID: 3
+Content-Type: application/json
+
 {
   "sale_id": 42,
   "payment_amount": 500.00,
   "payment_date": "2026-04-02",
   "payment_method": "Efectivo",
-  "branch_id": 3,
   "reference_number": "REF-001",
   "notes": "Abono en sucursal norte"
 }
