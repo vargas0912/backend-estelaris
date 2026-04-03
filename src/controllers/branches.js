@@ -1,7 +1,7 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
 
-const { getAllBranches, getBranch, addNewBranch, updateBranch, deleteBranch } = require('../services/branches');
+const { getAllBranches, getBranch, addNewBranch, updateBranch, deleteBranch, getPublicBranches } = require('../services/branches');
 
 /**
  * Obtener lista de registros
@@ -86,4 +86,13 @@ const deleteRecord = async(req, res) => {
   }
 };
 
-module.exports = { getRecord, getRecords, addRecord, updateRecord, deleteRecord };
+const getPublicRecords = async (req, res) => {
+  try {
+    const branches = await getPublicBranches();
+    res.send({ branches });
+  } catch (error) {
+    handleHttpError(res, `ERROR_GET_PUBLIC_BRANCHES -> ${error}`);
+  }
+};
+
+module.exports = { getRecord, getRecords, addRecord, updateRecord, deleteRecord, getPublicRecords };

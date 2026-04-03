@@ -1,4 +1,4 @@
-const { branches, municipalities } = require('../models/index');
+const { branches, municipalities, states } = require('../models/index');
 
 const attributes = [
   'id',
@@ -12,6 +12,8 @@ const attributes = [
   'deletedAt',
   'municipality_id'
 ];
+
+const publicAttributes = ['id', 'name', 'address', 'phone', 'opening_date'];
 
 const municipalityAttributes = ['id', 'name'];
 
@@ -102,10 +104,33 @@ const deleteBranch = async(id) => {
   return data;
 };
 
+const getPublicBranches = async () => {
+  return branches.findAll({
+    attributes: publicAttributes,
+    include: [
+      {
+        model: municipalities,
+        as: 'municipio',
+        attributes: municipalityAttributes,
+        required: true,
+        include: [
+          {
+            model: states,
+            as: 'estado',
+            attributes: ['id', 'name'],
+            required: true
+          }
+        ]
+      }
+    ]
+  });
+};
+
 module.exports = {
   getAllBranches,
   getBranch,
   addNewBranch,
   updateBranch,
-  deleteBranch
+  deleteBranch,
+  getPublicBranches
 };
