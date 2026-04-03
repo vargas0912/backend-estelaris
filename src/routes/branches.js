@@ -7,9 +7,23 @@ const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
-const { getRecord, getRecords, addRecord, updateRecord, deleteRecord } = require('../controllers/branches');
+const { getRecord, getRecords, addRecord, updateRecord, deleteRecord, getPublicRecords } = require('../controllers/branches');
 const { BRANCH } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
+
+/**
+ * @openapi
+ * /branches/public:
+ *   get:
+ *     tags:
+ *       - branches
+ *     summary: Sucursales activas (público)
+ *     description: Lista de sucursales activas sin requerir autenticación. Uso previsto para landing page.
+ *     responses:
+ *       '200':
+ *         description: Arreglo de sucursales con nombre, dirección, teléfono, municipio y fecha de apertura.
+ */
+router.get('/public', [readLimiter], getPublicRecords);
 
 /**
  * Get all states
