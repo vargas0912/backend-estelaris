@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord, valiGrantAccess } = require('../validators/employees');
+const { validateGetAll, validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord, valiGrantAccess } = require('../validators/employees');
 
 const authMidleware = require('../middlewares/session');
 const branchScope = require('../middlewares/branchScope');
@@ -32,6 +32,7 @@ router.get('/', [
   readLimiter,
   authMidleware,
   branchScope,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], EMPlOYEE.VIEW_ALL)
 ], getRecords);
 

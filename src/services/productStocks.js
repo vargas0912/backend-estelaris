@@ -18,10 +18,11 @@ const attributes = [
 const productAttributes = ['id', 'name', 'cost_price', 'unit_of_measure'];
 const branchAttributes = ['id', 'name'];
 
-const getAllProductStocks = async (branchId = null) => {
+const getAllProductStocks = async (branchId = null, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
   const where = branchId !== null ? { branch_id: branchId } : {};
 
-  const result = await productStocks.findAll({
+  const { count, rows } = await productStocks.findAndCountAll({
     attributes,
     where,
     include: [
@@ -35,10 +36,12 @@ const getAllProductStocks = async (branchId = null) => {
         as: 'branch',
         attributes: branchAttributes
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { stocks: rows, total: count };
 };
 
 const getProductStock = async (purchId) => {
@@ -64,40 +67,42 @@ const getProductStock = async (purchId) => {
   return result;
 };
 
-const getStocksByProduct = async (productId) => {
-  const result = await productStocks.findAll({
+const getStocksByProduct = async (productId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await productStocks.findAndCountAll({
     attributes,
-    where: {
-      product_id: productId
-    },
+    where: { product_id: productId },
     include: [
       {
         model: branches,
         as: 'branch',
         attributes: branchAttributes
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { stocks: rows, total: count };
 };
 
-const getStocksByBranch = async (branchId) => {
-  const result = await productStocks.findAll({
+const getStocksByBranch = async (branchId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await productStocks.findAndCountAll({
     attributes,
-    where: {
-      branch_id: branchId
-    },
+    where: { branch_id: branchId },
     include: [
       {
         model: products,
         as: 'product',
         attributes: productAttributes
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { stocks: rows, total: count };
 };
 
 const addNewProductStock = async (body) => {

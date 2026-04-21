@@ -55,8 +55,8 @@ describe('[MUNICIPALITIES] Test api municipalities //api/municipalities/', () =>
       .auth(Token, { type: 'bearer' })
       .expect(200);
 
-    expect(response.body).toHaveProperty('data');
-    expect(Array.isArray(response.body.data)).toBe(true);
+    expect(response.body).toHaveProperty('municipalities');
+    expect(Array.isArray(response.body.municipalities)).toBe(true);
   });
 
   test('4. Obtener municipios de estado inexistente. Expect 200 con array vacio', async() => {
@@ -65,9 +65,9 @@ describe('[MUNICIPALITIES] Test api municipalities //api/municipalities/', () =>
       .auth(Token, { type: 'bearer' })
       .expect(200);
 
-    expect(response.body).toHaveProperty('data');
-    expect(Array.isArray(response.body.data)).toBe(true);
-    expect(response.body.data.length).toBe(0);
+    expect(response.body).toHaveProperty('municipalities');
+    expect(Array.isArray(response.body.municipalities)).toBe(true);
+    expect(response.body.municipalities.length).toBe(0);
   });
 
   // ============================================
@@ -118,8 +118,8 @@ describe('[MUNICIPALITIES] Test api municipalities //api/municipalities/', () =>
         .auth(Token, { type: 'bearer' })
         .expect(200);
 
-      expect(response.body).toHaveProperty('data');
-      expect(Array.isArray(response.body.data)).toBe(true);
+      expect(response.body).toHaveProperty('municipalities');
+      expect(Array.isArray(response.body.municipalities)).toBe(true);
     });
 
     test('11. Obtener municipio con ID negativo. Expect 404', async() => {
@@ -153,8 +153,8 @@ describe('[MUNICIPALITIES] Test api municipalities //api/municipalities/', () =>
         .auth(Token, { type: 'bearer' })
         .expect(200);
 
-      expect(response.body).toHaveProperty('data');
-      expect(Array.isArray(response.body.data)).toBe(true);
+      expect(response.body).toHaveProperty('municipalities');
+      expect(Array.isArray(response.body.municipalities)).toBe(true);
     });
 
     test('14. Verificar estructura de municipio con estado', async() => {
@@ -175,10 +175,10 @@ describe('[MUNICIPALITIES] Test api municipalities //api/municipalities/', () =>
         .auth(Token, { type: 'bearer' })
         .expect(200);
 
-      if (response.body.data.length > 0) {
-        expect(response.body.data[0]).toHaveProperty('estado');
-        expect(response.body.data[0].estado).toHaveProperty('id');
-        expect(response.body.data[0].estado).toHaveProperty('name');
+      if (response.body.municipalities.length > 0) {
+        expect(response.body.municipalities[0]).toHaveProperty('estado');
+        expect(response.body.municipalities[0].estado).toHaveProperty('id');
+        expect(response.body.municipalities[0].estado).toHaveProperty('name');
       }
     });
   });

@@ -25,8 +25,9 @@ const attributes = [
 
 const categoryAttributes = ['id', 'name'];
 
-const getAllProducts = async() => {
-  const result = await products.findAll({
+const getAllProducts = async(page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await products.findAndCountAll({
     attributes,
     include: [
       {
@@ -34,10 +35,12 @@ const getAllProducts = async() => {
         as: 'category',
         attributes: categoryAttributes
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { products: rows, total: count };
 };
 
 const getProduct = async(id) => {

@@ -3,13 +3,16 @@ const { expense_types } = require('../models/index');
 
 const attributes = ['id', 'name', 'created_at', 'updated_at'];
 
-const getAllExpenseTypes = async() => {
+const getAllExpenseTypes = async(page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
   // eslint-disable-next-line camelcase
-  const result = await expense_types.findAll({
-    attributes
+  const { count, rows } = await expense_types.findAndCountAll({
+    attributes,
+    limit,
+    offset
   });
 
-  return result;
+  return { expenseTypes: rows, total: count };
 };
 
 const getExpenseType = async(id) => {

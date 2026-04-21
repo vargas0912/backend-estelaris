@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../validators/branches');
+const { validateGetAll, validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../validators/branches');
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
@@ -23,7 +23,7 @@ const { ROLE } = require('../constants/roles');
  *       '200':
  *         description: Arreglo de sucursales con nombre, dirección, teléfono, municipio y fecha de apertura.
  */
-router.get('/public', [readLimiter], getPublicRecords);
+router.get('/public', [readLimiter, validateGetAll], getPublicRecords);
 
 /**
  * Get all states
@@ -51,6 +51,7 @@ router.get('/public', [readLimiter], getPublicRecords);
 router.get('/', [
   readLimiter,
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], BRANCH.VIEW_ALL)
 ], getRecords);
 

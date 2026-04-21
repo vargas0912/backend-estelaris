@@ -5,8 +5,9 @@ const { campaignProducts: CampaignProducts, campaignProductBranches: CampaignPro
  * @param {number} campaignId - ID de la campaña
  * @returns {Promise<Array>}
  */
-const getProductsByCampaign = async(campaignId) => {
-  const products = await CampaignProducts.findAll({
+const getProductsByCampaign = async(campaignId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await CampaignProducts.findAndCountAll({
     where: { campaign_id: campaignId },
     include: [
       {
@@ -25,10 +26,13 @@ const getProductsByCampaign = async(campaignId) => {
           }
         ]
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
 
-  return products;
+  return { products: rows, total: count };
 };
 
 /**

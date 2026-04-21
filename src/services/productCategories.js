@@ -2,12 +2,15 @@ const { productCategories } = require('../models/index');
 
 const attributes = ['id', 'name', 'description', 'created_at', 'updated_at'];
 
-const getAllProductCategories = async() => {
-  const result = await productCategories.findAll({
-    attributes
+const getAllProductCategories = async(page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await productCategories.findAndCountAll({
+    attributes,
+    limit,
+    offset
   });
 
-  return result;
+  return { productCategories: rows, total: count };
 };
 
 const getProductCategory = async(id) => {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord } = require('../validators/states');
+const { validateGetAll, validateGetRecord } = require('../validators/states');
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
@@ -35,7 +35,7 @@ const { getRecord, getRecords } = require('../controllers/states');
  *        '422':
  *          description: Error de validacion.
  */
-router.get('/', readLimiter, authMidleware, checkRol([ROLE.USER, ROLE.ADMIN], STATES.VIEW_ALL), getRecords);
+router.get('/', readLimiter, authMidleware, validateGetAll, checkRol([ROLE.USER, ROLE.ADMIN], STATES.VIEW_ALL), getRecords);
 
 /**
  * Get detail from states

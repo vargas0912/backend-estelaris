@@ -1,5 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
+const { getPaginationParams } = require('../utils/pagination');
 const campaignsService = require('../services/campaigns');
 const {
   ERROR_GET_CAMPAIGNS,
@@ -23,11 +24,13 @@ const {
 const getCampaigns = async (req, res) => {
   try {
     const data = matchedData(req);
-    const campaigns = await campaignsService.getAllCampaigns(data);
+    const { page, limit } = getPaginationParams(data);
+    const { campaigns, total } = await campaignsService.getAllCampaigns(data, page, limit);
 
     res.status(200).json({
       ok: true,
-      data: campaigns
+      data: campaigns,
+      pagination: { total, page, limit, totalPages: Math.ceil(total / limit) }
     });
   } catch (error) {
     handleHttpError(res, ERROR_GET_CAMPAIGNS, 500);
@@ -39,11 +42,13 @@ const getCampaigns = async (req, res) => {
  */
 const getActiveCampaigns = async (req, res) => {
   try {
-    const campaigns = await campaignsService.getActiveCampaigns();
+    const { page, limit } = getPaginationParams(matchedData(req));
+    const { campaigns, total } = await campaignsService.getActiveCampaigns(page, limit);
 
     res.status(200).json({
       ok: true,
-      data: campaigns
+      data: campaigns,
+      pagination: { total, page, limit, totalPages: Math.ceil(total / limit) }
     });
   } catch (error) {
     handleHttpError(res, ERROR_GET_ACTIVE_CAMPAIGNS, 500);

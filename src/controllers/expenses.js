@@ -1,18 +1,14 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
+const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const { getAllExpenses, getExpensesByBranch, getExpense, addExpense, updateExpense, deleteExpense } = require('../services/expenses');
 
-/**
- * Obtener lista de todos los gastos
- * @param {*} req Request
- * @param {*} res Response
- */
 const getRecords = async(req, res) => {
   try {
-    const expensesList = await getAllExpenses();
-
-    res.send({ expenses: expensesList });
+    const { page, limit } = getPaginationParams(matchedData(req));
+    const { expenses, total } = await getAllExpenses(page, limit);
+    res.send(buildPaginationResponse('expenses', expenses, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }
@@ -40,19 +36,13 @@ const getRecord = async(req, res) => {
   }
 };
 
-/**
- * Obtener gastos por sucursal
- * @param {Request} req Request param
- * @param {Response} res Response param
- */
 const getRecordsByBranch = async(req, res) => {
   try {
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
     // eslint-disable-next-line camelcase
-    const { branch_id } = matchedData(req);
-
-    const expensesList = await getExpensesByBranch(branch_id);
-
-    res.send({ expenses: expensesList });
+    const { expenses, total } = await getExpensesByBranch(data.branch_id, page, limit);
+    res.send(buildPaginationResponse('expenses', expenses, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_BRANCH -> ${error}`, 400);
   }

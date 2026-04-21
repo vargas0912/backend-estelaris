@@ -311,20 +311,25 @@ const voidEarnPoints = async (customerId, saleId, userId, transaction) => {
  * @param {number|null} branchId - null devuelve todas
  * @returns {loyaltyConfig[]}
  */
-const listConfigs = async (branchId) => {
+const listConfigs = async (branchId, page = 1, limit = 20) => {
   const where = branchId != null
     ? {
         [Op.or]: [{ branch_id: branchId }, { branch_id: null }]
       }
     : {};
+  const offset = (page - 1) * limit;
 
-  return loyaltyConfig.findAll({
+  const { count, rows } = await loyaltyConfig.findAndCountAll({
     where,
     order: [
       [loyaltyConfig.sequelize.literal('CASE WHEN branch_id IS NULL THEN 0 ELSE 1 END'), 'ASC'],
       ['id', 'ASC']
-    ]
+    ],
+    limit,
+    offset
   });
+
+  return { configs: rows, total: count };
 };
 
 /**

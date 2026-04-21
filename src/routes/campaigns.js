@@ -23,6 +23,7 @@ const {
   updateCampaignValidator,
   getCampaignValidator,
   getCampaignsValidator,
+  getActiveCampaignsValidator,
   addCampaignBranchesValidator,
   removeCampaignBranchValidator
 } = require('../validators/campaigns');
@@ -106,6 +107,8 @@ router.get(
   '/active',
   authMiddleware,
   checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.VIEW_ACTIVE),
+  getActiveCampaignsValidator,
+  handleValidationErrors,
   getActiveCampaigns
 );
 

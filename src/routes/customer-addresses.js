@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {
+  validateGetAll,
   validateGetRecord,
   validateCreate,
   validateUpdate,
@@ -50,6 +51,7 @@ const { ROLE } = require('../constants/roles');
 router.get('/', [
   readLimiter,
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], CUSTOMER_ADDRESS.VIEW_ALL)
 ], getRecords);
 

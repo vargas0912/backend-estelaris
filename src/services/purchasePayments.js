@@ -40,25 +40,31 @@ const paymentIncludes = [
   }
 ];
 
-const getAllPayments = async () => {
-  const result = await purchasePayments.findAll({
+const getAllPayments = async (page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await purchasePayments.findAndCountAll({
     attributes: paymentAttributes,
     include: paymentIncludes,
-    order: [['payment_date', 'DESC']]
+    order: [['payment_date', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { payments: rows, total: count };
 };
 
-const getPaymentsByPurchase = async (purchId) => {
-  const result = await purchasePayments.findAll({
+const getPaymentsByPurchase = async (purchId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await purchasePayments.findAndCountAll({
     attributes: paymentAttributes,
     where: { purch_id: purchId },
     include: paymentIncludes,
-    order: [['payment_date', 'DESC']]
+    order: [['payment_date', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { payments: rows, total: count };
 };
 
 const getPayment = async (id) => {

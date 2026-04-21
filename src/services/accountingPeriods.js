@@ -12,12 +12,18 @@ const closedByInclude = {
   attributes: ['id', 'name', 'email']
 };
 
-const getAllPeriods = async () => {
-  return accountingPeriods.findAll({
+const getAllPeriods = async (page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await accountingPeriods.findAndCountAll({
     attributes: periodAttributes,
     include: [closedByInclude],
-    order: [['year', 'DESC'], ['month', 'DESC']]
+    order: [['year', 'DESC'], ['month', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
+
+  return { periods: rows, total: count };
 };
 
 const getCurrentPeriod = async () => {

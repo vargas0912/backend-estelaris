@@ -1,5 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
+const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const {
   getAllPurchases,
@@ -15,8 +16,9 @@ const {
 
 const getRecords = async (req, res) => {
   try {
-    const purchaseList = await getAllPurchases(req.branchId);
-    res.send({ purchases: purchaseList });
+    const { page, limit } = getPaginationParams(matchedData(req));
+    const { purchases, total } = await getAllPurchases(req.branchId, page, limit);
+    res.send(buildPaginationResponse('purchases', purchases, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }
@@ -40,9 +42,10 @@ const getRecord = async (req, res) => {
 
 const getRecordsBySupplier = async (req, res) => {
   try {
-    const { supplier_id: supplierId } = matchedData(req);
-    const purchaseList = await getPurchasesBySupplier(supplierId);
-    res.send({ purchases: purchaseList });
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const { purchases, total } = await getPurchasesBySupplier(data.supplier_id, page, limit);
+    res.send(buildPaginationResponse('purchases', purchases, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_SUPPLIER -> ${error}`, 400);
   }
@@ -50,9 +53,10 @@ const getRecordsBySupplier = async (req, res) => {
 
 const getRecordsByBranch = async (req, res) => {
   try {
-    const { branch_id: branchId } = matchedData(req);
-    const purchaseList = await getPurchasesByBranch(branchId);
-    res.send({ purchases: purchaseList });
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const { purchases, total } = await getPurchasesByBranch(data.branch_id, page, limit);
+    res.send(buildPaginationResponse('purchases', purchases, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_BRANCH -> ${error}`, 400);
   }

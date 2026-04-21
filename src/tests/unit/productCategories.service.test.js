@@ -11,6 +11,7 @@ const {
 jest.mock('../../models/index', () => ({
   productCategories: {
     findAll: jest.fn(),
+    findAndCountAll: jest.fn(),
     findOne: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn(),
@@ -30,22 +31,24 @@ describe('ProductCategories Service - Unit Tests', () => {
         { id: 2, name: 'Muebles', description: 'Muebles para el hogar' }
       ];
 
-      productCategories.findAll.mockResolvedValue(mockCategories);
+      productCategories.findAndCountAll.mockResolvedValue({ count: 2, rows: mockCategories });
 
       const result = await getAllProductCategories();
 
-      expect(productCategories.findAll).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(mockCategories);
-      expect(result).toHaveLength(2);
+      expect(productCategories.findAndCountAll).toHaveBeenCalledTimes(1);
+      expect(result.productCategories).toEqual(mockCategories);
+      expect(result.productCategories).toHaveLength(2);
+      expect(result.total).toBe(2);
     });
 
     test('debe retornar array vacío si no hay categorías', async() => {
-      productCategories.findAll.mockResolvedValue([]);
+      productCategories.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getAllProductCategories();
 
-      expect(result).toEqual([]);
-      expect(result).toHaveLength(0);
+      expect(result.productCategories).toEqual([]);
+      expect(result.productCategories).toHaveLength(0);
+      expect(result.total).toBe(0);
     });
   });
 
@@ -237,7 +240,7 @@ describe('ProductCategories Service - Unit Tests', () => {
   describe('Manejo de errores de base de datos', () => {
     test('getAllProductCategories debe propagar error de BD', async() => {
       const dbError = new Error('Database connection failed');
-      productCategories.findAll.mockRejectedValue(dbError);
+      productCategories.findAndCountAll.mockRejectedValue(dbError);
 
       await expect(getAllProductCategories()).rejects.toThrow('Database connection failed');
     });
@@ -334,13 +337,14 @@ describe('ProductCategories Service - Unit Tests', () => {
         description: `Descripción ${i + 1}`
       }));
 
-      productCategories.findAll.mockResolvedValue(manyCategories);
+      productCategories.findAndCountAll.mockResolvedValue({ count: 100, rows: manyCategories });
 
       const result = await getAllProductCategories();
 
-      expect(result).toHaveLength(100);
-      expect(result[0].name).toBe('Categoría 1');
-      expect(result[99].name).toBe('Categoría 100');
+      expect(result.productCategories).toHaveLength(100);
+      expect(result.productCategories[0].name).toBe('Categoría 1');
+      expect(result.productCategories[99].name).toBe('Categoría 100');
+      expect(result.total).toBe(100);
     });
 
     test('addNewProductCategory con datos mínimos', async() => {

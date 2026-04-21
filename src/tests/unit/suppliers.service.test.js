@@ -13,6 +13,7 @@ const {
 jest.mock('../../models/index', () => ({
   suppliers: {
     findAll: jest.fn(),
+    findAndCountAll: jest.fn(),
     findOne: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn(),
@@ -46,29 +47,31 @@ describe('Suppliers Service - Unit Tests', () => {
         }
       ];
 
-      suppliers.findAll.mockResolvedValue(mockSuppliers);
+      suppliers.findAndCountAll.mockResolvedValue({ count: 2, rows: mockSuppliers });
 
       const result = await getAllSuppliers();
 
-      expect(suppliers.findAll).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(mockSuppliers);
-      expect(result).toHaveLength(2);
+      expect(suppliers.findAndCountAll).toHaveBeenCalledTimes(1);
+      expect(result.suppliers).toEqual(mockSuppliers);
+      expect(result.suppliers).toHaveLength(2);
+      expect(result.total).toBe(2);
     });
 
     test('debe retornar array vacío si no hay proveedores', async() => {
-      suppliers.findAll.mockResolvedValue([]);
+      suppliers.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getAllSuppliers();
 
-      expect(result).toEqual([]);
+      expect(result.suppliers).toEqual([]);
+      expect(result.total).toBe(0);
     });
 
     test('debe incluir municipio en la consulta', async() => {
-      suppliers.findAll.mockResolvedValue([]);
+      suppliers.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getAllSuppliers();
 
-      expect(suppliers.findAll).toHaveBeenCalledWith(
+      expect(suppliers.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           include: expect.arrayContaining([
             expect.objectContaining({
@@ -258,7 +261,7 @@ describe('Suppliers Service - Unit Tests', () => {
   describe('Manejo de errores', () => {
     test('getAllSuppliers debe propagar error de BD', async() => {
       const dbError = new Error('Database connection failed');
-      suppliers.findAll.mockRejectedValue(dbError);
+      suppliers.findAndCountAll.mockRejectedValue(dbError);
 
       await expect(getAllSuppliers()).rejects.toThrow('Database connection failed');
     });

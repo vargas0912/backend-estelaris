@@ -1,7 +1,13 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
+const { paginationChecks } = require('./shared');
 
 const { PRODUCT_PRICES_VALIDATORS } = require('../constants/productPrices');
+
+const validateGetAll = [
+  ...paginationChecks,
+  (req, res, next) => validateResults(req, res, next)
+];
 
 const validateGetRecord = [
   check('id')
@@ -20,6 +26,7 @@ const validateGetByProduct = [
     .notEmpty().withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_IS_EMPTY).bail()
     .isString().withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_INVALID).bail()
     .isLength({ max: 20 }).withMessage(PRODUCT_PRICES_VALIDATORS.PRODUCT_ID_INVALID).bail(),
+  ...paginationChecks,
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -31,6 +38,7 @@ const validateGetByPriceList = [
     .notEmpty().withMessage(PRODUCT_PRICES_VALIDATORS.PRICE_LIST_ID_IS_EMPTY).bail()
     .isInt().withMessage(PRODUCT_PRICES_VALIDATORS.PRICE_LIST_ID_INVALID).bail()
     .toInt(),
+  ...paginationChecks,
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -89,6 +97,7 @@ const validateGenerateByPriceList = validateGetByPriceList;
 const validateRecalculateByProduct = validateGetByProduct;
 
 module.exports = {
+  validateGetAll,
   validateGetRecord,
   validateGetByProduct,
   validateGetByPriceList,

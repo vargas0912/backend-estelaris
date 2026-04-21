@@ -14,6 +14,7 @@ const {
 jest.mock('../../models/index', () => ({
   employees: {
     findAll: jest.fn(),
+    findAndCountAll: jest.fn(),
     findOne: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn(),
@@ -198,19 +199,20 @@ describe('Employees Service - Unit Tests', () => {
         { id: 1, name: 'Empleado 1' },
         { id: 2, name: 'Empleado 2' }
       ];
-      employees.findAll.mockResolvedValue(mockEmployees);
+      employees.findAndCountAll.mockResolvedValue({ count: 2, rows: mockEmployees });
 
       const result = await getAllEmployees();
 
-      expect(result).toEqual(mockEmployees);
+      expect(result.employees).toEqual(mockEmployees);
+      expect(result.total).toBe(2);
     });
 
     test('debe filtrar por sucursal', async() => {
-      employees.findAll.mockResolvedValue([]);
+      employees.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getAllEmployees(1);
 
-      expect(employees.findAll).toHaveBeenCalledWith(
+      expect(employees.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { branch_id: 1 }
         })
@@ -240,12 +242,13 @@ describe('Employees Service - Unit Tests', () => {
   describe('getEmployeesByBranch', () => {
     test('debe retornar empleados de una sucursal', async() => {
       const mockEmployees = [{ id: 1, name: 'Empleado 1' }];
-      employees.findAll.mockResolvedValue(mockEmployees);
+      employees.findAndCountAll.mockResolvedValue({ count: 1, rows: mockEmployees });
 
       const result = await getEmployeesByBranch(1);
 
-      expect(result).toEqual(mockEmployees);
-      expect(employees.findAll).toHaveBeenCalledWith(
+      expect(result.employees).toEqual(mockEmployees);
+      expect(result.total).toBe(1);
+      expect(employees.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({ where: { branch_id: 1 } })
       );
     });

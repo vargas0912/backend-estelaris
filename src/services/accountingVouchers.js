@@ -68,7 +68,8 @@ const getVoucher = async (id) => {
 /**
  * Lista todas las pólizas con filtros opcionales.
  */
-const getAllVouchers = async (filters = {}) => {
+const getAllVouchers = async (filters = {}, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
   const where = {};
 
   if (filters.period_id !== undefined) where.period_id = filters.period_id;
@@ -78,14 +79,18 @@ const getAllVouchers = async (filters = {}) => {
   if (filters.reference_type !== undefined) where.reference_type = filters.reference_type;
   if (filters.reference_id !== undefined) where.reference_id = filters.reference_id;
 
-  return accountingVouchers.findAll({
+  const { count, rows } = await accountingVouchers.findAndCountAll({
     where,
     include: voucherListInclude,
     order: [
       ['date', 'DESC'],
       ['folio', 'ASC']
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
+  return { vouchers: rows, total: count };
 };
 
 /**

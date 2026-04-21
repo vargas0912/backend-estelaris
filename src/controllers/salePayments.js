@@ -1,5 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
+const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const {
   getAllPayments,
@@ -11,8 +12,9 @@ const {
 
 const getRecords = async (req, res) => {
   try {
-    const payments = await getAllPayments();
-    res.send({ payments });
+    const { page, limit } = getPaginationParams(matchedData(req));
+    const { payments, total } = await getAllPayments(page, limit);
+    res.send(buildPaginationResponse('payments', payments, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }
@@ -20,9 +22,10 @@ const getRecords = async (req, res) => {
 
 const getRecordsBySale = async (req, res) => {
   try {
-    const { sale_id: saleId } = matchedData(req);
-    const payments = await getPaymentsBySale(saleId);
-    res.send({ payments });
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const { payments, total } = await getPaymentsBySale(data.sale_id, page, limit);
+    res.send(buildPaginationResponse('payments', payments, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_SALE -> ${error}`, 400);
   }

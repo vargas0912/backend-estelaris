@@ -1,7 +1,14 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
-
 const { EXPENSE_VALIDATORS } = require('../constants/expenses');
+const { paginationChecks } = require('./shared');
+
+const validateGetAll = [
+  ...paginationChecks,
+  (req, res, next) => {
+    return validateResults(req, res, next);
+  }
+];
 
 const validateGetRecord = [
   check('id')
@@ -18,6 +25,7 @@ const validateGetByBranch = [
     .exists().withMessage(EXPENSE_VALIDATORS.BRANCH_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(EXPENSE_VALIDATORS.BRANCH_ID_IS_EMPTY).bail()
     .isInt().withMessage(EXPENSE_VALIDATORS.BRANCH_ID_NOT_EXISTS),
+  ...paginationChecks,
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -61,4 +69,4 @@ const valiUpdateRecord = [
   }
 ];
 
-module.exports = { validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord };
+module.exports = { validateGetAll, validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord };

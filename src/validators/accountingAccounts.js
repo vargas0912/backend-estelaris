@@ -1,5 +1,6 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
+const { paginationChecks } = require('./shared');
 const { ACCOUNTING_ACCOUNT_VALIDATORS: V } = require('../constants/accountingAccounts');
 
 const VALID_TYPES = ['activo', 'pasivo', 'capital', 'ingreso', 'egreso', 'costo'];
@@ -91,4 +92,9 @@ const valiUpdateRecord = [
   (req, res, next) => validateResults(req, res, next)
 ];
 
-module.exports = { validateGetRecord, valiAddRecord, valiUpdateRecord };
+const validateGetAll = [
+  ...paginationChecks,
+  (req, res, next) => validateResults(req, res, next)
+];
+
+module.exports = { validateGetAll, validateGetRecord, valiAddRecord, valiUpdateRecord };

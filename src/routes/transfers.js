@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {
+  validateGetAll,
   validateGetRecord,
   validateGetByBranch,
   valiAddRecord,
@@ -52,6 +53,7 @@ router.get('/', [
   readLimiter,
   authMidleware,
   branchScope,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.VIEW_ALL)
 ], getRecords);
 

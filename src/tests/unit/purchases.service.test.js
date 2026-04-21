@@ -8,6 +8,7 @@ jest.mock('../../models/index', () => {
   return {
     purchases: {
       findAll: jest.fn(),
+      findAndCountAll: jest.fn(),
       findOne: jest.fn(),
       findByPk: jest.fn(),
       create: jest.fn(),
@@ -63,20 +64,22 @@ describe('Purchases Service - Unit Tests', () => {
 
   describe('getAllPurchases', () => {
     test('debe retornar lista de compras', async () => {
-      purchases.findAll.mockResolvedValue([mockPurchase]);
+      purchases.findAndCountAll.mockResolvedValue({ count: 1, rows: [mockPurchase] });
 
       const result = await getAllPurchases();
 
-      expect(purchases.findAll).toHaveBeenCalledTimes(1);
-      expect(result).toHaveLength(1);
+      expect(purchases.findAndCountAll).toHaveBeenCalledTimes(1);
+      expect(result.purchases).toHaveLength(1);
+      expect(result.total).toBe(1);
     });
 
     test('debe retornar array vacío si no hay compras', async () => {
-      purchases.findAll.mockResolvedValue([]);
+      purchases.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getAllPurchases();
 
-      expect(result).toEqual([]);
+      expect(result.purchases).toEqual([]);
+      expect(result.total).toBe(0);
     });
   });
 
@@ -103,27 +106,27 @@ describe('Purchases Service - Unit Tests', () => {
 
   describe('getPurchasesBySupplier', () => {
     test('debe retornar compras filtradas por proveedor', async () => {
-      purchases.findAll.mockResolvedValue([mockPurchase]);
+      purchases.findAndCountAll.mockResolvedValue({ count: 1, rows: [mockPurchase] });
 
       const result = await getPurchasesBySupplier(1);
 
-      expect(purchases.findAll).toHaveBeenCalledWith(
+      expect(purchases.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({ where: { supplier_id: 1 } })
       );
-      expect(result).toHaveLength(1);
+      expect(result.purchases).toHaveLength(1);
     });
   });
 
   describe('getPurchasesByBranch', () => {
     test('debe retornar compras filtradas por sucursal', async () => {
-      purchases.findAll.mockResolvedValue([mockPurchase]);
+      purchases.findAndCountAll.mockResolvedValue({ count: 1, rows: [mockPurchase] });
 
       const result = await getPurchasesByBranch(1);
 
-      expect(purchases.findAll).toHaveBeenCalledWith(
+      expect(purchases.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({ where: { branch_id: 1 } })
       );
-      expect(result).toEqual([mockPurchase]);
+      expect(result.purchases).toEqual([mockPurchase]);
     });
   });
 
@@ -308,7 +311,7 @@ describe('Purchases Service - Unit Tests', () => {
 
   describe('Manejo de errores', () => {
     test('getAllPurchases debe propagar error de BD', async () => {
-      purchases.findAll.mockRejectedValue(new Error('Database error'));
+      purchases.findAndCountAll.mockRejectedValue(new Error('Database error'));
 
       await expect(getAllPurchases()).rejects.toThrow('Database error');
     });

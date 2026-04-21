@@ -12,23 +12,29 @@ const includes = [
   { model: expense_types, as: 'expenseType', attributes: ['id', 'name'] }
 ];
 
-const getAllExpenses = async() => {
-  const result = await expenses.findAll({
-    attributes,
-    include: includes
-  });
-
-  return result;
-};
-
-const getExpensesByBranch = async(branchId) => {
-  const result = await expenses.findAll({
+const getAllExpenses = async(page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await expenses.findAndCountAll({
     attributes,
     include: includes,
-    where: { branch_id: branchId }
+    limit,
+    offset,
+    distinct: true
   });
+  return { expenses: rows, total: count };
+};
 
-  return result;
+const getExpensesByBranch = async(branchId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await expenses.findAndCountAll({
+    attributes,
+    include: includes,
+    where: { branch_id: branchId },
+    limit,
+    offset,
+    distinct: true
+  });
+  return { expenses: rows, total: count };
 };
 
 const getExpense = async(id) => {

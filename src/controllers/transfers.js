@@ -1,5 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
+const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const {
   getAllTransfers,
@@ -15,8 +16,9 @@ const {
 
 const getRecords = async (req, res) => {
   try {
-    const list = await getAllTransfers(req.branchId);
-    res.send({ transfers: list });
+    const { page, limit } = getPaginationParams(matchedData(req));
+    const { transfers, total } = await getAllTransfers(req.branchId, page, limit);
+    res.send(buildPaginationResponse('transfers', transfers, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }
@@ -45,15 +47,16 @@ const getRecord = async (req, res) => {
 
 const getRecordsByFromBranch = async (req, res) => {
   try {
-    const { branch_id: branchId } = matchedData(req);
-    const result = await getTransfersByFromBranch(branchId, req.branchId);
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const result = await getTransfersByFromBranch(data.branch_id, req.branchId, page, limit);
 
     if (result && result.error === 'BRANCH_ACCESS_DENIED') {
       handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
       return;
     }
 
-    res.send({ transfers: result });
+    res.send(buildPaginationResponse('transfers', result.transfers, result.total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_FROM_BRANCH -> ${error}`, 400);
   }
@@ -61,15 +64,16 @@ const getRecordsByFromBranch = async (req, res) => {
 
 const getRecordsByToBranch = async (req, res) => {
   try {
-    const { branch_id: branchId } = matchedData(req);
-    const result = await getTransfersByToBranch(branchId, req.branchId);
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const result = await getTransfersByToBranch(data.branch_id, req.branchId, page, limit);
 
     if (result && result.error === 'BRANCH_ACCESS_DENIED') {
       handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
       return;
     }
 
-    res.send({ transfers: result });
+    res.send(buildPaginationResponse('transfers', result.transfers, result.total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_TO_BRANCH -> ${error}`, 400);
   }

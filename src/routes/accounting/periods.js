@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord, valiAddRecord } = require('../../validators/accountingPeriods');
+const { validateGetAll, validateGetRecord, valiAddRecord } = require('../../validators/accountingPeriods');
 
 const authMiddleware = require('../../middlewares/session');
 const checkRol = require('../../middlewares/rol');
@@ -68,6 +68,7 @@ router.get('/current', [
 router.get('/', [
   readLimiter,
   authMiddleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_PERIOD.VIEW_ALL)
 ], getRecords);
 

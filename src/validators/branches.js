@@ -1,5 +1,6 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
+const { paginationChecks } = require('./shared');
 
 const BRANCH_VALIDATORS = require('../constants/branches');
 
@@ -104,7 +105,13 @@ const validateGetRecordMunicipality = [
   }
 ];
 
+const validateGetAll = [
+  ...paginationChecks,
+  (req, res, next) => validateResults(req, res, next)
+];
+
 module.exports = {
+  validateGetAll,
   validateGetRecord,
   validateGetRecordMunicipality,
   valiAddRecord,

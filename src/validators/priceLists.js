@@ -1,7 +1,13 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
+const { paginationChecks } = require('./shared');
 
 const { PRICE_LISTS_VALIDATORS } = require('../constants/priceLists');
+
+const validateGetAll = [
+  ...paginationChecks,
+  (req, res, next) => validateResults(req, res, next)
+];
 
 const validateGetRecord = [
   check('id')
@@ -49,4 +55,4 @@ const valiUpdateRecord = [
   }
 ];
 
-module.exports = { validateGetRecord, valiAddRecord, valiUpdateRecord };
+module.exports = { validateGetAll, validateGetRecord, valiAddRecord, valiUpdateRecord };

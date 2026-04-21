@@ -1,5 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
+const { getPaginationParams } = require('../utils/pagination');
 const campaignProductsService = require('../services/campaignProducts');
 const {
   ERROR_GET_CAMPAIGN_PRODUCTS,
@@ -22,13 +23,15 @@ const {
  */
 const getProductsByCampaign = async(req, res) => {
   try {
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
     // eslint-disable-next-line camelcase
-    const { campaign_id } = matchedData(req);
-    const products = await campaignProductsService.getProductsByCampaign(campaign_id);
+    const { products, total } = await campaignProductsService.getProductsByCampaign(data.campaign_id, page, limit);
 
     res.status(200).json({
       ok: true,
-      data: products
+      data: products,
+      pagination: { total, page, limit, totalPages: Math.ceil(total / limit) }
     });
   } catch (error) {
     handleHttpError(res, ERROR_GET_CAMPAIGN_PRODUCTS, 500);

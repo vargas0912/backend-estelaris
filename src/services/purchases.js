@@ -73,16 +73,19 @@ const purchaseIncludes = [
   }
 ];
 
-const getAllPurchases = async (branchId) => {
+const getAllPurchases = async (branchId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
   const where = branchId ? { branch_id: branchId } : {};
-  const result = await purchases.findAll({
+  const { count, rows } = await purchases.findAndCountAll({
     attributes: purchaseAttributes,
     where,
     include: purchaseIncludes,
-    order: [['purch_date', 'DESC']]
+    order: [['purch_date', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { purchases: rows, total: count };
 };
 
 const getPurchase = async (id) => {
@@ -95,26 +98,32 @@ const getPurchase = async (id) => {
   return result;
 };
 
-const getPurchasesBySupplier = async (supplierId) => {
-  const result = await purchases.findAll({
+const getPurchasesBySupplier = async (supplierId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await purchases.findAndCountAll({
     attributes: purchaseAttributes,
     where: { supplier_id: supplierId },
     include: purchaseIncludes,
-    order: [['purch_date', 'DESC']]
+    order: [['purch_date', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { purchases: rows, total: count };
 };
 
-const getPurchasesByBranch = async (branchId) => {
-  const result = await purchases.findAll({
+const getPurchasesByBranch = async (branchId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await purchases.findAndCountAll({
     attributes: purchaseAttributes,
     where: { branch_id: branchId },
     include: purchaseIncludes,
-    order: [['purch_date', 'DESC']]
+    order: [['purch_date', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { purchases: rows, total: count };
 };
 
 const createPurchase = async (body, userId) => {

@@ -1,5 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
+const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const {
   getAllProductStocks,
@@ -18,9 +19,9 @@ const {
  */
 const getRecords = async (req, res) => {
   try {
-    const stocks = await getAllProductStocks(req.branchId);
-
-    res.send({ stocks });
+    const { page, limit } = getPaginationParams(matchedData(req));
+    const { stocks, total } = await getAllProductStocks(req.branchId, page, limit);
+    res.send(buildPaginationResponse('stocks', stocks, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }
@@ -55,11 +56,10 @@ const getRecord = async (req, res) => {
  */
 const getRecordsByProduct = async (req, res) => {
   try {
-    const { product_id: productId } = matchedData(req);
-
-    const stocks = await getStocksByProduct(productId);
-
-    res.send({ stocks });
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const { stocks, total } = await getStocksByProduct(data.product_id, page, limit);
+    res.send(buildPaginationResponse('stocks', stocks, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_PRODUCT -> ${error}`, 400);
   }
@@ -72,11 +72,10 @@ const getRecordsByProduct = async (req, res) => {
  */
 const getRecordsByBranch = async (req, res) => {
   try {
-    const { branch_id: branchId } = matchedData(req);
-
-    const stocks = await getStocksByBranch(branchId);
-
-    res.send({ stocks });
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const { stocks, total } = await getStocksByBranch(data.branch_id, page, limit);
+    res.send(buildPaginationResponse('stocks', stocks, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_BRANCH -> ${error}`, 400);
   }

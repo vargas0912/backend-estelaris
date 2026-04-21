@@ -18,7 +18,7 @@ const {
   getPrivilegesByModuleRecords
 } = require('../controllers/privileges');
 
-const { validateGetRecord, validateAddRecord, validateUpdateRecord, validateGetRecordByModule } = require('../validators/privileges');
+const { validateGetAll, validateGetRecord, validateAddRecord, validateUpdateRecord, validateGetRecordByModule } = require('../validators/privileges');
 const { validateGetUserAllRecord, validateGetUserOneRecord, validateAddUserRecord, validateDeleteRecord } = require('../validators/user-privilege');
 
 const { ROLE } = require('../constants/roles');
@@ -53,6 +53,7 @@ const { PRIVILEGES } = require('../constants/privileges');
  */
 router.get('/', [
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.VIEW)
 ], getAllPrivilegesRecords);
 

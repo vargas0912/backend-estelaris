@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {
+  validateGetAll,
   validateGetRecord,
   validateGetBySupplier,
   validateGetByBranch,
@@ -54,6 +55,7 @@ router.get('/', [
   readLimiter,
   authMidleware,
   branchScope,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], PURCHASE.VIEW_ALL)
 ], getRecords);
 

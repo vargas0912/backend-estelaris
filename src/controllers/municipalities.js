@@ -1,5 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
+const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const { getMunicipality, getMunicipalitiesByStateId } = require('../services/municipalities');
 
@@ -26,16 +27,13 @@ const getById = async(req, res) => {
 
 const getByStateId = async(req, res) => {
   try {
-    const { stateId } = matchedData(req);
+    const data = matchedData(req);
+    const { stateId } = data;
+    const { page, limit } = getPaginationParams(data);
 
-    const data = await getMunicipalitiesByStateId(stateId);
+    const { municipalities, total } = await getMunicipalitiesByStateId(stateId, page, limit);
 
-    if (!data) {
-      handleHttpError(res, `STATE ${stateId} NOT EXISTS`, 404);
-      return;
-    }
-
-    res.send({ data });
+    res.send(buildPaginationResponse('municipalities', municipalities, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORD -> ${error}`, 400);
   }

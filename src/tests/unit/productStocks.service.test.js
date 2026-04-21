@@ -12,6 +12,7 @@ const {
 jest.mock('../../models/index', () => ({
   productStocks: {
     findAll: jest.fn(),
+    findAndCountAll: jest.fn(),
     findOne: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn(),
@@ -53,30 +54,32 @@ describe('ProductStocks Service - Unit Tests', () => {
         }
       ];
 
-      productStocks.findAll.mockResolvedValue(mockStocks);
+      productStocks.findAndCountAll.mockResolvedValue({ count: 2, rows: mockStocks });
 
       const result = await getAllProductStocks();
 
-      expect(productStocks.findAll).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(mockStocks);
-      expect(result).toHaveLength(2);
+      expect(productStocks.findAndCountAll).toHaveBeenCalledTimes(1);
+      expect(result.stocks).toEqual(mockStocks);
+      expect(result.stocks).toHaveLength(2);
+      expect(result.total).toBe(2);
     });
 
     test('debe retornar array vacío si no hay inventarios', async () => {
-      productStocks.findAll.mockResolvedValue([]);
+      productStocks.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getAllProductStocks();
 
-      expect(result).toEqual([]);
-      expect(result).toHaveLength(0);
+      expect(result.stocks).toEqual([]);
+      expect(result.stocks).toHaveLength(0);
+      expect(result.total).toBe(0);
     });
 
     test('debe incluir producto y sucursal en la consulta', async () => {
-      productStocks.findAll.mockResolvedValue([]);
+      productStocks.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getAllProductStocks();
 
-      expect(productStocks.findAll).toHaveBeenCalledWith(
+      expect(productStocks.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           include: expect.arrayContaining([
             expect.objectContaining({
@@ -100,24 +103,26 @@ describe('ProductStocks Service - Unit Tests', () => {
         { id: 2, product_id: 1, branch_id: 2, quantity: 50, branch: { id: 2, name: 'Sucursal 2' } }
       ];
 
-      productStocks.findAll.mockResolvedValue(mockStocks);
+      productStocks.findAndCountAll.mockResolvedValue({ count: 2, rows: mockStocks });
 
       const result = await getStocksByProduct(1);
 
-      expect(productStocks.findAll).toHaveBeenCalledWith(
+      expect(productStocks.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { product_id: 1 }
         })
       );
-      expect(result).toHaveLength(2);
+      expect(result.stocks).toHaveLength(2);
+      expect(result.total).toBe(2);
     });
 
     test('debe retornar array vacío si el producto no tiene inventario', async () => {
-      productStocks.findAll.mockResolvedValue([]);
+      productStocks.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getStocksByProduct(999);
 
-      expect(result).toEqual([]);
+      expect(result.stocks).toEqual([]);
+      expect(result.total).toBe(0);
     });
   });
 
@@ -128,24 +133,26 @@ describe('ProductStocks Service - Unit Tests', () => {
         { id: 2, product_id: 2, branch_id: 1, quantity: 75, product: { id: 2, sku: 'SKU002', name: 'Producto 2' } }
       ];
 
-      productStocks.findAll.mockResolvedValue(mockStocks);
+      productStocks.findAndCountAll.mockResolvedValue({ count: 2, rows: mockStocks });
 
       const result = await getStocksByBranch(1);
 
-      expect(productStocks.findAll).toHaveBeenCalledWith(
+      expect(productStocks.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { branch_id: 1 }
         })
       );
-      expect(result).toHaveLength(2);
+      expect(result.stocks).toHaveLength(2);
+      expect(result.total).toBe(2);
     });
 
     test('debe retornar array vacío si la sucursal no tiene inventario', async () => {
-      productStocks.findAll.mockResolvedValue([]);
+      productStocks.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getStocksByBranch(999);
 
-      expect(result).toEqual([]);
+      expect(result.stocks).toEqual([]);
+      expect(result.total).toBe(0);
     });
   });
 
@@ -345,21 +352,21 @@ describe('ProductStocks Service - Unit Tests', () => {
   describe('Manejo de errores de base de datos', () => {
     test('getAllProductStocks debe propagar error de BD', async () => {
       const dbError = new Error('Database connection failed');
-      productStocks.findAll.mockRejectedValue(dbError);
+      productStocks.findAndCountAll.mockRejectedValue(dbError);
 
       await expect(getAllProductStocks()).rejects.toThrow('Database connection failed');
     });
 
     test('getStocksByProduct debe propagar error de BD', async () => {
       const dbError = new Error('Query failed');
-      productStocks.findAll.mockRejectedValue(dbError);
+      productStocks.findAndCountAll.mockRejectedValue(dbError);
 
       await expect(getStocksByProduct(1)).rejects.toThrow('Query failed');
     });
 
     test('getStocksByBranch debe propagar error de BD', async () => {
       const dbError = new Error('Query failed');
-      productStocks.findAll.mockRejectedValue(dbError);
+      productStocks.findAndCountAll.mockRejectedValue(dbError);
 
       await expect(getStocksByBranch(1)).rejects.toThrow('Query failed');
     });
@@ -420,11 +427,12 @@ describe('ProductStocks Service - Unit Tests', () => {
         quantity: (i + 1) * 10
       }));
 
-      productStocks.findAll.mockResolvedValue(manyStocks);
+      productStocks.findAndCountAll.mockResolvedValue({ count: 100, rows: manyStocks });
 
       const result = await getAllProductStocks();
 
-      expect(result).toHaveLength(100);
+      expect(result.stocks).toHaveLength(100);
+      expect(result.total).toBe(100);
     });
 
     test('deleteProductStock debe retornar número de filas eliminadas', async () => {

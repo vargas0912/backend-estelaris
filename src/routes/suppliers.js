@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetSupplier, valiAddSupplier, valiUpdateSupplier } = require('../validators/suppliers');
+const { validateGetAll, validateGetSupplier, valiAddSupplier, valiUpdateSupplier } = require('../validators/suppliers');
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
@@ -38,6 +38,7 @@ const { ROLE } = require('../constants/roles');
 router.get('/', [
   readLimiter,
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], SUPPLIER.VIEW_ALL)
 ], getRecords);
 

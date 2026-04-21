@@ -5,7 +5,7 @@ const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
-const { validateGetUser, validateUpdateUser } = require('../validators/auth');
+const { validateGetUser, validateGetUsers, validateUpdateUser } = require('../validators/auth');
 
 const { getRecords, updateRecord, deleteRecord, getRecord } = require('../controllers/user');
 
@@ -37,6 +37,7 @@ const { USERS } = require('../constants/privileges');
 router.get('/', [
   readLimiter,
   authMidleware,
+  validateGetUsers,
   checkRol([ROLE.ADMIN, ROLE.SUPERADMIN], USERS.VIEW_ALL)
 ], getRecords);
 

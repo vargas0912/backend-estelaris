@@ -13,6 +13,7 @@ const {
 jest.mock('../../models/index', () => ({
   users: {
     findAll: jest.fn(),
+    findAndCountAll: jest.fn(),
     findOne: jest.fn(),
     create: jest.fn()
   }
@@ -109,27 +110,29 @@ describe('Users Service - Unit Tests', () => {
         }
       ];
 
-      users.findAll.mockResolvedValue(mockUsers);
+      users.findAndCountAll.mockResolvedValue({ count: 2, rows: mockUsers });
 
       const result = await getUsers();
 
-      expect(users.findAll).toHaveBeenCalledTimes(1);
-      expect(result).toHaveLength(2);
+      expect(users.findAndCountAll).toHaveBeenCalledTimes(1);
+      expect(result.users).toHaveLength(2);
+      expect(result.total).toBe(2);
       // Verificar que no incluye password
-      expect(result[0]).not.toHaveProperty('password');
-      expect(result[1]).not.toHaveProperty('password');
+      expect(result.users[0]).not.toHaveProperty('password');
+      expect(result.users[1]).not.toHaveProperty('password');
       // Verificar que incluye otros campos
-      expect(result[0]).toHaveProperty('id', 1);
-      expect(result[0]).toHaveProperty('name', 'User 1');
-      expect(result[0]).toHaveProperty('email', 'user1@test.com');
+      expect(result.users[0]).toHaveProperty('id', 1);
+      expect(result.users[0]).toHaveProperty('name', 'User 1');
+      expect(result.users[0]).toHaveProperty('email', 'user1@test.com');
     });
 
     test('debe retornar array vacio si no hay usuarios', async() => {
-      users.findAll.mockResolvedValue([]);
+      users.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getUsers();
 
-      expect(result).toEqual([]);
+      expect(result.users).toEqual([]);
+      expect(result.total).toBe(0);
     });
 
     test('debe llamar toJSON en cada usuario', async() => {
@@ -148,7 +151,7 @@ describe('Users Service - Unit Tests', () => {
         })
       };
 
-      users.findAll.mockResolvedValue([mockUser]);
+      users.findAndCountAll.mockResolvedValue({ count: 1, rows: [mockUser] });
 
       await getUsers();
 
@@ -373,7 +376,7 @@ describe('Users Service - Unit Tests', () => {
 
     test('getUsers debe propagar error de BD', async() => {
       const dbError = new Error('Database query failed');
-      users.findAll.mockRejectedValue(dbError);
+      users.findAndCountAll.mockRejectedValue(dbError);
 
       await expect(getUsers()).rejects.toThrow('Database query failed');
     });
@@ -438,12 +441,13 @@ describe('Users Service - Unit Tests', () => {
         })
       }));
 
-      users.findAll.mockResolvedValue(manyUsers);
+      users.findAndCountAll.mockResolvedValue({ count: 100, rows: manyUsers });
 
       const result = await getUsers();
 
-      expect(result).toHaveLength(100);
-      result.forEach(user => {
+      expect(result.users).toHaveLength(100);
+      expect(result.total).toBe(100);
+      result.users.forEach(user => {
         expect(user).not.toHaveProperty('password');
       });
     });

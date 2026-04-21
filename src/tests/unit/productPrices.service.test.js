@@ -13,6 +13,7 @@ const {
 jest.mock('../../models/index', () => ({
   productPrices: {
     findAll: jest.fn(),
+    findAndCountAll: jest.fn(),
     findOne: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn(),
@@ -54,29 +55,31 @@ describe('ProductPrices Service - Unit Tests', () => {
         }
       ];
 
-      productPrices.findAll.mockResolvedValue(mockPrices);
+      productPrices.findAndCountAll.mockResolvedValue({ count: 2, rows: mockPrices });
 
       const result = await getAllProductPrices();
 
-      expect(productPrices.findAll).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(mockPrices);
-      expect(result).toHaveLength(2);
+      expect(productPrices.findAndCountAll).toHaveBeenCalledTimes(1);
+      expect(result.prices).toEqual(mockPrices);
+      expect(result.prices).toHaveLength(2);
+      expect(result.total).toBe(2);
     });
 
     test('debe retornar array vacío si no hay precios', async () => {
-      productPrices.findAll.mockResolvedValue([]);
+      productPrices.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getAllProductPrices();
 
-      expect(result).toEqual([]);
+      expect(result.prices).toEqual([]);
+      expect(result.total).toBe(0);
     });
 
     test('debe incluir producto y lista en la consulta', async () => {
-      productPrices.findAll.mockResolvedValue([]);
+      productPrices.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getAllProductPrices();
 
-      expect(productPrices.findAll).toHaveBeenCalledWith(
+      expect(productPrices.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           include: expect.arrayContaining([
             expect.objectContaining({
@@ -128,24 +131,26 @@ describe('ProductPrices Service - Unit Tests', () => {
         { id: 2, product_id: 1, price_list_id: 2, price: 90.00, priceList: { id: 2, name: 'Mayoreo' } }
       ];
 
-      productPrices.findAll.mockResolvedValue(mockPrices);
+      productPrices.findAndCountAll.mockResolvedValue({ count: 2, rows: mockPrices });
 
       const result = await getPricesByProduct(1);
 
-      expect(productPrices.findAll).toHaveBeenCalledWith(
+      expect(productPrices.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { product_id: 1 }
         })
       );
-      expect(result).toHaveLength(2);
+      expect(result.prices).toHaveLength(2);
+      expect(result.total).toBe(2);
     });
 
     test('debe retornar array vacío si el producto no tiene precios', async () => {
-      productPrices.findAll.mockResolvedValue([]);
+      productPrices.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getPricesByProduct(999);
 
-      expect(result).toEqual([]);
+      expect(result.prices).toEqual([]);
+      expect(result.total).toBe(0);
     });
   });
 
@@ -156,16 +161,17 @@ describe('ProductPrices Service - Unit Tests', () => {
         { id: 2, product_id: 2, price_list_id: 1, price: 200.00, product: { id: 2, sku: 'SKU002' } }
       ];
 
-      productPrices.findAll.mockResolvedValue(mockPrices);
+      productPrices.findAndCountAll.mockResolvedValue({ count: 2, rows: mockPrices });
 
       const result = await getPricesByPriceList(1);
 
-      expect(productPrices.findAll).toHaveBeenCalledWith(
+      expect(productPrices.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { price_list_id: 1 }
         })
       );
-      expect(result).toHaveLength(2);
+      expect(result.prices).toHaveLength(2);
+      expect(result.total).toBe(2);
     });
   });
 
@@ -275,7 +281,7 @@ describe('ProductPrices Service - Unit Tests', () => {
   describe('Manejo de errores', () => {
     test('getAllProductPrices debe propagar error de BD', async () => {
       const dbError = new Error('Database connection failed');
-      productPrices.findAll.mockRejectedValue(dbError);
+      productPrices.findAndCountAll.mockRejectedValue(dbError);
 
       await expect(getAllProductPrices()).rejects.toThrow('Database connection failed');
     });

@@ -1,7 +1,13 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
+const { paginationChecks } = require('./shared');
 
 const { USER_VALIDATORS } = require('../constants/privileges');
+
+const validateGetAll = [
+  ...paginationChecks,
+  (req, res, next) => validateResults(req, res, next)
+];
 
 const validateGetRecord = [
   check('id')
@@ -16,6 +22,7 @@ const validateGetRecordByModule = [
   check('module')
     .exists().withMessage(USER_VALIDATORS.MODULE_NOT_EXISTS).bail()
     .notEmpty().withMessage(USER_VALIDATORS.MODULE_IS_EMPTY).bail(),
+  ...paginationChecks,
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -54,4 +61,4 @@ const validateUpdateRecord = [
   }
 ];
 
-module.exports = { validateGetRecord, validateAddRecord, validateUpdateRecord, validateGetRecordByModule };
+module.exports = { validateGetAll, validateGetRecord, validateAddRecord, validateUpdateRecord, validateGetRecordByModule };

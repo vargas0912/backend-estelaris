@@ -8,12 +8,18 @@ const parentInclude = {
   attributes: ['id', 'code', 'name']
 };
 
-const getAllAccounts = async () => {
-  return accountingAccounts.findAll({
+const getAllAccounts = async (page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await accountingAccounts.findAndCountAll({
     attributes,
     include: [parentInclude],
-    order: [['code', 'ASC']]
+    order: [['code', 'ASC']],
+    limit,
+    offset,
+    distinct: true
   });
+
+  return { accounts: rows, total: count };
 };
 
 const getAccountsTree = async () => {

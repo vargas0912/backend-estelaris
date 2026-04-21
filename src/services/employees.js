@@ -7,10 +7,11 @@ const attributes = ['id', 'name', 'email', 'phone', 'hire_date', 'active', 'user
 const positionAttributes = ['id', 'name'];
 const branchAttributes = ['id', 'name'];
 
-const getAllEmployees = async (branchId = null) => {
+const getAllEmployees = async (branchId = null, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
   const where = branchId !== null ? { branch_id: branchId } : {};
 
-  const result = await employees.findAll({
+  const { count, rows } = await employees.findAndCountAll({
     attributes,
     where,
     include: [
@@ -26,10 +27,12 @@ const getAllEmployees = async (branchId = null) => {
         attributes: branchAttributes,
         required: true
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { employees: rows, total: count };
 };
 
 const getEmployee = async (id) => {
@@ -57,8 +60,9 @@ const getEmployee = async (id) => {
   return result;
 };
 
-const getEmployeesByBranch = async (branchId) => {
-  const result = await employees.findAll({
+const getEmployeesByBranch = async (branchId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await employees.findAndCountAll({
     attributes,
     where: { branch_id: branchId },
     include: [
@@ -74,10 +78,12 @@ const getEmployeesByBranch = async (branchId) => {
         attributes: branchAttributes,
         required: true
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { employees: rows, total: count };
 };
 
 const addNewEmployee = async (body) => {

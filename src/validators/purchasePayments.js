@@ -1,6 +1,12 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
 const { PURCH_PAYMENT_VALIDATORS } = require('../constants/purchasePayments');
+const { paginationChecks } = require('./shared');
+
+const validateGetAll = [
+  ...paginationChecks,
+  (req, res, next) => validateResults(req, res, next)
+];
 
 const validateGetRecord = [
   check('id')
@@ -15,6 +21,7 @@ const validateGetByPurchase = [
     .exists().withMessage(PURCH_PAYMENT_VALIDATORS.PURCH_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(PURCH_PAYMENT_VALIDATORS.PURCH_ID_IS_EMPTY).bail()
     .isInt().withMessage(PURCH_PAYMENT_VALIDATORS.PURCH_ID_INVALID).bail(),
+  ...paginationChecks,
   (req, res, next) => validateResults(req, res, next)
 ];
 
@@ -48,6 +55,7 @@ const valiAddRecord = [
 ];
 
 module.exports = {
+  validateGetAll,
   validateGetRecord,
   validateGetByPurchase,
   valiAddRecord

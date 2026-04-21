@@ -40,9 +40,9 @@ describe('[STATES] Test api states //api/states/', () => {
       .auth(Token, { type: 'bearer' })
       .expect(200);
 
-    expect(response.body).toHaveProperty('data');
-    expect(Array.isArray(response.body.data)).toBe(true);
-    expect(response.body.data.length).toBeGreaterThan(0);
+    expect(response.body).toHaveProperty('states');
+    expect(Array.isArray(response.body.states)).toBe(true);
+    expect(response.body.states.length).toBeGreaterThan(0);
   });
 
   test('2. Obtener estado por id. Expect 200', async() => {
@@ -139,13 +139,13 @@ describe('[STATES] Test api states //api/states/', () => {
         .auth(Token, { type: 'bearer' })
         .expect(200);
 
-      expect(response.body).toHaveProperty('data');
-      expect(Array.isArray(response.body.data)).toBe(true);
-      expect(response.body.data.length).toBeGreaterThan(0);
+      expect(response.body).toHaveProperty('states');
+      expect(Array.isArray(response.body.states)).toBe(true);
+      expect(response.body.states.length).toBeGreaterThan(0);
 
       // Verificar estructura del primer elemento
-      if (response.body.data.length > 0) {
-        const firstState = response.body.data[0];
+      if (response.body.states.length > 0) {
+        const firstState = response.body.states[0];
         expect(firstState).toHaveProperty('id');
         expect(firstState).toHaveProperty('name');
       }

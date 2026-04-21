@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord } = require('../validators/expenses');
+const { validateGetAll, validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord } = require('../validators/expenses');
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
@@ -73,6 +73,7 @@ router.get('/branch/:branch_id', [
 router.get('/', [
   readLimiter,
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], EXPENSE.VIEW_ALL)
 ], getRecords);
 

@@ -26,8 +26,9 @@ const attributes = [
 
 const municipalityAttributes = ['id', 'name'];
 
-const getAllSuppliers = async() => {
-  const result = await suppliers.findAll({
+const getAllSuppliers = async(page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await suppliers.findAndCountAll({
     attributes,
     include: [
       {
@@ -35,10 +36,12 @@ const getAllSuppliers = async() => {
         as: 'municipality',
         attributes: municipalityAttributes
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { suppliers: rows, total: count };
 };
 
 const getSupplier = async(id) => {

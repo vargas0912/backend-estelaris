@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {
+  validateGetAll,
   validateGetRecord,
   validateGetByCustomer,
   validateGetByBranch,
@@ -57,6 +58,7 @@ router.get('/', [
   readLimiter,
   authMidleware,
   branchScope,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], SALE.VIEW_ALL)
 ], getRecords);
 
@@ -148,6 +150,7 @@ router.get('/branch/:branch_id', [
 router.get('/overdue', [
   readLimiter,
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], SALE.VIEW_OVERDUE)
 ], getOverdueRecords);
 

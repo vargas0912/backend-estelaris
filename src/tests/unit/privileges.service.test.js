@@ -13,6 +13,7 @@ jest.mock('../../models/index', () => ({
   privileges: {
     findByPk: jest.fn(),
     findAll: jest.fn(),
+    findAndCountAll: jest.fn(),
     create: jest.fn(),
     destroy: jest.fn()
   }
@@ -97,43 +98,39 @@ describe('Privileges Service - Unit Tests', () => {
         }
       ];
 
-      privileges.findAll.mockResolvedValue(mockPrivileges);
+      privileges.findAndCountAll.mockResolvedValue({ count: 2, rows: mockPrivileges });
 
       const result = await getPrivilegeByModule('users');
 
-      expect(privileges.findAll).toHaveBeenCalledWith({
-        where: {
-          module: 'users'
-        }
-      });
-      expect(privileges.findAll).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(mockPrivileges);
-      expect(result).toHaveLength(2);
+      expect(privileges.findAndCountAll).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { module: 'users' } })
+      );
+      expect(privileges.findAndCountAll).toHaveBeenCalledTimes(1);
+      expect(result.privileges).toEqual(mockPrivileges);
+      expect(result.privileges).toHaveLength(2);
+      expect(result.total).toBe(2);
     });
 
     test('debe retornar array vacio si no hay privilegios para el modulo', async() => {
-      privileges.findAll.mockResolvedValue([]);
+      privileges.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getPrivilegeByModule('nonexistent');
 
-      expect(privileges.findAll).toHaveBeenCalledWith({
-        where: {
-          module: 'nonexistent'
-        }
-      });
-      expect(result).toEqual([]);
+      expect(privileges.findAndCountAll).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { module: 'nonexistent' } })
+      );
+      expect(result.privileges).toEqual([]);
+      expect(result.total).toBe(0);
     });
 
     test('debe buscar con el modulo correcto', async() => {
-      privileges.findAll.mockResolvedValue([]);
+      privileges.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getPrivilegeByModule('branches');
 
-      expect(privileges.findAll).toHaveBeenCalledWith({
-        where: {
-          module: 'branches'
-        }
-      });
+      expect(privileges.findAndCountAll).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { module: 'branches' } })
+      );
     });
 
     test('debe retornar un solo privilegio si el modulo solo tiene uno', async() => {
@@ -146,12 +143,12 @@ describe('Privileges Service - Unit Tests', () => {
         }
       ];
 
-      privileges.findAll.mockResolvedValue(mockPrivilege);
+      privileges.findAndCountAll.mockResolvedValue({ count: 1, rows: mockPrivilege });
 
       const result = await getPrivilegeByModule('admin');
 
-      expect(result).toHaveLength(1);
-      expect(result[0].module).toBe('admin');
+      expect(result.privileges).toHaveLength(1);
+      expect(result.privileges[0].module).toBe('admin');
     });
   });
 
@@ -175,34 +172,23 @@ describe('Privileges Service - Unit Tests', () => {
         }
       ];
 
-      privileges.findAll.mockResolvedValue(mockPrivileges);
+      privileges.findAndCountAll.mockResolvedValue({ count: 2, rows: mockPrivileges });
 
       const result = await getAllPrivileges();
 
-      expect(privileges.findAll).toHaveBeenCalledTimes(1);
-      expect(privileges.findAll).toHaveBeenCalledWith();
-      expect(result).toEqual(mockPrivileges);
-      expect(result).toHaveLength(2);
+      expect(privileges.findAndCountAll).toHaveBeenCalledTimes(1);
+      expect(result.privileges).toEqual(mockPrivileges);
+      expect(result.privileges).toHaveLength(2);
+      expect(result.total).toBe(2);
     });
 
     test('debe retornar array vacio si no hay privilegios', async() => {
-      privileges.findAll.mockResolvedValue([]);
+      privileges.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getAllPrivileges();
 
-      expect(result).toEqual([]);
-    });
-
-    test('debe manejar caso cuando findAll retorna null', async() => {
-      privileges.findAll.mockResolvedValue(null);
-
-      const result = await getAllPrivileges();
-
-      expect(result).toEqual({
-        result: {
-          msg: 'NOT_FOUND'
-        }
-      });
+      expect(result.privileges).toEqual([]);
+      expect(result.total).toBe(0);
     });
 
     test('debe manejar gran cantidad de privilegios', async() => {
@@ -213,13 +199,14 @@ describe('Privileges Service - Unit Tests', () => {
         module: `module_${i % 10}`
       }));
 
-      privileges.findAll.mockResolvedValue(manyPrivileges);
+      privileges.findAndCountAll.mockResolvedValue({ count: 100, rows: manyPrivileges });
 
       const result = await getAllPrivileges();
 
-      expect(result).toHaveLength(100);
-      expect(result[0].name).toBe('Privilegio 1');
-      expect(result[99].name).toBe('Privilegio 100');
+      expect(result.privileges).toHaveLength(100);
+      expect(result.privileges[0].name).toBe('Privilegio 1');
+      expect(result.privileges[99].name).toBe('Privilegio 100');
+      expect(result.total).toBe(100);
     });
   });
 
@@ -593,14 +580,14 @@ describe('Privileges Service - Unit Tests', () => {
 
     test('getPrivilegeByModule debe propagar error de BD', async() => {
       const dbError = new Error('Database query failed');
-      privileges.findAll.mockRejectedValue(dbError);
+      privileges.findAndCountAll.mockRejectedValue(dbError);
 
       await expect(getPrivilegeByModule('users')).rejects.toThrow('Database query failed');
     });
 
     test('getAllPrivileges debe propagar error de BD', async() => {
       const dbError = new Error('Database query failed');
-      privileges.findAll.mockRejectedValue(dbError);
+      privileges.findAndCountAll.mockRejectedValue(dbError);
 
       await expect(getAllPrivileges()).rejects.toThrow('Database query failed');
     });
@@ -658,16 +645,14 @@ describe('Privileges Service - Unit Tests', () => {
   // ============================================
   describe('Casos edge', () => {
     test('getPrivilegeByModule con modulo vacio', async() => {
-      privileges.findAll.mockResolvedValue([]);
+      privileges.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getPrivilegeByModule('');
 
-      expect(privileges.findAll).toHaveBeenCalledWith({
-        where: {
-          module: ''
-        }
-      });
-      expect(result).toEqual([]);
+      expect(privileges.findAndCountAll).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { module: '' } })
+      );
+      expect(result.privileges).toEqual([]);
     });
 
     test('getPrivilegeByModule con modulo especial', async() => {
@@ -680,12 +665,12 @@ describe('Privileges Service - Unit Tests', () => {
         }
       ];
 
-      privileges.findAll.mockResolvedValue(mockPrivileges);
+      privileges.findAndCountAll.mockResolvedValue({ count: 1, rows: mockPrivileges });
 
       const result = await getPrivilegeByModule('special-module_123');
 
-      expect(result).toHaveLength(1);
-      expect(result[0].module).toBe('special-module_123');
+      expect(result.privileges).toHaveLength(1);
+      expect(result.privileges[0].module).toBe('special-module_123');
     });
 
     test('addPrivilege con nombre largo', async() => {
@@ -746,15 +731,6 @@ describe('Privileges Service - Unit Tests', () => {
       });
     });
 
-    test('getAllPrivileges debe retornar estructura correcta en NOT_FOUND', async() => {
-      privileges.findAll.mockResolvedValue(null);
-
-      const result = await getAllPrivileges();
-
-      expect(result).toHaveProperty('result');
-      expect(result.result).toHaveProperty('msg', 'NOT_FOUND');
-    });
-
     test('updatePrivilege debe aplicar cambios antes de save', async() => {
       const mockPrivilege = {
         id: 1,
@@ -812,15 +788,13 @@ describe('Privileges Service - Unit Tests', () => {
     });
 
     test('getPrivilegeByModule debe aceptar string como modulo', async() => {
-      privileges.findAll.mockResolvedValue([]);
+      privileges.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getPrivilegeByModule('test_module');
 
-      expect(privileges.findAll).toHaveBeenCalledWith({
-        where: {
-          module: 'test_module'
-        }
-      });
+      expect(privileges.findAndCountAll).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { module: 'test_module' } })
+      );
     });
 
     test('addPrivilege debe aceptar objeto como body', async() => {
