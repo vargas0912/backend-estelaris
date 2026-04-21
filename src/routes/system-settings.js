@@ -28,15 +28,35 @@ const { ROLE } = require('../constants/roles');
  *          required: false
  *          schema:
  *            type: string
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
  *      responses:
  *        '200':
- *          description: Arreglo de configuraciones
+ *          description: Lista de configuraciones paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/systemSettings'
+ *                type: object
+ *                properties:
+ *                  settings:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/systemSettings'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  */
 router.get('/', [
   readLimiter,

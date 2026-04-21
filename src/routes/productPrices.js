@@ -43,15 +43,36 @@ const { ROLE } = require('../constants/roles');
  *      description: Obtener todos los precios de productos con sus listas
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
  *      responses:
  *        '200':
- *          description: Arreglo de precios de productos.
+ *          description: Lista de precios de productos paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/productPrices'
+ *                type: object
+ *                properties:
+ *                  productPrices:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/productPrices'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion.
  */
@@ -80,15 +101,35 @@ router.get('/', [
  *        schema:
  *          type: string
  *          maxLength: 20
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          default: 1
+ *        description: Número de página
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          maximum: 100
+ *          default: 20
+ *        description: Registros por página
  *      responses:
  *        '200':
- *          description: Arreglo de precios del producto
+ *          description: Lista de precios del producto paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/productPrices'
+ *                type: object
+ *                properties:
+ *                  productPrices:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/productPrices'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion.
  */
@@ -116,15 +157,35 @@ router.get('/product/:product_id', [
  *        required: true
  *        schema:
  *          type: number
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          default: 1
+ *        description: Número de página
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          maximum: 100
+ *          default: 20
+ *        description: Registros por página
  *      responses:
  *        '200':
- *          description: Arreglo de precios de la lista
+ *          description: Lista de precios de la lista paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/productPrices'
+ *                type: object
+ *                properties:
+ *                  productPrices:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/productPrices'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion.
  */

@@ -39,15 +39,36 @@ const { PRIVILEGES } = require('../constants/privileges');
  *      description: Devuelve una lista con todos los privilegios
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
  *      responses:
  *        '200':
- *          description: Lista de privilegios.
+ *          description: Lista de privilegios paginada
  *          content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/privileges'
+ *               type: object
+ *               properties:
+ *                 privileges:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/privileges'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion.
  */
@@ -111,15 +132,35 @@ router.get('/:id', [
  *        required: true
  *        schema:
  *          type: string
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          default: 1
+ *        description: Número de página
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          maximum: 100
+ *          default: 20
+ *        description: Registros por página
  *      responses:
  *        '200':
- *          description: Lista de privilegios.
+ *          description: Lista de privilegios del módulo paginada
  *          content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/privileges'
+ *               type: object
+ *               properties:
+ *                 privileges:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/privileges'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion.
  */

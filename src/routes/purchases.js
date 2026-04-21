@@ -41,15 +41,36 @@ const branchScope = require('../middlewares/branchScope');
  *      description: Obtener todas las compras con sus detalles
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
  *      responses:
  *        '200':
- *          description: Arreglo de compras.
+ *          description: Lista de compras paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/purchases'
+ *                type: object
+ *                properties:
+ *                  purchases:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/purchases'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  */
 router.get('/', [
   readLimiter,
@@ -74,15 +95,35 @@ router.get('/', [
  *        required: true
  *        schema:
  *          type: number
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          default: 1
+ *        description: Número de página
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          maximum: 100
+ *          default: 20
+ *        description: Registros por página
  *      responses:
  *        '200':
- *          description: Arreglo de compras del proveedor
+ *          description: Lista de compras del proveedor paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/purchases'
+ *                type: object
+ *                properties:
+ *                  purchases:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/purchases'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  */
 router.get('/supplier/:supplier_id', [
   searchLimiter,
@@ -106,15 +147,35 @@ router.get('/supplier/:supplier_id', [
  *        required: true
  *        schema:
  *          type: number
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          default: 1
+ *        description: Número de página
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          maximum: 100
+ *          default: 20
+ *        description: Registros por página
  *      responses:
  *        '200':
- *          description: Arreglo de compras de la sucursal
+ *          description: Lista de compras de la sucursal paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/purchases'
+ *                type: object
+ *                properties:
+ *                  purchases:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/purchases'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  */
 router.get('/branch/:branch_id', [
   searchLimiter,

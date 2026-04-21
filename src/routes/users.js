@@ -22,15 +22,36 @@ const { USERS } = require('../constants/privileges');
  *      description: Devuelve la lista de usuarios activos
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
  *      responses:
  *        '200':
- *          description: Retorna lista de usuarios
+ *          description: Lista de usuarios paginada
  *          content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/users'
+ *               type: object
+ *               properties:
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/users'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion
  */
