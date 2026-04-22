@@ -5,6 +5,7 @@ const { paginationChecks } = require('./shared');
 
 const validateGetAll = [
   ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => validateResults(req, res, next)
 ];
 
@@ -22,6 +23,7 @@ const validateGetByCustomer = [
     .notEmpty().withMessage(SALES_VALIDATORS.CUSTOMER_ID_IS_EMPTY).bail()
     .isInt().withMessage(SALES_VALIDATORS.CUSTOMER_ID_INVALID).bail(),
   ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => validateResults(req, res, next)
 ];
 
@@ -31,6 +33,7 @@ const validateGetByBranch = [
     .notEmpty().withMessage(SALES_VALIDATORS.BRANCH_ID_IS_EMPTY).bail()
     .isInt().withMessage(SALES_VALIDATORS.BRANCH_ID_INVALID).bail(),
   ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => validateResults(req, res, next)
 ];
 

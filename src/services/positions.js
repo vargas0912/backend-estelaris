@@ -1,11 +1,14 @@
 const { positions } = require('../models/index');
+const { Op } = require('sequelize');
 
 const attributes = ['id', 'name', 'created_at', 'updated_at'];
 
-const getAllPositions = async(page = 1, limit = 20) => {
+const getAllPositions = async(page = 1, limit = 20, search = '') => {
   const offset = (page - 1) * limit;
+  const where = search ? { name: { [Op.like]: `%${search}%` } } : {};
   const { count, rows } = await positions.findAndCountAll({
     attributes,
+    where,
     limit,
     offset
   });

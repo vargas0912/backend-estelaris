@@ -1,11 +1,16 @@
 const { productCategories } = require('../models/index');
+const { Op } = require('sequelize');
 
 const attributes = ['id', 'name', 'description', 'created_at', 'updated_at'];
 
-const getAllProductCategories = async(page = 1, limit = 20) => {
+const getAllProductCategories = async(page = 1, limit = 20, search = '') => {
   const offset = (page - 1) * limit;
+  const where = search
+    ? { [Op.or]: [{ name: { [Op.like]: `%${search}%` } }, { description: { [Op.like]: `%${search}%` } }] }
+    : {};
   const { count, rows } = await productCategories.findAndCountAll({
     attributes,
+    where,
     limit,
     offset
   });

@@ -6,6 +6,7 @@ const { POSITIONS_VALIDATORS } = require('../constants/positions');
 
 const validateGetAll = [
   ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => validateResults(req, res, next)
 ];
 

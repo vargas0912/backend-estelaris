@@ -1,4 +1,5 @@
 const { accountingAccounts } = require('../models/index');
+const { Op } = require('sequelize');
 
 const attributes = ['id', 'code', 'name', 'type', 'nature', 'level', 'parent_id', 'allows_movements', 'is_system', 'active', 'created_at', 'updated_at'];
 
@@ -8,10 +9,14 @@ const parentInclude = {
   attributes: ['id', 'code', 'name']
 };
 
-const getAllAccounts = async (page = 1, limit = 20) => {
+const getAllAccounts = async (page = 1, limit = 20, search = '') => {
   const offset = (page - 1) * limit;
+  const where = search
+    ? { [Op.or]: [{ code: { [Op.like]: `%${search}%` } }, { name: { [Op.like]: `%${search}%` } }] }
+    : {};
   const { count, rows } = await accountingAccounts.findAndCountAll({
     attributes,
+    where,
     include: [parentInclude],
     order: [['code', 'ASC']],
     limit,

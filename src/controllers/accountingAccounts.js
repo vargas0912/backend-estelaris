@@ -6,8 +6,10 @@ const { getAllAccounts, getAccountsTree, getAccount, addAccount, updateAccount, 
 
 const getRecords = async (req, res) => {
   try {
-    const { page, limit } = getPaginationParams(matchedData(req));
-    const { accounts, total } = await getAllAccounts(page, limit);
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { accounts, total } = await getAllAccounts(page, limit, search);
     res.send(buildPaginationResponse('accounts', accounts, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);

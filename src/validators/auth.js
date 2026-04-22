@@ -84,6 +84,7 @@ const validateUpdateUser = [
 
 const validateGetUsers = [
   ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => validateResults(req, res, next)
 ];
 

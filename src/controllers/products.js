@@ -11,8 +11,10 @@ const { getAllProducts, getProduct, addNewProduct, updateProduct, deleteProduct 
  */
 const getRecords = async(req, res) => {
   try {
-    const { page, limit } = getPaginationParams(matchedData(req));
-    const { products, total } = await getAllProducts(page, limit);
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { products, total } = await getAllProducts(page, limit, search);
     res.send(buildPaginationResponse('products', products, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);

@@ -11,8 +11,10 @@ const { getAllBranches, getBranch, addNewBranch, updateBranch, deleteBranch, get
  */
 const getRecords = async(req, res) => {
   try {
-    const { page, limit } = getPaginationParams(matchedData(req));
-    const { branches, total } = await getAllBranches(page, limit);
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { branches, total } = await getAllBranches(page, limit, search);
 
     res.send(buildPaginationResponse('branches', branches, total, page, limit));
   } catch (error) {
@@ -90,8 +92,10 @@ const deleteRecord = async(req, res) => {
 
 const getPublicRecords = async (req, res) => {
   try {
-    const { page, limit } = getPaginationParams(matchedData(req));
-    const { branches, total } = await getPublicBranches(page, limit);
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { branches, total } = await getPublicBranches(page, limit, search);
     res.send(buildPaginationResponse('branches', branches, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_PUBLIC_BRANCHES -> ${error}`);

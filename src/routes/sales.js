@@ -57,6 +57,11 @@ const branchScope = require('../middlewares/branchScope');
  *            maximum: 100
  *            default: 20
  *          description: Registros por página
+ *        - in: query
+ *          name: search
+ *          schema:
+ *            type: string
+ *          description: Texto para filtrar resultados
  *      responses:
  *        '200':
  *          description: Lista de ventas paginada
@@ -110,6 +115,11 @@ router.get('/', [
  *          maximum: 100
  *          default: 20
  *        description: Registros por página
+ *      - in: query
+ *        name: search
+ *        schema:
+ *          type: string
+ *        description: Texto para filtrar resultados
  *      responses:
  *        '200':
  *          description: Lista de ventas del cliente paginada
@@ -162,6 +172,11 @@ router.get('/customer/:customer_id', [
  *          maximum: 100
  *          default: 20
  *        description: Registros por página
+ *      - in: query
+ *        name: search
+ *        schema:
+ *          type: string
+ *        description: Texto para filtrar resultados
  *      responses:
  *        '200':
  *          description: Lista de ventas de la sucursal paginada
@@ -211,6 +226,11 @@ router.get('/branch/:branch_id', [
  *            maximum: 100
  *            default: 20
  *          description: Registros por página
+ *        - in: query
+ *          name: search
+ *          schema:
+ *            type: string
+ *          description: Texto para filtrar resultados
  *      responses:
  *        '200':
  *          description: Lista de ventas morosas paginada

@@ -6,6 +6,7 @@ const { PRODUCT_CATEGORIES_VALIDATORS } = require('../constants/productCategorie
 
 const validateGetAll = [
   ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => validateResults(req, res, next)
 ];
 

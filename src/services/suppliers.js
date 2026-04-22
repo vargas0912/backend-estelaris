@@ -1,6 +1,7 @@
 'use strict';
 
 const { suppliers, municipalities } = require('../models/index');
+const { Op } = require('sequelize');
 
 const attributes = [
   'id',
@@ -26,10 +27,12 @@ const attributes = [
 
 const municipalityAttributes = ['id', 'name'];
 
-const getAllSuppliers = async(page = 1, limit = 20) => {
+const getAllSuppliers = async(page = 1, limit = 20, search = '') => {
   const offset = (page - 1) * limit;
+  const where = search ? { name: { [Op.like]: `%${search}%` } } : {};
   const { count, rows } = await suppliers.findAndCountAll({
     attributes,
+    where,
     include: [
       {
         model: municipalities,

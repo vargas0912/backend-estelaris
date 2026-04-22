@@ -19,8 +19,10 @@ const {
  */
 const getRecords = async(req, res) => {
   try {
-    const { page, limit } = getPaginationParams(matchedData(req));
-    const { suppliers, total } = await getAllSuppliers(page, limit);
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { suppliers, total } = await getAllSuppliers(page, limit, search);
     res.send(buildPaginationResponse('suppliers', suppliers, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);

@@ -38,6 +38,11 @@ const { USERS } = require('../constants/privileges');
  *            maximum: 100
  *            default: 20
  *          description: Registros por página
+ *        - in: query
+ *          name: search
+ *          schema:
+ *            type: string
+ *          description: Texto para filtrar resultados
  *      responses:
  *        '200':
  *          description: Lista de usuarios paginada

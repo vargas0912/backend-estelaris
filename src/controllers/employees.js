@@ -11,8 +11,10 @@ const { getAllEmployees, getEmployee, getEmployeesByBranch, addNewEmployee, upda
  */
 const getRecords = async(req, res) => {
   try {
-    const { page, limit } = getPaginationParams(matchedData(req));
-    const { employees, total } = await getAllEmployees(req.branchId, page, limit);
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { employees, total } = await getAllEmployees(req.branchId, page, limit, search);
     res.send(buildPaginationResponse('employees', employees, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
@@ -50,7 +52,8 @@ const getRecordsByBranch = async (req, res) => {
   try {
     const data = matchedData(req);
     const { page, limit } = getPaginationParams(data);
-    const { employees, total } = await getEmployeesByBranch(data.branch_id, page, limit);
+    const search = data.search ?? '';
+    const { employees, total } = await getEmployeesByBranch(data.branch_id, page, limit, search);
     res.send(buildPaginationResponse('employees', employees, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_BRANCH -> ${error}`);

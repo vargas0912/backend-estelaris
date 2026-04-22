@@ -11,8 +11,10 @@ const { getAllPositions, getPosition, addNewPosition, updatePosition, deletePosi
  */
 const getRecords = async(req, res) => {
   try {
-    const { page, limit } = getPaginationParams(matchedData(req));
-    const { positions, total } = await getAllPositions(page, limit);
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { positions, total } = await getAllPositions(page, limit, search);
 
     res.send(buildPaginationResponse('positions', positions, total, page, limit));
   } catch (error) {

@@ -7,6 +7,7 @@ const { SUPPLIERS_VALIDATORS } = require('../constants/suppliers');
 
 const validateGetAll = [
   ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => validateResults(req, res, next)
 ];
 

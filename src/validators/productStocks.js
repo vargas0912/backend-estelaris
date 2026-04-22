@@ -6,6 +6,7 @@ const { PRODUCT_STOCKS_VALIDATORS } = require('../constants/productStocks');
 
 const validateGetAll = [
   ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => validateResults(req, res, next)
 ];
 
@@ -25,6 +26,7 @@ const validateGetByProduct = [
     .isString().withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_INVALID).bail()
     .isLength({ max: 20 }).withMessage(PRODUCT_STOCKS_VALIDATORS.PRODUCT_ID_INVALID).bail(),
   ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -36,6 +38,7 @@ const validateGetByBranch = [
     .notEmpty().withMessage(PRODUCT_STOCKS_VALIDATORS.BRANCH_ID_IS_EMPTY).bail()
     .isInt().withMessage(PRODUCT_STOCKS_VALIDATORS.BRANCH_ID_INVALID).bail(),
   ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }

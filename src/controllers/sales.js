@@ -16,8 +16,10 @@ const {
 
 const getRecords = async (req, res) => {
   try {
-    const { page, limit } = getPaginationParams(matchedData(req));
-    const { sales, total } = await getAllSales(req.branchId, page, limit);
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { sales, total } = await getAllSales(req.branchId, page, limit, search);
     res.send(buildPaginationResponse('sales', sales, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
@@ -44,7 +46,8 @@ const getRecordsByCustomer = async (req, res) => {
   try {
     const data = matchedData(req);
     const { page, limit } = getPaginationParams(data);
-    const { sales, total } = await getSalesByCustomer(data.customer_id, page, limit);
+    const search = data.search ?? '';
+    const { sales, total } = await getSalesByCustomer(data.customer_id, page, limit, search);
     res.send(buildPaginationResponse('sales', sales, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_CUSTOMER -> ${error}`, 400);
@@ -55,7 +58,8 @@ const getRecordsByBranch = async (req, res) => {
   try {
     const data = matchedData(req);
     const { page, limit } = getPaginationParams(data);
-    const { sales, total } = await getSalesByBranch(data.branch_id, page, limit);
+    const search = data.search ?? '';
+    const { sales, total } = await getSalesByBranch(data.branch_id, page, limit, search);
     res.send(buildPaginationResponse('sales', sales, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_BRANCH -> ${error}`, 400);
@@ -64,8 +68,10 @@ const getRecordsByBranch = async (req, res) => {
 
 const getOverdueRecords = async (req, res) => {
   try {
-    const { page, limit } = getPaginationParams(matchedData(req));
-    const { sales, total } = await getOverdueSales(page, limit);
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { sales, total } = await getOverdueSales(page, limit, search);
     res.send(buildPaginationResponse('sales', sales, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_OVERDUE_RECORDS -> ${error}`);

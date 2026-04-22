@@ -5,6 +5,7 @@ const { paginationChecks } = require('./shared');
 
 const validateGetAll = [
   ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -26,6 +27,7 @@ const validateGetByBranch = [
     .notEmpty().withMessage(EXPENSE_VALIDATORS.BRANCH_ID_IS_EMPTY).bail()
     .isInt().withMessage(EXPENSE_VALIDATORS.BRANCH_ID_NOT_EXISTS),
   ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }

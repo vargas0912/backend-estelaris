@@ -53,6 +53,11 @@ const { ROLE } = require('../constants/roles');
  *            maximum: 100
  *            default: 20
  *          description: Registros por página
+ *        - in: query
+ *          name: search
+ *          schema:
+ *            type: string
+ *          description: Texto para filtrar resultados
  *      responses:
  *        '200':
  *          description: Lista de inventarios paginada
@@ -111,6 +116,11 @@ router.get('/', [
  *          maximum: 100
  *          default: 20
  *        description: Registros por página
+ *      - in: query
+ *        name: search
+ *        schema:
+ *          type: string
+ *        description: Texto para filtrar resultados
  *      responses:
  *        '200':
  *          description: Lista de inventarios del producto paginada
@@ -168,6 +178,11 @@ router.get('/product/:product_id', [
  *          maximum: 100
  *          default: 20
  *        description: Registros por página
+ *      - in: query
+ *        name: search
+ *        schema:
+ *          type: string
+ *        description: Texto para filtrar resultados
  *      responses:
  *        '200':
  *          description: Lista de inventarios de la sucursal paginada

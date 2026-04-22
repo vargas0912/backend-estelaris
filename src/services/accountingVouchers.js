@@ -7,6 +7,7 @@ const {
   users,
   sequelize
 } = require('../models/index');
+const { Op } = require('sequelize');
 
 // ─── Includes reutilizables ───────────────────────────────────────────────────
 
@@ -78,6 +79,7 @@ const getAllVouchers = async (filters = {}, page = 1, limit = 20) => {
   if (filters.status !== undefined) where.status = filters.status;
   if (filters.reference_type !== undefined) where.reference_type = filters.reference_type;
   if (filters.reference_id !== undefined) where.reference_id = filters.reference_id;
+  if (filters.search) where.folio = { [Op.like]: `%${filters.search}%` };
 
   const { count, rows } = await accountingVouchers.findAndCountAll({
     where,

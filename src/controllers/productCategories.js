@@ -17,8 +17,10 @@ const {
  */
 const getRecords = async(req, res) => {
   try {
-    const { page, limit } = getPaginationParams(matchedData(req));
-    const { productCategories, total } = await getAllProductCategories(page, limit);
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { productCategories, total } = await getAllProductCategories(page, limit, search);
 
     res.send(buildPaginationResponse('productCategories', productCategories, total, page, limit));
   } catch (error) {
