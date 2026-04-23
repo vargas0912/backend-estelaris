@@ -1,30 +1,36 @@
 # Spec: Paginación universal en endpoints de lista
 
 **Versión API:** 1.5.0  
-**Tipo de cambio:** BREAKING — todos los endpoints de lista cambian su shape de respuesta; nuevos endpoints soportan búsqueda por texto  
+**Tipo de cambio:** BREAKING — la mayoría de endpoints de lista cambian su shape de respuesta  
 **Branch:** `feat/universal-pagination`
 
 ---
 
 ## Resumen
 
-Todos los endpoints `GET` que devolvían un arreglo plano (o un objeto sin metadata) ahora devuelven un objeto con dos claves: el arreglo de datos y un objeto `pagination` con información de la página actual.
+Los endpoints `GET` de lista se dividen ahora en tres categorías:
+
+1. **Con paginación** — devuelven `{ <key>: [...], pagination: { ... } }` y aceptan `page`, `limit` y opcionalmente `search`
+2. **Catálogos estáticos** — devuelven `{ <key>: [...] }` sin objeto `pagination` (volúmenes acotados que no crecen)
+3. **Sin cambio** — detalle por ID, mutaciones, auth, dashboards, etc.
 
 ---
 
 ## Contrato de paginación
 
+> Aplica solo a los endpoints de la categoría **Con paginación**.
+
 ### Query params (todos opcionales)
 
-| Param    | Tipo    | Default | Máximo | Descripción                                      |
-|----------|---------|---------|--------|--------------------------------------------------|
-| `page`   | integer | `1`     | —      | Número de página                                 |
-| `limit`  | integer | `20`    | `100`  | Registros por página                             |
-| `search` | string  | `""`    | —      | Texto para filtrar resultados (ver tabla abajo) |
+| Param    | Tipo    | Default | Máximo | Descripción                                       |
+|----------|---------|---------|--------|---------------------------------------------------|
+| `page`   | integer | `1`     | —      | Número de página                                  |
+| `limit`  | integer | `20`    | `100`  | Registros por página                              |
+| `search` | string  | `""`    | —      | Texto para filtrar resultados (ver tabla por endpoint) |
 
-> `search` solo está disponible en los endpoints marcados con ✔ en la columna **Búsqueda** de cada tabla.
+> `search` solo está disponible en los endpoints marcados con ✔ en la columna **Búsqueda**.
 
-### Shape de respuesta
+### Shape de respuesta paginada
 
 ```jsonc
 {
@@ -38,8 +44,6 @@ Todos los endpoints `GET` que devolvían un arreglo plano (o un objeto sin metad
 }
 ```
 
-> `<key>` varía por endpoint — ver la tabla de endpoints más abajo.
-
 ### Ejemplo de petición
 
 ```http
@@ -51,7 +55,7 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "sales": [ { "id": 51, ... }, { "id": 52, ... } ],
+  "sales": [ { "id": 51 }, { "id": 52 } ],
   "pagination": {
     "total": 320,
     "page": 2,
@@ -63,16 +67,16 @@ Authorization: Bearer <token>
 
 ---
 
-## Endpoints afectados
+## Endpoints con paginación
 
 ### Ventas
 
-| Método | Ruta                           | Clave de datos | Búsqueda | Campo(s)      | Notas                         |
-|--------|--------------------------------|----------------|----------|---------------|-------------------------------|
-| GET    | `/api/sales`                   | `sales`        | ✔        | `ticket`      | Requiere header `X-Branch-ID` |
-| GET    | `/api/sales/customer/:id`      | `sales`        | ✔        | `ticket`      |                               |
-| GET    | `/api/sales/branch/:id`        | `sales`        | ✔        | `ticket`      |                               |
-| GET    | `/api/sales/overdue`           | `sales`        | ✔        | `ticket`      |                               |
+| Método | Ruta                           | Clave de datos | Búsqueda | Campo(s) | Notas                         |
+|--------|--------------------------------|----------------|----------|----------|-------------------------------|
+| GET    | `/api/sales`                   | `sales`        | ✔        | `ticket` | Requiere header `X-Branch-ID` |
+| GET    | `/api/sales/customer/:id`      | `sales`        | ✔        | `ticket` |                               |
+| GET    | `/api/sales/branch/:id`        | `sales`        | ✔        | `ticket` |                               |
+| GET    | `/api/sales/overdue`           | `sales`        | ✔        | `ticket` |                               |
 
 ### Pagos de ventas
 
@@ -91,87 +95,123 @@ Authorization: Bearer <token>
 
 ### Pagos de compras
 
-| Método | Ruta                                  | Clave de datos | Búsqueda | Notas |
-|--------|---------------------------------------|----------------|----------|-------|
-| GET    | `/api/purch-payments`                 | `payments`     | —        |       |
-| GET    | `/api/purch-payments/purchase/:id`    | `payments`     | —        |       |
+| Método | Ruta                               | Clave de datos | Búsqueda | Notas |
+|--------|------------------------------------|----------------|----------|-------|
+| GET    | `/api/purch-payments`              | `payments`     | —        |       |
+| GET    | `/api/purch-payments/purchase/:id` | `payments`     | —        |       |
 
 ### Gastos
 
-| Método | Ruta                           | Clave de datos | Búsqueda | Campo(s)          | Notas |
-|--------|--------------------------------|----------------|----------|-------------------|-------|
-| GET    | `/api/expenses`                | `expenses`     | ✔        | `expenseType.name`|       |
-| GET    | `/api/expenses/branch/:id`     | `expenses`     | ✔        | `expenseType.name`|       |
+| Método | Ruta                       | Clave de datos | Búsqueda | Campo(s)           | Notas |
+|--------|----------------------------|----------------|----------|--------------------|-------|
+| GET    | `/api/expenses`            | `expenses`     | ✔        | `expenseType.name` |       |
+| GET    | `/api/expenses/branch/:id` | `expenses`     | ✔        | `expenseType.name` |       |
 
 ### Transferencias
 
-| Método | Ruta                                 | Clave de datos | Búsqueda | Notas |
-|--------|--------------------------------------|----------------|----------|-------|
-| GET    | `/api/transfers`                     | `transfers`    | —        |       |
-| GET    | `/api/transfers/from-branch/:id`     | `transfers`    | —        |       |
-| GET    | `/api/transfers/to-branch/:id`       | `transfers`    | —        |       |
+| Método | Ruta                             | Clave de datos | Búsqueda | Notas |
+|--------|----------------------------------|----------------|----------|-------|
+| GET    | `/api/transfers`                 | `transfers`    | —        |       |
+| GET    | `/api/transfers/from-branch/:id` | `transfers`    | —        |       |
+| GET    | `/api/transfers/to-branch/:id`   | `transfers`    | —        |       |
 
 ### Pólizas contables
 
-| Método | Ruta                           | Clave de datos | Búsqueda | Campo(s) | Notas |
-|--------|--------------------------------|----------------|----------|----------|-------|
-| GET    | `/api/accounting/vouchers`     | `vouchers`     | ✔        | `folio`  |       |
+| Método | Ruta                       | Clave de datos | Búsqueda | Campo(s) | Notas |
+|--------|----------------------------|----------------|----------|----------|-------|
+| GET    | `/api/accounting/vouchers` | `vouchers`     | ✔        | `folio`  |       |
+
+### Cuentas contables
+
+| Método | Ruta                        | Clave de datos | Búsqueda | Campo(s)       | Notas |
+|--------|-----------------------------|----------------|----------|----------------|-------|
+| GET    | `/api/accounting/accounts`  | `accounts`     | ✔        | `code`, `name` |       |
+
+### Períodos contables
+
+| Método | Ruta                       | Clave de datos | Búsqueda | Notas                               |
+|--------|----------------------------|----------------|----------|-------------------------------------|
+| GET    | `/api/accounting/periods`  | `periods`      | —        | Ordenados por `year DESC, month DESC` |
 
 ### Productos
 
-| Método | Ruta                           | Clave de datos | Búsqueda | Campo(s)       | Notas |
-|--------|--------------------------------|----------------|----------|----------------|-------|
-| GET    | `/api/products`                | `products`     | ✔        | `id`, `name`   |       |
+| Método | Ruta            | Clave de datos | Búsqueda | Campo(s)     | Notas |
+|--------|-----------------|----------------|----------|--------------|-------|
+| GET    | `/api/products` | `products`     | ✔        | `id`, `name` |       |
 
 ### Inventarios (stocks)
 
-| Método | Ruta                              | Clave de datos | Búsqueda | Campo(s)                    | Notas                         |
-|--------|-----------------------------------|----------------|----------|-----------------------------|-------------------------------|
-| GET    | `/api/productStocks`              | `stocks`       | ✔        | `product.id`, `product.name`| Requiere header `X-Branch-ID` |
-| GET    | `/api/productStocks/product/:id`  | `stocks`       | —        |                             |                               |
-| GET    | `/api/productStocks/branch/:id`   | `stocks`       | ✔        | `product.id`, `product.name`|                               |
+| Método | Ruta                              | Clave de datos | Búsqueda | Campo(s)                     | Notas                         |
+|--------|-----------------------------------|----------------|----------|------------------------------|-------------------------------|
+| GET    | `/api/productStocks`              | `stocks`       | ✔        | `product.id`, `product.name` | Requiere header `X-Branch-ID` |
+| GET    | `/api/productStocks/product/:id`  | `stocks`       | —        |                              |                               |
+| GET    | `/api/productStocks/branch/:id`   | `stocks`       | ✔        | `product.id`, `product.name` |                               |
 
 ### Precios de productos
 
-| Método | Ruta                                  | Clave de datos | Búsqueda | Notas |
-|--------|---------------------------------------|----------------|----------|-------|
-| GET    | `/api/productPrices`                  | `prices`       | —        |       |
-| GET    | `/api/productPrices/product/:id`      | `prices`       | —        |       |
-| GET    | `/api/productPrices/priceList/:id`    | `prices`       | —        |       |
+| Método | Ruta                               | Clave de datos | Búsqueda | Notas |
+|--------|------------------------------------|----------------|----------|-------|
+| GET    | `/api/productPrices`               | `prices`       | —        |       |
+| GET    | `/api/productPrices/product/:id`   | `prices`       | —        |       |
+| GET    | `/api/productPrices/priceList/:id` | `prices`       | —        |       |
 
 ### Empleados
 
-| Método | Ruta                           | Clave de datos | Búsqueda | Campo(s) | Notas                         |
-|--------|--------------------------------|----------------|----------|----------|-------------------------------|
-| GET    | `/api/employees`               | `employees`    | ✔        | `name`   | Requiere header `X-Branch-ID` |
-| GET    | `/api/employees/branch/:id`    | `employees`    | ✔        | `name`   |                               |
+| Método | Ruta                        | Clave de datos | Búsqueda | Campo(s) | Notas                         |
+|--------|-----------------------------|----------------|----------|----------|-------------------------------|
+| GET    | `/api/employees`            | `employees`    | ✔        | `name`   | Requiere header `X-Branch-ID` |
+| GET    | `/api/employees/branch/:id` | `employees`    | ✔        | `name`   |                               |
 
 ### Proveedores
 
-| Método | Ruta                | Clave de datos | Búsqueda | Campo(s) | Notas |
-|--------|---------------------|----------------|----------|----------|-------|
-| GET    | `/api/suppliers`    | `suppliers`    | ✔        | `name`   |       |
+| Método | Ruta             | Clave de datos | Búsqueda | Campo(s) | Notas |
+|--------|------------------|----------------|----------|----------|-------|
+| GET    | `/api/suppliers` | `suppliers`    | ✔        | `name`   |       |
 
 ### Usuarios
 
-| Método | Ruta            | Clave de datos | Búsqueda | Campo(s) | Notas |
-|--------|-----------------|----------------|----------|----------|-------|
-| GET    | `/api/users`    | `users`        | ✔        | `name`   |       |
-
-### Direcciones de clientes
-
-| Método | Ruta                                    | Clave de datos | Búsqueda | Notas |
-|--------|-----------------------------------------|----------------|----------|-------|
-| GET    | `/api/customer-addresses`               | `addresses`    | —        |       |
-| GET    | `/api/customer-addresses/customer/:id`  | `addresses`    | —        |       |
+| Método | Ruta         | Clave de datos | Búsqueda | Campo(s) | Notas |
+|--------|--------------|----------------|----------|----------|-------|
+| GET    | `/api/users` | `users`        | ✔        | `name`   |       |
 
 ### Clientes
 
-| Método | Ruta                                    | Clave de datos | Búsqueda | Campo(s) | Notas                         |
-|--------|-----------------------------------------|----------------|----------|----------|-------------------------------|
-| GET    | `/api/customers`                        | `customers`    | ✔        | `name`   | Ya tenía paginación           |
-| GET    | `/api/customers/branch/:id`             | `customers`    | ✔        | `name`   |                               |
-| GET    | `/api/customers/municipality/:id`       | `customers`    | ✔        | `name`   |                               |
+| Método | Ruta                               | Clave de datos | Búsqueda | Campo(s) | Notas               |
+|--------|------------------------------------|----------------|----------|----------|---------------------|
+| GET    | `/api/customers`                   | `customers`    | ✔        | `name`   | Ya tenía paginación |
+| GET    | `/api/customers/branch/:id`        | `customers`    | ✔        | `name`   |                     |
+| GET    | `/api/customers/municipality/:id`  | `customers`    | ✔        | `name`   |                     |
+
+### Sucursales
+
+| Método | Ruta                   | Clave de datos | Búsqueda | Campo(s)          | Notas                       |
+|--------|------------------------|----------------|----------|-------------------|-----------------------------|
+| GET    | `/api/branches`        | `branches`     | ✔        | `name`, `address` |                             |
+| GET    | `/api/branches/public` | `branches`     | ✔        | `name`, `address` | Sin autenticación requerida |
+
+### Municipios
+
+| Método | Ruta                            | Clave de datos   | Búsqueda | Notas |
+|--------|---------------------------------|------------------|----------|-------|
+| GET    | `/api/municipalities/state/:id` | `municipalities` | —        |       |
+
+### Puestos
+
+| Método | Ruta              | Clave de datos | Búsqueda | Campo(s) | Notas |
+|--------|-------------------|----------------|----------|----------|-------|
+| GET    | `/api/positions`  | `positions`    | ✔        | `name`   |       |
+
+### Categorías de producto
+
+| Método | Ruta                     | Clave de datos      | Búsqueda | Campo(s)              | Notas |
+|--------|--------------------------|---------------------|----------|-----------------------|-------|
+| GET    | `/api/productCategories` | `productCategories` | ✔        | `name`, `description` |       |
+
+### Tipos de gasto
+
+| Método | Ruta                 | Clave de datos | Búsqueda | Notas |
+|--------|----------------------|----------------|----------|-------|
+| GET    | `/api/expense-types` | `expenseTypes` | —        |       |
 
 ### Campañas
 
@@ -182,85 +222,39 @@ Authorization: Bearer <token>
 
 ### Productos de campaña
 
-| Método | Ruta                                 | Clave de datos      | Búsqueda | Notas |
-|--------|--------------------------------------|---------------------|----------|-------|
-| GET    | `/api/campaignProducts/campaign/:id` | `campaignProducts`  | —        |       |
-
-### Sucursales
-
-| Método | Ruta                    | Clave de datos | Búsqueda | Campo(s)        | Notas                       |
-|--------|-------------------------|----------------|----------|-----------------|-----------------------------|
-| GET    | `/api/branches`         | `branches`     | ✔        | `name`, `address`|                            |
-| GET    | `/api/branches/public`  | `branches`     | ✔        | `name`, `address`| Sin autenticación requerida |
-
-### Estados
-
-| Método | Ruta            | Clave de datos | Búsqueda | Notas |
-|--------|-----------------|----------------|----------|-------|
-| GET    | `/api/states`   | `states`       | —        |       |
-
-### Municipios
-
-| Método | Ruta                              | Clave de datos    | Búsqueda | Notas |
-|--------|-----------------------------------|-------------------|----------|-------|
-| GET    | `/api/municipalities/state/:id`   | `municipalities`  | —        |       |
-
-### Puestos
-
-| Método | Ruta              | Clave de datos | Búsqueda | Campo(s) | Notas |
-|--------|-------------------|----------------|----------|----------|-------|
-| GET    | `/api/positions`  | `positions`    | ✔        | `name`   |       |
-
-### Listas de precios
-
-| Método | Ruta               | Clave de datos | Búsqueda | Notas                                   |
-|--------|--------------------|----------------|----------|-----------------------------------------|
-| GET    | `/api/priceLists`  | `priceLists`   | —        | Ordenadas por `priority DESC, name ASC` |
-
-### Categorías de producto
-
-| Método | Ruta                       | Clave de datos      | Búsqueda | Campo(s)           | Notas |
-|--------|----------------------------|---------------------|----------|--------------------|-------|
-| GET    | `/api/productCategories`   | `productCategories` | ✔        | `name`, `description`|     |
-
-### Tipos de gasto
-
-| Método | Ruta                   | Clave de datos | Búsqueda | Notas |
-|--------|------------------------|----------------|----------|-------|
-| GET    | `/api/expense-types`   | `expenseTypes` | —        |       |
-
-### Privilegios
-
-| Método | Ruta                              | Clave de datos | Búsqueda | Notas |
-|--------|-----------------------------------|----------------|----------|-------|
-| GET    | `/api/privileges`                 | `privileges`   | —        |       |
-| GET    | `/api/privileges/module/:module`  | `privileges`   | —        |       |
-
-### Configuración del sistema
-
-| Método | Ruta                    | Clave de datos | Búsqueda | Notas                                        |
-|--------|-------------------------|----------------|----------|----------------------------------------------|
-| GET    | `/api/system-settings`  | `settings`     | —        | Query param adicional: `category` (opcional) |
-
-### Cuentas contables
-
-| Método | Ruta                        | Clave de datos | Búsqueda | Campo(s)       | Notas |
-|--------|-----------------------------|----------------|----------|----------------|-------|
-| GET    | `/api/accounting/accounts`  | `accounts`     | ✔        | `code`, `name` |       |
-
-### Períodos contables
-
-| Método | Ruta                        | Clave de datos | Búsqueda | Notas                               |
-|--------|-----------------------------|----------------|----------|-------------------------------------|
-| GET    | `/api/accounting/periods`   | `periods`      | —        | Ordenados por `year DESC, month DESC` |
+| Método | Ruta                                 | Clave de datos     | Búsqueda | Notas |
+|--------|--------------------------------------|--------------------|----------|-------|
+| GET    | `/api/campaignProducts/campaign/:id` | `campaignProducts` | —        |       |
 
 ### Puntos de lealtad (configs)
 
-| Método | Ruta                          | Clave de datos | Búsqueda | Notas                                         |
-|--------|-------------------------------|----------------|----------|-----------------------------------------------|
-| GET    | `/api/loyaltyPoints/configs`  | `configs`      | —        | Query param adicional: `branch_id` (opcional) |
+| Método | Ruta                         | Clave de datos | Búsqueda | Notas                                         |
+|--------|------------------------------|----------------|----------|-----------------------------------------------|
+| GET    | `/api/loyaltyPoints/configs` | `configs`      | —        | Query param adicional: `branch_id` (opcional) |
 
 ---
+
+## Catálogos estáticos (sin paginación)
+
+Estos endpoints devuelven **todos los registros en una sola respuesta** sin objeto `pagination`. Su volumen es acotado y no crece con el uso del sistema, por lo que paginar no aporta valor.
+
+### Shape de respuesta
+
+```jsonc
+{ "<key>": [ ...items ] }  // sin campo pagination
+```
+
+### Tabla de catálogos
+
+| Método | Ruta                                    | Clave de datos | Notas                                        |
+|--------|-----------------------------------------|----------------|----------------------------------------------|
+| GET    | `/api/states`                           | `states`       |                                              |
+| GET    | `/api/priceLists`                       | `priceLists`   | Ordenadas por `priority DESC, name ASC`      |
+| GET    | `/api/privileges`                       | `privileges`   |                                              |
+| GET    | `/api/privileges/module/:module`        | `privileges`   |                                              |
+| GET    | `/api/system-settings`                  | `settings`     | Query param adicional: `category` (opcional) |
+| GET    | `/api/customer-addresses`               | `addresses`    |                                              |
+| GET    | `/api/customer-addresses/customer/:id`  | `addresses`    |                                              |
 
 ---
 
@@ -269,9 +263,9 @@ Authorization: Bearer <token>
 ### Comportamiento
 
 - Si `search` se omite o es cadena vacía, el endpoint devuelve todos los registros con la paginación normal.
-- Si `search` tiene valor, se aplica un filtro `LIKE %valor%` (case-insensitive en MySQL) sobre los campos indicados en cada tabla.
-- El parámetro se combina con la paginación: el `total` y `totalPages` reflejan el universo filtrado.
-- Algunos recursos buscan en un campo de un modelo relacionado (ej. gastos busca por nombre del tipo de gasto, inventario busca por código/nombre del producto). En esos casos, el join se convierte en INNER JOIN y solo devuelve registros que tienen la relación con coincidencia.
+- Si `search` tiene valor, se aplica un filtro `LIKE %valor%` (case-insensitive en MySQL) sobre los campos indicados en la tabla de cada recurso.
+- El parámetro se combina con la paginación: `total` y `totalPages` reflejan el universo ya filtrado.
+- Algunos recursos buscan a través de un modelo relacionado (gastos → `expenseType.name`, inventario → `product.id` / `product.name`). En esos casos el join se convierte en INNER JOIN y solo se devuelven registros con coincidencia en la relación.
 
 ### Ejemplo de petición con búsqueda y paginación
 
@@ -283,8 +277,8 @@ Authorization: Bearer <token>
 ```json
 {
   "products": [
-    { "id": "LAP-001", "name": "Laptop Pro 15", ... },
-    { "id": "LAP-002", "name": "Laptop Air 13", ... }
+    { "id": "LAP-001", "name": "Laptop Pro 15" },
+    { "id": "LAP-002", "name": "Laptop Air 13" }
   ],
   "pagination": {
     "total": 2,
@@ -313,13 +307,13 @@ const { data } = await api.get('/products', {
 });
 ```
 
-> **Importante:** siempre resetear `page` a 1 cuando el usuario modifica `search`, o el resultado puede quedar vacío si la nueva búsqueda tiene menos páginas que la actual.
+> **Importante:** siempre resetear `page` a `1` cuando el usuario modifica `search`, o el resultado puede quedar vacío si la nueva búsqueda tiene menos páginas que la página actual.
 
 ---
 
 ## Migración en el frontend
 
-### Patrón de acceso a datos
+### Patrón de acceso a datos (endpoints paginados)
 
 ```js
 // ANTES
@@ -345,6 +339,15 @@ const { sales, pagination } = response.data;
 // pagination.totalPages → total de páginas
 ```
 
+### Catálogos estáticos (sin cambio en el acceso a datos)
+
+Los catálogos estáticos siguen devolviendo la misma forma que antes — el array envuelto en un objeto:
+
+```js
+const response = await api.get('/states');
+const { states } = response.data; // igual que antes, sin pagination
+```
+
 ### Pedir todos los registros sin paginación
 
 No existe un modo "sin límite". Para obtener todos los datos usar `limit=100` (máximo permitido) y recorrer páginas si `totalPages > 1`. Se recomienda no hacer esto a menos que sea estrictamente necesario.
@@ -353,7 +356,7 @@ No existe un modo "sin límite". Para obtener todos los datos usar `limit=100` (
 
 ## Endpoints que NO cambian
 
-Los siguientes endpoints devuelven datos individuales o tienen una forma de respuesta distinta por diseño — no reciben paginación:
+Los siguientes endpoints devuelven datos individuales o tienen una forma de respuesta distinta por diseño:
 
 - Todos los `GET /:id` (detalle por ID)
 - `POST`, `PUT`, `DELETE` en cualquier ruta
@@ -369,4 +372,4 @@ Los siguientes endpoints devuelven datos individuales o tienen una forma de resp
 
 ## Documentación interactiva
 
-Swagger UI disponible en `http://localhost:3000/documentation` — todos los endpoints actualizados con los parámetros `page`/`limit` y el schema de respuesta paginada.
+Swagger UI disponible en `http://localhost:3000/documentation` — todos los endpoints actualizados con los parámetros `page`, `limit`, `search` y el schema de respuesta correspondiente.
