@@ -11,7 +11,6 @@ const {
 jest.mock('../../models/index', () => ({
   priceLists: {
     findAll: jest.fn(),
-    findAndCountAll: jest.fn(),
     findOne: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn(),
@@ -31,32 +30,30 @@ describe('PriceLists Service - Unit Tests', () => {
         { id: 2, name: 'Mayoreo', discount_percent: 10, priority: 2 }
       ];
 
-      priceLists.findAndCountAll.mockResolvedValue({ count: 2, rows: mockPriceLists });
+      priceLists.findAll.mockResolvedValue(mockPriceLists);
 
       const result = await getAllPriceLists();
 
-      expect(priceLists.findAndCountAll).toHaveBeenCalledTimes(1);
-      expect(result.priceLists).toEqual(mockPriceLists);
-      expect(result.priceLists).toHaveLength(2);
-      expect(result.total).toBe(2);
+      expect(priceLists.findAll).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(mockPriceLists);
+      expect(result).toHaveLength(2);
     });
 
     test('debe retornar array vacío si no hay listas', async() => {
-      priceLists.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
+      priceLists.findAll.mockResolvedValue([]);
 
       const result = await getAllPriceLists();
 
-      expect(result.priceLists).toEqual([]);
-      expect(result.priceLists).toHaveLength(0);
-      expect(result.total).toBe(0);
+      expect(result).toEqual([]);
+      expect(result).toHaveLength(0);
     });
 
     test('debe ordenar por prioridad descendente', async() => {
-      priceLists.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
+      priceLists.findAll.mockResolvedValue([]);
 
       await getAllPriceLists();
 
-      expect(priceLists.findAndCountAll).toHaveBeenCalledWith(
+      expect(priceLists.findAll).toHaveBeenCalledWith(
         expect.objectContaining({
           order: [['priority', 'DESC'], ['name', 'ASC']]
         })
@@ -185,7 +182,7 @@ describe('PriceLists Service - Unit Tests', () => {
   describe('Manejo de errores', () => {
     test('getAllPriceLists debe propagar error de BD', async() => {
       const dbError = new Error('Database connection failed');
-      priceLists.findAndCountAll.mockRejectedValue(dbError);
+      priceLists.findAll.mockRejectedValue(dbError);
 
       await expect(getAllPriceLists()).rejects.toThrow('Database connection failed');
     });

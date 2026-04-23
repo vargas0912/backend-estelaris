@@ -1,10 +1,8 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
-const { paginationChecks } = require('./shared');
 const { CUSTOMER_ADDRESSES_VALIDATORS } = require('../constants/errors');
 
 const validateGetAll = [
-  ...paginationChecks,
   (req, res, next) => validateResults(req, res, next)
 ];
 
@@ -88,7 +86,6 @@ const validateGetByCustomer = [
     .exists().withMessage('El ID del cliente es requerido').bail()
     .notEmpty().withMessage('El ID del cliente no puede estar vacío').bail()
     .isNumeric().withMessage('El ID del cliente debe ser numérico'),
-  ...paginationChecks,
   (req, res, next) => {
     return validateResults(req, res, next);
   }

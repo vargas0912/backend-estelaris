@@ -2,15 +2,9 @@ const { states } = require('../models/index');
 
 const attributes = ['id', 'name', 'created_at', 'updated_at'];
 
-const getAllStates = async(page = 1, limit = 20) => {
-  const offset = (page - 1) * limit;
-  const { count, rows } = await states.findAndCountAll({
-    attributes,
-    limit,
-    offset
-  });
-
-  return { states: rows, total: count };
+const getAllStates = async() => {
+  const rows = await states.findAll({ attributes });
+  return rows;
 };
 
 const getState = async(id) => {

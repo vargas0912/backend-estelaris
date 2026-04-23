@@ -1,15 +1,13 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
-const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 const { getSystemSettings, getSystemSetting, updateSystemSetting } = require('../services/systemSettings');
 
 const getRecords = async (req, res) => {
   try {
     const data = matchedData(req);
-    const { page, limit } = getPaginationParams(data);
     const category = data.category || undefined;
-    const { settings, total } = await getSystemSettings(category, page, limit);
-    res.send(buildPaginationResponse('settings', settings, total, page, limit));
+    const settings = await getSystemSettings(category);
+    res.send({ settings });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_SETTINGS -> ${error}`, 500);
   }

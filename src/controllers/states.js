@@ -1,7 +1,6 @@
 const { matchedData } = require('express-validator');
 const { states } = require('../models/index');
 const { handleHttpError } = require('../utils/handleErorr');
-const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 const { getAllStates } = require('../services/states');
 
 /**
@@ -11,9 +10,8 @@ const { getAllStates } = require('../services/states');
  */
 const getRecords = async(req, res) => {
   try {
-    const { page, limit } = getPaginationParams(matchedData(req));
-    const { states: statesList, total } = await getAllStates(page, limit);
-    res.send(buildPaginationResponse('states', statesList, total, page, limit));
+    const statesList = await getAllStates();
+    res.send({ states: statesList });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }

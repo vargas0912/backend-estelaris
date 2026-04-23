@@ -8,9 +8,8 @@ const attributes = [
 const municipalityAttributes = ['id', 'name'];
 const customerAttributes = ['id', 'name', 'email'];
 
-const getAllAddresses = async(page = 1, limit = 20) => {
-  const offset = (page - 1) * limit;
-  const { count, rows } = await customerAddresses.findAndCountAll({
+const getAllAddresses = async() => {
+  const rows = await customerAddresses.findAll({
     attributes,
     include: [
       {
@@ -25,12 +24,9 @@ const getAllAddresses = async(page = 1, limit = 20) => {
         attributes: municipalityAttributes,
         required: true
       }
-    ],
-    limit,
-    offset,
-    distinct: true
+    ]
   });
-  return { addresses: rows, total: count };
+  return rows;
 };
 
 const getAddress = async(id) => {
@@ -56,9 +52,8 @@ const getAddress = async(id) => {
   return result;
 };
 
-const getAddressesByCustomer = async(customerId, page = 1, limit = 20) => {
-  const offset = (page - 1) * limit;
-  const { count, rows } = await customerAddresses.findAndCountAll({
+const getAddressesByCustomer = async(customerId) => {
+  const rows = await customerAddresses.findAll({
     attributes,
     where: { customer_id: customerId },
     include: [
@@ -72,12 +67,9 @@ const getAddressesByCustomer = async(customerId, page = 1, limit = 20) => {
     order: [
       ['is_default', 'DESC'],
       ['created_at', 'DESC']
-    ],
-    limit,
-    offset,
-    distinct: true
+    ]
   });
-  return { addresses: rows, total: count };
+  return rows;
 };
 
 const addNewAddress = async(body) => {

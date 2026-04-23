@@ -36,25 +36,9 @@ const { ROLE } = require('../constants/roles');
  *      description: Obtener toda la lista de direcciones de clientes
  *      security:
  *        - bearerAuth: []
- *      parameters:
- *        - in: query
- *          name: page
- *          schema:
- *            type: integer
- *            minimum: 1
- *            default: 1
- *          description: Número de página
- *        - in: query
- *          name: limit
- *          schema:
- *            type: integer
- *            minimum: 1
- *            maximum: 100
- *            default: 20
- *          description: Registros por página
  *      responses:
  *        '200':
- *          description: Lista de direcciones paginada
+ *          description: Lista de direcciones de clientes
  *          content:
  *           application/json:
  *             schema:
@@ -64,8 +48,6 @@ const { ROLE } = require('../constants/roles');
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/customerAddresses'
- *                 pagination:
- *                   $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion.
  */
@@ -129,24 +111,9 @@ router.get('/:id', [
  *        required: true
  *        schema:
  *          type: number
- *      - in: query
- *        name: page
- *        schema:
- *          type: integer
- *          minimum: 1
- *          default: 1
- *        description: Número de página
- *      - in: query
- *        name: limit
- *        schema:
- *          type: integer
- *          minimum: 1
- *          maximum: 100
- *          default: 20
- *        description: Registros por página
  *      responses:
  *        '200':
- *          description: Lista de direcciones del cliente paginada
+ *          description: Lista de direcciones del cliente
  *          content:
  *           application/json:
  *             schema:
@@ -156,8 +123,6 @@ router.get('/:id', [
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/customerAddresses'
- *                 pagination:
- *                   $ref: '#/components/schemas/pagination'
  */
 router.get('/customer/:customerId', [
   readLimiter,

@@ -23,25 +23,9 @@ const { getRecord, getRecords } = require('../controllers/states');
  *      description: Devuelve la lista de estados completa
  *      security:
  *        - bearerAuth: []
- *      parameters:
- *        - in: query
- *          name: page
- *          schema:
- *            type: integer
- *            minimum: 1
- *            default: 1
- *          description: Número de página
- *        - in: query
- *          name: limit
- *          schema:
- *            type: integer
- *            minimum: 1
- *            maximum: 100
- *            default: 20
- *          description: Registros por página
  *      responses:
  *        '200':
- *          description: Lista de estados paginada
+ *          description: Lista de estados
  *          content:
  *           application/json:
  *             schema:
@@ -51,8 +35,6 @@ const { getRecord, getRecords } = require('../controllers/states');
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/states'
- *                 pagination:
- *                   $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion.
  */

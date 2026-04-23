@@ -1,7 +1,6 @@
 const { matchedData } = require('express-validator');
 
 const { handleHttpError } = require('../utils/handleErorr');
-const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 const { ERR_SECURITY } = require('../constants/errors');
 const { users } = require('../models/index');
 
@@ -77,10 +76,8 @@ const getOnePrivilegeRecord = async(req, res) => {
 const getPrivilegesByModuleRecords = async(req, res) => {
   try {
     const data = matchedData(req);
-    const { page, limit } = getPaginationParams(data);
-    const { privileges, total } = await getPrivilegeByModule(data.module, page, limit);
-
-    res.send(buildPaginationResponse('privileges', privileges, total, page, limit));
+    const privileges = await getPrivilegeByModule(data.module);
+    res.send({ privileges });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }
@@ -88,10 +85,8 @@ const getPrivilegesByModuleRecords = async(req, res) => {
 
 const getAllPrivilegesRecords = async(req, res) => {
   try {
-    const { page, limit } = getPaginationParams(matchedData(req));
-    const { privileges, total } = await getAllPrivileges(page, limit);
-
-    res.send(buildPaginationResponse('privileges', privileges, total, page, limit));
+    const privileges = await getAllPrivileges();
+    res.send({ privileges });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }

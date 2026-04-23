@@ -1,6 +1,5 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
-const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const {
   getAllAddresses,
@@ -18,9 +17,8 @@ const {
  */
 const getRecords = async(req, res) => {
   try {
-    const { page, limit } = getPaginationParams(matchedData(req));
-    const { addresses, total } = await getAllAddresses(page, limit);
-    res.send(buildPaginationResponse('addresses', addresses, total, page, limit));
+    const addresses = await getAllAddresses();
+    res.send({ addresses });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }
@@ -54,10 +52,9 @@ const getRecord = async(req, res) => {
  */
 const getRecordsByCustomer = async(req, res) => {
   try {
-    const data = matchedData(req);
-    const { page, limit } = getPaginationParams(data);
-    const { addresses, total } = await getAddressesByCustomer(data.customerId, page, limit);
-    res.send(buildPaginationResponse('addresses', addresses, total, page, limit));
+    const { customerId } = matchedData(req);
+    const addresses = await getAddressesByCustomer(customerId);
+    res.send({ addresses });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_CUSTOMER -> ${error}`, 400);
   }

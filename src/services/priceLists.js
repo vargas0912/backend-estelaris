@@ -11,16 +11,12 @@ const attributes = [
   'updated_at'
 ];
 
-const getAllPriceLists = async(page = 1, limit = 20) => {
-  const offset = (page - 1) * limit;
-  const { count, rows } = await priceLists.findAndCountAll({
+const getAllPriceLists = async() => {
+  const rows = await priceLists.findAll({
     attributes,
-    order: [['priority', 'DESC'], ['name', 'ASC']],
-    limit,
-    offset
+    order: [['priority', 'DESC'], ['name', 'ASC']]
   });
-
-  return { priceLists: rows, total: count };
+  return rows;
 };
 
 const getPriceList = async(id) => {

@@ -17,19 +17,16 @@ const settingAttributes = [
  * @param {string|undefined} category Filtro opcional por categoría.
  * @returns {Array} Arreglo de configuraciones.
  */
-const getSystemSettings = async (category, page = 1, limit = 20) => {
+const getSystemSettings = async (category) => {
   const where = category ? { category } : {};
-  const offset = (page - 1) * limit;
 
-  const { count, rows } = await systemSettings.findAndCountAll({
+  const rows = await systemSettings.findAll({
     attributes: settingAttributes,
     where,
-    order: [['category', 'ASC'], ['key', 'ASC']],
-    limit,
-    offset
+    order: [['category', 'ASC'], ['key', 'ASC']]
   });
 
-  return { settings: rows, total: count };
+  return rows;
 };
 
 /**

@@ -2,10 +2,8 @@ const { check } = require('express-validator');
 const { STATES } = require('../constants/states');
 
 const validateResults = require('../utils/handleValidator');
-const { paginationChecks } = require('./shared');
 
 const validateGetAll = [
-  ...paginationChecks,
   (req, res, next) => validateResults(req, res, next)
 ];
 

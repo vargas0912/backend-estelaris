@@ -7,25 +7,14 @@ const getOnePrivilege = async(id) => {
   return result;
 };
 
-const getPrivilegeByModule = async(module, page = 1, limit = 20) => {
-  const offset = (page - 1) * limit;
-  const { count, rows } = await privileges.findAndCountAll({
-    where: { module },
-    limit,
-    offset
-  });
-
-  return { privileges: rows, total: count };
+const getPrivilegeByModule = async(module) => {
+  const rows = await privileges.findAll({ where: { module } });
+  return rows;
 };
 
-const getAllPrivileges = async(page = 1, limit = 20) => {
-  const offset = (page - 1) * limit;
-  const { count, rows } = await privileges.findAndCountAll({
-    limit,
-    offset
-  });
-
-  return { privileges: rows, total: count };
+const getAllPrivileges = async() => {
+  const rows = await privileges.findAll();
+  return rows;
 };
 
 const addPrivilege = async(body) => {
