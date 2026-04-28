@@ -1,5 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
+const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const { getAllBranches, getBranch, addNewBranch, updateBranch, deleteBranch, getPublicBranches } = require('../services/branches');
 
@@ -10,9 +11,12 @@ const { getAllBranches, getBranch, addNewBranch, updateBranch, deleteBranch, get
  */
 const getRecords = async(req, res) => {
   try {
-    const branches = await getAllBranches();
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { branches, total } = await getAllBranches(page, limit, search);
 
-    res.send({ branches });
+    res.send(buildPaginationResponse('branches', branches, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }
@@ -88,8 +92,11 @@ const deleteRecord = async(req, res) => {
 
 const getPublicRecords = async (req, res) => {
   try {
-    const branches = await getPublicBranches();
-    res.send({ branches });
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { branches, total } = await getPublicBranches(page, limit, search);
+    res.send(buildPaginationResponse('branches', branches, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_PUBLIC_BRANCHES -> ${error}`);
   }

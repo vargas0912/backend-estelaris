@@ -1,4 +1,5 @@
 const { productStocks, stockMovements, products, branches } = require('../models/index');
+const { Op } = require('sequelize');
 
 const attributes = [
   'id',
@@ -18,27 +19,38 @@ const attributes = [
 const productAttributes = ['id', 'name', 'cost_price', 'unit_of_measure'];
 const branchAttributes = ['id', 'name'];
 
-const getAllProductStocks = async (branchId = null) => {
+const getAllProductStocks = async (branchId = null, page = 1, limit = 20, search = '') => {
+  const offset = (page - 1) * limit;
   const where = branchId !== null ? { branch_id: branchId } : {};
 
-  const result = await productStocks.findAll({
+  const productInclude = {
+    model: products,
+    as: 'product',
+    attributes: productAttributes,
+    ...(search
+      ? {
+          where: { [Op.or]: [{ id: { [Op.like]: `%${search}%` } }, { name: { [Op.like]: `%${search}%` } }] },
+          required: true
+        }
+      : {})
+  };
+
+  const { count, rows } = await productStocks.findAndCountAll({
     attributes,
     where,
     include: [
-      {
-        model: products,
-        as: 'product',
-        attributes: productAttributes
-      },
+      productInclude,
       {
         model: branches,
         as: 'branch',
         attributes: branchAttributes
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { stocks: rows, total: count };
 };
 
 const getProductStock = async (purchId) => {
@@ -64,40 +76,49 @@ const getProductStock = async (purchId) => {
   return result;
 };
 
-const getStocksByProduct = async (productId) => {
-  const result = await productStocks.findAll({
+const getStocksByProduct = async (productId, page = 1, limit = 20, search = '') => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await productStocks.findAndCountAll({
     attributes,
-    where: {
-      product_id: productId
-    },
+    where: { product_id: productId },
     include: [
       {
         model: branches,
         as: 'branch',
         attributes: branchAttributes
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { stocks: rows, total: count };
 };
 
-const getStocksByBranch = async (branchId) => {
-  const result = await productStocks.findAll({
-    attributes,
-    where: {
-      branch_id: branchId
-    },
-    include: [
-      {
-        model: products,
-        as: 'product',
-        attributes: productAttributes
-      }
-    ]
-  });
+const getStocksByBranch = async (branchId, page = 1, limit = 20, search = '') => {
+  const offset = (page - 1) * limit;
 
-  return result;
+  const productInclude = {
+    model: products,
+    as: 'product',
+    attributes: productAttributes,
+    ...(search
+      ? {
+          where: { [Op.or]: [{ id: { [Op.like]: `%${search}%` } }, { name: { [Op.like]: `%${search}%` } }] },
+          required: true
+        }
+      : {})
+  };
+
+  const { count, rows } = await productStocks.findAndCountAll({
+    attributes,
+    where: { branch_id: branchId },
+    include: [productInclude],
+    limit,
+    offset,
+    distinct: true
+  });
+  return { stocks: rows, total: count };
 };
 
 const addNewProductStock = async (body) => {

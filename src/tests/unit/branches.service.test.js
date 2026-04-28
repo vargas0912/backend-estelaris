@@ -11,12 +11,14 @@ const {
 jest.mock('../../models/index', () => ({
   branches: {
     findAll: jest.fn(),
+    findAndCountAll: jest.fn(),
     findOne: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn(),
     destroy: jest.fn()
   },
-  municipalities: {}
+  municipalities: {},
+  states: {}
 }));
 
 describe('Branches Service - Unit Tests', () => {
@@ -31,20 +33,22 @@ describe('Branches Service - Unit Tests', () => {
         { id: 2, name: 'Sucursal Norte', address: 'Blvd. Norte 200', phone: '5552002000' }
       ];
 
-      branches.findAll.mockResolvedValue(mockBranches);
+      branches.findAndCountAll.mockResolvedValue({ count: 2, rows: mockBranches });
 
       const result = await getAllBranches();
 
-      expect(branches.findAll).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(mockBranches);
+      expect(branches.findAndCountAll).toHaveBeenCalledTimes(1);
+      expect(result.branches).toEqual(mockBranches);
+      expect(result.total).toBe(2);
     });
 
     test('debe retornar array vacio si no hay sucursales', async() => {
-      branches.findAll.mockResolvedValue([]);
+      branches.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getAllBranches();
 
-      expect(result).toEqual([]);
+      expect(result.branches).toEqual([]);
+      expect(result.total).toBe(0);
     });
   });
 
@@ -177,7 +181,7 @@ describe('Branches Service - Unit Tests', () => {
   describe('Manejo de errores de base de datos', () => {
     test('getAllBranches debe propagar error de BD', async() => {
       const dbError = new Error('Database connection failed');
-      branches.findAll.mockRejectedValue(dbError);
+      branches.findAndCountAll.mockRejectedValue(dbError);
 
       await expect(getAllBranches()).rejects.toThrow('Database connection failed');
     });
@@ -413,13 +417,14 @@ describe('Branches Service - Unit Tests', () => {
         phone: `555000${String(i).padStart(4, '0')}`
       }));
 
-      branches.findAll.mockResolvedValue(manyBranches);
+      branches.findAndCountAll.mockResolvedValue({ count: 100, rows: manyBranches });
 
       const result = await getAllBranches();
 
-      expect(result).toHaveLength(100);
-      expect(result[0].name).toBe('Sucursal 1');
-      expect(result[99].name).toBe('Sucursal 100');
+      expect(result.branches).toHaveLength(100);
+      expect(result.branches[0].name).toBe('Sucursal 1');
+      expect(result.branches[99].name).toBe('Sucursal 100');
+      expect(result.total).toBe(100);
     });
 
     test('addNewBranch con datos minimos', async() => {

@@ -12,6 +12,7 @@ const {
 jest.mock('../../models/index', () => ({
   products: {
     findAll: jest.fn(),
+    findAndCountAll: jest.fn(),
     findOne: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn(),
@@ -57,30 +58,32 @@ describe('Products Service - Unit Tests', () => {
         }
       ];
 
-      products.findAll.mockResolvedValue(mockProducts);
+      products.findAndCountAll.mockResolvedValue({ count: 2, rows: mockProducts });
 
       const result = await getAllProducts();
 
-      expect(products.findAll).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(mockProducts);
-      expect(result).toHaveLength(2);
+      expect(products.findAndCountAll).toHaveBeenCalledTimes(1);
+      expect(result.products).toEqual(mockProducts);
+      expect(result.products).toHaveLength(2);
+      expect(result.total).toBe(2);
     });
 
     test('debe retornar array vacío si no hay productos', async() => {
-      products.findAll.mockResolvedValue([]);
+      products.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getAllProducts();
 
-      expect(result).toEqual([]);
-      expect(result).toHaveLength(0);
+      expect(result.products).toEqual([]);
+      expect(result.products).toHaveLength(0);
+      expect(result.total).toBe(0);
     });
 
     test('debe incluir la categoría en la consulta', async() => {
-      products.findAll.mockResolvedValue([]);
+      products.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getAllProducts();
 
-      expect(products.findAll).toHaveBeenCalledWith(
+      expect(products.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           include: expect.arrayContaining([
             expect.objectContaining({
@@ -368,7 +371,7 @@ describe('Products Service - Unit Tests', () => {
   describe('Manejo de errores de base de datos', () => {
     test('getAllProducts debe propagar error de BD', async() => {
       const dbError = new Error('Database connection failed');
-      products.findAll.mockRejectedValue(dbError);
+      products.findAndCountAll.mockRejectedValue(dbError);
 
       await expect(getAllProducts()).rejects.toThrow('Database connection failed');
     });
@@ -436,13 +439,14 @@ describe('Products Service - Unit Tests', () => {
         base_price: (i + 1) * 10
       }));
 
-      products.findAll.mockResolvedValue(manyProducts);
+      products.findAndCountAll.mockResolvedValue({ count: 100, rows: manyProducts });
 
       const result = await getAllProducts();
 
-      expect(result).toHaveLength(100);
-      expect(result[0].id).toBe('SKU001');
-      expect(result[99].id).toBe('SKU100');
+      expect(result.products).toHaveLength(100);
+      expect(result.total).toBe(100);
+      expect(result.products[0].id).toBe('SKU001');
+      expect(result.products[99].id).toBe('SKU100');
     });
 
     test('getProduct con id string', async() => {

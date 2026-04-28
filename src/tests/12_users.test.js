@@ -92,7 +92,7 @@ describe('[SECURITY] CRIT-002: Role Hierarchy Validation //api/users/', () => {
     // Primero asignar privilegio UPDATE_USER al admin
     // Necesitamos el ID del privilegio 'update_user'
     const privilegesResponse = await api
-      .get('/api/privileges')
+      .get('/api/privileges?limit=100')
       .auth(superadminToken, { type: 'bearer' })
       .expect(200);
 
@@ -159,7 +159,7 @@ describe('[SECURITY] CRIT-002: Privilege Assignment Hierarchy //api/privileges/'
   test('CRIT-002-8: Admin CANNOT remove privileges from superadmin. Expect 4xx', async() => {
     // Primero necesitamos asignar el privilegio delete_user_privilege al admin
     const privilegesResponse = await api
-      .get('/api/privileges')
+      .get('/api/privileges?limit=100')
       .auth(superadminToken, { type: 'bearer' })
       .expect(200);
 

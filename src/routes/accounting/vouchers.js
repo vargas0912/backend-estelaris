@@ -46,15 +46,40 @@ const { ROLE } = require('../../constants/roles');
  *         in: query
  *         schema:
  *           type: integer
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Número de página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 20
+ *         description: Registros por página
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Texto para filtrar resultados (por folio)
  *     responses:
  *       '200':
- *         description: Arreglo de pólizas contables
+ *         description: Lista de pólizas contables paginada
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/accountingVouchers'
+ *               type: object
+ *               properties:
+ *                 vouchers:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/accountingVouchers'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/pagination'
  */
 router.get('/', [
   readLimiter,

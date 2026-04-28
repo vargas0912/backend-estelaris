@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord } = require('../validators/expenses');
+const { validateGetAll, validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord } = require('../validators/expenses');
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
@@ -29,15 +29,40 @@ const { ROLE } = require('../constants/roles');
  *        required: true
  *        schema:
  *          type: number
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          default: 1
+ *        description: Número de página
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          maximum: 100
+ *          default: 20
+ *        description: Registros por página
+ *      - in: query
+ *        name: search
+ *        schema:
+ *          type: string
+ *        description: Texto para filtrar resultados
  *      responses:
  *        '200':
- *          description: Arreglo de gastos de la sucursal indicada.
+ *          description: Lista de gastos de la sucursal paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/expenses'
+ *                type: object
+ *                properties:
+ *                  expenses:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/expenses'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  *        '400':
  *          description: Error de validacion.
  */
@@ -58,21 +83,48 @@ router.get('/branch/:branch_id', [
  *      description: Obtener todos los gastos registrados en el sistema
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
+ *        - in: query
+ *          name: search
+ *          schema:
+ *            type: string
+ *          description: Texto para filtrar resultados
  *      responses:
  *        '200':
- *          description: Arreglo de todos los gastos.
+ *          description: Lista de gastos paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/expenses'
+ *                type: object
+ *                properties:
+ *                  expenses:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/expenses'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion.
  */
 router.get('/', [
   readLimiter,
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], EXPENSE.VIEW_ALL)
 ], getRecords);
 

@@ -2,10 +2,11 @@ const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
 const { SYSTEM_SETTINGS_VALIDATORS } = require('../constants/systemSettings');
 
-/**
- * Validación para PUT /api/system-settings/:key
- * El campo value es requerido.
- */
+const validateGetAll = [
+  check('category').optional().isString(),
+  (req, res, next) => validateResults(req, res, next)
+];
+
 const valiUpdateRecord = [
   check('value')
     .exists().withMessage(SYSTEM_SETTINGS_VALIDATORS.VALUE_NOT_EXISTS).bail()
@@ -15,4 +16,4 @@ const valiUpdateRecord = [
   (req, res, next) => validateResults(req, res, next)
 ];
 
-module.exports = { valiUpdateRecord };
+module.exports = { validateGetAll, valiUpdateRecord };

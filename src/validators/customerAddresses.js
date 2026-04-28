@@ -2,6 +2,10 @@ const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
 const { CUSTOMER_ADDRESSES_VALIDATORS } = require('../constants/errors');
 
+const validateGetAll = [
+  (req, res, next) => validateResults(req, res, next)
+];
+
 const validateGetRecord = [
   check('id')
     .exists().withMessage('El ID es requerido').bail()
@@ -88,6 +92,7 @@ const validateGetByCustomer = [
 ];
 
 module.exports = {
+  validateGetAll,
   validateGetRecord,
   validateCreate,
   validateUpdate,

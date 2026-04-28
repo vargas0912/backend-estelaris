@@ -1,4 +1,5 @@
 const { body, param, query } = require('express-validator');
+const { paginationChecks } = require('./shared');
 
 const createCampaignValidator = [
   body('name')
@@ -84,7 +85,12 @@ const getCampaignValidator = [
 const getCampaignsValidator = [
   query('status')
     .optional()
-    .isIn(['active', 'upcoming', 'finished', 'inactive']).withMessage('El status debe ser: active, upcoming, finished o inactive')
+    .isIn(['active', 'upcoming', 'finished', 'inactive']).withMessage('El status debe ser: active, upcoming, finished o inactive'),
+  ...paginationChecks
+];
+
+const getActiveCampaignsValidator = [
+  ...paginationChecks
 ];
 
 const addCampaignBranchesValidator = [
@@ -119,6 +125,7 @@ module.exports = {
   updateCampaignValidator,
   getCampaignValidator,
   getCampaignsValidator,
+  getActiveCampaignsValidator,
   addCampaignBranchesValidator,
   removeCampaignBranchValidator
 };

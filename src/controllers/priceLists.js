@@ -17,7 +17,6 @@ const {
 const getRecords = async(req, res) => {
   try {
     const priceLists = await getAllPriceLists();
-
     res.send({ priceLists });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);

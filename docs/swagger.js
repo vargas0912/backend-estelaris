@@ -1557,7 +1557,8 @@ const swaggerDefinition = {
 const options = {
   swaggerDefinition,
   apis: [
-    './src/routes/*.js'
+    './src/routes/*.js',
+    './src/routes/accounting/*.js'
   ]
 };
 

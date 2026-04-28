@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {
+  validateGetAll,
   validateGetRecord,
   validateGetByPurchase,
   valiAddRecord
@@ -32,19 +33,41 @@ const { ROLE } = require('../constants/roles');
  *      description: Obtener todos los pagos de compra registrados
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
  *      responses:
  *        '200':
- *          description: Arreglo de pagos de compra.
+ *          description: Lista de pagos de compra paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/purchasePayments'
+ *                type: object
+ *                properties:
+ *                  payments:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/purchasePayments'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  */
 router.get('/', [
   readLimiter,
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], PURCH_PAYMENT.VIEW_ALL)
 ], getRecords);
 
@@ -64,15 +87,35 @@ router.get('/', [
  *        required: true
  *        schema:
  *          type: number
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          default: 1
+ *        description: Número de página
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          maximum: 100
+ *          default: 20
+ *        description: Registros por página
  *      responses:
  *        '200':
- *          description: Arreglo de pagos de la compra
+ *          description: Lista de pagos de la compra paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/purchasePayments'
+ *                type: object
+ *                properties:
+ *                  payments:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/purchasePayments'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  */
 router.get('/purchase/:purch_id', [
   searchLimiter,

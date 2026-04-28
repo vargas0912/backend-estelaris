@@ -9,6 +9,7 @@ const validateGetAll = [
   check('limit')
     .optional()
     .isInt({ min: 1, max: 100 }).withMessage('limit debe ser un entero entre 1 y 100'),
+  check('search').optional().isString().trim(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -132,6 +133,7 @@ const validateGetByBranch = [
   check('limit')
     .optional()
     .isInt({ min: 1, max: 100 }).withMessage('limit debe ser un entero entre 1 y 100'),
+  check('search').optional().isString().trim(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -148,6 +150,7 @@ const validateGetByMunicipality = [
   check('limit')
     .optional()
     .isInt({ min: 1, max: 100 }).withMessage('limit debe ser un entero entre 1 y 100'),
+  check('search').optional().isString().trim(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }

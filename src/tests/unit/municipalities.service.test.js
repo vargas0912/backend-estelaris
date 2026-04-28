@@ -8,6 +8,7 @@ const {
 jest.mock('../../models/index', () => ({
   municipalities: {
     findAll: jest.fn(),
+    findAndCountAll: jest.fn(),
     findOne: jest.fn()
   },
   states: {}
@@ -46,57 +47,39 @@ describe('Municipalities Service - Unit Tests', () => {
         }
       ];
 
-      municipalities.findAll.mockResolvedValue(mockMunicipalities);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 2, rows: mockMunicipalities });
 
       const result = await getMunicipalitiesByStateId(14);
 
-      expect(municipalities.findAll).toHaveBeenCalledWith({
-        attributes: ['id', 'name', 'created_at', 'updated_at'],
-        where: {
-          state_id: 14
-        },
-        include: [
-          {
-            model: states,
-            as: 'estado',
-            attributes: ['id', 'name'],
-            required: true
-          }
-        ]
-      });
-      expect(municipalities.findAll).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(mockMunicipalities);
-      expect(result).toHaveLength(2);
+      expect(municipalities.findAndCountAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { state_id: 14 }
+        })
+      );
+      expect(municipalities.findAndCountAll).toHaveBeenCalledTimes(1);
+      expect(result.municipalities).toEqual(mockMunicipalities);
+      expect(result.municipalities).toHaveLength(2);
+      expect(result.total).toBe(2);
     });
 
     test('debe retornar array vacio si no hay municipios para el estado', async() => {
-      municipalities.findAll.mockResolvedValue([]);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getMunicipalitiesByStateId(999);
 
-      expect(municipalities.findAll).toHaveBeenCalledWith({
-        attributes: ['id', 'name', 'created_at', 'updated_at'],
-        where: {
-          state_id: 999
-        },
-        include: [
-          {
-            model: states,
-            as: 'estado',
-            attributes: ['id', 'name'],
-            required: true
-          }
-        ]
-      });
-      expect(result).toEqual([]);
+      expect(municipalities.findAndCountAll).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { state_id: 999 } })
+      );
+      expect(result.municipalities).toEqual([]);
+      expect(result.total).toBe(0);
     });
 
-    test('debe llamar findAll con el state_id correcto', async() => {
-      municipalities.findAll.mockResolvedValue([]);
+    test('debe llamar findAndCountAll con el state_id correcto', async() => {
+      municipalities.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getMunicipalitiesByStateId(5);
 
-      expect(municipalities.findAll).toHaveBeenCalledWith(
+      expect(municipalities.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
             state_id: 5
@@ -106,11 +89,11 @@ describe('Municipalities Service - Unit Tests', () => {
     });
 
     test('debe incluir solo los atributos especificados del municipio', async() => {
-      municipalities.findAll.mockResolvedValue([]);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getMunicipalitiesByStateId(1);
 
-      expect(municipalities.findAll).toHaveBeenCalledWith(
+      expect(municipalities.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           attributes: ['id', 'name', 'created_at', 'updated_at']
         })
@@ -118,11 +101,11 @@ describe('Municipalities Service - Unit Tests', () => {
     });
 
     test('debe incluir la relacion estado con sus atributos', async() => {
-      municipalities.findAll.mockResolvedValue([]);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getMunicipalitiesByStateId(1);
 
-      expect(municipalities.findAll).toHaveBeenCalledWith(
+      expect(municipalities.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           include: [
             {
@@ -150,20 +133,20 @@ describe('Municipalities Service - Unit Tests', () => {
         }
       ];
 
-      municipalities.findAll.mockResolvedValue(mockMunicipality);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 1, rows: mockMunicipality });
 
       const result = await getMunicipalitiesByStateId(1);
 
-      expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Municipio Unico');
+      expect(result.municipalities).toHaveLength(1);
+      expect(result.municipalities[0].name).toBe('Municipio Unico');
     });
 
     test('debe manejar state_id tipo string', async() => {
-      municipalities.findAll.mockResolvedValue([]);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getMunicipalitiesByStateId('10');
 
-      expect(municipalities.findAll).toHaveBeenCalledWith(
+      expect(municipalities.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
             state_id: '10'
@@ -186,17 +169,17 @@ describe('Municipalities Service - Unit Tests', () => {
         }
       ];
 
-      municipalities.findAll.mockResolvedValue(mockMunicipalities);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 1, rows: mockMunicipalities });
 
       const result = await getMunicipalitiesByStateId(19);
 
-      expect(result[0]).toHaveProperty('id');
-      expect(result[0]).toHaveProperty('name');
-      expect(result[0]).toHaveProperty('created_at');
-      expect(result[0]).toHaveProperty('updated_at');
-      expect(result[0]).toHaveProperty('estado');
-      expect(result[0].estado).toHaveProperty('id');
-      expect(result[0].estado).toHaveProperty('name');
+      expect(result.municipalities[0]).toHaveProperty('id');
+      expect(result.municipalities[0]).toHaveProperty('name');
+      expect(result.municipalities[0]).toHaveProperty('created_at');
+      expect(result.municipalities[0]).toHaveProperty('updated_at');
+      expect(result.municipalities[0]).toHaveProperty('estado');
+      expect(result.municipalities[0].estado).toHaveProperty('id');
+      expect(result.municipalities[0].estado).toHaveProperty('name');
     });
   });
 
@@ -378,7 +361,7 @@ describe('Municipalities Service - Unit Tests', () => {
   describe('Manejo de errores de base de datos', () => {
     test('getMunicipalitiesByStateId debe propagar error de BD', async() => {
       const dbError = new Error('Database connection failed');
-      municipalities.findAll.mockRejectedValue(dbError);
+      municipalities.findAndCountAll.mockRejectedValue(dbError);
 
       await expect(getMunicipalitiesByStateId(1)).rejects.toThrow('Database connection failed');
     });
@@ -392,7 +375,7 @@ describe('Municipalities Service - Unit Tests', () => {
 
     test('getMunicipalitiesByStateId debe propagar error de relacion', async() => {
       const relationError = new Error('Association estado not found');
-      municipalities.findAll.mockRejectedValue(relationError);
+      municipalities.findAndCountAll.mockRejectedValue(relationError);
 
       await expect(getMunicipalitiesByStateId(1)).rejects.toThrow('Association estado not found');
     });
@@ -406,7 +389,7 @@ describe('Municipalities Service - Unit Tests', () => {
 
     test('getMunicipalitiesByStateId debe propagar error de timeout', async() => {
       const timeoutError = new Error('Query timeout exceeded');
-      municipalities.findAll.mockRejectedValue(timeoutError);
+      municipalities.findAndCountAll.mockRejectedValue(timeoutError);
 
       await expect(getMunicipalitiesByStateId(1)).rejects.toThrow('Query timeout exceeded');
     });
@@ -424,18 +407,18 @@ describe('Municipalities Service - Unit Tests', () => {
   // ============================================
   describe('Casos edge', () => {
     test('getMunicipalitiesByStateId con id 0', async() => {
-      municipalities.findAll.mockResolvedValue([]);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getMunicipalitiesByStateId(0);
 
-      expect(municipalities.findAll).toHaveBeenCalledWith(
+      expect(municipalities.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
             state_id: 0
           }
         })
       );
-      expect(result).toEqual([]);
+      expect(result.municipalities).toEqual([]);
     });
 
     test('getMunicipality con id 0', async() => {
@@ -454,11 +437,11 @@ describe('Municipalities Service - Unit Tests', () => {
     });
 
     test('getMunicipalitiesByStateId con id negativo', async() => {
-      municipalities.findAll.mockResolvedValue([]);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getMunicipalitiesByStateId(-1);
 
-      expect(municipalities.findAll).toHaveBeenCalledWith(
+      expect(municipalities.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
             state_id: -1
@@ -493,13 +476,14 @@ describe('Municipalities Service - Unit Tests', () => {
         }
       }));
 
-      municipalities.findAll.mockResolvedValue(manyMunicipalities);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 100, rows: manyMunicipalities });
 
       const result = await getMunicipalitiesByStateId(1);
 
-      expect(result).toHaveLength(100);
-      expect(result[0].name).toBe('Municipio 1');
-      expect(result[99].name).toBe('Municipio 100');
+      expect(result.municipalities).toHaveLength(100);
+      expect(result.municipalities[0].name).toBe('Municipio 1');
+      expect(result.municipalities[99].name).toBe('Municipio 100');
+      expect(result.total).toBe(100);
     });
 
     test('getMunicipality con nombre especial (caracteres especiales)', async() => {
@@ -567,13 +551,13 @@ describe('Municipalities Service - Unit Tests', () => {
         }
       ];
 
-      municipalities.findAll.mockResolvedValue(orderedMunicipalities);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 3, rows: orderedMunicipalities });
 
       const result = await getMunicipalitiesByStateId(1);
 
-      expect(result[0].id).toBe(3);
-      expect(result[1].id).toBe(1);
-      expect(result[2].id).toBe(2);
+      expect(result.municipalities[0].id).toBe(3);
+      expect(result.municipalities[1].id).toBe(1);
+      expect(result.municipalities[2].id).toBe(2);
     });
   });
 
@@ -582,11 +566,11 @@ describe('Municipalities Service - Unit Tests', () => {
   // ============================================
   describe('Validacion de parametros', () => {
     test('getMunicipalitiesByStateId debe aceptar state_id numerico', async() => {
-      municipalities.findAll.mockResolvedValue([]);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getMunicipalitiesByStateId(123);
 
-      expect(municipalities.findAll).toHaveBeenCalledWith(
+      expect(municipalities.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
             state_id: 123
@@ -610,11 +594,11 @@ describe('Municipalities Service - Unit Tests', () => {
     });
 
     test('getMunicipalitiesByStateId debe pasar state_id exacto sin modificar', async() => {
-      municipalities.findAll.mockResolvedValue([]);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getMunicipalitiesByStateId(99);
 
-      expect(municipalities.findAll).toHaveBeenCalledWith(
+      expect(municipalities.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
             state_id: 99
@@ -656,14 +640,14 @@ describe('Municipalities Service - Unit Tests', () => {
         }
       ];
 
-      municipalities.findAll.mockResolvedValue(mockMunicipalities);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 1, rows: mockMunicipalities });
 
       const result = await getMunicipalitiesByStateId(1);
 
       // Verificar que no incluye atributos como 'key', 'active', 'deleted_at'
-      expect(result[0]).not.toHaveProperty('key');
-      expect(result[0]).not.toHaveProperty('active');
-      expect(result[0]).not.toHaveProperty('deleted_at');
+      expect(result.municipalities[0]).not.toHaveProperty('key');
+      expect(result.municipalities[0]).not.toHaveProperty('active');
+      expect(result.municipalities[0]).not.toHaveProperty('deleted_at');
     });
 
     test('getMunicipality no debe incluir atributos no especificados', async() => {
@@ -702,13 +686,13 @@ describe('Municipalities Service - Unit Tests', () => {
         }
       ];
 
-      municipalities.findAll.mockResolvedValue(mockMunicipalities);
+      municipalities.findAndCountAll.mockResolvedValue({ count: 1, rows: mockMunicipalities });
 
       const result = await getMunicipalitiesByStateId(1);
 
-      expect(result[0].estado).toHaveProperty('id');
-      expect(result[0].estado).toHaveProperty('name');
-      expect(Object.keys(result[0].estado)).toHaveLength(2);
+      expect(result.municipalities[0].estado).toHaveProperty('id');
+      expect(result.municipalities[0].estado).toHaveProperty('name');
+      expect(Object.keys(result.municipalities[0].estado)).toHaveLength(2);
     });
 
     test('getMunicipality debe incluir estado con solo id y name', async() => {

@@ -12,12 +12,11 @@ const attributes = [
 ];
 
 const getAllPriceLists = async() => {
-  const result = await priceLists.findAll({
+  const rows = await priceLists.findAll({
     attributes,
     order: [['priority', 'DESC'], ['name', 'ASC']]
   });
-
-  return result;
+  return rows;
 };
 
 const getPriceList = async(id) => {

@@ -1,5 +1,6 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
+const { paginationChecks } = require('./shared');
 const { ACCOUNTING_PERIOD_VALIDATORS: V } = require('../constants/accountingPeriods');
 
 const validateGetRecord = [
@@ -30,4 +31,9 @@ const valiAddRecord = [
   (req, res, next) => validateResults(req, res, next)
 ];
 
-module.exports = { validateGetRecord, valiAddRecord };
+const validateGetAll = [
+  ...paginationChecks,
+  (req, res, next) => validateResults(req, res, next)
+];
+
+module.exports = { validateGetAll, validateGetRecord, valiAddRecord };

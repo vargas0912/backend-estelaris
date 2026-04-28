@@ -14,8 +14,9 @@ const attributes = [
 const productAttributes = ['id', 'name', 'base_price'];
 const priceListAttributes = ['id', 'name', 'discount_percent'];
 
-const getAllProductPrices = async () => {
-  const result = await productPrices.findAll({
+const getAllProductPrices = async (page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await productPrices.findAndCountAll({
     attributes,
     include: [
       {
@@ -28,10 +29,12 @@ const getAllProductPrices = async () => {
         as: 'priceList',
         attributes: priceListAttributes
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { prices: rows, total: count };
 };
 
 const getProductPrice = async (id) => {
@@ -57,12 +60,11 @@ const getProductPrice = async (id) => {
   return result;
 };
 
-const getPricesByProduct = async (productId) => {
-  const result = await productPrices.findAll({
+const getPricesByProduct = async (productId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await productPrices.findAndCountAll({
     attributes,
-    where: {
-      product_id: productId
-    },
+    where: { product_id: productId },
     include: [
       {
         model: priceLists,
@@ -70,18 +72,19 @@ const getPricesByProduct = async (productId) => {
         attributes: priceListAttributes
       }
     ],
-    order: [['min_quantity', 'ASC']]
+    order: [['min_quantity', 'ASC']],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { prices: rows, total: count };
 };
 
-const getPricesByPriceList = async (priceListId) => {
-  const result = await productPrices.findAll({
+const getPricesByPriceList = async (priceListId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await productPrices.findAndCountAll({
     attributes,
-    where: {
-      price_list_id: priceListId
-    },
+    where: { price_list_id: priceListId },
     include: [
       {
         model: products,
@@ -89,10 +92,12 @@ const getPricesByPriceList = async (priceListId) => {
         attributes: productAttributes
       }
     ],
-    order: [['min_quantity', 'ASC']]
+    order: [['min_quantity', 'ASC']],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { prices: rows, total: count };
 };
 
 const addNewProductPrice = async (body) => {

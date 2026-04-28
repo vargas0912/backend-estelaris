@@ -71,14 +71,20 @@ const saleIncludes = [
 
 const PERIOD_DAYS = { Semanal: 7, Quincenal: 15, Mensual: 30 };
 
-const getAllSales = async (branchId) => {
+const getAllSales = async (branchId, page = 1, limit = 20, search = '') => {
+  const offset = (page - 1) * limit;
   const where = branchId ? { branch_id: branchId } : {};
-  return sales.findAll({
+  if (search) where.ticket = { [Op.like]: `%${search}%` };
+  const { count, rows } = await sales.findAndCountAll({
     attributes: saleAttributes,
     where,
     include: saleIncludes,
-    order: [['sales_date', 'DESC']]
+    order: [['sales_date', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
+  return { sales: rows, total: count };
 };
 
 const getSale = async (id) => {
@@ -89,34 +95,50 @@ const getSale = async (id) => {
   });
 };
 
-const getSalesByCustomer = async (customerId) => {
-  return sales.findAll({
+const getSalesByCustomer = async (customerId, page = 1, limit = 20, search = '') => {
+  const offset = (page - 1) * limit;
+  const where = { customer_id: customerId };
+  if (search) where.ticket = { [Op.like]: `%${search}%` };
+  const { count, rows } = await sales.findAndCountAll({
     attributes: saleAttributes,
-    where: { customer_id: customerId },
+    where,
     include: saleIncludes,
-    order: [['sales_date', 'DESC']]
+    order: [['sales_date', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
+  return { sales: rows, total: count };
 };
 
-const getSalesByBranch = async (branchId) => {
-  return sales.findAll({
+const getSalesByBranch = async (branchId, page = 1, limit = 20, search = '') => {
+  const offset = (page - 1) * limit;
+  const where = { branch_id: branchId };
+  if (search) where.ticket = { [Op.like]: `%${search}%` };
+  const { count, rows } = await sales.findAndCountAll({
     attributes: saleAttributes,
-    where: { branch_id: branchId },
+    where,
     include: saleIncludes,
-    order: [['sales_date', 'DESC']]
+    order: [['sales_date', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
+  return { sales: rows, total: count };
 };
 
-const getOverdueSales = async () => {
+const getOverdueSales = async (page = 1, limit = 20, search = '') => {
+  const offset = (page - 1) * limit;
   const today = new Date().toISOString().split('T')[0];
+  const where = {
+    sales_type: 'Credito',
+    status: 'Pendiente'
+  };
+  if (search) where.ticket = { [Op.like]: `%${search}%` };
 
-  return sales.findAll({
+  const { count, rows } = await sales.findAndCountAll({
     attributes: saleAttributes,
-    where: {
-      sales_type: 'Credito',
-      status: 'Pendiente'
-      // due_date: { [Op.lt]: today }
-    },
+    where,
     include: [
       { model: customers, as: 'customer', attributes: customerAttributes },
       { model: branches, as: 'branch', attributes: branchAttributes },
@@ -131,8 +153,12 @@ const getOverdueSales = async () => {
         required: true
       }
     ],
-    order: [['due_date', 'ASC']]
+    order: [['due_date', 'ASC']],
+    limit,
+    offset,
+    distinct: true
   });
+  return { sales: rows, total: count };
 };
 
 const createSale = async (body, userId) => {

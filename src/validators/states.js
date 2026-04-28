@@ -3,6 +3,10 @@ const { STATES } = require('../constants/states');
 
 const validateResults = require('../utils/handleValidator');
 
+const validateGetAll = [
+  (req, res, next) => validateResults(req, res, next)
+];
+
 const validateGetRecord = [
   check('id')
     .exists().withMessage(STATES.ID_NOT_EXISTS).bail()
@@ -12,4 +16,4 @@ const validateGetRecord = [
   }
 ];
 
-module.exports = { validateGetRecord };
+module.exports = { validateGetAll, validateGetRecord };

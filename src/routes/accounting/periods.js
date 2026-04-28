@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord, valiAddRecord } = require('../../validators/accountingPeriods');
+const { validateGetAll, validateGetRecord, valiAddRecord } = require('../../validators/accountingPeriods');
 
 const authMiddleware = require('../../middlewares/session');
 const checkRol = require('../../middlewares/rol');
@@ -55,19 +55,41 @@ router.get('/current', [
  *     description: Retorna todos los períodos ordenados por año/mes descendente
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Número de página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 20
+ *         description: Registros por página
  *     responses:
  *       '200':
- *         description: Arreglo de períodos contables
+ *         description: Lista de períodos contables paginada
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/accountingPeriods'
+ *               type: object
+ *               properties:
+ *                 periods:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/accountingPeriods'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/pagination'
  */
 router.get('/', [
   readLimiter,
   authMiddleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_PERIOD.VIEW_ALL)
 ], getRecords);
 

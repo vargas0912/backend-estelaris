@@ -5,7 +5,7 @@ const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
-const { validateGetUser, validateUpdateUser } = require('../validators/auth');
+const { validateGetUser, validateGetUsers, validateUpdateUser } = require('../validators/auth');
 
 const { getRecords, updateRecord, deleteRecord, getRecord } = require('../controllers/user');
 
@@ -22,21 +22,48 @@ const { USERS } = require('../constants/privileges');
  *      description: Devuelve la lista de usuarios activos
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
+ *        - in: query
+ *          name: search
+ *          schema:
+ *            type: string
+ *          description: Texto para filtrar resultados
  *      responses:
  *        '200':
- *          description: Retorna lista de usuarios
+ *          description: Lista de usuarios paginada
  *          content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/users'
+ *               type: object
+ *               properties:
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/users'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion
  */
 router.get('/', [
   readLimiter,
   authMidleware,
+  validateGetUsers,
   checkRol([ROLE.ADMIN, ROLE.SUPERADMIN], USERS.VIEW_ALL)
 ], getRecords);
 

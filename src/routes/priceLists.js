@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../validators/priceLists');
+const { validateGetAll, validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../validators/priceLists');
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
@@ -23,19 +23,23 @@ const { ROLE } = require('../constants/roles');
  *        - bearerAuth: []
  *      responses:
  *        '200':
- *          description: Arreglo de listas de precios.
+ *          description: Lista de listas de precios ordenadas por prioridad
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/priceLists'
+ *                type: object
+ *                properties:
+ *                  priceLists:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/priceLists'
  *        '422':
  *          description: Error de validacion.
  */
 router.get('/', [
   readLimiter,
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], PRICE_LIST.VIEW_ALL)
 ], getRecords);
 

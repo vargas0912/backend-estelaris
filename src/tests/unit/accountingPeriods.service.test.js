@@ -14,6 +14,7 @@ const {
 jest.mock('../../models/index', () => ({
   accountingPeriods: {
     findAll: jest.fn(),
+    findAndCountAll: jest.fn(),
     findOne: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn()
@@ -45,30 +46,31 @@ describe('AccountingPeriods Service - Unit Tests', () => {
   describe('getAllPeriods', () => {
     test('debe retornar lista de períodos', async () => {
       const mock = [mockPeriod(), mockPeriod({ id: 2, month: 2 })];
-      accountingPeriods.findAll.mockResolvedValue(mock);
+      accountingPeriods.findAndCountAll.mockResolvedValue({ count: 2, rows: mock });
 
       const result = await getAllPeriods();
 
-      expect(accountingPeriods.findAll).toHaveBeenCalledTimes(1);
-      expect(result).toHaveLength(2);
+      expect(accountingPeriods.findAndCountAll).toHaveBeenCalledTimes(1);
+      expect(result.periods).toHaveLength(2);
+      expect(result.total).toBe(2);
     });
 
     test('debe ordenar por year DESC, month DESC', async () => {
-      accountingPeriods.findAll.mockResolvedValue([]);
+      accountingPeriods.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getAllPeriods();
 
-      expect(accountingPeriods.findAll).toHaveBeenCalledWith(
+      expect(accountingPeriods.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({ order: [['year', 'DESC'], ['month', 'DESC']] })
       );
     });
 
     test('debe incluir closedBy en la consulta', async () => {
-      accountingPeriods.findAll.mockResolvedValue([]);
+      accountingPeriods.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       await getAllPeriods();
 
-      expect(accountingPeriods.findAll).toHaveBeenCalledWith(
+      expect(accountingPeriods.findAndCountAll).toHaveBeenCalledWith(
         expect.objectContaining({
           include: expect.arrayContaining([expect.objectContaining({ as: 'closedBy' })])
         })
@@ -295,7 +297,7 @@ describe('AccountingPeriods Service - Unit Tests', () => {
 
   describe('Manejo de errores', () => {
     test('getAllPeriods debe propagar error de BD', async () => {
-      accountingPeriods.findAll.mockRejectedValue(new Error('DB error'));
+      accountingPeriods.findAndCountAll.mockRejectedValue(new Error('DB error'));
 
       await expect(getAllPeriods()).rejects.toThrow('DB error');
     });

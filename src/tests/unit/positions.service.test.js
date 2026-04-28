@@ -11,6 +11,7 @@ const {
 jest.mock('../../models/index', () => ({
   positions: {
     findAll: jest.fn(),
+    findAndCountAll: jest.fn(),
     findOne: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn(),
@@ -30,23 +31,22 @@ describe('Positions Service - Unit Tests', () => {
         { id: 2, name: 'Programador', created_at: new Date(), updated_at: new Date() }
       ];
 
-      positions.findAll.mockResolvedValue(mockPositions);
+      positions.findAndCountAll.mockResolvedValue({ count: 2, rows: mockPositions });
 
       const result = await getAllPositions();
 
-      expect(positions.findAll).toHaveBeenCalledTimes(1);
-      expect(positions.findAll).toHaveBeenCalledWith({
-        attributes: ['id', 'name', 'created_at', 'updated_at']
-      });
-      expect(result).toEqual(mockPositions);
+      expect(positions.findAndCountAll).toHaveBeenCalledTimes(1);
+      expect(result.positions).toEqual(mockPositions);
+      expect(result.total).toBe(2);
     });
 
     test('debe retornar array vacio si no hay puestos', async() => {
-      positions.findAll.mockResolvedValue([]);
+      positions.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 
       const result = await getAllPositions();
 
-      expect(result).toEqual([]);
+      expect(result.positions).toEqual([]);
+      expect(result.total).toBe(0);
     });
   });
 

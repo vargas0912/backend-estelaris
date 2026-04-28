@@ -1,5 +1,6 @@
 // eslint-disable-next-line camelcase
 const { expenses, branches, users, expense_types } = require('../models/index');
+const { Op } = require('sequelize');
 const accountingEngine = require('./accountingEngine.service');
 
 // eslint-disable-next-line camelcase
@@ -12,23 +13,53 @@ const includes = [
   { model: expense_types, as: 'expenseType', attributes: ['id', 'name'] }
 ];
 
-const getAllExpenses = async() => {
-  const result = await expenses.findAll({
+const getAllExpenses = async(page = 1, limit = 20, search = '') => {
+  const offset = (page - 1) * limit;
+  // eslint-disable-next-line camelcase
+  const expenseTypeInclude = {
+    model: expense_types, // eslint-disable-line camelcase
+    as: 'expenseType',
+    attributes: ['id', 'name'],
+    ...(search ? { where: { name: { [Op.like]: `%${search}%` } }, required: true } : {})
+  };
+  const include = [
+    { model: branches, as: 'branch', attributes: ['id', 'name'] },
+    { model: users, as: 'user', attributes: ['id', 'name', 'email'] },
+    expenseTypeInclude
+  ];
+  const { count, rows } = await expenses.findAndCountAll({
     attributes,
-    include: includes
+    include,
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { expenses: rows, total: count };
 };
 
-const getExpensesByBranch = async(branchId) => {
-  const result = await expenses.findAll({
+const getExpensesByBranch = async(branchId, page = 1, limit = 20, search = '') => {
+  const offset = (page - 1) * limit;
+  // eslint-disable-next-line camelcase
+  const expenseTypeInclude = {
+    model: expense_types, // eslint-disable-line camelcase
+    as: 'expenseType',
+    attributes: ['id', 'name'],
+    ...(search ? { where: { name: { [Op.like]: `%${search}%` } }, required: true } : {})
+  };
+  const include = [
+    { model: branches, as: 'branch', attributes: ['id', 'name'] },
+    { model: users, as: 'user', attributes: ['id', 'name', 'email'] },
+    expenseTypeInclude
+  ];
+  const { count, rows } = await expenses.findAndCountAll({
     attributes,
-    include: includes,
-    where: { branch_id: branchId }
+    include,
+    where: { branch_id: branchId },
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { expenses: rows, total: count };
 };
 
 const getExpense = async(id) => {

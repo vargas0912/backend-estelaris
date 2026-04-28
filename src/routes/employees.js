@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord, valiGrantAccess } = require('../validators/employees');
+const { validateGetAll, validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord, valiGrantAccess } = require('../validators/employees');
 
 const authMidleware = require('../middlewares/session');
 const branchScope = require('../middlewares/branchScope');
@@ -22,9 +22,41 @@ const { ROLE } = require('../constants/roles');
  *      description: Obtener toda la lista de empleados activos
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
+ *        - in: query
+ *          name: search
+ *          schema:
+ *            type: string
+ *          description: Texto para filtrar resultados
  *      responses:
  *        '200':
- *          description: Arreglo de objetos de todos los empleados.
+ *          description: Lista de empleados paginada
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  employees:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/employees'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion.
  */
@@ -32,6 +64,7 @@ router.get('/', [
   readLimiter,
   authMidleware,
   branchScope,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], EMPlOYEE.VIEW_ALL)
 ], getRecords);
 
@@ -133,9 +166,29 @@ router.delete('/:id/revoke-access', [
  *        required: true
  *        schema:
  *          type: integer
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          default: 1
+ *        description: Número de página
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          maximum: 100
+ *          default: 20
+ *        description: Registros por página
+ *      - in: query
+ *        name: search
+ *        schema:
+ *          type: string
+ *        description: Texto para filtrar resultados
  *      responses:
  *        '200':
- *          description: Arreglo de empleados de la sucursal
+ *          description: Lista de empleados de la sucursal paginada
  *          content:
  *            application/json:
  *              schema:
@@ -145,6 +198,8 @@ router.delete('/:id/revoke-access', [
  *                    type: array
  *                    items:
  *                      $ref: '#/components/schemas/employees'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  *        '400':
  *          description: branch_id inválido
  */

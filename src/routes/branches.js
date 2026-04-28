@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../validators/branches');
+const { validateGetAll, validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../validators/branches');
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
@@ -19,11 +19,43 @@ const { ROLE } = require('../constants/roles');
  *       - branches
  *     summary: Sucursales activas (público)
  *     description: Lista de sucursales activas sin requerir autenticación. Uso previsto para landing page.
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Número de página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 20
+ *         description: Registros por página
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Texto para filtrar resultados
  *     responses:
  *       '200':
- *         description: Arreglo de sucursales con nombre, dirección, teléfono, municipio y fecha de apertura.
+ *         description: Lista de sucursales activas paginada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 branches:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/branches'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/pagination'
  */
-router.get('/public', [readLimiter], getPublicRecords);
+router.get('/public', [readLimiter, validateGetAll], getPublicRecords);
 
 /**
  * Get all states
@@ -36,21 +68,48 @@ router.get('/public', [readLimiter], getPublicRecords);
  *      description: Obtener toda la lista de sucursales activas
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
+ *        - in: query
+ *          name: search
+ *          schema:
+ *            type: string
+ *          description: Texto para filtrar resultados
  *      responses:
  *        '200':
- *          description: Arreglo de objetos de todas las sucursales.
+ *          description: Lista de sucursales paginada
  *          content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/branches'
+ *               type: object
+ *               properties:
+ *                 branches:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/branches'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion.
  */
 router.get('/', [
   readLimiter,
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], BRANCH.VIEW_ALL)
 ], getRecords);
 

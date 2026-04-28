@@ -75,14 +75,8 @@ const getOnePrivilegeRecord = async(req, res) => {
 
 const getPrivilegesByModuleRecords = async(req, res) => {
   try {
-    req = matchedData(req);
-
-    const privileges = await getPrivilegeByModule(req.module);
-
-    if (!privileges) {
-      res.status(404);
-    }
-
+    const data = matchedData(req);
+    const privileges = await getPrivilegeByModule(data.module);
     res.send({ privileges });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
@@ -92,7 +86,6 @@ const getPrivilegesByModuleRecords = async(req, res) => {
 const getAllPrivilegesRecords = async(req, res) => {
   try {
     const privileges = await getAllPrivileges();
-
     res.send({ privileges });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);

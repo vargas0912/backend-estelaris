@@ -4,7 +4,8 @@ const { getSystemSettings, getSystemSetting, updateSystemSetting } = require('..
 
 const getRecords = async (req, res) => {
   try {
-    const category = req.query.category || undefined;
+    const data = matchedData(req);
+    const category = data.category || undefined;
     const settings = await getSystemSettings(category);
     res.send({ settings });
   } catch (error) {

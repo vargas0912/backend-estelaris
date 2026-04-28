@@ -3,6 +3,10 @@ const validateResults = require('../utils/handleValidator');
 
 const { USER_VALIDATORS } = require('../constants/privileges');
 
+const validateGetAll = [
+  (req, res, next) => validateResults(req, res, next)
+];
+
 const validateGetRecord = [
   check('id')
     .exists().withMessage(USER_VALIDATORS.ID_NOT_EXISTS).bail()
@@ -54,4 +58,4 @@ const validateUpdateRecord = [
   }
 ];
 
-module.exports = { validateGetRecord, validateAddRecord, validateUpdateRecord, validateGetRecordByModule };
+module.exports = { validateGetAll, validateGetRecord, validateAddRecord, validateUpdateRecord, validateGetRecordByModule };

@@ -58,6 +58,12 @@ const { ROLE } = require('../constants/roles');
  *            minimum: 1
  *            maximum: 100
  *            default: 20
+ *        - name: search
+ *          in: query
+ *          description: Texto para filtrar resultados
+ *          required: false
+ *          schema:
+ *            type: string
  *      responses:
  *        '200':
  *          description: Lista paginada de clientes.
@@ -147,6 +153,12 @@ router.get('/:id', [
  *            minimum: 1
  *            maximum: 100
  *            default: 20
+ *        - name: search
+ *          in: query
+ *          description: Texto para filtrar resultados
+ *          required: false
+ *          schema:
+ *            type: string
  *      responses:
  *        '200':
  *          description: Lista paginada de clientes de la sucursal.
@@ -201,6 +213,12 @@ router.get('/branch/:branchId', [
  *            minimum: 1
  *            maximum: 100
  *            default: 20
+ *        - name: search
+ *          in: query
+ *          description: Texto para filtrar resultados
+ *          required: false
+ *          schema:
+ *            type: string
  *      responses:
  *        '200':
  *          description: Lista paginada de clientes del municipio.

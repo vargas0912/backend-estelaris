@@ -1,6 +1,7 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
 const { loyaltyConfig } = require('../models/index');
+const { getPaginationParams } = require('../utils/pagination');
 
 const {
   getActiveConfig,
@@ -35,9 +36,13 @@ const getConfig = async (req, res) => {
  */
 const listAllConfigs = async (req, res) => {
   try {
-    const { branch_id: branchId } = matchedData(req);
-    const configs = await listConfigs(branchId ?? null);
-    res.send({ configs });
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const { configs, total } = await listConfigs(data.branch_id ?? null, page, limit);
+    res.send({
+      configs,
+      pagination: { total, page, limit, totalPages: Math.ceil(total / limit) }
+    });
   } catch (error) {
     handleHttpError(res, `ERROR_LIST_LOYALTY_CONFIGS -> ${error}`, 400);
   }

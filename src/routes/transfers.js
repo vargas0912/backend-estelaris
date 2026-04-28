@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {
+  validateGetAll,
   validateGetRecord,
   validateGetByBranch,
   valiAddRecord,
@@ -38,20 +39,42 @@ const { ROLE } = require('../constants/roles');
  *      summary: Lista todas las transferencias
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
  *      responses:
  *        '200':
- *          description: Arreglo de transferencias
+ *          description: Lista de transferencias paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/transfers'
+ *                type: object
+ *                properties:
+ *                  transfers:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/transfers'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  */
 router.get('/', [
   readLimiter,
   authMidleware,
   branchScope,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.VIEW_ALL)
 ], getRecords);
 
@@ -69,15 +92,35 @@ router.get('/', [
  *          required: true
  *          schema:
  *            type: integer
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
  *      responses:
  *        '200':
- *          description: Arreglo de transferencias de la sucursal origen
+ *          description: Lista de transferencias de la sucursal origen paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/transfers'
+ *                type: object
+ *                properties:
+ *                  transfers:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/transfers'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  */
 router.get('/from-branch/:branch_id', [
   searchLimiter,
@@ -101,15 +144,35 @@ router.get('/from-branch/:branch_id', [
  *          required: true
  *          schema:
  *            type: integer
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
  *      responses:
  *        '200':
- *          description: Arreglo de transferencias de la sucursal destino
+ *          description: Lista de transferencias de la sucursal destino paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/transfers'
+ *                type: object
+ *                properties:
+ *                  transfers:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/transfers'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  */
 router.get('/to-branch/:branch_id', [
   searchLimiter,

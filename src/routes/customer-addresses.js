@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {
+  validateGetAll,
   validateGetRecord,
   validateCreate,
   validateUpdate,
@@ -37,19 +38,23 @@ const { ROLE } = require('../constants/roles');
  *        - bearerAuth: []
  *      responses:
  *        '200':
- *          description: Arreglo de objetos de todas las direcciones.
+ *          description: Lista de direcciones de clientes
  *          content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/customerAddresses'
+ *               type: object
+ *               properties:
+ *                 addresses:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/customerAddresses'
  *        '422':
  *          description: Error de validacion.
  */
 router.get('/', [
   readLimiter,
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], CUSTOMER_ADDRESS.VIEW_ALL)
 ], getRecords);
 
@@ -108,13 +113,16 @@ router.get('/:id', [
  *          type: number
  *      responses:
  *        '200':
- *          description: Arreglo de direcciones del cliente
+ *          description: Lista de direcciones del cliente
  *          content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/customerAddresses'
+ *               type: object
+ *               properties:
+ *                 addresses:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/customerAddresses'
  */
 router.get('/customer/:customerId', [
   readLimiter,

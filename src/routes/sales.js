@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {
+  validateGetAll,
   validateGetRecord,
   validateGetByCustomer,
   validateGetByBranch,
@@ -40,9 +41,30 @@ const branchScope = require('../middlewares/branchScope');
  *      security:
  *        - bearerAuth: []
  *        - branchHeader: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
+ *        - in: query
+ *          name: search
+ *          schema:
+ *            type: string
+ *          description: Texto para filtrar resultados
  *      responses:
  *        '200':
- *          description: Arreglo de ventas
+ *          description: Lista de ventas paginada
  *          content:
  *            application/json:
  *              schema:
@@ -52,11 +74,14 @@ const branchScope = require('../middlewares/branchScope');
  *                    type: array
  *                    items:
  *                      $ref: '#/components/schemas/sales'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  */
 router.get('/', [
   readLimiter,
   authMidleware,
   branchScope,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], SALE.VIEW_ALL)
 ], getRecords);
 
@@ -75,15 +100,40 @@ router.get('/', [
  *        required: true
  *        schema:
  *          type: number
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          default: 1
+ *        description: Número de página
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          maximum: 100
+ *          default: 20
+ *        description: Registros por página
+ *      - in: query
+ *        name: search
+ *        schema:
+ *          type: string
+ *        description: Texto para filtrar resultados
  *      responses:
  *        '200':
- *          description: Arreglo de ventas del cliente
+ *          description: Lista de ventas del cliente paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/sales'
+ *                type: object
+ *                properties:
+ *                  sales:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/sales'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  */
 router.get('/customer/:customer_id', [
   searchLimiter,
@@ -107,15 +157,40 @@ router.get('/customer/:customer_id', [
  *        required: true
  *        schema:
  *          type: number
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          default: 1
+ *        description: Número de página
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          maximum: 100
+ *          default: 20
+ *        description: Registros por página
+ *      - in: query
+ *        name: search
+ *        schema:
+ *          type: string
+ *        description: Texto para filtrar resultados
  *      responses:
  *        '200':
- *          description: Arreglo de ventas de la sucursal
+ *          description: Lista de ventas de la sucursal paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/sales'
+ *                type: object
+ *                properties:
+ *                  sales:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/sales'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  */
 router.get('/branch/:branch_id', [
   searchLimiter,
@@ -135,19 +210,46 @@ router.get('/branch/:branch_id', [
  *      description: Ventas a crédito con fecha de vencimiento pasada y status Pendiente
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
+ *        - in: query
+ *          name: search
+ *          schema:
+ *            type: string
+ *          description: Texto para filtrar resultados
  *      responses:
  *        '200':
- *          description: Arreglo de ventas morosas con cuotas vencidas
+ *          description: Lista de ventas morosas paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/sales'
+ *                type: object
+ *                properties:
+ *                  sales:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/sales'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  */
 router.get('/overdue', [
   readLimiter,
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], SALE.VIEW_OVERDUE)
 ], getOverdueRecords);
 

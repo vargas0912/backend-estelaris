@@ -8,28 +8,13 @@ const getOnePrivilege = async(id) => {
 };
 
 const getPrivilegeByModule = async(module) => {
-  const result = await privileges.findAll(
-    {
-      where: {
-        module
-      }
-    });
-
-  return result;
+  const rows = await privileges.findAll({ where: { module } });
+  return rows;
 };
 
 const getAllPrivileges = async() => {
-  const result = await privileges.findAll();
-
-  if (!result) {
-    return {
-      result: {
-        msg: 'NOT_FOUND'
-      }
-    };
-  }
-
-  return result;
+  const rows = await privileges.findAll();
+  return rows;
 };
 
 const addPrivilege = async(body) => {

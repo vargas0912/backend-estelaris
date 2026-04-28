@@ -1,5 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
+const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const {
   getAllSales,
@@ -15,8 +16,11 @@ const {
 
 const getRecords = async (req, res) => {
   try {
-    const salesList = await getAllSales(req.branchId);
-    res.send({ sales: salesList });
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { sales, total } = await getAllSales(req.branchId, page, limit, search);
+    res.send(buildPaginationResponse('sales', sales, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }
@@ -40,9 +44,11 @@ const getRecord = async (req, res) => {
 
 const getRecordsByCustomer = async (req, res) => {
   try {
-    const { customer_id: customerId } = matchedData(req);
-    const salesList = await getSalesByCustomer(customerId);
-    res.send({ sales: salesList });
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { sales, total } = await getSalesByCustomer(data.customer_id, page, limit, search);
+    res.send(buildPaginationResponse('sales', sales, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_CUSTOMER -> ${error}`, 400);
   }
@@ -50,9 +56,11 @@ const getRecordsByCustomer = async (req, res) => {
 
 const getRecordsByBranch = async (req, res) => {
   try {
-    const { branch_id: branchId } = matchedData(req);
-    const salesList = await getSalesByBranch(branchId);
-    res.send({ sales: salesList });
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { sales, total } = await getSalesByBranch(data.branch_id, page, limit, search);
+    res.send(buildPaginationResponse('sales', sales, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_BRANCH -> ${error}`, 400);
   }
@@ -60,8 +68,11 @@ const getRecordsByBranch = async (req, res) => {
 
 const getOverdueRecords = async (req, res) => {
   try {
-    const salesList = await getOverdueSales();
-    res.send({ sales: salesList });
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { sales, total } = await getOverdueSales(page, limit, search);
+    res.send(buildPaginationResponse('sales', sales, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_OVERDUE_RECORDS -> ${error}`);
   }

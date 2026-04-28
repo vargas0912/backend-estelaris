@@ -1,6 +1,7 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
 const { ACCOUNTING_VOUCHER_VALIDATORS: V } = require('../constants/accountingVouchers');
+const { paginationChecks } = require('./shared');
 
 const VOUCHER_TYPES = ['ingreso', 'egreso', 'diario', 'ajuste'];
 const VOUCHER_STATUSES = ['borrador', 'aplicada', 'cancelada'];
@@ -37,6 +38,8 @@ const validateListFilters = [
     .optional()
     .isInt()
     .toInt(),
+  ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => validateResults(req, res, next)
 ];
 

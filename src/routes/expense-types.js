@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../validators/expense-types');
+const { validateGetAll, validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../validators/expense-types');
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
@@ -21,21 +21,43 @@ const { ROLE } = require('../constants/roles');
  *      description: Obtener toda la lista de tipos de gastos
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
  *      responses:
  *        '200':
- *          description: Arreglo de objetos de todos los tipos de gastos.
+ *          description: Lista de tipos de gastos paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/expenseTypes'
+ *                type: object
+ *                properties:
+ *                  expenseTypes:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/expenseTypes'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion.
  */
 router.get('/', [
   readLimiter,
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], EXPENSE_TYPE.VIEW_ALL)
 ], getRecords);
 

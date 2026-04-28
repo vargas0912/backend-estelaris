@@ -1,5 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
+const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const {
   getAllProductPrices,
@@ -22,9 +23,9 @@ const {
  */
 const getRecords = async(req, res) => {
   try {
-    const prices = await getAllProductPrices();
-
-    res.send({ prices });
+    const { page, limit } = getPaginationParams(matchedData(req));
+    const { prices, total } = await getAllProductPrices(page, limit);
+    res.send(buildPaginationResponse('prices', prices, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }
@@ -59,11 +60,10 @@ const getRecord = async(req, res) => {
  */
 const getRecordsByProduct = async(req, res) => {
   try {
-    const { product_id: productId } = matchedData(req);
-
-    const prices = await getPricesByProduct(productId);
-
-    res.send({ prices });
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const { prices, total } = await getPricesByProduct(data.product_id, page, limit);
+    res.send(buildPaginationResponse('prices', prices, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_PRODUCT -> ${error}`, 400);
   }
@@ -76,11 +76,10 @@ const getRecordsByProduct = async(req, res) => {
  */
 const getRecordsByPriceList = async(req, res) => {
   try {
-    const { price_list_id: priceListId } = matchedData(req);
-
-    const prices = await getPricesByPriceList(priceListId);
-
-    res.send({ prices });
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const { prices, total } = await getPricesByPriceList(data.price_list_id, page, limit);
+    res.send(buildPaginationResponse('prices', prices, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_PRICE_LIST -> ${error}`, 400);
   }

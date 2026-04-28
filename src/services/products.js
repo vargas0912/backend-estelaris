@@ -25,19 +25,26 @@ const attributes = [
 
 const categoryAttributes = ['id', 'name'];
 
-const getAllProducts = async() => {
-  const result = await products.findAll({
+const getAllProducts = async(page = 1, limit = 20, search = '') => {
+  const offset = (page - 1) * limit;
+  const where = search
+    ? { [Op.or]: [{ id: { [Op.like]: `%${search}%` } }, { name: { [Op.like]: `%${search}%` } }] }
+    : {};
+  const { count, rows } = await products.findAndCountAll({
     attributes,
+    where,
     include: [
       {
         model: productCategories,
         as: 'category',
         attributes: categoryAttributes
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
-
-  return result;
+  return { products: rows, total: count };
 };
 
 const getProduct = async(id) => {

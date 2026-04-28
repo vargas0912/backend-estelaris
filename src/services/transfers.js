@@ -47,43 +47,58 @@ const getTransfer = async (id, reqBranchId) => {
   return transfer;
 };
 
-const getAllTransfers = async (reqBranchId) => {
+const getAllTransfers = async (reqBranchId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
   const where = reqBranchId
     ? { [Op.or]: [{ from_branch_id: reqBranchId }, { to_branch_id: reqBranchId }] }
     : {};
 
-  return transfers.findAll({
+  const { count, rows } = await transfers.findAndCountAll({
     attributes: transferAttributes,
     where,
     include: transferIncludes,
-    order: [['transfer_date', 'DESC']]
+    order: [['transfer_date', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
+  return { transfers: rows, total: count };
 };
 
-const getTransfersByFromBranch = async (paramBranchId, reqBranchId) => {
+const getTransfersByFromBranch = async (paramBranchId, reqBranchId, page = 1, limit = 20) => {
   if (reqBranchId && reqBranchId !== paramBranchId) {
     return { error: 'BRANCH_ACCESS_DENIED' };
   }
 
-  return transfers.findAll({
+  const offset = (page - 1) * limit;
+  const { count, rows } = await transfers.findAndCountAll({
     attributes: transferAttributes,
     where: { from_branch_id: paramBranchId },
     include: transferIncludes,
-    order: [['transfer_date', 'DESC']]
+    order: [['transfer_date', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
+  return { transfers: rows, total: count };
 };
 
-const getTransfersByToBranch = async (paramBranchId, reqBranchId) => {
+const getTransfersByToBranch = async (paramBranchId, reqBranchId, page = 1, limit = 20) => {
   if (reqBranchId && reqBranchId !== paramBranchId) {
     return { error: 'BRANCH_ACCESS_DENIED' };
   }
 
-  return transfers.findAll({
+  const offset = (page - 1) * limit;
+  const { count, rows } = await transfers.findAndCountAll({
     attributes: transferAttributes,
     where: { to_branch_id: paramBranchId },
     include: transferIncludes,
-    order: [['transfer_date', 'DESC']]
+    order: [['transfer_date', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
+  return { transfers: rows, total: count };
 };
 
 const createTransfer = async (body, userId, reqBranchId) => {

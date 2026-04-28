@@ -1,7 +1,14 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
+const { paginationChecks } = require('./shared');
 
 const { EMPLOYEES_VALIDATORS } = require('../constants/employees');
+
+const validateGetAll = [
+  ...paginationChecks,
+  check('search').optional().isString().trim(),
+  (req, res, next) => validateResults(req, res, next)
+];
 
 const validateGetRecord = [
   check('id')
@@ -17,6 +24,8 @@ const validateGetByBranch = [
     .exists().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_IS_EMPTY).bail()
     .isInt().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_INVALID).bail(),
+  ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -95,4 +104,4 @@ const valiGrantAccess = [
   }
 ];
 
-module.exports = { validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord, valiGrantAccess };
+module.exports = { validateGetAll, validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord, valiGrantAccess };

@@ -18,7 +18,7 @@ const {
   getPrivilegesByModuleRecords
 } = require('../controllers/privileges');
 
-const { validateGetRecord, validateAddRecord, validateUpdateRecord, validateGetRecordByModule } = require('../validators/privileges');
+const { validateGetAll, validateGetRecord, validateAddRecord, validateUpdateRecord, validateGetRecordByModule } = require('../validators/privileges');
 const { validateGetUserAllRecord, validateGetUserOneRecord, validateAddUserRecord, validateDeleteRecord } = require('../validators/user-privilege');
 
 const { ROLE } = require('../constants/roles');
@@ -41,18 +41,22 @@ const { PRIVILEGES } = require('../constants/privileges');
  *        - bearerAuth: []
  *      responses:
  *        '200':
- *          description: Lista de privilegios.
+ *          description: Lista de privilegios
  *          content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/privileges'
+ *               type: object
+ *               properties:
+ *                 privileges:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/privileges'
  *        '422':
  *          description: Error de validacion.
  */
 router.get('/', [
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.VIEW)
 ], getAllPrivilegesRecords);
 
@@ -112,13 +116,16 @@ router.get('/:id', [
  *          type: string
  *      responses:
  *        '200':
- *          description: Lista de privilegios.
+ *          description: Lista de privilegios del módulo
  *          content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/privileges'
+ *               type: object
+ *               properties:
+ *                 privileges:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/privileges'
  *        '422':
  *          description: Error de validacion.
  */

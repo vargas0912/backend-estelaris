@@ -3,11 +3,8 @@ const { states } = require('../models/index');
 const attributes = ['id', 'name', 'created_at', 'updated_at'];
 
 const getAllStates = async() => {
-  const result = await states.findAll({
-    attributes
-  });
-
-  return result;
+  const rows = await states.findAll({ attributes });
+  return rows;
 };
 
 const getState = async(id) => {

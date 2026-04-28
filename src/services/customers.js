@@ -1,4 +1,5 @@
 const { customers, customerAddresses, municipalities, branches, users } = require('../models/index');
+const { Op } = require('sequelize');
 const { encrypt } = require('../utils/handlePassword');
 const { ROLE } = require('../constants/roles');
 
@@ -12,10 +13,12 @@ const municipalityAttributes = ['id', 'name'];
 const branchAttributes = ['id', 'name'];
 const userAttributes = ['id', 'email', 'role'];
 
-const getAllCustomers = async(page = 1, limit = 20) => {
+const getAllCustomers = async(page = 1, limit = 20, search = '') => {
   const offset = (page - 1) * limit;
+  const where = search ? { name: { [Op.like]: `%${search}%` } } : {};
   const { count, rows } = await customers.findAndCountAll({
     attributes,
+    where,
     include: [
       {
         model: municipalities,
@@ -75,11 +78,13 @@ const getCustomer = async(id) => {
   return result;
 };
 
-const getCustomersByBranch = async(branchId, page = 1, limit = 20) => {
+const getCustomersByBranch = async(branchId, page = 1, limit = 20, search = '') => {
   const offset = (page - 1) * limit;
+  const where = { branch_id: branchId };
+  if (search) where.name = { [Op.like]: `%${search}%` };
   const { count, rows } = await customers.findAndCountAll({
     attributes,
-    where: { branch_id: branchId },
+    where,
     include: [
       {
         model: municipalities,
@@ -101,11 +106,13 @@ const getCustomersByBranch = async(branchId, page = 1, limit = 20) => {
   return { customers: rows, total: count };
 };
 
-const getCustomersByMunicipality = async(municipalityId, page = 1, limit = 20) => {
+const getCustomersByMunicipality = async(municipalityId, page = 1, limit = 20, search = '') => {
   const offset = (page - 1) * limit;
+  const where = { municipality_id: municipalityId };
+  if (search) where.name = { [Op.like]: `%${search}%` };
   const { count, rows } = await customers.findAndCountAll({
     attributes,
-    where: { municipality_id: municipalityId },
+    where,
     include: [
       {
         model: municipalities,

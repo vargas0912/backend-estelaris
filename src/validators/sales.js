@@ -1,6 +1,13 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
 const { SALES_VALIDATORS } = require('../constants/sales');
+const { paginationChecks } = require('./shared');
+
+const validateGetAll = [
+  ...paginationChecks,
+  check('search').optional().isString().trim(),
+  (req, res, next) => validateResults(req, res, next)
+];
 
 const validateGetRecord = [
   check('id')
@@ -15,6 +22,8 @@ const validateGetByCustomer = [
     .exists().withMessage(SALES_VALIDATORS.CUSTOMER_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(SALES_VALIDATORS.CUSTOMER_ID_IS_EMPTY).bail()
     .isInt().withMessage(SALES_VALIDATORS.CUSTOMER_ID_INVALID).bail(),
+  ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => validateResults(req, res, next)
 ];
 
@@ -23,6 +32,8 @@ const validateGetByBranch = [
     .exists().withMessage(SALES_VALIDATORS.BRANCH_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(SALES_VALIDATORS.BRANCH_ID_IS_EMPTY).bail()
     .isInt().withMessage(SALES_VALIDATORS.BRANCH_ID_INVALID).bail(),
+  ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => validateResults(req, res, next)
 ];
 
@@ -140,6 +151,7 @@ const valiUpdateRecord = [
 ];
 
 module.exports = {
+  validateGetAll,
   validateGetRecord,
   validateGetByCustomer,
   validateGetByBranch,

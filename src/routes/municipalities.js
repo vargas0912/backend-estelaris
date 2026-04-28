@@ -64,13 +64,35 @@ router.get('/:id', [
 *        required: true
 *        schema:
 *          type: number
+*      - in: query
+*        name: page
+*        schema:
+*          type: integer
+*          minimum: 1
+*          default: 1
+*        description: Número de página
+*      - in: query
+*        name: limit
+*        schema:
+*          type: integer
+*          minimum: 1
+*          maximum: 100
+*          default: 20
+*        description: Registros por página
 *      responses:
 *        '200':
-*          description: Retorna el objecto de todos los municpios del estado especificado
+*          description: Lista de municipios del estado paginada
 *          content:
 *             application/json:
 *               schema:
-*                   $ref: '#/components/schemas/municipalities'
+*                 type: object
+*                 properties:
+*                   municipalities:
+*                     type: array
+*                     items:
+*                       $ref: '#/components/schemas/municipalities'
+*                   pagination:
+*                     $ref: '#/components/schemas/pagination'
 *        '422':
 *          description: Error de validacion.
 */

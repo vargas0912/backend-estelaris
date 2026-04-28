@@ -1,6 +1,7 @@
 const { matchedData } = require('express-validator');
 const { users } = require('../models/index');
 const { handleHttpError } = require('../utils/handleErorr');
+const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 const { getUsers, getUser } = require('../services/users');
 const { ERR_SECURITY } = require('../constants/errors');
 const { pick, USER_UPDATABLE_FIELDS, USER_ADMIN_UPDATABLE_FIELDS } = require('../utils/fieldWhitelist');
@@ -39,9 +40,11 @@ const validateRoleHierarchy = (performingUserRole, targetUserRole) => {
  */
 const getRecords = async(req, res) => {
   try {
-    const users = await getUsers();
-
-    res.send({ users });
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { users, total } = await getUsers(page, limit, search);
+    res.send(buildPaginationResponse('users', users, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }

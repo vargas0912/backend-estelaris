@@ -23,6 +23,7 @@ const {
   updateCampaignValidator,
   getCampaignValidator,
   getCampaignsValidator,
+  getActiveCampaignsValidator,
   addCampaignBranchesValidator,
   removeCampaignBranchValidator
 } = require('../validators/campaigns');
@@ -61,15 +62,35 @@ const handleValidationErrors = (req, res, next) => {
  *           type: string
  *           enum: [active, upcoming, finished, inactive]
  *         description: Filtrar por estado de campaña
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Número de página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 20
+ *         description: Registros por página
  *     responses:
  *       200:
- *         description: Lista de campañas obtenida correctamente
+ *         description: Lista de campañas paginada
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/campaigns'
+ *               type: object
+ *               properties:
+ *                 campaigns:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/campaigns'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/pagination'
  *       401:
  *         description: No autorizado
  */
@@ -90,15 +111,36 @@ router.get(
  *     tags: [Campaigns]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Número de página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 20
+ *         description: Registros por página
  *     responses:
  *       200:
- *         description: Campañas activas obtenidas correctamente
+ *         description: Campañas activas paginadas
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/campaigns'
+ *               type: object
+ *               properties:
+ *                 campaigns:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/campaigns'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/pagination'
  *       401:
  *         description: No autorizado
  */
@@ -106,6 +148,8 @@ router.get(
   '/active',
   authMiddleware,
   checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.VIEW_ACTIVE),
+  getActiveCampaignsValidator,
+  handleValidationErrors,
   getActiveCampaigns
 );
 

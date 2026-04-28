@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {
+  validateGetAll,
   validateGetRecord,
   validateGetByProduct,
   validateGetByBranch,
@@ -36,15 +37,41 @@ const { ROLE } = require('../constants/roles');
  *      description: Obtener toda la lista de inventarios por producto y sucursal
  *      security:
  *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
+ *        - in: query
+ *          name: search
+ *          schema:
+ *            type: string
+ *          description: Texto para filtrar resultados
  *      responses:
  *        '200':
- *          description: Arreglo de objetos de todos los inventarios.
+ *          description: Lista de inventarios paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/productStocks'
+ *                type: object
+ *                properties:
+ *                  productStocks:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/productStocks'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion.
  */
@@ -52,6 +79,7 @@ router.get('/', [
   readLimiter,
   authMidleware,
   branchScope,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], PRODUCT_STOCK.VIEW_ALL)
 ], getRecords);
 
@@ -73,15 +101,40 @@ router.get('/', [
  *        schema:
  *          type: string
  *          maxLength: 20
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          default: 1
+ *        description: Número de página
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          maximum: 100
+ *          default: 20
+ *        description: Registros por página
+ *      - in: query
+ *        name: search
+ *        schema:
+ *          type: string
+ *        description: Texto para filtrar resultados
  *      responses:
  *        '200':
- *          description: Arreglo de inventarios del producto
+ *          description: Lista de inventarios del producto paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/productStocks'
+ *                type: object
+ *                properties:
+ *                  productStocks:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/productStocks'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion.
  */
@@ -110,15 +163,40 @@ router.get('/product/:product_id', [
  *        required: true
  *        schema:
  *          type: number
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          default: 1
+ *        description: Número de página
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          maximum: 100
+ *          default: 20
+ *        description: Registros por página
+ *      - in: query
+ *        name: search
+ *        schema:
+ *          type: string
+ *        description: Texto para filtrar resultados
  *      responses:
  *        '200':
- *          description: Arreglo de inventarios de la sucursal
+ *          description: Lista de inventarios de la sucursal paginada
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/productStocks'
+ *                type: object
+ *                properties:
+ *                  productStocks:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/productStocks'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
  *        '422':
  *          description: Error de validacion.
  */

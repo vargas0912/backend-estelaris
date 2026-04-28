@@ -20,13 +20,13 @@ const settingAttributes = [
 const getSystemSettings = async (category) => {
   const where = category ? { category } : {};
 
-  const result = await systemSettings.findAll({
+  const rows = await systemSettings.findAll({
     attributes: settingAttributes,
     where,
     order: [['category', 'ASC'], ['key', 'ASC']]
   });
 
-  return result;
+  return rows;
 };
 
 /**

@@ -3,6 +3,10 @@ const validateResults = require('../utils/handleValidator');
 
 const { PRICE_LISTS_VALIDATORS } = require('../constants/priceLists');
 
+const validateGetAll = [
+  (req, res, next) => validateResults(req, res, next)
+];
+
 const validateGetRecord = [
   check('id')
     .exists().withMessage(PRICE_LISTS_VALIDATORS.ID_NOT_EXISTS).bail()
@@ -49,4 +53,4 @@ const valiUpdateRecord = [
   }
 ];
 
-module.exports = { validateGetRecord, valiAddRecord, valiUpdateRecord };
+module.exports = { validateGetAll, validateGetRecord, valiAddRecord, valiUpdateRecord };

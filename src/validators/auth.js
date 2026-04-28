@@ -1,5 +1,6 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
+const { paginationChecks } = require('./shared');
 const { users } = require('../models/index');
 
 const { REGISTER, USER } = require('../constants/errors');
@@ -81,4 +82,10 @@ const validateUpdateUser = [
   }
 ];
 
-module.exports = { validateRegister, validateLogin, validateGetUser, validateUpdateUser };
+const validateGetUsers = [
+  ...paginationChecks,
+  check('search').optional().isString().trim(),
+  (req, res, next) => validateResults(req, res, next)
+];
+
+module.exports = { validateRegister, validateLogin, validateGetUser, validateGetUsers, validateUpdateUser };

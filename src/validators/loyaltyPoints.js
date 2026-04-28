@@ -1,5 +1,6 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
+const { paginationChecks } = require('./shared');
 
 const validateGetCustomer = [
   check('customerId')
@@ -137,6 +138,7 @@ const validateListConfigs = [
     .optional({ nullable: true })
     .isInt({ min: 1 }).withMessage('BRANCH_ID_INVALID').bail()
     .toInt(),
+  ...paginationChecks,
   (req, res, next) => validateResults(req, res, next)
 ];
 

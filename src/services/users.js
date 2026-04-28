@@ -1,4 +1,5 @@
 const { users } = require('../models/index');
+const { Op } = require('sequelize');
 const { encrypt } = require('../utils/handlePassword');
 const { tokenSign } = require('../utils/handleJwt');
 
@@ -16,17 +17,16 @@ const getUser = async(id) => {
   return data;
 };
 
-const getUsers = async() => {
-  const data = await users.findAll();
-
-  // Omitir un valor específico de cada objeto en el array
-  const allUsers = data.map(user => {
+const getUsers = async(page = 1, limit = 20, search = '') => {
+  const offset = (page - 1) * limit;
+  const where = search ? { name: { [Op.like]: `%${search}%` } } : {};
+  const { count, rows } = await users.findAndCountAll({ where, limit, offset });
+  const allUsers = rows.map(user => {
     // eslint-disable-next-line no-unused-vars
     const { password, ...rest } = user.toJSON();
     return rest;
   });
-
-  return allUsers;
+  return { users: allUsers, total: count };
 };
 
 const registerUser = async(req) => {

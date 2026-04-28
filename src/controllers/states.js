@@ -1,6 +1,7 @@
 const { matchedData } = require('express-validator');
 const { states } = require('../models/index');
 const { handleHttpError } = require('../utils/handleErorr');
+const { getAllStates } = require('../services/states');
 
 /**
  * Obtener lista de registros
@@ -9,9 +10,8 @@ const { handleHttpError } = require('../utils/handleErorr');
  */
 const getRecords = async(req, res) => {
   try {
-    // eslint-disable-next-line no-use-before-define
-    const data = await states.findAll();
-    res.send({ data });
+    const statesList = await getAllStates();
+    res.send({ states: statesList });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
   }

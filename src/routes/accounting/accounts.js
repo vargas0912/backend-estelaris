@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../../validators/accountingAccounts');
+const { validateGetAll, validateGetRecord, valiAddRecord, valiUpdateRecord } = require('../../validators/accountingAccounts');
 
 const authMiddleware = require('../../middlewares/session');
 const checkRol = require('../../middlewares/rol');
@@ -52,21 +52,48 @@ router.get('/tree', [
  *     description: Obtener todas las cuentas contables con su cuenta padre
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Número de página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 20
+ *         description: Registros por página
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Texto para filtrar resultados
  *     responses:
  *       '200':
- *         description: Arreglo de cuentas contables
+ *         description: Lista de cuentas contables paginada
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/accountingAccounts'
+ *               type: object
+ *               properties:
+ *                 accounts:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/accountingAccounts'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/pagination'
  *       '400':
  *         description: Error al obtener el catálogo
  */
 router.get('/', [
   readLimiter,
   authMiddleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], ACCOUNTING_ACCOUNT.VIEW_ALL)
 ], getRecords);
 

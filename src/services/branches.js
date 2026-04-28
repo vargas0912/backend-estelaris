@@ -1,4 +1,5 @@
 const { branches, municipalities, states } = require('../models/index');
+const { Op } = require('sequelize');
 
 const attributes = [
   'id',
@@ -17,9 +18,14 @@ const publicAttributes = ['id', 'name', 'address', 'phone', 'opening_date'];
 
 const municipalityAttributes = ['id', 'name'];
 
-const getAllBranches = async() => {
-  const result = await branches.findAll({
+const getAllBranches = async(page = 1, limit = 20, search = '') => {
+  const offset = (page - 1) * limit;
+  const where = search
+    ? { [Op.or]: [{ name: { [Op.like]: `%${search}%` } }, { address: { [Op.like]: `%${search}%` } }] }
+    : {};
+  const { count, rows } = await branches.findAndCountAll({
     attributes,
+    where,
     include: [
       {
         model: municipalities,
@@ -27,10 +33,13 @@ const getAllBranches = async() => {
         attributes: municipalityAttributes,
         required: true
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
 
-  return result;
+  return { branches: rows, total: count };
 };
 
 const getBranch = async(id) => {
@@ -104,9 +113,14 @@ const deleteBranch = async(id) => {
   return data;
 };
 
-const getPublicBranches = async () => {
-  return branches.findAll({
+const getPublicBranches = async (page = 1, limit = 20, search = '') => {
+  const offset = (page - 1) * limit;
+  const where = search
+    ? { [Op.or]: [{ name: { [Op.like]: `%${search}%` } }, { address: { [Op.like]: `%${search}%` } }] }
+    : {};
+  const { count, rows } = await branches.findAndCountAll({
     attributes: publicAttributes,
+    where,
     include: [
       {
         model: municipalities,
@@ -122,8 +136,13 @@ const getPublicBranches = async () => {
           }
         ]
       }
-    ]
+    ],
+    limit,
+    offset,
+    distinct: true
   });
+
+  return { branches: rows, total: count };
 };
 
 module.exports = {

@@ -6,11 +6,11 @@ const { Op } = require('sequelize');
  * @param {Object} filters - Filtros opcionales (status: active/upcoming/finished/inactive)
  * @returns {Promise<Array>}
  */
-const getAllCampaigns = async (filters = {}) => {
+const getAllCampaigns = async (filters = {}, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
   const where = {};
   const now = new Date();
 
-  // Filtro por estado
   if (filters.status) {
     switch (filters.status) {
       case 'active':
@@ -31,7 +31,7 @@ const getAllCampaigns = async (filters = {}) => {
     }
   }
 
-  const campaigns = await Campaigns.findAll({
+  const { count, rows } = await Campaigns.findAndCountAll({
     where,
     include: [
       {
@@ -52,20 +52,24 @@ const getAllCampaigns = async (filters = {}) => {
         attributes: ['id', 'name']
       }
     ],
-    order: [['priority', 'DESC'], ['start_date', 'DESC']]
+    order: [['priority', 'DESC'], ['start_date', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
 
-  return campaigns;
+  return { campaigns: rows, total: count };
 };
 
 /**
  * Obtiene solo las campañas activas y vigentes
  * @returns {Promise<Array>}
  */
-const getActiveCampaigns = async () => {
+const getActiveCampaigns = async (page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
   const now = new Date();
 
-  const campaigns = await Campaigns.findAll({
+  const { count, rows } = await Campaigns.findAndCountAll({
     where: {
       is_active: true,
       start_date: { [Op.lte]: now },
@@ -88,10 +92,13 @@ const getActiveCampaigns = async () => {
         through: { attributes: [] }
       }
     ],
-    order: [['priority', 'DESC']]
+    order: [['priority', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
 
-  return campaigns;
+  return { campaigns: rows, total: count };
 };
 
 /**

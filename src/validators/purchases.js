@@ -1,6 +1,12 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
 const { PURCHASES_VALIDATORS } = require('../constants/purchases');
+const { paginationChecks } = require('./shared');
+
+const validateGetAll = [
+  ...paginationChecks,
+  (req, res, next) => validateResults(req, res, next)
+];
 
 const validateGetRecord = [
   check('id')
@@ -15,6 +21,7 @@ const validateGetBySupplier = [
     .exists().withMessage(PURCHASES_VALIDATORS.SUPPLIER_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(PURCHASES_VALIDATORS.SUPPLIER_ID_IS_EMPTY).bail()
     .isInt().withMessage(PURCHASES_VALIDATORS.SUPPLIER_ID_INVALID).bail(),
+  ...paginationChecks,
   (req, res, next) => validateResults(req, res, next)
 ];
 
@@ -23,6 +30,7 @@ const validateGetByBranch = [
     .exists().withMessage(PURCHASES_VALIDATORS.BRANCH_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(PURCHASES_VALIDATORS.BRANCH_ID_IS_EMPTY).bail()
     .isInt().withMessage(PURCHASES_VALIDATORS.BRANCH_ID_INVALID).bail(),
+  ...paginationChecks,
   (req, res, next) => validateResults(req, res, next)
 ];
 
@@ -120,6 +128,7 @@ const validateReceiveRecord = [
 ];
 
 module.exports = {
+  validateGetAll,
   validateGetRecord,
   validateGetBySupplier,
   validateGetByBranch,

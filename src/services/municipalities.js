@@ -3,8 +3,9 @@ const { municipalities, states } = require('../models/index');
 const attributes = ['id', 'name', 'created_at', 'updated_at'];
 const stateAttributes = ['id', 'name'];
 
-const getMunicipalitiesByStateId = async(stateId) => {
-  const result = await municipalities.findAll({
+const getMunicipalitiesByStateId = async(stateId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await municipalities.findAndCountAll({
     attributes,
     where: {
       state_id: stateId
@@ -15,10 +16,13 @@ const getMunicipalitiesByStateId = async(stateId) => {
         as: 'estado',
         attributes: stateAttributes,
         required: true
-      }]
+      }],
+    limit,
+    offset,
+    distinct: true
   });
 
-  return result;
+  return { municipalities: rows, total: count };
 };
 
 const getMunicipality = async(id) => {

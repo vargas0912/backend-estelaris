@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { valiUpdateRecord } = require('../validators/systemSettings');
+const { validateGetAll, valiUpdateRecord } = require('../validators/systemSettings');
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
@@ -30,17 +30,21 @@ const { ROLE } = require('../constants/roles');
  *            type: string
  *      responses:
  *        '200':
- *          description: Arreglo de configuraciones
+ *          description: Lista de configuraciones del sistema
  *          content:
  *            application/json:
  *              schema:
- *                type: array
- *                items:
- *                  $ref: '#/components/schemas/systemSettings'
+ *                type: object
+ *                properties:
+ *                  settings:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/systemSettings'
  */
 router.get('/', [
   readLimiter,
   authMidleware,
+  validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], SYSTEM_SETTINGS.VIEW_ALL)
 ], getRecords);
 

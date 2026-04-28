@@ -22,21 +22,31 @@ const paymentIncludes = [
   { model: branches, as: 'branch', attributes: branchAttributes }
 ];
 
-const getAllPayments = async () => {
-  return salePayments.findAll({
+const getAllPayments = async (page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await salePayments.findAndCountAll({
     attributes: paymentAttributes,
     include: paymentIncludes,
-    order: [['payment_date', 'DESC']]
+    order: [['payment_date', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
+  return { payments: rows, total: count };
 };
 
-const getPaymentsBySale = async (saleId) => {
-  return salePayments.findAll({
+const getPaymentsBySale = async (saleId, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+  const { count, rows } = await salePayments.findAndCountAll({
     attributes: paymentAttributes,
     where: { sale_id: saleId },
     include: paymentIncludes,
-    order: [['payment_date', 'DESC']]
+    order: [['payment_date', 'DESC']],
+    limit,
+    offset,
+    distinct: true
   });
+  return { payments: rows, total: count };
 };
 
 const getPayment = async (id) => {
