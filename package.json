@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Sistema de administracion de mercancias Estelaris",
   "main": "index.js",
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "start": "node ./app.js",
     "dev": "nodemon ./app.js",
