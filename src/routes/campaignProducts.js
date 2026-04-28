@@ -60,6 +60,24 @@ const handleValidationErrors = (req, res, next) => {
  *         schema:
  *           type: integer
  *         description: ID de la campaña
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: Número de página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *         description: Resultados por página
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Buscar por nombre de producto
  *     responses:
  *       200:
  *         description: Productos obtenidos correctamente
