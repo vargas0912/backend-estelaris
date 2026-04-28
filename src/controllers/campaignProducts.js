@@ -25,8 +25,9 @@ const getProductsByCampaign = async(req, res) => {
   try {
     const data = matchedData(req);
     const { page, limit } = getPaginationParams(data);
+    const search = data.search || '';
     // eslint-disable-next-line camelcase
-    const { products, total } = await campaignProductsService.getProductsByCampaign(data.campaign_id, page, limit);
+    const { products, total } = await campaignProductsService.getProductsByCampaign(data.campaign_id, page, limit, search);
 
     res.status(200).json({
       ok: true,

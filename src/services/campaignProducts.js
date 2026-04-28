@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const { campaignProducts: CampaignProducts, campaignProductBranches: CampaignProductBranches, campaigns: Campaigns, products: Products, branches: Branches } = require('../models');
 
 /**
@@ -5,7 +6,7 @@ const { campaignProducts: CampaignProducts, campaignProductBranches: CampaignPro
  * @param {number} campaignId - ID de la campaña
  * @returns {Promise<Array>}
  */
-const getProductsByCampaign = async(campaignId, page = 1, limit = 20) => {
+const getProductsByCampaign = async(campaignId, page = 1, limit = 20, search = '') => {
   const offset = (page - 1) * limit;
   const { count, rows } = await CampaignProducts.findAndCountAll({
     where: { campaign_id: campaignId },
@@ -13,7 +14,8 @@ const getProductsByCampaign = async(campaignId, page = 1, limit = 20) => {
       {
         model: Products,
         as: 'product',
-        attributes: ['id', 'name', 'base_price', 'description']
+        attributes: ['id', 'name', 'base_price', 'description'],
+        ...(search ? { where: { name: { [Op.like]: `%${search}%` } }, required: true } : {})
       },
       {
         model: CampaignProductBranches,

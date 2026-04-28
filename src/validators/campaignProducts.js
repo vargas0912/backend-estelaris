@@ -1,4 +1,4 @@
-const { body, param } = require('express-validator');
+const { body, param, check } = require('express-validator');
 const { paginationChecks } = require('./shared');
 
 const createCampaignProductValidator = [
@@ -89,7 +89,8 @@ const getProductsByCampaignValidator = [
     .exists().withMessage('El ID de la campaña es requerido')
     .isInt({ min: 1 }).withMessage('El ID de la campaña debe ser un número entero positivo')
     .toInt(),
-  ...paginationChecks
+  ...paginationChecks,
+  check('search').optional().isString().trim().isLength({ max: 100 }).withMessage('search no puede superar 100 caracteres')
 ];
 
 const createBranchOverrideValidator = [
