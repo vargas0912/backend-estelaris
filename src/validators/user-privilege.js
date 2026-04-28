@@ -54,4 +54,18 @@ const validateDeleteRecord = [
   }
 ];
 
-module.exports = { validateGetUserAllRecord, validateGetUserOneRecord, validateAddUserRecord, validateDeleteRecord };
+const validateCopyFromTemplate = [
+  check('user_id')
+    .exists().withMessage(USER_VALIDATORS.USER_ID_NOT_EXISTS).bail()
+    .notEmpty().withMessage(USER_VALIDATORS.USER_ID_IS_EMPTY).bail()
+    .isNumeric().withMessage(USER_VALIDATORS.ID_MUST_BE_NUMERIC).bail(),
+  check('template_user_id')
+    .exists().withMessage('TEMPLATE_USER_ID_NOT_EXISTS').bail()
+    .notEmpty().withMessage('TEMPLATE_USER_ID_IS_EMPTY').bail()
+    .isNumeric().withMessage(USER_VALIDATORS.ID_MUST_BE_NUMERIC).bail(),
+  (req, res, next) => {
+    return validateResults(req, res, next);
+  }
+];
+
+module.exports = { validateGetUserAllRecord, validateGetUserOneRecord, validateAddUserRecord, validateDeleteRecord, validateCopyFromTemplate };

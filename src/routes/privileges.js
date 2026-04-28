@@ -10,6 +10,7 @@ const {
   getAllUserPrivilegesRecords,
   getOneUserPrivilegeRecord,
   deleteUserPrivilegeRecord,
+  copyPrivilegesFromTemplateRecord,
   getOnePrivilegeRecord, // Privielges
   getAllPrivilegesRecords,
   addPrivilegeRecord,
@@ -19,7 +20,7 @@ const {
 } = require('../controllers/privileges');
 
 const { validateGetAll, validateGetRecord, validateAddRecord, validateUpdateRecord, validateGetRecordByModule } = require('../validators/privileges');
-const { validateGetUserAllRecord, validateGetUserOneRecord, validateAddUserRecord, validateDeleteRecord } = require('../validators/user-privilege');
+const { validateGetUserAllRecord, validateGetUserOneRecord, validateAddUserRecord, validateDeleteRecord, validateCopyFromTemplate } = require('../validators/user-privilege');
 
 const { ROLE } = require('../constants/roles');
 const { PRIVILEGES } = require('../constants/privileges');
@@ -321,6 +322,54 @@ router.get('/user/:userid/code/:codename', [
   authMidleware,
   validateGetUserOneRecord,
   checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.VIEW_ALL)], getOneUserPrivilegeRecord);
+
+/**
+ * Copy privileges from template user
+ * @openapi
+ * /privileges/user/from-template:
+ *      post:
+ *          tags:
+ *              - user-privileges
+ *          summary: Copiar privilegios desde usuario plantilla
+ *          description: Copia todos los privilegios de un usuario plantilla al usuario destino
+ *          security:
+ *              - bearerAuth: []
+ *          operationId: "copyPrivilegesFromTemplate"
+ *          requestBody:
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          required:
+ *                            - user_id
+ *                            - template_user_id
+ *                          properties:
+ *                            user_id:
+ *                              type: number
+ *                              description: ID del usuario destino
+ *                            template_user_id:
+ *                              type: number
+ *                              description: ID del usuario plantilla
+ *          responses:
+ *              '201':
+ *                  description: Privilegios copiados correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        type: object
+ *                        properties:
+ *                          copied:
+ *                            type: number
+ *              '403':
+ *                  description: Sin permisos para copiar privilegios de superadmin
+ *              '404':
+ *                  description: Usuario destino o plantilla no encontrado
+ */
+router.post('/user/from-template', [
+  authMidleware,
+  validateCopyFromTemplate,
+  checkRol([ROLE.SUPERADMIN, ROLE.ADMIN], PRIVILEGES.CREATE_USER)
+], copyPrivilegesFromTemplateRecord);
 
 /**
  * Register new privilege

@@ -8,7 +8,8 @@ const {
   getOneUserPrivilege,
   getAllUserPrivileges,
   addNewUserPrivilege,
-  deleteUserPrivilege
+  deleteUserPrivilege,
+  copyPrivilegesFromTemplate
 } = require('../services/user-privileges');
 
 const {
@@ -155,6 +156,47 @@ const addUserPrivilegeRecord = async(req, res) => {
   }
 };
 
+const copyPrivilegesFromTemplateRecord = async(req, res) => {
+  try {
+    const body = matchedData(req);
+    // eslint-disable-next-line camelcase
+    const { user_id, template_user_id } = body;
+
+    const targetUser = await users.findByPk(user_id);
+    if (!targetUser) {
+      handleHttpError(res, 'USER_NOT_EXISTS', 404);
+      return;
+    }
+
+    // eslint-disable-next-line camelcase
+    const templateUser = await users.findByPk(template_user_id);
+    if (!templateUser) {
+      handleHttpError(res, 'TEMPLATE_USER_NOT_EXISTS', 404);
+      return;
+    }
+
+    const performingUserRole = req.user.role;
+    if (
+      templateUser.role === 'superadmin' &&
+      performingUserRole !== 'superadmin'
+    ) {
+      handleHttpError(
+        res,
+        ERR_SECURITY.FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES,
+        403
+      );
+      return;
+    }
+
+    // eslint-disable-next-line camelcase
+    const copied = await copyPrivilegesFromTemplate(template_user_id, user_id);
+
+    res.status(201).send({ copied });
+  } catch (error) {
+    handleHttpError(res, `ERROR_COPYING_PRIVILEGES --> ${error}`, 400);
+  }
+};
+
 const deleteUserPrivilegeRecord = async(req, res) => {
   try {
     const body = matchedData(req);
@@ -196,6 +238,7 @@ module.exports = {
   getAllUserPrivilegesRecords,
   getOneUserPrivilegeRecord,
   deleteUserPrivilegeRecord,
+  copyPrivilegesFromTemplateRecord,
   getOnePrivilegeRecord, // Privielges
   getAllPrivilegesRecords,
   getPrivilegesByModuleRecords,
