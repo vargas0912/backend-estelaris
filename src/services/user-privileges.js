@@ -45,6 +45,36 @@ const addNewUserPrivilege = async(body) => {
   return privilege;
 };
 
+const copyPrivilegesFromTemplate = async(templateUserId, targetUserId) => {
+  const templatePrivileges = await userprivileges.findAll({
+    attributes: ['privilege_id'],
+    where: { user_id: templateUserId },
+    include: [
+      {
+        model: privileges,
+        as: 'privileges',
+        attributes: [],
+        required: true
+      }
+    ]
+  });
+
+  if (templatePrivileges.length === 0) {
+    return 0;
+  }
+
+  // eslint-disable-next-line camelcase
+  const records = templatePrivileges.map(({ privilege_id }) => ({
+    user_id: targetUserId,
+    // eslint-disable-next-line camelcase
+    privilege_id
+  }));
+
+  const created = await userprivileges.bulkCreate(records, { ignoreDuplicates: true });
+
+  return created.length;
+};
+
 const deleteUserPrivilege = async(userId, privilegeId) => {
   const userPrivilege = await userprivileges.destroy({
     where: {
@@ -68,5 +98,6 @@ module.exports = {
   getOneUserPrivilege,
   getAllUserPrivileges,
   addNewUserPrivilege,
-  deleteUserPrivilege
+  deleteUserPrivilege,
+  copyPrivilegesFromTemplate
 };
