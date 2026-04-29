@@ -1546,6 +1546,102 @@ const swaggerDefinition = {
           updated_at: { type: 'string', format: 'date-time' },
           deleted_at: { type: 'string', format: 'date-time', nullable: true }
         }
+      },
+      dailyMovementReport: {
+        type: 'object',
+        description: 'Reporte de movimiento diario de una sucursal',
+        properties: {
+          credits: {
+            type: 'array',
+            description: 'Una fila por ítem de venta a crédito del día (no canceladas)',
+            items: {
+              type: 'object',
+              properties: {
+                saleId: { type: 'integer' },
+                productName: { type: 'string' },
+                customerName: { type: 'string' },
+                customerAddress: { type: 'string', nullable: true },
+                unitPrice: { type: 'number', format: 'decimal' },
+                anticipo: { type: 'number', format: 'decimal' },
+                duePayment: { type: 'number', format: 'decimal' },
+                paymentPeriod: { type: 'string', nullable: true, enum: ['Semanal', 'Quincenal', 'Mensual'] }
+              }
+            }
+          },
+          cash: {
+            type: 'array',
+            description: 'Una fila por ítem de venta de contado del día (no canceladas)',
+            items: {
+              type: 'object',
+              properties: {
+                saleId: { type: 'integer' },
+                qty: { type: 'number', format: 'decimal' },
+                productName: { type: 'string' },
+                customerName: { type: 'string' },
+                unitPrice: { type: 'number', format: 'decimal' },
+                subtotal: { type: 'number', format: 'decimal' }
+              }
+            }
+          },
+          expenses: {
+            type: 'array',
+            description: 'Gastos registrados en el día',
+            items: {
+              type: 'object',
+              properties: {
+                id: { type: 'integer' },
+                amount: { type: 'number', format: 'decimal' },
+                concept: { type: 'string' },
+                notes: { type: 'string', nullable: true }
+              }
+            }
+          },
+          payments: {
+            type: 'array',
+            description: 'Abonos recibidos en el día',
+            items: {
+              type: 'object',
+              properties: {
+                saleId: { type: 'integer' },
+                customerName: { type: 'string' },
+                paymentDate: { type: 'string', format: 'date' },
+                amount: { type: 'number', format: 'decimal' },
+                remainingDue: { type: 'number', format: 'decimal' }
+              }
+            }
+          },
+          transfersSent: {
+            type: 'array',
+            description: 'Transferencias enviadas desde esta sucursal (no canceladas)',
+            items: {
+              type: 'object',
+              properties: {
+                transferId: { type: 'integer' },
+                toBranchName: { type: 'string' }
+              }
+            }
+          },
+          transfersReceived: {
+            type: 'array',
+            description: 'Transferencias recibidas en esta sucursal (status Recibido)',
+            items: {
+              type: 'object',
+              properties: {
+                transferId: { type: 'integer' },
+                fromBranchName: { type: 'string' }
+              }
+            }
+          },
+          totals: {
+            type: 'object',
+            properties: {
+              anticipos: { type: 'number', format: 'decimal', description: 'Suma de anticipo_amount de ventas a crédito' },
+              cashSales: { type: 'number', format: 'decimal', description: 'Suma de subtotales de ítems de contado' },
+              expenses: { type: 'number', format: 'decimal', description: 'Suma de gastos' },
+              payments: { type: 'number', format: 'decimal', description: 'Suma de abonos recibidos' }
+            }
+          }
+        }
       }
     }
   }
