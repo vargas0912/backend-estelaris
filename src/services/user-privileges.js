@@ -67,9 +67,7 @@ const copyPrivilegesFromTemplate = async(templateUserId, targetUserId) => {
   const records = templatePrivileges.map(({ privilege_id }) => ({
     user_id: targetUserId,
     // eslint-disable-next-line camelcase
-    privilege_id,
-    created_at: new Date(),
-    updated_at: new Date()
+    privilege_id
   }));
 
   const created = await userprivileges.bulkCreate(records, { ignoreDuplicates: true });

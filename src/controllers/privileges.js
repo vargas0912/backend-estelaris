@@ -162,14 +162,17 @@ const copyPrivilegesFromTemplateRecord = async(req, res) => {
     // eslint-disable-next-line camelcase
     const { user_id, template_user_id } = body;
 
-    const targetUser = await users.findByPk(user_id);
+    // eslint-disable-next-line camelcase
+    const [targetUser, templateUser] = await Promise.all([
+      users.findByPk(user_id),
+      users.findByPk(template_user_id)
+    ]);
+
     if (!targetUser) {
       handleHttpError(res, 'USER_NOT_EXISTS', 404);
       return;
     }
 
-    // eslint-disable-next-line camelcase
-    const templateUser = await users.findByPk(template_user_id);
     if (!templateUser) {
       handleHttpError(res, 'TEMPLATE_USER_NOT_EXISTS', 404);
       return;
