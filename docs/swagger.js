@@ -1553,6 +1553,70 @@ const swaggerDefinition = {
           deleted_at: { type: 'string', format: 'date-time', nullable: true }
         }
       },
+      accountsReceivableReport: {
+        type: 'object',
+        description: 'Reporte de cartera de créditos activos de una sucursal',
+        properties: {
+          credits: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                saleId: { type: 'integer' },
+                customerId: { type: 'integer' },
+                customerName: { type: 'string' },
+                salesDate: { type: 'string', format: 'date' },
+                dueDate: { type: 'string', format: 'date', nullable: true },
+                salesTotal: { type: 'number', format: 'decimal' },
+                anticipoAmount: { type: 'number', format: 'decimal' },
+                duePayment: { type: 'number', format: 'decimal' },
+                paymentPeriod: { type: 'string', enum: ['Semanal', 'Quincenal', 'Mensual'], nullable: true },
+                totalDaysTerm: { type: 'integer', nullable: true },
+                creditStatus: { type: 'string', enum: ['vencido', 'atrasado', 'abonan_hoy', 'al_corriente'] },
+                daysOverdue: { type: 'integer', description: '0 si no hay cuotas vencidas' },
+                overdueAmount: { type: 'number', format: 'decimal', description: '0 si no aplica' },
+                installments: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      installmentNumber: { type: 'integer' },
+                      dueDate: { type: 'string', format: 'date' },
+                      amount: { type: 'number', format: 'decimal' },
+                      paidAmount: { type: 'number', format: 'decimal' },
+                      status: { type: 'string', enum: ['Pendiente', 'Pagado'] }
+                    }
+                  }
+                },
+                paymentsReceived: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      paymentDate: { type: 'string', format: 'date' },
+                      amount: { type: 'number', format: 'decimal' },
+                      method: { type: 'string', enum: ['Efectivo', 'Transferencia', 'Vale despensa', 'Tarjeta'] }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          summary: {
+            type: 'object',
+            properties: {
+              totalVencido: { type: 'number', format: 'decimal' },
+              totalAtrasado: { type: 'number', format: 'decimal' },
+              totalAlCorriente: { type: 'number', format: 'decimal' },
+              totalAbonanHoy: { type: 'number', format: 'decimal' },
+              countVencido: { type: 'integer' },
+              countAtrasado: { type: 'integer' },
+              countAlCorriente: { type: 'integer' },
+              countAbonanHoy: { type: 'integer' }
+            }
+          }
+        }
+      },
       dailyMovementReport: {
         type: 'object',
         description: 'Reporte de movimiento diario de una sucursal',
