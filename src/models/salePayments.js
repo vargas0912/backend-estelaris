@@ -42,6 +42,11 @@ module.exports = (sequelize, DataTypes) => {
     notes: {
       type: DataTypes.TEXT,
       allowNull: true
+    },
+    payment_type: {
+      type: DataTypes.ENUM('Anticipo', 'Abono'),
+      allowNull: false,
+      defaultValue: 'Abono'
     }
   }, {
     sequelize,

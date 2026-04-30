@@ -1135,7 +1135,13 @@ const swaggerDefinition = {
           payment_method: { type: 'string', enum: ['Efectivo', 'Transferencia', 'Vale despensa', 'Tarjeta'] },
           reference_number: { type: 'string', maxLength: 100, nullable: true },
           user_id: { type: 'integer' },
+          branch_id: { type: 'integer' },
           notes: { type: 'string', nullable: true },
+          payment_type: {
+            type: 'string',
+            enum: ['Anticipo', 'Abono'],
+            description: 'Asignado automáticamente por el backend. Anticipo: pago inicial al crear la venta. Abono: pago posterior al saldo pendiente.'
+          },
           created_at: { type: 'string', format: 'date-time' },
           updated_at: { type: 'string', format: 'date-time' }
         }

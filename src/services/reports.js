@@ -78,6 +78,7 @@ const getDailyMovement = async (branchId, date) => {
       INNER JOIN customers c ON c.id = s.customer_id AND c.deleted_at IS NULL
       WHERE sp.branch_id    = :branch_id
         AND sp.payment_date = :date
+        AND sp.payment_type = 'Abono'
         AND sp.deleted_at  IS NULL
       ORDER BY sp.id
     `, { replacements, type: sequelize.QueryTypes.SELECT }),

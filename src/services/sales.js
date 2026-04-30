@@ -426,6 +426,7 @@ const createSale = async (body, userId) => {
         payment_date: salesDate,
         payment_method: antizipoPaymentMethod,
         notes: 'Anticipo',
+        payment_type: 'Anticipo',
         user_id: userId,
         branch_id: branchId
       }, { transaction });

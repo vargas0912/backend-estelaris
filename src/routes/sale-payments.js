@@ -202,7 +202,7 @@ router.get('/:id', [
  *                  type: string
  *      responses:
  *        '200':
- *          description: Cobro registrado correctamente
+ *          description: Cobro registrado. El campo `payment_type` es asignado automáticamente por el backend como `Abono`.
  *          content:
  *            application/json:
  *              schema:
