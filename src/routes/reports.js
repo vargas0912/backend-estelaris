@@ -6,7 +6,7 @@ const authMiddleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 const { readLimiter } = require('../middlewares/rateLimiters');
 const { getDailyMovementReport, getAccountsReceivableReport } = require('../controllers/reports');
-const { SALE } = require('../constants/modules');
+const { REPORTS } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
 
 /**
@@ -58,7 +58,7 @@ router.get('/daily-movement', [
   readLimiter,
   authMiddleware,
   validateDailyMovement,
-  checkRol([ROLE.USER, ROLE.ADMIN], SALE.VIEW_ALL)
+  checkRol([ROLE.USER, ROLE.ADMIN], REPORTS.VIEW_DAILY_MOVEMENT)
 ], getDailyMovementReport);
 
 /**
@@ -107,7 +107,7 @@ router.get('/accounts-receivable', [
   readLimiter,
   authMiddleware,
   validateAccountsReceivable,
-  checkRol([ROLE.USER, ROLE.ADMIN], SALE.VIEW_ALL)
+  checkRol([ROLE.USER, ROLE.ADMIN], REPORTS.VIEW_ACCOUNTS_RECEIVABLE)
 ], getAccountsReceivableReport);
 
 module.exports = router;
