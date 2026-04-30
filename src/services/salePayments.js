@@ -57,7 +57,7 @@ const getPayment = async (id) => {
   });
 };
 
-const applyPaymentToInstallments = async (saleId, amount, transaction) => {
+const applyPaymentToInstallments = async (saleId, amount, paymentDate, transaction) => {
   const pendingInstallments = await saleInstallments.findAll({
     where: { sale_id: saleId, status: 'Pendiente' },
     order: [['installment_number', 'ASC']],
@@ -66,7 +66,6 @@ const applyPaymentToInstallments = async (saleId, amount, transaction) => {
   });
 
   let remaining = amount;
-  const today = new Date().toISOString().split('T')[0];
 
   for (const installment of pendingInstallments) {
     if (remaining <= 0) break;
@@ -78,7 +77,7 @@ const applyPaymentToInstallments = async (saleId, amount, transaction) => {
 
     if (installment.paid_amount >= parseFloat(installment.amount)) {
       installment.status = 'Pagado';
-      installment.paid_date = today;
+      installment.paid_date = paymentDate;
     }
 
     await installment.save({ transaction });
@@ -171,7 +170,7 @@ const createPayment = async (body, userId, branchId) => {
 
     // Auto-apply to installments
     if (sale.sales_type === 'Credito') {
-      await applyPaymentToInstallments(saleId, amount, transaction);
+      await applyPaymentToInstallments(saleId, amount, paymentDate, transaction);
     }
 
     await transaction.commit();
