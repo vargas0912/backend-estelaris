@@ -14,6 +14,7 @@ const getDailyMovement = async (branchId, date) => {
             THEN CONCAT(', ', ca.neighborhood) ELSE '' END
         ))                  AS customerAddress,
         sd.unit_price       AS unitPrice,
+        s.sales_total       AS saleTotal,
         s.anticipo_amount   AS anticipo,
         s.due_payment       AS duePayment,
         s.payment_periods   AS paymentPeriod
@@ -37,7 +38,8 @@ const getDailyMovement = async (branchId, date) => {
         p.name        AS productName,
         c.name        AS customerName,
         sd.unit_price AS unitPrice,
-        sd.subtotal
+        sd.subtotal,
+        s.sales_total AS saleTotal
       FROM sales s
       INNER JOIN sale_details sd ON sd.sale_id = s.id
       INNER JOIN products p      ON p.id = sd.product_id AND p.deleted_at IS NULL
