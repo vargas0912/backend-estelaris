@@ -4,7 +4,7 @@ const accountingEngine = require('./accountingEngine.service');
 
 const paymentAttributes = [
   'id', 'sale_id', 'payment_amount', 'payment_date', 'payment_method',
-  'reference_number', 'user_id', 'branch_id', 'notes', 'created_at', 'updated_at'
+  'reference_number', 'user_id', 'branch_id', 'notes', 'payment_type', 'created_at', 'updated_at'
 ];
 
 const userAttributes = ['id', 'name', 'email'];
@@ -160,7 +160,8 @@ const createPayment = async (body, userId, branchId) => {
       reference_number: referenceNumber || null,
       user_id: userId,
       branch_id: branchId,
-      notes: notes || null
+      notes: notes || null,
+      payment_type: 'Abono'
     }, { transaction });
 
     await saleForUpdate.update(
