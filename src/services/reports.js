@@ -1,4 +1,5 @@
 const { sequelize } = require('../models');
+const { getSystemSetting } = require('./systemSettings');
 
 const getDailyMovement = async (branchId, date) => {
   const replacements = { branch_id: branchId, date };
@@ -140,4 +141,159 @@ const getDailyMovement = async (branchId, date) => {
   };
 };
 
-module.exports = { getDailyMovement };
+const getAccountsReceivable = async (branchId) => {
+  const setting = await getSystemSetting('timezone');
+  const tz = setting?.value || 'America/Mexico_City';
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: tz });
+
+  const replacements = { branch_id: branchId };
+
+  const [sales, installments, paymentsRaw] = await Promise.all([
+    sequelize.query(`
+      SELECT
+        s.id              AS saleId,
+        s.customer_id     AS customerId,
+        c.name            AS customerName,
+        s.sales_date      AS salesDate,
+        s.due_date        AS dueDate,
+        s.sales_total     AS salesTotal,
+        s.anticipo_amount AS anticipoAmount,
+        s.due_payment     AS duePayment,
+        s.payment_periods AS paymentPeriod,
+        s.total_days_term AS totalDaysTerm
+      FROM sales s
+      INNER JOIN customers c ON c.id = s.customer_id AND c.deleted_at IS NULL
+      WHERE s.branch_id  = :branch_id
+        AND s.sales_type = 'Credito'
+        AND s.status     = 'Pendiente'
+        AND s.deleted_at IS NULL
+      ORDER BY s.sales_date DESC, s.id DESC
+    `, { replacements, type: sequelize.QueryTypes.SELECT }),
+
+    sequelize.query(`
+      SELECT
+        si.sale_id            AS saleId,
+        si.installment_number AS installmentNumber,
+        si.due_date           AS dueDate,
+        si.amount,
+        si.paid_amount        AS paidAmount,
+        si.status
+      FROM sale_installments si
+      WHERE si.sale_id IN (
+        SELECT id FROM sales
+        WHERE branch_id = :branch_id
+          AND sales_type = 'Credito'
+          AND status     = 'Pendiente'
+          AND deleted_at IS NULL
+      )
+      ORDER BY si.sale_id, si.installment_number
+    `, { replacements, type: sequelize.QueryTypes.SELECT }),
+
+    sequelize.query(`
+      SELECT
+        sp.sale_id        AS saleId,
+        sp.payment_date   AS paymentDate,
+        sp.payment_amount AS amount,
+        sp.payment_method AS method
+      FROM sale_payments sp
+      WHERE sp.sale_id IN (
+        SELECT id FROM sales
+        WHERE branch_id = :branch_id
+          AND sales_type = 'Credito'
+          AND status     = 'Pendiente'
+          AND deleted_at IS NULL
+      )
+        AND sp.payment_type = 'Abono'
+        AND sp.deleted_at  IS NULL
+      ORDER BY sp.sale_id, sp.payment_date, sp.id
+    `, { replacements, type: sequelize.QueryTypes.SELECT })
+  ]);
+
+  // Group installments and payments by saleId
+  const installmentMap = new Map();
+  for (const row of installments) {
+    if (!installmentMap.has(row.saleId)) installmentMap.set(row.saleId, []);
+    installmentMap.get(row.saleId).push(row);
+  }
+
+  const paymentMap = new Map();
+  for (const row of paymentsRaw) {
+    if (!paymentMap.has(row.saleId)) paymentMap.set(row.saleId, []);
+    paymentMap.get(row.saleId).push(row);
+  }
+
+  const summary = {
+    totalVencido: 0,
+    totalAtrasado: 0,
+    totalAlCorriente: 0,
+    totalAbonanHoy: 0,
+    countVencido: 0,
+    countAtrasado: 0,
+    countAlCorriente: 0,
+    countAbonanHoy: 0
+  };
+
+  const credits = sales.map((sale) => {
+    const saleInstallments = installmentMap.get(sale.saleId) || [];
+    const paymentsReceived = paymentMap.get(sale.saleId) || [];
+    const notPaid = saleInstallments.filter(i => i.status !== 'Pagado');
+
+    let creditStatus;
+    if (sale.dueDate && sale.dueDate <= today) {
+      creditStatus = 'vencido';
+    } else if (notPaid.some(i => i.dueDate < today)) {
+      creditStatus = 'atrasado';
+    } else if (notPaid.some(i => i.dueDate === today)) {
+      creditStatus = 'abonan_hoy';
+    } else {
+      creditStatus = 'al_corriente';
+    }
+
+    const overdueInstallments = notPaid.filter(i => i.dueDate < today);
+    const oldestOverdue = overdueInstallments[0]?.dueDate;
+    const daysOverdue = oldestOverdue
+      ? Math.floor((new Date(today) - new Date(oldestOverdue)) / 86400000)
+      : 0;
+    const overdueAmount = Math.round(
+      overdueInstallments.reduce((sum, i) => sum + (parseFloat(i.amount) - parseFloat(i.paidAmount)), 0) * 100
+    ) / 100;
+
+    const due = parseFloat(sale.duePayment) || 0;
+    const statusKeyMap = {
+      vencido: 'Vencido',
+      atrasado: 'Atrasado',
+      al_corriente: 'AlCorriente',
+      abonan_hoy: 'AbonanHoy'
+    };
+    const k = statusKeyMap[creditStatus];
+    summary[`total${k}`] += due;
+    summary[`count${k}`] += 1;
+
+    return {
+      saleId: sale.saleId,
+      customerId: sale.customerId,
+      customerName: sale.customerName,
+      salesDate: sale.salesDate,
+      dueDate: sale.dueDate,
+      salesTotal: sale.salesTotal,
+      anticipoAmount: sale.anticipoAmount,
+      duePayment: sale.duePayment,
+      paymentPeriod: sale.paymentPeriod,
+      totalDaysTerm: sale.totalDaysTerm,
+      creditStatus,
+      daysOverdue,
+      overdueAmount,
+      installments: saleInstallments,
+      paymentsReceived
+    };
+  });
+
+  // Round summary totals
+  for (const key of ['totalVencido', 'totalAtrasado', 'totalAlCorriente', 'totalAbonanHoy']) {
+    summary[key] = Math.round(summary[key] * 100) / 100;
+  }
+
+  return { credits, summary };
+};
+
+module.exports = { getDailyMovement, getAccountsReceivable };

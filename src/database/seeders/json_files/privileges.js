@@ -3,7 +3,8 @@ const {
   BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD,
   CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR, PRODUCT: PRD, POSITION: POS, PRICE_LIST: PL,
   PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP, PURCH_PAYMENT: PP_PAY, TRANSFER: TRANSF,
-  SALE_PAYMENT: SL_PAY, DRIVER: DRV, LOYALTY: LY, ACCOUNTING_REPORT: AC_RPT, ACCOUNTING_ACCOUNT: AC_AC
+  SALE_PAYMENT: SL_PAY, DRIVER: DRV, LOYALTY: LY, ACCOUNTING_REPORT: AC_RPT, ACCOUNTING_ACCOUNT: AC_AC,
+  REPORTS: REPORT
 } = require('../../../constants/modules');
 
 const data = [
@@ -190,7 +191,12 @@ const data = [
   { name: LY.NAME_VIEW_POINTS, codeName: LY.VIEW_POINTS, module: LY.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: LY.NAME_CREATE_CONFIG, codeName: LY.CREATE_CONFIG, module: LY.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: LY.NAME_EDIT_CONFIG, codeName: LY.EDIT_CONFIG, module: LY.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: LY.NAME_ADD_USER_PRIVILEGE, codeName: LY.ADJUST_POINTS, module: LY.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: LY.NAME_ADD_USER_PRIVILEGE, codeName: LY.ADJUST_POINTS, module: LY.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // reports
+  { name: REPORT.NAME_DAILY_MOVEMENT, codeName: REPORT.VIEW_DAILY_MOVEMENT, module: REPORT.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: REPORT.NAME_ACCOUNTS_RECEIVABLE, codeName: REPORT.VIEW_ACCOUNTS_RECEIVABLE, module: REPORT.MODULE_NAME, created_at: fecha, updated_at: fecha }
+
 ];
 
 module.exports = { data };

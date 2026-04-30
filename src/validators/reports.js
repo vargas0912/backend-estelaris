@@ -12,4 +12,12 @@ const validateDailyMovement = [
   (req, res, next) => validateResults(req, res, next)
 ];
 
-module.exports = { validateDailyMovement };
+const validateAccountsReceivable = [
+  query('branch_id')
+    .notEmpty().withMessage('branch_id es requerido')
+    .isInt({ min: 1 }).withMessage('branch_id debe ser un número entero positivo')
+    .toInt(),
+  (req, res, next) => validateResults(req, res, next)
+];
+
+module.exports = { validateDailyMovement, validateAccountsReceivable };
