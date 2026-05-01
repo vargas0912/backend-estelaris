@@ -454,7 +454,7 @@ const REPORTS = Object.freeze({
   MODULE_NAME: 'reports',
   VIEW_DAILY_MOVEMENT: 'view_daily_movement',
   NAME_DAILY_MOVEMENT: 'Ver reporte diario de movimientos',
-  VIEW_ACCOUNTS_RECEIVABLE: 'viewaccounts_receivable',
+  VIEW_ACCOUNTS_RECEIVABLE: 'view_accounts_receivable',
   NAME_ACCOUNTS_RECEIVABLE: 'Ver reporte de cuentas por cobrar'
 });
 
