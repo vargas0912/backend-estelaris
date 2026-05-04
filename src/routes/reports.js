@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateDailyMovement, validateAccountsReceivable } = require('../validators/reports');
+const { validateDailyMovement, validateAccountsReceivable, validateInventoryReport } = require('../validators/reports');
 const authMiddleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 const { readLimiter } = require('../middlewares/rateLimiters');
-const { getDailyMovementReport, getAccountsReceivableReport } = require('../controllers/reports');
+const { getDailyMovementReport, getAccountsReceivableReport, getInventoryReportController } = require('../controllers/reports');
 const { REPORTS } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
 
@@ -109,5 +109,76 @@ router.get('/accounts-receivable', [
   validateAccountsReceivable,
   checkRol([ROLE.USER, ROLE.ADMIN], REPORTS.VIEW_ACCOUNTS_RECEIVABLE)
 ], getAccountsReceivableReport);
+
+/**
+ * @openapi
+ * /reports/inventory:
+ *   get:
+ *     tags:
+ *       - reports
+ *     summary: Reporte de inventario por sucursal y periodo
+ *     description: |
+ *       Devuelve un listado de productos activos de la sucursal con los movimientos
+ *       de inventario ocurridos entre start_date y end_date (inclusive).
+ *       Para cada producto calcula:
+ *       - **inicio**: stock al inicio de start_date (stock actual menos movimientos del periodo en adelante).
+ *       - **compro**: entradas por compras (reference_type = 'purchase').
+ *       - **recibio**: entradas por transferencias recibidas (reference_type = 'transfer', qty > 0).
+ *       - **cancelo**: reingresos por cancelación de venta (reference_type = 'reversal').
+ *       - **envio**: salidas por transferencias despachadas (reference_type = 'transfer', qty < 0).
+ *       - **contado**: unidades vendidas en ventas de contado no canceladas.
+ *       - **credito**: unidades vendidas en ventas a crédito no canceladas.
+ *       - **existencia**: inicio + compro + recibio + cancelo - envio - contado - credito.
+ *       - **importe**: unitPrice × existencia.
+ *       Requiere el privilegio `view_inventory`.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: branch_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID de la sucursal a consultar
+ *       - in: query
+ *         name: start_date
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: "2026-01-01"
+ *         description: Fecha inicial del periodo en formato YYYY-MM-DD
+ *       - in: query
+ *         name: end_date
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: "2026-04-30"
+ *         description: Fecha final del periodo en formato YYYY-MM-DD (debe ser >= start_date)
+ *     responses:
+ *       '200':
+ *         description: Reporte de inventario generado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 report:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/inventoryReportItem'
+ *       '400':
+ *         description: Parámetros inválidos (branch_id, start_date o end_date faltante/incorrecto)
+ *       '403':
+ *         description: Sin privilegio view_inventory
+ */
+router.get('/inventory', [
+  readLimiter,
+  authMiddleware,
+  validateInventoryReport,
+  checkRol([ROLE.USER, ROLE.ADMIN], REPORTS.VIEW_INVENTORY)
+], getInventoryReportController);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
-const { getDailyMovement, getAccountsReceivable } = require('../services/reports');
+const { getDailyMovement, getAccountsReceivable, getInventoryReport } = require('../services/reports');
 
 const getDailyMovementReport = async (req, res) => {
   try {
@@ -22,4 +22,14 @@ const getAccountsReceivableReport = async (req, res) => {
   }
 };
 
-module.exports = { getDailyMovementReport, getAccountsReceivableReport };
+const getInventoryReportController = async (req, res) => {
+  try {
+    const { branch_id: branchId, start_date: startDate, end_date: endDate } = matchedData(req);
+    const report = await getInventoryReport(branchId, startDate, endDate);
+    res.send({ report });
+  } catch (error) {
+    handleHttpError(res, `ERROR_GET_INVENTORY_REPORT -> ${error}`);
+  }
+};
+
+module.exports = { getDailyMovementReport, getAccountsReceivableReport, getInventoryReportController };

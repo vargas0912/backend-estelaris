@@ -296,4 +296,143 @@ const getAccountsReceivable = async (branchId) => {
   return { credits, summary };
 };
 
-module.exports = { getDailyMovement, getAccountsReceivable };
+const getInventoryReport = async (branchId, startDate, endDate) => {
+  const setting = await getSystemSetting('timezone');
+  const tz = setting?.value || 'America/Mexico_City';
+
+  // Compute UTC boundaries for local midnight using Intl (avoids MySQL timezone tables)
+  const localDayStartUTC = (dateStr) => {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    // Use noon UTC as reference to safely compute the offset (avoids DST edge cases at midnight)
+    const noonUTC = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+    const toMs = (date, timezone) => {
+      const p = new Intl.DateTimeFormat('en-CA', {
+        timeZone: timezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hourCycle: 'h23'
+      }).formatToParts(date).filter(({ type }) => type !== 'literal');
+      const o = Object.fromEntries(p.map(({ type, value }) => [type, Number(value)]));
+      return Date.UTC(o.year, o.month - 1, o.day, o.hour, o.minute, o.second);
+    };
+    const offsetMs = toMs(noonUTC, 'UTC') - toMs(noonUTC, tz);
+    return new Date(Date.UTC(y, m - 1, d, 0, 0, 0) + offsetMs).toISOString().slice(0, 19).replace('T', ' ');
+  };
+
+  const startUTC = localDayStartUTC(startDate);
+  // endUTC is exclusive: start of the day AFTER end_date in local time
+  const endDayAfter = new Date(`${endDate}T00:00:00Z`);
+  endDayAfter.setUTCDate(endDayAfter.getUTCDate() + 1);
+  const endUTC = localDayStartUTC(endDayAfter.toISOString().slice(0, 10));
+
+  const replacements = { branch_id: branchId, start_utc: startUTC, end_utc: endUTC };
+
+  const rows = await sequelize.query(`
+    SELECT
+      p.id         AS product_id,
+      p.name       AS product_name,
+      p.cost_price AS unit_price,
+
+      COALESCE((
+        SELECT SUM(sm0.qty_change)
+        FROM stock_movements sm0
+        WHERE sm0.product_id = p.id
+          AND sm0.branch_id  = :branch_id
+          AND sm0.created_at < :start_utc
+      ), 0) AS inicio,
+
+      COALESCE((
+        SELECT SUM(sm1.qty_change) FROM stock_movements sm1
+        WHERE sm1.product_id = p.id AND sm1.branch_id = :branch_id
+          AND sm1.reference_type = 'purchase'
+          AND sm1.created_at >= :start_utc AND sm1.created_at < :end_utc
+      ), 0) AS compro,
+
+      COALESCE((
+        SELECT SUM(sm2.qty_change) FROM stock_movements sm2
+        WHERE sm2.product_id = p.id AND sm2.branch_id = :branch_id
+          AND sm2.reference_type = 'transfer' AND sm2.qty_change > 0
+          AND sm2.created_at >= :start_utc AND sm2.created_at < :end_utc
+      ), 0) AS recibio,
+
+      COALESCE((
+        SELECT SUM(sm3.qty_change) FROM stock_movements sm3
+        WHERE sm3.product_id = p.id AND sm3.branch_id = :branch_id
+          AND sm3.reference_type = 'adjustment'
+          AND sm3.created_at >= :start_utc AND sm3.created_at < :end_utc
+      ), 0) AS cancelo,
+
+      COALESCE((
+        SELECT ABS(SUM(sm4.qty_change)) FROM stock_movements sm4
+        WHERE sm4.product_id = p.id AND sm4.branch_id = :branch_id
+          AND sm4.reference_type = 'transfer' AND sm4.qty_change < 0
+          AND sm4.created_at >= :start_utc AND sm4.created_at < :end_utc
+      ), 0) AS envio,
+
+      COALESCE((
+        SELECT ABS(SUM(sm5.qty_change)) FROM stock_movements sm5
+        INNER JOIN sales s1 ON s1.id = sm5.reference_id AND s1.deleted_at IS NULL
+        WHERE sm5.product_id = p.id AND sm5.branch_id = :branch_id
+          AND sm5.reference_type = 'sale'
+          AND s1.sales_type = 'Contado'           
+          AND sm5.created_at >= :start_utc AND sm5.created_at < :end_utc
+      ), 0) AS contado,
+
+      COALESCE((
+        SELECT ABS(SUM(sm6.qty_change)) FROM stock_movements sm6
+        INNER JOIN sales s2 ON s2.id = sm6.reference_id AND s2.deleted_at IS NULL
+        WHERE sm6.product_id = p.id AND sm6.branch_id = :branch_id
+          AND sm6.reference_type = 'sale'
+          AND s2.sales_type = 'Credito'           
+          AND sm6.created_at >= :start_utc AND sm6.created_at < :end_utc
+      ), 0) AS credito
+
+    FROM products p
+    WHERE p.deleted_at IS NULL
+      AND p.is_active = 1
+      AND EXISTS (
+        SELECT 1 FROM product_stocks ps
+        WHERE ps.product_id = p.id
+          AND ps.branch_id  = :branch_id
+          AND ps.quantity > 0
+          AND ps.deleted_at IS NULL
+      )
+    ORDER BY p.name
+  `, { replacements, type: sequelize.QueryTypes.SELECT });
+
+  const round = (n) => Math.round(parseFloat(n) * 1000) / 1000;
+
+  return rows.map((row) => {
+    const inicio = round(row.inicio);
+    const compro = round(row.compro);
+    const recibio = round(row.recibio);
+    const cancelo = round(row.cancelo);
+    const envio = round(row.envio);
+    const contado = round(row.contado);
+    const credito = round(row.credito);
+    const unitPrice = round(row.unit_price);
+    const existencia = Math.round((inicio + compro + recibio + cancelo - envio - contado - credito) * 1000) / 1000;
+    const importe = Math.round(unitPrice * existencia * 100) / 100;
+
+    return {
+      productId: row.product_id,
+      productName: row.product_name,
+      inicio,
+      compro,
+      recibio,
+      cancelo,
+      envio,
+      contado,
+      credito,
+      existencia,
+      unitPrice,
+      importe
+    };
+  });
+};
+
+module.exports = { getDailyMovement, getAccountsReceivable, getInventoryReport };

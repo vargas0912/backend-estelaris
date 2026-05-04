@@ -455,7 +455,9 @@ const REPORTS = Object.freeze({
   VIEW_DAILY_MOVEMENT: 'view_daily_movement',
   NAME_DAILY_MOVEMENT: 'Ver reporte diario de movimientos',
   VIEW_ACCOUNTS_RECEIVABLE: 'view_accounts_receivable',
-  NAME_ACCOUNTS_RECEIVABLE: 'Ver reporte de cuentas por cobrar'
+  NAME_ACCOUNTS_RECEIVABLE: 'Ver reporte de cuentas por cobrar',
+  VIEW_INVENTORY: 'view_inventory',
+  NAME_INVENTORY: 'Ver reporte de inventario'
 });
 
 module.exports = {
