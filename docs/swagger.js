@@ -1617,6 +1617,24 @@ const swaggerDefinition = {
           }
         }
       },
+      inventoryReportItem: {
+        type: 'object',
+        description: 'Fila del reporte de inventario por producto',
+        properties: {
+          productId: { type: 'string', maxLength: 20, description: 'Código SKU del producto' },
+          productName: { type: 'string', description: 'Nombre del producto' },
+          inicio: { type: 'number', format: 'decimal', description: 'Stock al inicio del periodo' },
+          compro: { type: 'number', format: 'decimal', description: 'Entradas por compras en el periodo' },
+          recibio: { type: 'number', format: 'decimal', description: 'Entradas por transferencias recibidas' },
+          cancelo: { type: 'number', format: 'decimal', description: 'Reingresos por cancelaciones de venta' },
+          envio: { type: 'number', format: 'decimal', description: 'Salidas por transferencias despachadas' },
+          contado: { type: 'number', format: 'decimal', description: 'Unidades vendidas en ventas de contado' },
+          credito: { type: 'number', format: 'decimal', description: 'Unidades vendidas en ventas a crédito' },
+          existencia: { type: 'number', format: 'decimal', description: 'inicio + compro + recibio + cancelo - envio - contado - credito' },
+          unitPrice: { type: 'number', format: 'decimal', description: 'Precio base unitario del producto' },
+          importe: { type: 'number', format: 'decimal', description: 'unitPrice × existencia' }
+        }
+      },
       dailyMovementReport: {
         type: 'object',
         description: 'Reporte de movimiento diario de una sucursal',

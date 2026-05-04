@@ -195,7 +195,8 @@ const data = [
 
   // reports
   { name: REPORT.NAME_DAILY_MOVEMENT, codeName: REPORT.VIEW_DAILY_MOVEMENT, module: REPORT.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: REPORT.NAME_ACCOUNTS_RECEIVABLE, codeName: REPORT.VIEW_ACCOUNTS_RECEIVABLE, module: REPORT.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: REPORT.NAME_ACCOUNTS_RECEIVABLE, codeName: REPORT.VIEW_ACCOUNTS_RECEIVABLE, module: REPORT.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: REPORT.NAME_INVENTORY, codeName: REPORT.VIEW_INVENTORY, module: REPORT.MODULE_NAME, created_at: fecha, updated_at: fecha }
 
 ];
 
