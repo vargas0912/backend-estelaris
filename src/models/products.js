@@ -26,7 +26,8 @@ module.exports = (sequelize, DataTypes) => {
     id: {
       type: DataTypes.STRING(20),
       primaryKey: true,
-      allowNull: false
+      allowNull: false,
+      collate: 'utf8mb4_bin'
     },
     barcode: {
       type: DataTypes.STRING(50),
