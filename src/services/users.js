@@ -1,6 +1,6 @@
 const { users } = require('../models/index');
 const { Op } = require('sequelize');
-const { encrypt } = require('../utils/handlePassword');
+const { encrypt, compare } = require('../utils/handlePassword');
 const { tokenSign } = require('../utils/handleJwt');
 
 const getUser = async(id) => {
@@ -75,10 +75,25 @@ const findByEmail = async(req) => {
   return user;
 };
 
+const changePassword = async(userId, currentPassword, newPassword) => {
+  const user = await users.findByPk(userId);
+
+  if (!user) return null;
+
+  const isMatch = await compare(currentPassword, user.password);
+  if (!isMatch) return false;
+
+  const hashed = await encrypt(newPassword);
+  await users.update({ password: hashed }, { where: { id: userId } });
+
+  return true;
+};
+
 module.exports = {
   getUsers,
   getUser,
   registerUser,
   registerSuperAdmin,
-  findByEmail
+  findByEmail,
+  changePassword
 };

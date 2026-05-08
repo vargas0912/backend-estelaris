@@ -5,9 +5,9 @@ const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
-const { validateGetUser, validateGetUsers, validateUpdateUser } = require('../validators/auth');
+const { validateGetUser, validateGetUsers, validateUpdateUser, validateChangePassword } = require('../validators/auth');
 
-const { getRecords, updateRecord, deleteRecord, getRecord } = require('../controllers/user');
+const { getRecords, updateRecord, deleteRecord, getRecord, changePasswordRecord } = require('../controllers/user');
 
 const { ROLE } = require('../constants/roles');
 const { USERS } = require('../constants/privileges');
@@ -66,6 +66,44 @@ router.get('/', [
   validateGetUsers,
   checkRol([ROLE.ADMIN, ROLE.SUPERADMIN], USERS.VIEW_ALL)
 ], getRecords);
+
+/**
+ * @openapi
+ * /users/change-password:
+ *    put:
+ *      tags:
+ *        - users
+ *      summary: Cambiar contraseña propia
+ *      description: Permite a cualquier usuario autenticado cambiar su propia contraseña. Requiere la contraseña actual para confirmar identidad.
+ *      security:
+ *        - bearerAuth: []
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/changePassword'
+ *      responses:
+ *        '200':
+ *          description: Contraseña actualizada exitosamente
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: PASSWORD_CHANGED_SUCCESSFULLY
+ *        '401':
+ *          description: Contraseña actual incorrecta
+ *        '422':
+ *          description: Error de validación
+ */
+router.put('/change-password', [
+  writeLimiter,
+  authMidleware,
+  validateChangePassword
+], changePasswordRecord);
 
 /**
  * Get detail from user

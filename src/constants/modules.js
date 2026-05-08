@@ -57,7 +57,9 @@ const USERS = Object.freeze({
   UPDATE: 'update_user',
   NAME_UPDATE: 'Modificar usuarios',
   DELETE: 'delete_user',
-  NAME_DELETE: 'Eliminar usuarios'
+  NAME_DELETE: 'Eliminar usuarios',
+  CHANGE_PASSWORD: 'change_password',
+  NAME_CHANGE_PASSWORD: 'Cambiar contraseña propia'
 });
 
 const MUNICIPALITIES = Object.freeze({

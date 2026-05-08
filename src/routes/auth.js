@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { registerAdminCtrl, registerCtrl, loginCtrl } = require('../controllers/auth');
+const { registerAdminCtrl, registerCtrl, loginCtrl, refreshCtrl } = require('../controllers/auth');
 const { validateLogin, validateRegister } = require('../validators/auth');
 
 const authMidleware = require('../middlewares/session');
@@ -103,5 +103,27 @@ registerCtrl
  *        description: Error al iniciar sesión '403'
  */
 router.post('/login', validateLogin, loginCtrl);
+
+/**
+ * @openapi
+ * /auth/refresh:
+ *    post:
+ *      tags:
+ *        - auth
+ *      summary: Renovar token de sesión
+ *      description: Emite un nuevo token JWT con ventana de 2 horas a partir de ahora. Requiere un token válido (no expirado). El frontend debe llamar este endpoint antes de que el token expire para mantener la sesión activa.
+ *      security:
+ *        - bearerAuth: []
+ *      responses:
+ *        '200':
+ *          description: Token renovado exitosamente
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/tokenRefresh'
+ *        '401':
+ *          description: Token inválido o expirado — debe iniciar sesión nuevamente
+ */
+router.post('/refresh', [authMidleware], refreshCtrl);
 
 module.exports = router;

@@ -51,6 +51,7 @@ const data = [
   { name: USR.NAME_DELETE, codeName: USR.DELETE, module: USR.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: USR.NAME_ADD, codeName: USR.ADD, module: USR.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: USR.NAME_CREATE_SUPERADMIN, codeName: USR.CREATE_SUPERADMIN, module: USR.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: USR.NAME_CHANGE_PASSWORD, codeName: USR.CHANGE_PASSWORD, module: USR.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Puestos de trabajo
   { name: POS.NAME_ALL, codeName: POS.VIEW_ALL, module: POS.MODULE_NAME, created_at: fecha, updated_at: fecha },

@@ -2,8 +2,8 @@ const { matchedData } = require('express-validator');
 const { users } = require('../models/index');
 const { handleHttpError } = require('../utils/handleErorr');
 const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
-const { getUsers, getUser } = require('../services/users');
-const { ERR_SECURITY } = require('../constants/errors');
+const { getUsers, getUser, changePassword } = require('../services/users');
+const { ERR_SECURITY, USER: USER_ERRORS } = require('../constants/errors');
 const { pick, USER_UPDATABLE_FIELDS, USER_ADMIN_UPDATABLE_FIELDS } = require('../utils/fieldWhitelist');
 
 /**
@@ -160,4 +160,27 @@ const deleteRecord = async(req, res) => {
   }
 };
 
-module.exports = { getRecord, getRecords, updateRecord, deleteRecord };
+const changePasswordRecord = async(req, res) => {
+  try {
+    const body = matchedData(req);
+    const userId = req.user.id;
+
+    const result = await changePassword(userId, body.current_password, body.new_password);
+
+    if (result === null) {
+      handleHttpError(res, 'USER_NOT_FOUND', 404);
+      return;
+    }
+
+    if (result === false) {
+      handleHttpError(res, USER_ERRORS.CURRENT_PASSWORD_INVALID, 401);
+      return;
+    }
+
+    res.send({ message: 'PASSWORD_CHANGED_SUCCESSFULLY' });
+  } catch (error) {
+    handleHttpError(res, `ERROR_CHANGE_PASSWORD -> ${error}`, 400);
+  }
+};
+
+module.exports = { getRecord, getRecords, updateRecord, deleteRecord, changePasswordRecord };

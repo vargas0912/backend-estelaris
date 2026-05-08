@@ -85,8 +85,10 @@ const loginCtrl = async(req, res) => {
       });
     }
 
+    const token = await tokenSign(user);
     const sesion = {
-      token: await tokenSign(user),
+      token,
+      expires_at: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
       user,
       branches: branchesList
     };
@@ -97,4 +99,18 @@ const loginCtrl = async(req, res) => {
     handleHttpError(res, LOGIN.ERR_LOGIN, 400);
   }
 };
-module.exports = { registerAdminCtrl, registerCtrl, loginCtrl };
+const refreshCtrl = async(req, res) => {
+  try {
+    const user = req.user;
+    const token = await tokenSign(user);
+
+    res.send({
+      token,
+      expires_at: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
+    });
+  } catch (error) {
+    handleHttpError(res, 'ERROR_REFRESH_TOKEN', 400);
+  }
+};
+
+module.exports = { registerAdminCtrl, registerCtrl, loginCtrl, refreshCtrl };
