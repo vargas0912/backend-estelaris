@@ -65,6 +65,20 @@ const swaggerDefinition = {
           }
         }
       },
+      tokenRefresh: {
+        type: 'object',
+        properties: {
+          token: {
+            type: 'string',
+            description: 'Nuevo token JWT válido por 2 horas'
+          },
+          expires_at: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Fecha y hora de expiración del nuevo token (ISO 8601)'
+          }
+        }
+      },
       changePassword: {
         type: 'object',
         required: ['current_password', 'new_password', 'confirm_password'],
