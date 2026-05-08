@@ -65,6 +65,29 @@ const swaggerDefinition = {
           }
         }
       },
+      changePassword: {
+        type: 'object',
+        required: ['current_password', 'new_password', 'confirm_password'],
+        properties: {
+          current_password: {
+            type: 'string',
+            format: 'password',
+            description: 'Contraseña actual del usuario'
+          },
+          new_password: {
+            type: 'string',
+            format: 'password',
+            minLength: 8,
+            maxLength: 50,
+            description: 'Nueva contraseña (mín. 8 caracteres, debe incluir mayúscula, minúscula y número)'
+          },
+          confirm_password: {
+            type: 'string',
+            format: 'password',
+            description: 'Confirmación de la nueva contraseña (debe coincidir con new_password)'
+          }
+        }
+      },
       users: {
         type: 'object',
         properties: {

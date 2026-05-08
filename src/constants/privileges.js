@@ -15,7 +15,8 @@ const USERS = Object.freeze({
   VIEW: 'view_user',
   VIEW_ALL: 'view_users',
   UPDATE: 'update_user',
-  DELETE: 'delete_user'
+  DELETE: 'delete_user',
+  CHANGE_PASSWORD: 'change_password'
 });
 
 const USER_VALIDATORS = Object.freeze({

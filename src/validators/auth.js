@@ -88,4 +88,29 @@ const validateGetUsers = [
   (req, res, next) => validateResults(req, res, next)
 ];
 
-module.exports = { validateRegister, validateLogin, validateGetUser, validateGetUsers, validateUpdateUser };
+const validateChangePassword = [
+  check('current_password')
+    .exists().withMessage(REGISTER.PASSWORD_NOT_EXISTS).bail()
+    .notEmpty().withMessage(REGISTER.PASSWORD_EMPTY).bail(),
+  check('new_password')
+    .exists().withMessage(REGISTER.PASSWORD_NOT_EXISTS).bail()
+    .notEmpty().withMessage(REGISTER.PASSWORD_EMPTY).bail()
+    .isLength({ min: 8, max: 50 }).withMessage('Password must be between 8 and 50 characters').bail()
+    .matches(/\d/).withMessage('Password must contain at least one number').bail()
+    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter').bail()
+    .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter').bail(),
+  check('confirm_password')
+    .exists().withMessage(REGISTER.PASSWORD_NOT_EXISTS).bail()
+    .notEmpty().withMessage(REGISTER.PASSWORD_EMPTY).bail()
+    .custom((value, { req }) => {
+      if (value !== req.body.new_password) {
+        throw new Error('PASSWORDS_DO_NOT_MATCH');
+      }
+      return true;
+    }),
+  (req, res, next) => {
+    return validateResults(req, res, next);
+  }
+];
+
+module.exports = { validateRegister, validateLogin, validateGetUser, validateGetUsers, validateUpdateUser, validateChangePassword };
