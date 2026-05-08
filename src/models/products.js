@@ -65,6 +65,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0.00
     },
+    credit_price: {
+      type: DataTypes.DECIMAL(12, 2),
+      allowNull: true,
+      defaultValue: 0.00
+    },
     weight: {
       type: DataTypes.DECIMAL(10, 3),
       allowNull: true

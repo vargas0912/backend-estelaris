@@ -150,6 +150,10 @@ router.get('/:id', [
  *                                  type: number
  *                                  format: decimal
  *                                  description: Precio base de venta
+ *                              credit_price:
+ *                                  type: number
+ *                                  format: decimal
+ *                                  description: Precio para ventas a credito
  *                              weight:
  *                                  type: number
  *                                  format: decimal
@@ -238,6 +242,9 @@ router.post('/', [
  *                                  type: number
  *                                  format: decimal
  *                              base_price:
+ *                                  type: number
+ *                                  format: decimal
+ *                              credit_price:
  *                                  type: number
  *                                  format: decimal
  *                              weight:
