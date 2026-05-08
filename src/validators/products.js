@@ -43,6 +43,9 @@ const valiAddRecord = [
     .exists().withMessage(PRODUCTS_VALIDATORS.BASE_PRICE_NOT_EXISTS).bail()
     .notEmpty().withMessage(PRODUCTS_VALIDATORS.BASE_PRICE_IS_EMPTY).bail()
     .isDecimal().withMessage(PRODUCTS_VALIDATORS.BASE_PRICE_INVALID).bail(),
+  check('credit_price')
+    .optional()
+    .isDecimal().withMessage(PRODUCTS_VALIDATORS.CREDIT_PRICE_INVALID).bail(),
   check('weight')
     .optional()
     .isDecimal().withMessage(PRODUCTS_VALIDATORS.WEIGHT_INVALID).bail(),
@@ -81,6 +84,9 @@ const valiUpdateRecord = [
     .exists().withMessage(PRODUCTS_VALIDATORS.BASE_PRICE_NOT_EXISTS).bail()
     .notEmpty().withMessage(PRODUCTS_VALIDATORS.BASE_PRICE_IS_EMPTY).bail()
     .isDecimal().withMessage(PRODUCTS_VALIDATORS.BASE_PRICE_INVALID).bail(),
+  check('credit_price')
+    .optional()
+    .isDecimal().withMessage(PRODUCTS_VALIDATORS.CREDIT_PRICE_INVALID).bail(),
   check('weight')
     .optional()
     .isDecimal().withMessage(PRODUCTS_VALIDATORS.WEIGHT_INVALID).bail(),

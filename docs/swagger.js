@@ -534,6 +534,11 @@ const swaggerDefinition = {
             type: 'number',
             format: 'decimal'
           },
+          credit_price: {
+            type: 'number',
+            format: 'decimal',
+            description: 'Precio para ventas a crédito'
+          },
           weight: {
             type: 'number',
             format: 'decimal'

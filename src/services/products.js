@@ -11,6 +11,7 @@ const attributes = [
   'unit_of_measure',
   'cost_price',
   'base_price',
+  'credit_price',
   'weight',
   'dimensions',
   'images',
@@ -81,6 +82,7 @@ const updateProduct = async(id, req) => {
     unit_of_measure: unitOfMeasure,
     cost_price: costPrice,
     base_price: basePrice,
+    credit_price: creditPrice,
     weight,
     dimensions,
     images,
@@ -109,6 +111,7 @@ const updateProduct = async(id, req) => {
   data.unit_of_measure = unitOfMeasure || data.unit_of_measure;
   data.cost_price = costPrice !== undefined ? costPrice : data.cost_price;
   data.base_price = basePrice !== undefined ? basePrice : data.base_price;
+  data.credit_price = creditPrice !== undefined ? creditPrice : data.credit_price;
   data.weight = weight !== undefined ? weight : data.weight;
   data.dimensions = dimensions !== undefined ? dimensions : data.dimensions;
   data.images = images !== undefined ? images : data.images;
