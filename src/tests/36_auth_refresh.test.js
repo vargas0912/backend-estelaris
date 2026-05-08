@@ -7,11 +7,11 @@ let validToken = '';
 let expiresAt = '';
 
 describe('[AUTH] Token refresh //api/auth/refresh', () => {
-  test('Setup: Bootstrap superadmin and login', async() => {
+  test('Setup: Ensure superadmin exists and login', async() => {
+    // Works in isolation (bootstrap) and in full suite (superadmin already exists → 401, ignored)
     await api
       .post('/api/auth/registerSuperUser')
-      .send({ name: 'Super Admin', email: 'superadmin@estelaris.com', role: 'superadmin', password: 'Admin123' })
-      .expect(200);
+      .send({ name: 'Super Admin', email: 'superadmin@estelaris.com', role: 'superadmin', password: 'Admin123' });
 
     const res = await api
       .post('/api/auth/login')

@@ -11,12 +11,11 @@ const USER_PASSWORD = 'UserPass1';
 const NEW_PASSWORD = 'NewPass99';
 
 describe('[USERS] Change password //api/users/change-password', () => {
-  test('Setup: Bootstrap superadmin and login', async() => {
-    // Bootstrap initial superadmin (only works when no superadmin exists in DB)
+  test('Setup: Ensure superadmin exists and login', async() => {
+    // Works in isolation (bootstrap) and in full suite (superadmin already exists → 401, ignored)
     await api
       .post('/api/auth/registerSuperUser')
-      .send({ name: 'Super Admin', email: 'superadmin@estelaris.com', role: 'superadmin', password: SUPERADMIN_PASSWORD })
-      .expect(200);
+      .send({ name: 'Super Admin', email: 'superadmin@estelaris.com', role: 'superadmin', password: SUPERADMIN_PASSWORD });
 
     const res = await api
       .post('/api/auth/login')
