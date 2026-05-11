@@ -15,12 +15,14 @@ const { SESSION } = require('../constants/errors');
 
 const authMidleware = async(req, res, next) => {
   try {
-    if (!req.headers.authorization) {
+    const authHeader = req.headers.authorization?.split(' ').pop();
+    const cookieToken = req.cookies?.token;
+    const token = authHeader ?? cookieToken;
+
+    if (!token) {
       handleHttpError(res, SESSION.NOT_TOKEN, 401);
       return;
     }
-
-    const token = req.headers.authorization.split(' ').pop();
     const dataToken = await verifyToken(token);
 
     // Verificar si hay error específico de JWT
