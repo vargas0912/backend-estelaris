@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
@@ -47,7 +48,13 @@ class Server {
     }));
 
     // CORS
-    this.app.use(cors());
+    this.app.use(cors({
+      origin: process.env.FRONTEND_URL,
+      credentials: true
+    }));
+
+    // Cookie parser
+    this.app.use(cookieParser());
 
     // Compresión gzip para mejorar performance
     this.app.use(compression());

@@ -94,10 +94,25 @@ const loginCtrl = async(req, res) => {
     };
 
     user.set('password', undefined, { strict: false });
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 2 * 60 * 60 * 1000
+    });
     res.send({ sesion });
   } catch (error) {
     handleHttpError(res, LOGIN.ERR_LOGIN, 400);
   }
+};
+
+const logoutCtrl = (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production'
+  });
+  res.send({ message: 'Sesión cerrada' });
 };
 const refreshCtrl = async(req, res) => {
   try {
@@ -113,4 +128,4 @@ const refreshCtrl = async(req, res) => {
   }
 };
 
-module.exports = { registerAdminCtrl, registerCtrl, loginCtrl, refreshCtrl };
+module.exports = { registerAdminCtrl, registerCtrl, loginCtrl, refreshCtrl, logoutCtrl };

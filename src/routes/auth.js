@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { registerAdminCtrl, registerCtrl, loginCtrl, refreshCtrl } = require('../controllers/auth');
+const { registerAdminCtrl, registerCtrl, loginCtrl, refreshCtrl, logoutCtrl } = require('../controllers/auth');
 const { validateLogin, validateRegister } = require('../validators/auth');
 
 const authMidleware = require('../middlewares/session');
@@ -125,5 +125,31 @@ router.post('/login', validateLogin, loginCtrl);
  *          description: Token inválido o expirado — debe iniciar sesión nuevamente
  */
 router.post('/refresh', [authMidleware], refreshCtrl);
+
+/**
+ * @openapi
+ * /auth/logout:
+ *   post:
+ *     tags:
+ *       - auth
+ *     summary: Cerrar sesión
+ *     description: Invalida la cookie HttpOnly del token. El cliente debe descartar el token JWT almacenado localmente.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Sesión cerrada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Sesión cerrada
+ *       '401':
+ *         description: Token inválido o ausente
+ */
+router.post('/logout', authMidleware, logoutCtrl);
 
 module.exports = router;
