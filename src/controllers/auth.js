@@ -96,8 +96,8 @@ const loginCtrl = async(req, res) => {
     user.set('password', undefined, { strict: false });
     res.cookie('token', token, {
       httpOnly: true,
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      secure: true,
       maxAge: 2 * 60 * 60 * 1000
     });
     res.send({ sesion });
@@ -109,8 +109,8 @@ const loginCtrl = async(req, res) => {
 const logoutCtrl = (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
-    sameSite: 'strict',
-    secure: process.env.NODE_ENV === 'production'
+    sameSite: 'none',
+    secure: true
   });
   res.send({ message: 'Sesión cerrada' });
 };
