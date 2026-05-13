@@ -94,4 +94,6 @@ const TICKET_CONFIG = Object.freeze({
   PREFIX_FALLBACK_PADDING: 3
 });
 
-module.exports = { SALES_VALIDATORS, TICKET_CONFIG };
+const SORT_WHITELIST = Object.freeze(['id', 'sales_date', 'sales_total', 'status']);
+
+module.exports = { SALES_VALIDATORS, TICKET_CONFIG, SORT_WHITELIST };

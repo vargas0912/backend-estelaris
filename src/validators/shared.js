@@ -5,4 +5,9 @@ const paginationChecks = [
   check('limit').optional().isInt({ min: 1, max: 100 }).withMessage('limit debe ser un entero entre 1 y 100')
 ];
 
-module.exports = { paginationChecks };
+const sortChecks = (whitelist) => [
+  check('sortBy').optional().isString().trim().isIn(whitelist),
+  check('sortOrder').optional().isString().trim().isIn(['ASC', 'DESC'])
+];
+
+module.exports = { paginationChecks, sortChecks };
