@@ -55,6 +55,9 @@ const SALES_VALIDATORS = Object.freeze({
   ITEMS_NOT_EXISTS: 'Los artículos son requeridos',
   ITEMS_INVALID: 'Los artículos deben ser un arreglo con al menos un elemento',
 
+  // items.*.bar_code
+  ITEM_BAR_CODE_INVALID: 'El código de barras del lote es requerido y debe tener máximo 100 caracteres',
+
   // items.*.product_id
   ITEM_PRODUCT_ID_INVALID: 'El id de producto es requerido y debe tener máximo 20 caracteres',
 

@@ -199,13 +199,24 @@ const createSale = async (body, userId) => {
   const branch = await branches.findByPk(branchId, { attributes: ['id', 'ticket_prefix'] });
   if (!branch) return { error: 'BRANCH_NOT_FOUND' };
 
-  // Validar productos
-  const productIds = items.map(i => i.product_id);
+  // Resolver bar_codes a product_id + purch_id y verificar que existan en la sucursal
+  const barCodes = items.map(i => i.bar_code);
+  const stockRefs = await productStocks.findAll({
+    where: { bar_code: barCodes, branch_id: branchId },
+    attributes: ['bar_code', 'product_id', 'purch_id']
+  });
+  if (stockRefs.length !== [...new Set(barCodes)].length) {
+    return { error: 'SOME_PRODUCTS_NOT_FOUND_OR_INACTIVE' };
+  }
+  const stockRefMap = Object.fromEntries(stockRefs.map(s => [s.bar_code, s]));
+
+  // Validar que los productos referenciados estén activos
+  const productIds = [...new Set(stockRefs.map(s => s.product_id))];
   const foundProducts = await products.findAll({
     where: { id: productIds, is_active: true },
     attributes: ['id']
   });
-  if (foundProducts.length !== [...new Set(productIds)].length) {
+  if (foundProducts.length !== productIds.length) {
     return { error: 'SOME_PRODUCTS_NOT_FOUND_OR_INACTIVE' };
   }
 
@@ -222,6 +233,7 @@ const createSale = async (body, userId) => {
   try {
     // Calcular subtotales por línea
     const details = items.map(item => {
+      const { product_id: productId } = stockRefMap[item.bar_code];
       const qty = parseFloat(item.qty);
       const unitPrice = parseFloat(item.unit_price);
       const discount = parseFloat(item.discount || 0);
@@ -229,13 +241,13 @@ const createSale = async (body, userId) => {
       const lineSubtotal = parseFloat((qty * unitPrice * (1 - discount / 100)).toFixed(2));
 
       return {
-        product_id: item.product_id,
+        product_id: productId,
+        bar_code: item.bar_code,
         qty,
         unit_price: unitPrice,
         discount,
         tax_rate: taxRate,
         subtotal: lineSubtotal,
-        purch_id: item.purch_id || null,
         notes: item.notes || null
       };
     });
@@ -294,13 +306,9 @@ const createSale = async (body, userId) => {
     // Validar y decrementar stock
     for (const item of details) {
       const qty = parseFloat(item.qty);
-      const barCode = item.purch_id ? `${item.product_id}-${item.purch_id}` : null;
-      const stockWhere = barCode
-        ? { bar_code: barCode, branch_id: branchId }
-        : { product_id: item.product_id, branch_id: branchId };
 
       const stock = await productStocks.findOne({
-        where: stockWhere,
+        where: { bar_code: item.bar_code, branch_id: branchId },
         transaction,
         lock: transaction.LOCK.UPDATE
       });
@@ -349,8 +357,15 @@ const createSale = async (body, userId) => {
 
     // Crear detalles
     const detailRecords = details.map(d => ({
-      ...d,
       sale_id: sale.id,
+      product_id: d.product_id,
+      purch_id: stockRefMap[d.bar_code].purch_id,
+      qty: d.qty,
+      unit_price: d.unit_price,
+      discount: d.discount,
+      tax_rate: d.tax_rate,
+      subtotal: d.subtotal,
+      notes: d.notes,
       created_at: new Date(),
       updated_at: new Date()
     }));
@@ -506,13 +521,8 @@ const cancelSale = async (id, userId) => {
     // Revertir stock
     for (const detail of sale.details) {
       const qty = parseFloat(detail.qty);
-      const barCode = detail.purch_id ? `${detail.product_id}-${detail.purch_id}` : null;
-      const stockWhere = barCode
-        ? { bar_code: barCode, branch_id: sale.branch_id }
-        : { product_id: detail.product_id, branch_id: sale.branch_id };
-
       const stock = await productStocks.findOne({
-        where: stockWhere,
+        where: { bar_code: `${detail.product_id}-${detail.purch_id}`, branch_id: sale.branch_id },
         transaction,
         lock: transaction.LOCK.UPDATE
       });

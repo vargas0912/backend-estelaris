@@ -19,6 +19,7 @@ let createdPaymentId = null;
 let fullPaymentSaleId = null;
 let customerId = null;
 let addressId = null;
+let purchaseId = null;
 
 const api = request(server.app);
 
@@ -91,8 +92,10 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       .send(purchaseForSaleStock)
       .expect(200);
 
+    purchaseId = purchRes.body.purchase.id;
+
     await api
-      .patch(`/api/purchases/${purchRes.body.purchase.id}/receive`)
+      .patch(`/api/purchases/${purchaseId}/receive`)
       .auth(Token, { type: 'bearer' })
       .set('x-branch-id', '1')
       .expect(200);
@@ -102,7 +105,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       .post('/api/sales')
       .auth(Token, { type: 'bearer' })
       .set('x-branch-id', '1')
-      .send(saleCreateCredito(customerId, addressId))
+      .send(saleCreateCredito(customerId, addressId, purchaseId))
       .expect(200);
 
     creditoSaleId = saleRes.body.sale.id;
@@ -112,7 +115,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
       .post('/api/sales')
       .auth(Token, { type: 'bearer' })
       .set('x-branch-id', '1')
-      .send(saleCreateCredito(customerId, addressId))
+      .send(saleCreateCredito(customerId, addressId, purchaseId))
       .expect(200);
 
     cancelledSaleId = cancelRes.body.sale.id;
@@ -155,7 +158,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
         .post('/api/sales')
         .auth(Token, { type: 'bearer' })
         .set('x-branch-id', '1')
-        .send(saleCreateCredito(customerId, addressId))
+        .send(saleCreateCredito(customerId, addressId, purchaseId))
         .expect(200);
 
       fullPaymentSaleId = newSaleRes.body.sale.id;
@@ -272,7 +275,7 @@ describe('[SALE_PAYMENTS] Test api sale-payments /api/sale-payments/', () => {
         .post('/api/sales')
         .auth(Token, { type: 'bearer' })
         .set('x-branch-id', '1')
-        .send(saleCreateCredito(customerId, addressId))
+        .send(saleCreateCredito(customerId, addressId, purchaseId))
         .expect(200);
 
       const response = await api
