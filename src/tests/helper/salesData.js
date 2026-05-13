@@ -35,7 +35,7 @@ const purchaseForSaleStock = {
   ]
 };
 
-const saleCreateContado = (customerId, addressId) => ({
+const saleCreateContado = (customerId, addressId, purchaseId) => ({
   branch_id: 1,
   customer_id: customerId,
   customer_address_id: addressId,
@@ -43,11 +43,11 @@ const saleCreateContado = (customerId, addressId) => ({
   sales_date: '2026-03-04',
   sales_type: 'Contado',
   items: [
-    { product_id: 'TEST-001', qty: 2, unit_price: 150.00, discount: 0, tax_rate: 16 }
+    { bar_code: `TEST-001-${purchaseId}`, qty: 2, unit_price: 150.00, discount: 0, tax_rate: 16 }
   ]
 });
 
-const saleCreateCredito = (customerId, addressId) => ({
+const saleCreateCredito = (customerId, addressId, purchaseId) => ({
   branch_id: 1,
   customer_id: customerId,
   customer_address_id: addressId,
@@ -58,8 +58,8 @@ const saleCreateCredito = (customerId, addressId) => ({
   total_days_term: 60,
   notes: 'Venta a crédito de prueba',
   items: [
-    { product_id: 'TEST-001', qty: 3, unit_price: 200.00, discount: 5, tax_rate: 16 },
-    { product_id: 'TEST-002', qty: 2, unit_price: 100.00, discount: 0, tax_rate: 16 }
+    { bar_code: `TEST-001-${purchaseId}`, qty: 3, unit_price: 200.00, discount: 5, tax_rate: 16 },
+    { bar_code: `TEST-002-${purchaseId}`, qty: 2, unit_price: 100.00, discount: 0, tax_rate: 16 }
   ]
 });
 
@@ -68,7 +68,7 @@ const saleCreateNoCustomer = {
   customer_address_id: 1,
   employee_id: 1,
   sales_date: '2026-03-04',
-  items: [{ product_id: 'TEST-001', qty: 1, unit_price: 100.00 }]
+  items: [{ bar_code: 'TEST-001-1', qty: 1, unit_price: 100.00 }]
 };
 
 const saleCreateNoAddress = {
@@ -76,7 +76,7 @@ const saleCreateNoAddress = {
   customer_id: 1,
   employee_id: 1,
   sales_date: '2026-03-04',
-  items: [{ product_id: 'TEST-001', qty: 1, unit_price: 100.00 }]
+  items: [{ bar_code: 'TEST-001-1', qty: 1, unit_price: 100.00 }]
 };
 
 const saleCreateNoEmployee = {
@@ -84,7 +84,7 @@ const saleCreateNoEmployee = {
   customer_id: 1,
   customer_address_id: 1,
   sales_date: '2026-03-04',
-  items: [{ product_id: 'TEST-001', qty: 1, unit_price: 100.00 }]
+  items: [{ bar_code: 'TEST-001-1', qty: 1, unit_price: 100.00 }]
 };
 
 const saleCreateNoDate = {
@@ -92,7 +92,7 @@ const saleCreateNoDate = {
   customer_id: 1,
   customer_address_id: 1,
   employee_id: 1,
-  items: [{ product_id: 'TEST-001', qty: 1, unit_price: 100.00 }]
+  items: [{ bar_code: 'TEST-001-1', qty: 1, unit_price: 100.00 }]
 };
 
 const saleCreateNoItems = {
@@ -103,7 +103,7 @@ const saleCreateNoItems = {
   sales_date: '2026-03-04'
 };
 
-const saleCreateEntregado = (customerId, addressId) => ({
+const saleCreateEntregado = (customerId, addressId, purchaseId) => ({
   branch_id: 1,
   customer_id: customerId,
   customer_address_id: addressId,
@@ -112,7 +112,7 @@ const saleCreateEntregado = (customerId, addressId) => ({
   sales_type: 'Contado',
   delivery_status: 'Entregado',
   items: [
-    { product_id: 'TEST-001', qty: 1, unit_price: 150.00, discount: 0, tax_rate: 16 }
+    { bar_code: `TEST-001-${purchaseId}`, qty: 1, unit_price: 150.00, discount: 0, tax_rate: 16 }
   ]
 });
 

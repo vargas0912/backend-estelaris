@@ -22,6 +22,7 @@ let creditoSaleId = null;
 let cancelSaleId = null;
 let customerId = null;
 let addressId = null;
+let purchaseId = null;
 
 const api = request(server.app);
 
@@ -101,7 +102,7 @@ describe('[SALES] Test api sales /api/sales/', () => {
       .send(purchaseForSaleStock)
       .expect(200);
 
-    const purchaseId = purchRes.body.purchase.id;
+    purchaseId = purchRes.body.purchase.id;
 
     await api
       .patch(`/api/purchases/${purchaseId}/receive`)
@@ -119,7 +120,7 @@ describe('[SALES] Test api sales /api/sales/', () => {
         .post('/api/sales')
         .auth(Token, { type: 'bearer' })
         .set('x-branch-id', '1')
-        .send(saleCreateContado(customerId, addressId))
+        .send(saleCreateContado(customerId, addressId, purchaseId))
         .expect(200);
 
       expect(response.body).toHaveProperty('sale');
@@ -137,7 +138,7 @@ describe('[SALES] Test api sales /api/sales/', () => {
         .post('/api/sales')
         .auth(Token, { type: 'bearer' })
         .set('x-branch-id', '1')
-        .send(saleCreateCredito(customerId, addressId))
+        .send(saleCreateCredito(customerId, addressId, purchaseId))
         .expect(200);
 
       expect(response.body).toHaveProperty('sale');
@@ -212,7 +213,7 @@ describe('[SALES] Test api sales /api/sales/', () => {
         .post('/api/sales')
         .auth(Token, { type: 'bearer' })
         .set('x-branch-id', '1')
-        .send(saleCreateEntregado(customerId, addressId))
+        .send(saleCreateEntregado(customerId, addressId, purchaseId))
         .expect(200);
 
       expect(response.body.sale.delivery_status).toBe('Entregado');
@@ -223,7 +224,7 @@ describe('[SALES] Test api sales /api/sales/', () => {
         .post('/api/sales')
         .auth(Token, { type: 'bearer' })
         .set('x-branch-id', '1')
-        .send(saleCreateContado(customerId, addressId))
+        .send(saleCreateContado(customerId, addressId, purchaseId))
         .expect(200);
 
       expect(response.body.sale.delivery_status).toBe('Pendiente');
@@ -232,7 +233,7 @@ describe('[SALES] Test api sales /api/sales/', () => {
     test('10. Crear venta sin token. Expect 401', async () => {
       await api
         .post('/api/sales')
-        .send(saleCreateContado(customerId, addressId))
+        .send(saleCreateContado(customerId, addressId, purchaseId))
         .expect(401);
     });
   });
@@ -339,7 +340,7 @@ describe('[SALES] Test api sales /api/sales/', () => {
         .post('/api/sales')
         .auth(Token, { type: 'bearer' })
         .set('x-branch-id', '1')
-        .send(saleCreateCredito(customerId, addressId))
+        .send(saleCreateCredito(customerId, addressId, purchaseId))
         .expect(200);
 
       cancelSaleId = newSaleRes.body.sale.id;
@@ -363,7 +364,7 @@ describe('[SALES] Test api sales /api/sales/', () => {
         .post('/api/sales')
         .auth(Token, { type: 'bearer' })
         .set('x-branch-id', '1')
-        .send(saleCreateCredito(customerId, addressId))
+        .send(saleCreateCredito(customerId, addressId, purchaseId))
         .expect(200);
 
       const deleteSaleId = newSaleRes.body.sale.id;

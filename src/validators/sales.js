@@ -90,10 +90,11 @@ const valiAddRecord = [
   check('items')
     .exists().withMessage(SALES_VALIDATORS.ITEMS_NOT_EXISTS).bail()
     .isArray({ min: 1 }).withMessage(SALES_VALIDATORS.ITEMS_INVALID).bail(),
-  check('items.*.product_id')
-    .isString().withMessage(SALES_VALIDATORS.ITEM_PRODUCT_ID_INVALID).bail()
-    .notEmpty().withMessage(SALES_VALIDATORS.ITEM_PRODUCT_ID_INVALID).bail()
-    .isLength({ max: 20 }).withMessage(SALES_VALIDATORS.ITEM_PRODUCT_ID_INVALID).bail(),
+  check('items.*.bar_code')
+    .exists().withMessage(SALES_VALIDATORS.ITEM_BAR_CODE_INVALID).bail()
+    .notEmpty().withMessage(SALES_VALIDATORS.ITEM_BAR_CODE_INVALID).bail()
+    .isString().withMessage(SALES_VALIDATORS.ITEM_BAR_CODE_INVALID).bail()
+    .isLength({ max: 100 }).withMessage(SALES_VALIDATORS.ITEM_BAR_CODE_INVALID).bail(),
   check('items.*.qty')
     .isDecimal({ decimal_digits: '0,3', force_decimal: false }).withMessage(SALES_VALIDATORS.ITEM_QTY_INVALID).bail()
     .custom(val => parseFloat(val) > 0).withMessage(SALES_VALIDATORS.ITEM_QTY_INVALID),
@@ -107,10 +108,6 @@ const valiAddRecord = [
   check('items.*.tax_rate')
     .optional()
     .isDecimal({ decimal_digits: '0,2', force_decimal: false }).withMessage(SALES_VALIDATORS.ITEM_TAX_RATE_INVALID),
-  check('items.*.purch_id')
-    .optional({ nullable: true })
-    .isInt().withMessage(SALES_VALIDATORS.ITEM_PURCH_ID_INVALID).bail()
-    .toInt(),
   check('items.*.notes')
     .optional({ nullable: true })
     .isString().withMessage(SALES_VALIDATORS.ITEM_NOTES_INVALID).bail(),

@@ -15,6 +15,7 @@ let configId = null;
 let customerId = null;
 let addressId = null;
 let saleWithPointsId = null;
+let purchaseId = null;
 
 // ─── Fixture helpers ───────────────────────────────────────────────────────────
 
@@ -69,7 +70,7 @@ const loyaltyPurchaseStock = {
   ]
 };
 
-const saleContadoForPoints = (cId, aId) => ({
+const saleContadoForPoints = (cId, aId, purchId) => ({
   branch_id: 1,
   customer_id: cId,
   customer_address_id: aId,
@@ -77,12 +78,12 @@ const saleContadoForPoints = (cId, aId) => ({
   sales_date: '2026-03-31',
   sales_type: 'Contado',
   items: [
-    { product_id: 'TEST-001', qty: 5, unit_price: 100.00, discount: 0, tax_rate: 0 }
+    { bar_code: `TEST-001-${purchId}`, qty: 5, unit_price: 100.00, discount: 0, tax_rate: 0 }
   ]
   // subtotal=500, tax=0, total=500 → points = floor(500 * 0.1) = 50
 });
 
-const saleContadoForRedeem = (cId, aId, pointsToRedeem) => ({
+const saleContadoForRedeem = (cId, aId, purchId, pointsToRedeem) => ({
   branch_id: 1,
   customer_id: cId,
   customer_address_id: aId,
@@ -91,7 +92,7 @@ const saleContadoForRedeem = (cId, aId, pointsToRedeem) => ({
   sales_type: 'Contado',
   points_redeemed: pointsToRedeem,
   items: [
-    { product_id: 'TEST-001', qty: 10, unit_price: 100.00, discount: 0, tax_rate: 0 }
+    { bar_code: `TEST-001-${purchId}`, qty: 10, unit_price: 100.00, discount: 0, tax_rate: 0 }
   ]
   // subtotal=1000, total=1000
   // redeeming 20 pts → discount = 20 * 0.10 = $2
@@ -184,8 +185,10 @@ describe('[LOYALTY POINTS] Test api loyalty /api/loyaltyPoints/', () => {
       .send(loyaltyPurchaseStock)
       .expect(200);
 
+    purchaseId = purchRes.body.purchase.id;
+
     await api
-      .patch(`/api/purchases/${purchRes.body.purchase.id}/receive`)
+      .patch(`/api/purchases/${purchaseId}/receive`)
       .auth(Token, { type: 'bearer' })
       .set('x-branch-id', '1')
       .expect(200);
@@ -308,7 +311,7 @@ describe('[LOYALTY POINTS] Test api loyalty /api/loyaltyPoints/', () => {
         .post('/api/sales')
         .auth(Token, { type: 'bearer' })
         .set('x-branch-id', '1')
-        .send(saleContadoForPoints(customerId, addressId))
+        .send(saleContadoForPoints(customerId, addressId, purchaseId))
         .expect(200);
 
       expect(response.body).toHaveProperty('sale');
@@ -357,7 +360,7 @@ describe('[LOYALTY POINTS] Test api loyalty /api/loyaltyPoints/', () => {
         .post('/api/sales')
         .auth(Token, { type: 'bearer' })
         .set('x-branch-id', '1')
-        .send(saleContadoForRedeem(customerId, addressId, 20))
+        .send(saleContadoForRedeem(customerId, addressId, purchaseId, 20))
         .expect(200);
 
       expect(response.body).toHaveProperty('sale');
@@ -395,7 +398,7 @@ describe('[LOYALTY POINTS] Test api loyalty /api/loyaltyPoints/', () => {
         .post('/api/sales')
         .auth(Token, { type: 'bearer' })
         .set('x-branch-id', '1')
-        .send(saleContadoForRedeem(customerId, addressId, 99999))
+        .send(saleContadoForRedeem(customerId, addressId, purchaseId, 99999))
         .expect(422);
     });
 
@@ -404,7 +407,7 @@ describe('[LOYALTY POINTS] Test api loyalty /api/loyaltyPoints/', () => {
         .post('/api/sales')
         .auth(Token, { type: 'bearer' })
         .set('x-branch-id', '1')
-        .send(saleContadoForRedeem(customerId, addressId, 3))
+        .send(saleContadoForRedeem(customerId, addressId, purchaseId, 3))
         .expect(422);
     });
 
@@ -420,7 +423,7 @@ describe('[LOYALTY POINTS] Test api loyalty /api/loyaltyPoints/', () => {
         sales_date: '2026-03-31',
         sales_type: 'Contado',
         points_redeemed: 600, // 600 * $0.10 = $60 > 50% de $100 ($50)
-        items: [{ product_id: 'TEST-001', qty: 1, unit_price: 100.00, discount: 0, tax_rate: 0 }]
+        items: [{ bar_code: `TEST-001-${purchaseId}`, qty: 1, unit_price: 100.00, discount: 0, tax_rate: 0 }]
       };
       await api
         .post('/api/sales')

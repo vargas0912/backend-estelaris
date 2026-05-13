@@ -16,6 +16,7 @@ let deliveryId = null;
 let fullFlowDeliveryId = null;
 let customerId = null;
 let addressId = null;
+let purchaseId = null;
 
 const api = request(server.app);
 
@@ -90,8 +91,10 @@ describe('[SALE_DELIVERIES] Test api sale-deliveries /api/sale-deliveries/', () 
       .send(purchaseForSaleStock)
       .expect(200);
 
+    purchaseId = purchRes.body.purchase.id;
+
     await api
-      .patch(`/api/purchases/${purchRes.body.purchase.id}/receive`)
+      .patch(`/api/purchases/${purchaseId}/receive`)
       .auth(Token, { type: 'bearer' })
       .set('x-branch-id', '1')
       .expect(200);
@@ -101,7 +104,7 @@ describe('[SALE_DELIVERIES] Test api sale-deliveries /api/sale-deliveries/', () 
       .post('/api/sales')
       .auth(Token, { type: 'bearer' })
       .set('x-branch-id', '1')
-      .send(saleCreateCredito(customerId, addressId))
+      .send(saleCreateCredito(customerId, addressId, purchaseId))
       .expect(200);
 
     saleId = saleRes.body.sale.id;
