@@ -314,6 +314,124 @@ describe('[SALES] Test api sales /api/sales/', () => {
   });
 
   // ============================================
+  // GET /api/sales — ordenamiento
+  // ============================================
+  describe('GET /api/sales - sorting', () => {
+    test('20. Sin params de orden → 200, respuesta tiene sales y pagination', async () => {
+      const response = await api
+        .get('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('sales');
+      expect(response.body).toHaveProperty('pagination');
+      expect(Array.isArray(response.body.sales)).toBe(true);
+    });
+
+    test('21. ?sortBy=sales_date&sortOrder=ASC → 200', async () => {
+      const response = await api
+        .get('/api/sales?sortBy=sales_date&sortOrder=ASC')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('sales');
+      expect(Array.isArray(response.body.sales)).toBe(true);
+    });
+
+    test('22. ?sortBy=sales_total&sortOrder=DESC → 200', async () => {
+      const response = await api
+        .get('/api/sales?sortBy=sales_total&sortOrder=DESC')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('sales');
+    });
+
+    test('23. ?sortBy=status → 200', async () => {
+      const response = await api
+        .get('/api/sales?sortBy=status')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('sales');
+    });
+
+    test('24. ?sortBy=invalid_column → 400 (validator rechaza)', async () => {
+      await api
+        .get('/api/sales?sortBy=invalid_column')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .expect(400);
+    });
+
+    test('25. ?sortOrder=RANDOM → 400 (validator rechaza)', async () => {
+      await api
+        .get('/api/sales?sortOrder=RANDOM')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .expect(400);
+    });
+
+    test('26. ?sortBy=id&sortOrder=ASC combinado con search → 200', async () => {
+      const response = await api
+        .get('/api/sales?sortBy=id&sortOrder=ASC&search=test')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('sales');
+      expect(response.body).toHaveProperty('pagination');
+    });
+  });
+
+  // ============================================
+  // GET /api/sales/branch/:branchId — ordenamiento
+  // ============================================
+  describe('GET /api/sales/branch/:branchId - sorting', () => {
+    test('27. ?sortBy=sales_date&sortOrder=ASC → 200', async () => {
+      const response = await api
+        .get('/api/sales/branch/1?sortBy=sales_date&sortOrder=ASC')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('sales');
+      expect(response.body).toHaveProperty('pagination');
+      expect(Array.isArray(response.body.sales)).toBe(true);
+    });
+
+    test('28. ?sortBy=sales_total&sortOrder=ASC → 200', async () => {
+      const response = await api
+        .get('/api/sales/branch/1?sortBy=sales_total&sortOrder=ASC')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('sales');
+    });
+
+    test('29. ?sortBy=invalid_column → 400 (validator rechaza)', async () => {
+      await api
+        .get('/api/sales/branch/1?sortBy=invalid_column')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .expect(400);
+    });
+
+    test('30. ?sortOrder=asc (minúsculas) → 400 (validator rechaza)', async () => {
+      await api
+        .get('/api/sales/branch/1?sortOrder=asc')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .expect(400);
+    });
+  });
+
+  // ============================================
   // PUT /api/sales/:id
   // ============================================
   describe('PUT /api/sales/:id', () => {

@@ -1,11 +1,12 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
-const { SALES_VALIDATORS } = require('../constants/sales');
-const { paginationChecks } = require('./shared');
+const { SALES_VALIDATORS, SORT_WHITELIST } = require('../constants/sales');
+const { paginationChecks, sortChecks } = require('./shared');
 
 const validateGetAll = [
   ...paginationChecks,
   check('search').optional().isString().trim(),
+  ...sortChecks(SORT_WHITELIST),
   (req, res, next) => validateResults(req, res, next)
 ];
 
@@ -34,6 +35,7 @@ const validateGetByBranch = [
     .isInt().withMessage(SALES_VALIDATORS.BRANCH_ID_INVALID).bail(),
   ...paginationChecks,
   check('search').optional().isString().trim(),
+  ...sortChecks(SORT_WHITELIST),
   (req, res, next) => validateResults(req, res, next)
 ];
 

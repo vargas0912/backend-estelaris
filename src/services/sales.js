@@ -6,7 +6,7 @@ const {
 const { sequelize } = require('../models/index');
 const { Op } = require('sequelize');
 const accountingEngine = require('./accountingEngine.service');
-const { TICKET_CONFIG } = require('../constants/sales');
+const { TICKET_CONFIG, SORT_WHITELIST } = require('../constants/sales');
 const {
   getActiveConfig,
   getOrCreateCustomerPoints,
@@ -71,15 +71,21 @@ const saleIncludes = [
 
 const PERIOD_DAYS = { Semanal: 7, Quincenal: 15, Mensual: 30 };
 
-const getAllSales = async (branchId, page = 1, limit = 20, search = '') => {
+const sanitizeSort = (sortBy, sortOrder) => ({
+  safeSortBy: SORT_WHITELIST.includes(sortBy) ? sortBy : 'id',
+  safeSortOrder: sortOrder === 'ASC' ? 'ASC' : 'DESC'
+});
+
+const getAllSales = async (branchId, page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC') => {
   const offset = (page - 1) * limit;
+  const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
   const where = branchId ? { branch_id: branchId } : {};
   if (search) where.ticket = { [Op.like]: `%${search}%` };
   const { count, rows } = await sales.findAndCountAll({
     attributes: saleAttributes,
     where,
     include: saleIncludes,
-    order: [['sales_date', 'DESC']],
+    order: [[safeSortBy, safeSortOrder]],
     limit,
     offset,
     distinct: true
@@ -111,15 +117,16 @@ const getSalesByCustomer = async (customerId, page = 1, limit = 20, search = '')
   return { sales: rows, total: count };
 };
 
-const getSalesByBranch = async (branchId, page = 1, limit = 20, search = '') => {
+const getSalesByBranch = async (branchId, page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC') => {
   const offset = (page - 1) * limit;
+  const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
   const where = { branch_id: branchId };
   if (search) where.ticket = { [Op.like]: `%${search}%` };
   const { count, rows } = await sales.findAndCountAll({
     attributes: saleAttributes,
     where,
     include: saleIncludes,
-    order: [['sales_date', 'DESC']],
+    order: [[safeSortBy, safeSortOrder]],
     limit,
     offset,
     distinct: true
