@@ -278,7 +278,7 @@ router.delete(
 router.get(
   '/:id/branches',
   authMiddleware,
-  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN_PRODUCT.MANAGE_OVERRIDES),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN_PRODUCT.VIEW_OVERRIDES),
   getCampaignProductValidator,
   handleValidationErrors,
   getBranchOverrides

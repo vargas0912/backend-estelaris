@@ -401,7 +401,7 @@ router.delete(
 router.get(
   '/:id/stats',
   authMiddleware,
-  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.VIEW_ALL),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.VIEW_STATS),
   getCampaignValidator,
   handleValidationErrors,
   getCampaignStats
@@ -436,7 +436,7 @@ router.get(
 router.get(
   '/:id/branches',
   authMiddleware,
-  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.MANAGE_BRANCHES),
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.VIEW_BRANCHES),
   getCampaignValidator,
   handleValidationErrors,
   getCampaignBranches

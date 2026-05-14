@@ -112,6 +112,8 @@ const data = [
   { name: CMP.NAME_ACTIVATE, codeName: CMP.ACTIVATE, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: CMP.NAME_DEACTIVATE, codeName: CMP.DEACTIVATE, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: CMP.NAME_MANAGE_BRANCHES, codeName: CMP.MANAGE_BRANCHES, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMP.NAME_VIEW_BRANCHES, codeName: CMP.VIEW_BRANCHES, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMP.NAME_VIEW_STATS, codeName: CMP.VIEW_STATS, module: CMP.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Productos de Campañas
   { name: CMPPROD.NAME_ALL, codeName: CMPPROD.VIEW_ALL, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha },
@@ -119,6 +121,7 @@ const data = [
   { name: CMPPROD.NAME_UPDATE, codeName: CMPPROD.UPDATE, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: CMPPROD.NAME_DELETE, codeName: CMPPROD.DELETE, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: CMPPROD.NAME_MANAGE_OVERRIDES, codeName: CMPPROD.MANAGE_OVERRIDES, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: CMPPROD.NAME_VIEW_OVERRIDES, codeName: CMPPROD.VIEW_OVERRIDES, module: CMPPROD.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Sucursales de usuario
   { name: UBR.NAME_ALL, codeName: UBR.VIEW_ALL, module: UBR.MODULE_NAME, created_at: fecha, updated_at: fecha },
