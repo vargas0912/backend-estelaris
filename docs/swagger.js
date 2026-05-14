@@ -859,6 +859,60 @@ const swaggerDefinition = {
           }
         }
       },
+      campaignStats: {
+        type: 'object',
+        properties: {
+          campaign: {
+            type: 'object',
+            properties: {
+              id: { type: 'integer' },
+              name: { type: 'string' },
+              start_date: { type: 'string', format: 'date-time' },
+              end_date: { type: 'string', format: 'date-time' },
+              is_active: { type: 'boolean' }
+            }
+          },
+          summary: {
+            type: 'object',
+            properties: {
+              total_units_sold: { type: 'number' },
+              total_revenue: { type: 'string', format: 'decimal' },
+              total_discount_applied: { type: 'string', format: 'decimal' },
+              sales_count: { type: 'number' }
+            }
+          },
+          products: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                campaign_product_id: { type: 'integer' },
+                product_id: { type: 'string' },
+                product_name: { type: 'string' },
+                discount_type: { type: 'string', enum: ['percentage', 'fixed_price'] },
+                discount_value: { type: 'string', format: 'decimal' },
+                max_quantity: { type: 'integer', nullable: true },
+                sold_quantity: { type: 'integer' },
+                progress_pct: { type: 'number', nullable: true }
+              }
+            }
+          },
+          by_branch: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                branch_id: { type: 'integer' },
+                branch_name: { type: 'string' },
+                sales_count: { type: 'number' },
+                total_units_sold: { type: 'number' },
+                total_revenue: { type: 'string', format: 'decimal' },
+                total_discount_applied: { type: 'string', format: 'decimal' }
+              }
+            }
+          }
+        }
+      },
       campaignBranches: {
         type: 'object',
         properties: {

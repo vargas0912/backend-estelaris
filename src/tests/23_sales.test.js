@@ -13,7 +13,8 @@ const {
   saleCreateNoEmployee,
   saleCreateNoDate,
   saleCreateNoItems,
-  saleUpdate
+  saleUpdate,
+  saleCreateWithCampaign
 } = require('./helper/salesData');
 
 let Token = '';
@@ -503,6 +504,61 @@ describe('[SALES] Test api sales /api/sales/', () => {
       await api
         .delete('/api/sales/1')
         .expect(401);
+    });
+  });
+
+  // ============================================
+  // POST /api/sales — campaign_product_id
+  // ============================================
+  describe('POST /api/sales - campaign_product_id', () => {
+    test('30. Venta con campaign_product_id válido → 200 y sold_quantity incrementado por qty', async () => {
+      const response = await api
+        .post('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(saleCreateWithCampaign(customerId, addressId, purchaseId))
+        .expect(200);
+
+      expect(response.body.sale.status).toBe('Pagado');
+
+      const cpRes = await api
+        .get('/api/campaignProducts/1')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(cpRes.body.data.sold_quantity).toBe(2);
+    });
+
+    test('31. campaign_product_id inválido (string) → 400', async () => {
+      await api
+        .post('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(saleCreateWithCampaign(customerId, addressId, purchaseId, 'abc', 1))
+        .expect(400);
+    });
+
+    test('32. campaign_product_id omitido no incrementa sold_quantity', async () => {
+      const beforeRes = await api
+        .get('/api/campaignProducts/1')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      const soldBefore = beforeRes.body.data.sold_quantity;
+
+      await api
+        .post('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(saleCreateContado(customerId, addressId, purchaseId))
+        .expect(200);
+
+      const afterRes = await api
+        .get('/api/campaignProducts/1')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(afterRes.body.data.sold_quantity).toBe(soldBefore);
     });
   });
 });

@@ -16,7 +16,8 @@ const {
   deleteCampaign,
   getCampaignBranches,
   addCampaignBranches,
-  removeCampaignBranch
+  removeCampaignBranch,
+  getCampaignStats
 } = require('../controllers/campaigns');
 const {
   createCampaignValidator,
@@ -363,6 +364,47 @@ router.delete(
   getCampaignValidator,
   handleValidationErrors,
   deleteCampaign
+);
+
+/**
+ * @swagger
+ * /campaigns/{id}/stats:
+ *   get:
+ *     summary: Obtiene estadísticas de ventas de una campaña
+ *     tags: [Campaigns]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la campaña
+ *     responses:
+ *       200:
+ *         description: Estadísticas de la campaña
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/campaignStats'
+ *       404:
+ *         description: Campaña no encontrada
+ *       500:
+ *         description: Error interno
+ */
+router.get(
+  '/:id/stats',
+  authMiddleware,
+  checkRol([ROLE.USER, ROLE.ADMIN], CAMPAIGN.VIEW_ALL),
+  getCampaignValidator,
+  handleValidationErrors,
+  getCampaignStats
 );
 
 /**

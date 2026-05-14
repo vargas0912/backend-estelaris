@@ -15,7 +15,8 @@ const {
   ERROR_GET_CAMPAIGN_BRANCHES,
   ERROR_ADD_CAMPAIGN_BRANCHES,
   ERROR_REMOVE_CAMPAIGN_BRANCH,
-  ERROR_BRANCH_NOT_IN_CAMPAIGN
+  ERROR_BRANCH_NOT_IN_CAMPAIGN,
+  ERROR_GET_CAMPAIGN_STATS
 } = require('../constants/campaigns');
 
 /**
@@ -251,6 +252,24 @@ const removeCampaignBranch = async (req, res) => {
   }
 };
 
+const getCampaignStats = async (req, res) => {
+  try {
+    const { id } = matchedData(req);
+    const stats = await campaignsService.getCampaignStats(id);
+
+    if (!stats) {
+      return handleHttpError(res, ERROR_CAMPAIGN_NOT_FOUND, 404);
+    }
+
+    res.status(200).json({
+      ok: true,
+      data: stats
+    });
+  } catch (error) {
+    handleHttpError(res, ERROR_GET_CAMPAIGN_STATS, 500);
+  }
+};
+
 module.exports = {
   getCampaigns,
   getActiveCampaigns,
@@ -262,5 +281,6 @@ module.exports = {
   deleteCampaign,
   getCampaignBranches,
   addCampaignBranches,
-  removeCampaignBranch
+  removeCampaignBranch,
+  getCampaignStats
 };

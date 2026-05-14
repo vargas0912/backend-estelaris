@@ -79,6 +79,9 @@ const SALES_VALIDATORS = Object.freeze({
   // items.*.notes
   ITEM_NOTES_INVALID: 'Las observaciones del ítem deben ser texto',
 
+  // items.*.campaign_product_id
+  ITEM_CAMPAIGN_PRODUCT_ID_INVALID: 'El id de producto de campaña debe ser un número entero positivo',
+
   // delivery_status
   DELIVERY_STATUS_INVALID: 'Estado de entrega inválido. Use: Entregado o Pendiente',
 
