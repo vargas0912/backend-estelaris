@@ -119,7 +119,14 @@ const refreshCtrl = async(req, res) => {
     const user = req.user;
     const token = await tokenSign(user);
 
-    res.send({
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      maxAge: JWT_EXPIRY_MS,
+      path: '/'
+    });
+    res.json({
       token,
       expires_at: new Date(Date.now() + JWT_EXPIRY_MS).toISOString()
     });
