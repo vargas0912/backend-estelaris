@@ -113,6 +113,10 @@ const valiAddRecord = [
   check('items.*.notes')
     .optional({ nullable: true })
     .isString().withMessage(SALES_VALIDATORS.ITEM_NOTES_INVALID).bail(),
+  check('items.*.campaign_product_id')
+    .optional({ nullable: true })
+    .isInt({ min: 1 }).withMessage(SALES_VALIDATORS.ITEM_CAMPAIGN_PRODUCT_ID_INVALID).bail()
+    .toInt(),
   check('delivery_status')
     .optional()
     .isIn(['Entregado', 'Pendiente']).withMessage(SALES_VALIDATORS.DELIVERY_STATUS_INVALID),

@@ -121,6 +121,18 @@ const saleUpdate = {
   notes: 'Nota actualizada'
 };
 
+const saleCreateWithCampaign = (customerId, addressId, purchaseId, campaignProductId = 1, qty = 2) => ({
+  branch_id: 1,
+  customer_id: customerId,
+  customer_address_id: addressId,
+  employee_id: 1,
+  sales_date: '2026-03-04',
+  sales_type: 'Contado',
+  items: [
+    { bar_code: `TEST-001-${purchaseId}`, qty, unit_price: 150.00, discount: 0, tax_rate: 16, campaign_product_id: campaignProductId }
+  ]
+});
+
 module.exports = {
   saleCustomerCreate,
   saleAddressCreate,
@@ -133,5 +145,6 @@ module.exports = {
   saleCreateNoEmployee,
   saleCreateNoDate,
   saleCreateNoItems,
-  saleUpdate
+  saleUpdate,
+  saleCreateWithCampaign
 };

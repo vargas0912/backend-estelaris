@@ -1,7 +1,7 @@
 const {
   sales, saleDetails, saleInstallments, salePayments, saleDeliveries,
   customers, customerAddresses, employees, branches, users, products,
-  productStocks, stockMovements
+  productStocks, stockMovements, campaignProducts
 } = require('../models/index');
 const { sequelize } = require('../models/index');
 const { Op } = require('sequelize');
@@ -255,7 +255,8 @@ const createSale = async (body, userId) => {
         discount,
         tax_rate: taxRate,
         subtotal: lineSubtotal,
-        notes: item.notes || null
+        notes: item.notes || null,
+        campaign_product_id: item.campaign_product_id || null
       };
     });
 
@@ -377,6 +378,16 @@ const createSale = async (body, userId) => {
       updated_at: new Date()
     }));
     await saleDetails.bulkCreate(detailRecords, { transaction });
+
+    for (const detail of details) {
+      if (detail.campaign_product_id) {
+        await campaignProducts.increment('sold_quantity', {
+          by: detail.qty,
+          where: { id: detail.campaign_product_id },
+          transaction
+        });
+      }
+    }
 
     // Crear stockMovements
     for (const item of details) {

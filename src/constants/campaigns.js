@@ -14,5 +14,6 @@ module.exports = {
   ERROR_ADD_CAMPAIGN_BRANCHES: 'Error al agregar sucursales a la campaña',
   ERROR_REMOVE_CAMPAIGN_BRANCH: 'Error al remover sucursal de la campaña',
   ERROR_BRANCH_NOT_IN_CAMPAIGN: 'La sucursal no está asignada a esta campaña',
-  ERROR_BRANCH_ALREADY_IN_CAMPAIGN: 'La sucursal ya está asignada a esta campaña'
+  ERROR_BRANCH_ALREADY_IN_CAMPAIGN: 'La sucursal ya está asignada a esta campaña',
+  ERROR_GET_CAMPAIGN_STATS: 'Error al obtener estadísticas de la campaña'
 };
