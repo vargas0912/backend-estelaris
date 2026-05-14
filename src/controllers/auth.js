@@ -1,6 +1,6 @@
 const { matchedData } = require('express-validator');
 const { compare } = require('../utils/handlePassword');
-const { tokenSign } = require('../utils/handleJwt');
+const { tokenSign, JWT_EXPIRY_MS } = require('../utils/handleJwt');
 const { users, branches } = require('../models/index');
 const { handleHttpError } = require('../utils/handleErorr');
 const { registerUser, registerSuperAdmin } = require('../services/users');
@@ -88,7 +88,7 @@ const loginCtrl = async(req, res) => {
     const token = await tokenSign(user);
     const sesion = {
       token,
-      expires_at: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+      expires_at: new Date(Date.now() + JWT_EXPIRY_MS).toISOString(),
       user,
       branches: branchesList
     };
@@ -98,7 +98,7 @@ const loginCtrl = async(req, res) => {
       httpOnly: true,
       sameSite: 'none',
       secure: true,
-      maxAge: 2 * 60 * 60 * 1000
+      maxAge: JWT_EXPIRY_MS
     });
     res.send({ sesion });
   } catch (error) {
@@ -121,7 +121,7 @@ const refreshCtrl = async(req, res) => {
 
     res.send({
       token,
-      expires_at: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
+      expires_at: new Date(Date.now() + JWT_EXPIRY_MS).toISOString()
     });
   } catch (error) {
     handleHttpError(res, 'ERROR_REFRESH_TOKEN', 400);

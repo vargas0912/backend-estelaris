@@ -25,7 +25,7 @@ const tokenSign = async(user) => {
       },
       JWT_SECRET,
       {
-        expiresIn: '2h',
+        expiresIn: '1h',
         algorithm: 'HS256',
         issuer: 'estelaris-api',
         audience: 'estelaris-client'
@@ -89,4 +89,6 @@ const verifyToken = async(tokenJwt) => {
   }
 };
 
-module.exports = { tokenSign, verifyToken };
+const JWT_EXPIRY_MS = 60 * 60 * 1000; // kept in sync with expiresIn above
+
+module.exports = { tokenSign, verifyToken, JWT_EXPIRY_MS };
