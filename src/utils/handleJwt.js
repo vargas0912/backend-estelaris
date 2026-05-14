@@ -89,4 +89,6 @@ const verifyToken = async(tokenJwt) => {
   }
 };
 
-module.exports = { tokenSign, verifyToken };
+const JWT_EXPIRY_MS = 2 * 60 * 60 * 1000; // kept in sync with expiresIn above
+
+module.exports = { tokenSign, verifyToken, JWT_EXPIRY_MS };
