@@ -27,6 +27,9 @@ const SUPPLIERS_VALIDATORS = Object.freeze({
   PAYMENT_DAYS_NEGATIVE: 'PAYMENT_DAYS_NEGATIVE'
 });
 
+const SORT_WHITELIST = Object.freeze(['id', 'name', 'trade_name', 'is_active', 'createdAt']);
+
 module.exports = {
-  SUPPLIERS_VALIDATORS
+  SUPPLIERS_VALIDATORS,
+  SORT_WHITELIST
 };
