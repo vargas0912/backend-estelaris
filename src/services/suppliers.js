@@ -2,6 +2,12 @@
 
 const { suppliers, municipalities } = require('../models/index');
 const { Op } = require('sequelize');
+const { SORT_WHITELIST } = require('../constants/suppliers');
+
+const sanitizeSort = (sortBy, sortOrder) => ({
+  safeSortBy: SORT_WHITELIST.includes(sortBy) ? sortBy : 'id',
+  safeSortOrder: sortOrder === 'ASC' ? 'ASC' : 'DESC'
+});
 
 const attributes = [
   'id',
@@ -27,8 +33,9 @@ const attributes = [
 
 const municipalityAttributes = ['id', 'name'];
 
-const getAllSuppliers = async(page = 1, limit = 20, search = '') => {
+const getAllSuppliers = async(page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC') => {
   const offset = (page - 1) * limit;
+  const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
   const where = search ? { name: { [Op.like]: `%${search}%` } } : {};
   const { count, rows } = await suppliers.findAndCountAll({
     attributes,
@@ -40,6 +47,7 @@ const getAllSuppliers = async(page = 1, limit = 20, search = '') => {
         attributes: municipalityAttributes
       }
     ],
+    order: [[safeSortBy, safeSortOrder]],
     limit,
     offset,
     distinct: true

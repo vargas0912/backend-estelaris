@@ -22,7 +22,7 @@ const getRecords = async(req, res) => {
     const data = matchedData(req);
     const { page, limit } = getPaginationParams(data);
     const search = data.search ?? '';
-    const { suppliers, total } = await getAllSuppliers(page, limit, search);
+    const { suppliers, total } = await getAllSuppliers(page, limit, search, data.sortBy, data.sortOrder);
     res.send(buildPaginationResponse('suppliers', suppliers, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);

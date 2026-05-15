@@ -2,11 +2,12 @@
 
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
-const { paginationChecks } = require('./shared');
-const { SUPPLIERS_VALIDATORS } = require('../constants/suppliers');
+const { paginationChecks, sortChecks } = require('./shared');
+const { SUPPLIERS_VALIDATORS, SORT_WHITELIST } = require('../constants/suppliers');
 
 const validateGetAll = [
   ...paginationChecks,
+  ...sortChecks(SORT_WHITELIST),
   check('search').optional().isString().trim(),
   (req, res, next) => validateResults(req, res, next)
 ];
