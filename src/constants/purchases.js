@@ -65,4 +65,6 @@ const PURCHASES_VALIDATORS = Object.freeze({
   NOTES_INVALID: 'Las observaciones deben ser texto'
 });
 
-module.exports = { PURCHASES_VALIDATORS };
+const SORT_WHITELIST = Object.freeze(['id', 'purch_date', 'supplier_id', 'purch_type', 'status', 'createdAt', 'supplier_name']);
+
+module.exports = { PURCHASES_VALIDATORS, SORT_WHITELIST };

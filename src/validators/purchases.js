@@ -1,7 +1,7 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
-const { PURCHASES_VALIDATORS } = require('../constants/purchases');
-const { paginationChecks } = require('./shared');
+const { PURCHASES_VALIDATORS, SORT_WHITELIST } = require('../constants/purchases');
+const { paginationChecks, sortChecks } = require('./shared');
 
 const validateGetAll = [
   ...paginationChecks,
@@ -31,6 +31,8 @@ const validateGetByBranch = [
     .notEmpty().withMessage(PURCHASES_VALIDATORS.BRANCH_ID_IS_EMPTY).bail()
     .isInt().withMessage(PURCHASES_VALIDATORS.BRANCH_ID_INVALID).bail(),
   ...paginationChecks,
+  ...sortChecks(SORT_WHITELIST),
+  check('search').optional().isString().trim(),
   (req, res, next) => validateResults(req, res, next)
 ];
 
