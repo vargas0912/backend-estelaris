@@ -55,7 +55,8 @@ const getRecordsByBranch = async (req, res) => {
   try {
     const data = matchedData(req);
     const { page, limit } = getPaginationParams(data);
-    const { purchases, total } = await getPurchasesByBranch(data.branch_id, page, limit);
+    const search = data.search ?? '';
+    const { purchases, total } = await getPurchasesByBranch(data.branch_id, page, limit, search, data.sortBy, data.sortOrder);
     res.send(buildPaginationResponse('purchases', purchases, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_BRANCH -> ${error}`, 400);

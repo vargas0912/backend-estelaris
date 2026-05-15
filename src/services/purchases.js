@@ -1,7 +1,19 @@
 const { purchases, purchaseDetails, suppliers, branches, users, products } = require('../models/index');
 const { sequelize } = require('../models/index');
+const { Op } = require('sequelize');
 const { updateFromPurchase } = require('./productStocks');
 const accountingEngine = require('./accountingEngine.service');
+const { SORT_WHITELIST } = require('../constants/purchases');
+
+const sanitizeSort = (sortBy, sortOrder) => ({
+  safeSortBy: SORT_WHITELIST.includes(sortBy) ? sortBy : 'purch_date',
+  safeSortOrder: sortOrder === 'ASC' ? 'ASC' : 'DESC'
+});
+
+const buildSortOrder = (safeSortBy, safeSortOrder) =>
+  safeSortBy === 'supplier_name'
+    ? [[{ model: suppliers, as: 'supplier' }, 'name', safeSortOrder]]
+    : [[safeSortBy, safeSortOrder]];
 
 const purchaseAttributes = [
   'id',
@@ -112,13 +124,26 @@ const getPurchasesBySupplier = async (supplierId, page = 1, limit = 20) => {
   return { purchases: rows, total: count };
 };
 
-const getPurchasesByBranch = async (branchId, page = 1, limit = 20) => {
+const getPurchasesByBranch = async (branchId, page = 1, limit = 20, search = '', sortBy = 'purch_date', sortOrder = 'DESC') => {
   const offset = (page - 1) * limit;
+  const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
+  const supplierInclude = {
+    model: suppliers,
+    as: 'supplier',
+    attributes: supplierAttributes,
+    ...(search ? { where: { name: { [Op.like]: `%${search}%` } }, required: true } : {})
+  };
+  const includes = [
+    supplierInclude,
+    { model: branches, as: 'branch', attributes: branchAttributes },
+    { model: users, as: 'user', attributes: userAttributes },
+    { model: purchaseDetails, as: 'details', attributes: detailAttributes, include: detailIncludes }
+  ];
   const { count, rows } = await purchases.findAndCountAll({
     attributes: purchaseAttributes,
     where: { branch_id: branchId },
-    include: purchaseIncludes,
-    order: [['purch_date', 'DESC']],
+    include: includes,
+    order: buildSortOrder(safeSortBy, safeSortOrder),
     limit,
     offset,
     distinct: true
