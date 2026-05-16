@@ -1,5 +1,16 @@
 const { productStocks, stockMovements, products, branches } = require('../models/index');
 const { Op } = require('sequelize');
+const { SORT_WHITELIST } = require('../constants/productStocks');
+
+const sanitizeSort = (sortBy, sortOrder) => ({
+  safeSortBy: SORT_WHITELIST.includes(sortBy) ? sortBy : 'id',
+  safeSortOrder: sortOrder === 'ASC' ? 'ASC' : 'DESC'
+});
+
+const buildSortOrder = (safeSortBy, safeSortOrder) =>
+  safeSortBy === 'product_name'
+    ? [[{ model: products, as: 'product' }, 'name', safeSortOrder]]
+    : [[safeSortBy, safeSortOrder]];
 
 const attributes = [
   'id',
@@ -95,8 +106,9 @@ const getStocksByProduct = async (productId, page = 1, limit = 20, search = '') 
   return { stocks: rows, total: count };
 };
 
-const getStocksByBranch = async (branchId, page = 1, limit = 20, search = '') => {
+const getStocksByBranch = async (branchId, page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC') => {
   const offset = (page - 1) * limit;
+  const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
 
   const productInclude = {
     model: products,
@@ -114,6 +126,7 @@ const getStocksByBranch = async (branchId, page = 1, limit = 20, search = '') =>
     attributes,
     where: { branch_id: branchId },
     include: [productInclude],
+    order: buildSortOrder(safeSortBy, safeSortOrder),
     limit,
     offset,
     distinct: true

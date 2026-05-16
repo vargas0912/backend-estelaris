@@ -13,4 +13,6 @@ const PRODUCT_STOCKS_VALIDATORS = Object.freeze({
   LAST_COUNT_DATE_INVALID: 'LAST_COUNT_DATE_INVALID'
 });
 
-module.exports = { PRODUCT_STOCKS_VALIDATORS };
+const SORT_WHITELIST = Object.freeze(['bar_code', 'quantity', 'min_stock', 'max_stock', 'last_count_date', 'created_at', 'product_name']);
+
+module.exports = { PRODUCT_STOCKS_VALIDATORS, SORT_WHITELIST };
