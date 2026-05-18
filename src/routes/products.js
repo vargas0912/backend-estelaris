@@ -82,7 +82,8 @@ router.get('/', [
  *        description: Identificador del producto
  *        required: true
  *        schema:
- *          type: number
+ *          type: string
+ *          maxLength: 20
  *      responses:
  *        '200':
  *          description: Retorna el objecto del producto consultado
@@ -116,13 +117,14 @@ router.get('/:id', [
  *                      schema:
  *                          type: object
  *                          required:
- *                              - sku
+ *                              - id
  *                              - name
  *                              - base_price
  *                          properties:
- *                              sku:
+ *                              id:
  *                                  type: string
- *                                  description: Codigo unico del producto
+ *                                  maxLength: 20
+ *                                  description: Codigo unico del producto (SKU)
  *                              barcode:
  *                                  type: string
  *                                  description: Codigo de barras (opcional)
@@ -212,19 +214,17 @@ router.post('/', [
  *            description: Identificador del producto
  *            required: true
  *            schema:
- *              type: number
+ *              type: string
+ *              maxLength: 20
  *          requestBody:
  *              content:
  *                  application/json:
  *                      schema:
  *                          type: object
  *                          required:
- *                              - sku
  *                              - name
  *                              - base_price
  *                          properties:
- *                              sku:
- *                                  type: string
  *                              barcode:
  *                                  type: string
  *                              name:
@@ -297,7 +297,8 @@ router.put('/:id', [
  *            description: Identificador del producto
  *            required: true
  *            schema:
- *              type: number
+ *              type: string
+ *              maxLength: 20
  *          responses:
  *              '200':
  *                  description: El producto se ha marcado como eliminado satisfactoriamente
