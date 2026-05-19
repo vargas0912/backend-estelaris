@@ -477,13 +477,12 @@ describe('[SALES] Test api sales /api/sales/', () => {
   // DELETE /api/sales/:id
   // ============================================
   describe('DELETE /api/sales/:id', () => {
-    test('18. Soft delete venta Pendiente sin pagos. Expect 200', async () => {
-      // Create a new credit sale for deletion
+    test('18. Soft delete venta Contado sin pagos. Expect 200', async () => {
       const newSaleRes = await api
         .post('/api/sales')
         .auth(Token, { type: 'bearer' })
         .set('x-branch-id', '1')
-        .send(saleCreateCredito(customerId, addressId, purchaseId))
+        .send(saleCreateContado(customerId, addressId, purchaseId))
         .expect(200);
 
       const deleteSaleId = newSaleRes.body.sale.id;
