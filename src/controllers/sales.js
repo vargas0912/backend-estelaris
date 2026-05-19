@@ -47,7 +47,8 @@ const getRecordsByCustomer = async (req, res) => {
     const data = matchedData(req);
     const { page, limit } = getPaginationParams(data);
     const search = data.search ?? '';
-    const { sales, total } = await getSalesByCustomer(data.customer_id, page, limit, search);
+    const salesType = data.sales_type ?? null;
+    const { sales, total } = await getSalesByCustomer(data.customer_id, page, limit, search, salesType);
     res.send(buildPaginationResponse('sales', sales, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_CUSTOMER -> ${error}`, 400);
