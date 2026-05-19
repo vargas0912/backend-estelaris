@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const { registerAdminCtrl, registerCtrl, loginCtrl, refreshCtrl, logoutCtrl } = require('../controllers/auth');
-const { validateLogin, validateRegister } = require('../validators/auth');
+const { registerAdminCtrl, registerCtrl, loginCtrl, refreshCtrl, logoutCtrl, verifyPasswordCtrl } = require('../controllers/auth');
+const { validateLogin, validateRegister, validateVerifyPassword } = require('../validators/auth');
 
 const authMidleware = require('../middlewares/session');
 const conditionalAuthForSuperAdmin = require('../middlewares/conditionalAuth');
@@ -151,5 +151,61 @@ router.post('/refresh', [authMidleware], refreshCtrl);
  *         description: Token inválido o ausente
  */
 router.post('/logout', authMidleware, logoutCtrl);
+
+/**
+ * @openapi
+ * /auth/verify-password:
+ *   post:
+ *     tags:
+ *       - auth
+ *     summary: Verificar contraseña del usuario activo
+ *     description: Confirma que la contraseña enviada corresponde al usuario autenticado. Usado para autorizar acciones sensibles sin cerrar sesión.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *             properties:
+ *               password:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Contraseña válida
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: true
+ *       '401':
+ *         description: Contraseña incorrecta
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       type:
+ *                         type: string
+ *                         example: client
+ *                       name:
+ *                         type: string
+ *                         example: password
+ *                       message:
+ *                         type: string
+ *                         example: Contraseña incorrecta
+ */
+router.post('/verify-password', [authMidleware, validateVerifyPassword], verifyPasswordCtrl);
 
 module.exports = router;
