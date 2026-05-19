@@ -101,10 +101,11 @@ const getSale = async (id) => {
   });
 };
 
-const getSalesByCustomer = async (customerId, page = 1, limit = 20, search = '') => {
+const getSalesByCustomer = async (customerId, page = 1, limit = 20, search = '', salesType = null) => {
   const offset = (page - 1) * limit;
   const where = { customer_id: customerId };
   if (search) where.ticket = { [Op.like]: `%${search}%` };
+  if (salesType) where.sales_type = salesType;
   const { count, rows } = await sales.findAndCountAll({
     attributes: saleAttributes,
     where,

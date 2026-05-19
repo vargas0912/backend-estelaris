@@ -120,6 +120,12 @@ router.get('/', [
  *        schema:
  *          type: string
  *        description: Texto para filtrar resultados
+ *      - in: query
+ *        name: sales_type
+ *        schema:
+ *          type: string
+ *          enum: [Contado, Credito]
+ *        description: Filtrar por tipo de venta
  *      responses:
  *        '200':
  *          description: Lista de ventas del cliente paginada

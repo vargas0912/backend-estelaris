@@ -25,6 +25,7 @@ const validateGetByCustomer = [
     .isInt().withMessage(SALES_VALIDATORS.CUSTOMER_ID_INVALID).bail(),
   ...paginationChecks,
   check('search').optional().isString().trim(),
+  check('sales_type').optional().isIn(['Contado', 'Credito']).withMessage('sales_type must be Contado or Credito'),
   (req, res, next) => validateResults(req, res, next)
 ];
 
