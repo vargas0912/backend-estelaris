@@ -145,7 +145,8 @@ const cancelRecord = async (req, res) => {
 const deleteRecord = async (req, res) => {
   try {
     const { id } = matchedData(req);
-    const result = await deleteSale(id);
+    const userId = req.user.id;
+    const result = await deleteSale(id, userId);
 
     if (result && result.error === 'NOT_FOUND') {
       handleHttpError(res, `SALE ${id} NOT EXISTS`, 404);

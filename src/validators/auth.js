@@ -113,4 +113,11 @@ const validateChangePassword = [
   }
 ];
 
-module.exports = { validateRegister, validateLogin, validateGetUser, validateGetUsers, validateUpdateUser, validateChangePassword };
+const validateVerifyPassword = [
+  check('password')
+    .exists().withMessage(REGISTER.PASSWORD_NOT_EXISTS).bail()
+    .notEmpty().withMessage(REGISTER.PASSWORD_EMPTY).bail(),
+  (req, res, next) => validateResults(req, res, next)
+];
+
+module.exports = { validateRegister, validateLogin, validateGetUser, validateGetUsers, validateUpdateUser, validateChangePassword, validateVerifyPassword };

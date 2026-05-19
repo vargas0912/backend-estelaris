@@ -135,4 +135,21 @@ const refreshCtrl = async(req, res) => {
   }
 };
 
-module.exports = { registerAdminCtrl, registerCtrl, loginCtrl, refreshCtrl, logoutCtrl };
+const verifyPasswordCtrl = async (req, res) => {
+  try {
+    const { password } = matchedData(req);
+    const user = await users.findByPk(req.user.id, { attributes: ['password'] });
+    if (!user) return res.status(401).json({ errors: [{ type: 'client', name: 'password', message: 'Contraseña incorrecta' }] });
+    const valid = await compare(password, user.password);
+    if (!valid) {
+      return res.status(401).json({
+        errors: [{ type: 'client', name: 'password', message: 'Contraseña incorrecta' }]
+      });
+    }
+    res.send({ ok: true });
+  } catch (error) {
+    handleHttpError(res, 'ERROR_VERIFY_PASSWORD', 400);
+  }
+};
+
+module.exports = { registerAdminCtrl, registerCtrl, loginCtrl, refreshCtrl, logoutCtrl, verifyPasswordCtrl };
