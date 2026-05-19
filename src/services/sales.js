@@ -1,11 +1,12 @@
 const {
   sales, saleDetails, saleInstallments, salePayments, saleDeliveries,
   customers, customerAddresses, employees, branches, users, products,
-  productStocks, stockMovements, campaignProducts
+  productStocks, stockMovements, campaignProducts, accountingVouchers: avModel
 } = require('../models/index');
 const { sequelize } = require('../models/index');
 const { Op } = require('sequelize');
 const accountingEngine = require('./accountingEngine.service');
+const { cancelVoucher } = require('./accountingVouchers');
 const { TICKET_CONFIG, SORT_WHITELIST } = require('../constants/sales');
 const {
   getActiveConfig,
@@ -591,21 +592,76 @@ const cancelSale = async (id, userId) => {
   }
 };
 
-const deleteSale = async (id) => {
-  const data = await sales.findByPk(id);
-  if (!data) return { error: 'NOT_FOUND' };
+const deleteSale = async (id, userId) => {
+  const sale = await sales.findOne({
+    where: { id },
+    include: [{ model: saleDetails, as: 'details', attributes: detailAttributes }]
+  });
 
-  if (data.status !== 'Pendiente') {
-    return { error: 'SALE_CANNOT_BE_DELETED' };
-  }
+  if (!sale) return { error: 'NOT_FOUND' };
+  if (sale.sales_type !== 'Contado') return { error: 'SALE_DELETE_ONLY_CONTADO' };
 
   const activePayments = await salePayments.count({ where: { sale_id: id } });
-  if (activePayments > 0) {
-    return { error: 'SALE_HAS_ACTIVE_PAYMENTS' };
+  if (activePayments > 0) return { error: 'SALE_HAS_ACTIVE_PAYMENTS' };
+
+  const voucher = await avModel.findOne({
+    where: { reference_type: 'sale', reference_id: id },
+    include: [{ association: 'period', attributes: ['status'] }]
+  });
+  if (voucher && voucher.period && voucher.period.status !== 'abierto') {
+    return { error: 'SALE_PERIOD_CLOSED' };
   }
 
-  await sales.destroy({ where: { id } });
-  return { deleted: true };
+  const transaction = await sequelize.transaction();
+  try {
+    for (const detail of sale.details) {
+      const qty = parseFloat(detail.qty);
+      const stock = await productStocks.findOne({
+        where: { bar_code: `${detail.product_id}-${detail.purch_id}`, branch_id: sale.branch_id },
+        transaction,
+        lock: transaction.LOCK.UPDATE
+      });
+
+      if (stock) {
+        stock.quantity = parseFloat((parseFloat(stock.quantity) + qty).toFixed(3));
+        stock.last_count_date = new Date();
+        await stock.save({ transaction });
+      }
+
+      await stockMovements.create({
+        product_id: detail.product_id,
+        branch_id: sale.branch_id,
+        reference_type: 'adjustment',
+        reference_id: id,
+        qty_change: qty,
+        notes: `Reversal por eliminación de venta #${id}`,
+        created_by: userId
+      }, { transaction });
+    }
+
+    if (parseFloat(sale.points_redeemed) > 0) {
+      await voidRedeemPoints(sale.customer_id, id, userId, transaction);
+    }
+    if (parseFloat(sale.points_earned) > 0) {
+      await voidEarnPoints(sale.customer_id, id, userId, transaction);
+    }
+
+    await sales.destroy({ where: { id }, transaction });
+
+    await transaction.commit();
+
+    if (voucher) {
+      cancelVoucher(voucher.id)
+        .catch(err =>
+          console.error(`[AccountingEngine] Error revirtiendo póliza de venta #${id}:`, err.message)
+        );
+    }
+
+    return { deleted: true };
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 };
 
 module.exports = {
