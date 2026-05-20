@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.customerAddresses, { as: 'customerAddress', foreignKey: 'customer_address_id' });
       this.belongsTo(models.employees, { as: 'employee', foreignKey: 'employee_id' });
       this.belongsTo(models.users, { as: 'user', foreignKey: 'user_id' });
+      this.belongsTo(models.users, { as: 'modifiedBy', foreignKey: 'modified_by' });
       this.belongsTo(models.priceLists, { as: 'priceList', foreignKey: 'price_list_id' });
       this.hasMany(models.saleDetails, { as: 'details', foreignKey: 'sale_id' });
       this.hasMany(models.salePayments, { as: 'payments', foreignKey: 'sale_id' });
@@ -128,6 +129,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     notes: {
       type: DataTypes.TEXT,
+      allowNull: true
+    },
+    modified_by: {
+      type: DataTypes.INTEGER,
       allowNull: true
     }
   }, {
