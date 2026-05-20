@@ -582,6 +582,7 @@ const cancelSale = async (id, userId) => {
 
     sale.status = 'Cancelado';
     sale.due_payment = 0;
+    sale.modified_by = userId;
     await sale.save({ transaction });
 
     await transaction.commit();
@@ -646,7 +647,8 @@ const deleteSale = async (id, userId) => {
       await voidEarnPoints(sale.customer_id, id, userId, transaction);
     }
 
-    await sales.destroy({ where: { id }, transaction });
+    await sale.update({ modified_by: userId }, { transaction });
+    await sale.destroy({ transaction });
 
     await transaction.commit();
 
