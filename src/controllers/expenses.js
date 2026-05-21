@@ -9,7 +9,7 @@ const getRecords = async(req, res) => {
     const data = matchedData(req);
     const { page, limit } = getPaginationParams(data);
     const search = data.search ?? '';
-    const { expenses, total } = await getAllExpenses(page, limit, search);
+    const { expenses, total } = await getAllExpenses(page, limit, search, data.sortBy, data.sortOrder);
     res.send(buildPaginationResponse('expenses', expenses, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
@@ -44,7 +44,7 @@ const getRecordsByBranch = async(req, res) => {
     const { page, limit } = getPaginationParams(data);
     const search = data.search ?? '';
     // eslint-disable-next-line camelcase
-    const { expenses, total } = await getExpensesByBranch(data.branch_id, page, limit, search);
+    const { expenses, total } = await getExpensesByBranch(data.branch_id, page, limit, search, data.sortBy, data.sortOrder);
     res.send(buildPaginationResponse('expenses', expenses, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_BRANCH -> ${error}`, 400);

@@ -1,10 +1,11 @@
 const { check } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
-const { EXPENSE_VALIDATORS } = require('../constants/expenses');
-const { paginationChecks } = require('./shared');
+const { EXPENSE_VALIDATORS, SORT_WHITELIST } = require('../constants/expenses');
+const { paginationChecks, sortChecks } = require('./shared');
 
 const validateGetAll = [
   ...paginationChecks,
+  ...sortChecks(SORT_WHITELIST),
   check('search').optional().isString().trim(),
   (req, res, next) => {
     return validateResults(req, res, next);
@@ -27,6 +28,7 @@ const validateGetByBranch = [
     .notEmpty().withMessage(EXPENSE_VALIDATORS.BRANCH_ID_IS_EMPTY).bail()
     .isInt().withMessage(EXPENSE_VALIDATORS.BRANCH_ID_NOT_EXISTS),
   ...paginationChecks,
+  ...sortChecks(SORT_WHITELIST),
   check('search').optional().isString().trim(),
   (req, res, next) => {
     return validateResults(req, res, next);

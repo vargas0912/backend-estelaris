@@ -6,8 +6,8 @@ const paginationChecks = [
 ];
 
 const sortChecks = (whitelist) => [
-  check('sortBy').optional().isString().trim().isIn(whitelist),
-  check('sortOrder').optional().isString().trim().isIn(['ASC', 'DESC'])
+  check('sortBy').optional().isString().trim().isIn(whitelist).withMessage('INVALID_SORT_FIELD'),
+  check('sortOrder').optional().isString().trim().isIn(['ASC', 'DESC']).withMessage('INVALID_SORT_ORDER')
 ];
 
 module.exports = { paginationChecks, sortChecks };

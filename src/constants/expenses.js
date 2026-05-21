@@ -13,4 +13,6 @@ const EXPENSE_VALIDATORS = Object.freeze({
   EXPENSE_AMOUNT_INVALID: 'EXPENSE_AMOUNT_INVALID'
 });
 
-module.exports = { EXPENSE_VALIDATORS };
+const SORT_WHITELIST = Object.freeze(['id', 'trans_date', 'expense_amount', 'created_at', 'expenseType']);
+
+module.exports = { EXPENSE_VALIDATORS, SORT_WHITELIST };

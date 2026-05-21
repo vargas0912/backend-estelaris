@@ -14,7 +14,7 @@ const swaggerDefinition = {
       url: 'http://localhost:3000/api'
     },
     {
-      url: 'https://backend-estelaris-uatestelaris.up.railway.app'
+      url: 'https://backend-estelaris-uatestelaris.up.railway.app/api'
     }
   ],
   components: {

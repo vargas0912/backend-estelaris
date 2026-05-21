@@ -2,6 +2,16 @@
 const { expenses, branches, users, expense_types } = require('../models/index');
 const { Op } = require('sequelize');
 const accountingEngine = require('./accountingEngine.service');
+const { SORT_WHITELIST } = require('../constants/expenses');
+
+const buildOrder = (sortBy, sortOrder) => {
+  const safeSortOrder = sortOrder === 'ASC' ? 'ASC' : 'DESC';
+  if (sortBy === 'expenseType') {
+    return [[{ model: expense_types, as: 'expenseType' }, 'name', safeSortOrder]]; // eslint-disable-line camelcase
+  }
+  const safeSortBy = SORT_WHITELIST.filter(c => c !== 'expenseType').includes(sortBy) ? sortBy : 'id';
+  return [[safeSortBy, safeSortOrder]];
+};
 
 // eslint-disable-next-line camelcase
 const attributes = ['id', 'branch_id', 'user_id', 'expense_type_id', 'trans_date', 'expense_amount', 'notes', 'created_at', 'updated_at'];
@@ -13,7 +23,7 @@ const includes = [
   { model: expense_types, as: 'expenseType', attributes: ['id', 'name'] }
 ];
 
-const getAllExpenses = async(page = 1, limit = 20, search = '') => {
+const getAllExpenses = async(page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC') => {
   const offset = (page - 1) * limit;
   // eslint-disable-next-line camelcase
   const expenseTypeInclude = {
@@ -30,6 +40,7 @@ const getAllExpenses = async(page = 1, limit = 20, search = '') => {
   const { count, rows } = await expenses.findAndCountAll({
     attributes,
     include,
+    order: buildOrder(sortBy, sortOrder),
     limit,
     offset,
     distinct: true
@@ -37,7 +48,7 @@ const getAllExpenses = async(page = 1, limit = 20, search = '') => {
   return { expenses: rows, total: count };
 };
 
-const getExpensesByBranch = async(branchId, page = 1, limit = 20, search = '') => {
+const getExpensesByBranch = async(branchId, page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC') => {
   const offset = (page - 1) * limit;
   // eslint-disable-next-line camelcase
   const expenseTypeInclude = {
@@ -55,6 +66,7 @@ const getExpensesByBranch = async(branchId, page = 1, limit = 20, search = '') =
     attributes,
     include,
     where: { branch_id: branchId },
+    order: buildOrder(sortBy, sortOrder),
     limit,
     offset,
     distinct: true
