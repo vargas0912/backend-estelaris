@@ -231,6 +231,48 @@ const swaggerDefinition = {
           }
         }
       },
+      MunicipalityWithState: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'integer'
+          },
+          name: {
+            type: 'string'
+          },
+          created_at: {
+            type: 'string',
+            format: 'date-time'
+          },
+          updated_at: {
+            type: 'string',
+            format: 'date-time'
+          },
+          estado: {
+            type: 'object',
+            nullable: true,
+            properties: {
+              id: {
+                type: 'integer'
+              },
+              name: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      },
+      MunicipalitiesAutocompleteResponse: {
+        type: 'object',
+        properties: {
+          municipalities: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/MunicipalityWithState'
+            }
+          }
+        }
+      },
       branches: {
         type: 'object',
         properties: {

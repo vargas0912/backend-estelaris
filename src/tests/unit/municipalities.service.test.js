@@ -1,7 +1,9 @@
+const { Op } = require('sequelize');
 const { municipalities, states } = require('../../models/index');
 const {
   getMunicipalitiesByStateId,
-  getMunicipality
+  getMunicipality,
+  getAll
 } = require('../../services/municipalities');
 
 // Mock de los modelos
@@ -558,6 +560,80 @@ describe('Municipalities Service - Unit Tests', () => {
       expect(result.municipalities[0].id).toBe(3);
       expect(result.municipalities[1].id).toBe(1);
       expect(result.municipalities[2].id).toBe(2);
+    });
+  });
+
+  // ============================================
+  // Tests para getAll (autocomplete)
+  // ============================================
+  describe('getAll', () => {
+    test('6.1 debe llamar findAll con where Op.like, include estado (required:false), attributes y limit por defecto', async() => {
+      const mockRows = [
+        { id: 1, name: 'Guadalajara', estado: { id: 14, name: 'Jalisco' } }
+      ];
+      municipalities.findAll.mockResolvedValue(mockRows);
+
+      const result = await getAll('Gua');
+
+      expect(municipalities.findAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { name: { [Op.like]: '%Gua%' } },
+          include: [
+            expect.objectContaining({
+              model: states,
+              as: 'estado',
+              attributes: ['id', 'name'],
+              required: false
+            })
+          ],
+          attributes: ['id', 'name', 'created_at', 'updated_at'],
+          limit: 15
+        })
+      );
+      expect(result).toEqual({ municipalities: mockRows });
+    });
+
+    test('6.2 debe reenviar limit personalizado a findAll', async() => {
+      municipalities.findAll.mockResolvedValue([]);
+
+      await getAll('x', 5);
+
+      expect(municipalities.findAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          limit: 5
+        })
+      );
+    });
+
+    test('6.3 debe propagar el error si findAll falla', async() => {
+      const dbError = new Error('DB error in getAll');
+      municipalities.findAll.mockRejectedValue(dbError);
+
+      await expect(getAll('test')).rejects.toThrow('DB error in getAll');
+    });
+
+    test('debe retornar municipalities vacio si no hay coincidencias', async() => {
+      municipalities.findAll.mockResolvedValue([]);
+
+      const result = await getAll('zzzzz');
+
+      expect(result).toEqual({ municipalities: [] });
+    });
+
+    test('debe usar required:false para no excluir municipios huerfanos', async() => {
+      municipalities.findAll.mockResolvedValue([]);
+
+      await getAll('test');
+
+      expect(municipalities.findAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: [
+            expect.objectContaining({
+              required: false
+            })
+          ]
+        })
+      );
     });
   });
 

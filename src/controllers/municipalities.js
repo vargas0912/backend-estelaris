@@ -2,7 +2,7 @@ const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
 const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
-const { getMunicipality, getMunicipalitiesByStateId } = require('../services/municipalities');
+const { getMunicipality, getMunicipalitiesByStateId, getAll: getAllMunicipalities } = require('../services/municipalities');
 
 /**
  * Obtener detalle de un registro
@@ -39,4 +39,14 @@ const getByStateId = async(req, res) => {
   }
 };
 
-module.exports = { getById, getByStateId };
+const getAll = async(req, res) => {
+  try {
+    const { search, limit } = matchedData(req);
+    const { municipalities } = await getAllMunicipalities(search, limit);
+    res.send({ municipalities });
+  } catch (error) {
+    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`, 400);
+  }
+};
+
+module.exports = { getById, getByStateId, getAll };

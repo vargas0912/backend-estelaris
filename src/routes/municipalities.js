@@ -1,16 +1,62 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord, validateGetRecordByState } = require('../validators/municipalities');
+const { validateGetRecord, validateGetRecordByState, validateGetAll } = require('../validators/municipalities');
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 const { readLimiter } = require('../middlewares/rateLimiters');
 
-const { getById, getByStateId } = require('../controllers/municipalities');
+const { getById, getByStateId, getAll } = require('../controllers/municipalities');
 
 const { MUNICIPALITIES: MUN } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
+
+/**
+ * Get municipalities autocomplete search
+ * @openapi
+ * /municipalities:
+ *    get:
+ *      tags:
+ *        - municipalities
+ *      summary: Autocomplete de municipios por nombre
+ *      description: Busqueda por nombre (Op.like) con estado embebido, limitada por limit
+ *      security:
+ *        - bearerAuth: []
+ *      parameters:
+ *      - in: query
+ *        name: search
+ *        required: true
+ *        schema:
+ *          type: string
+ *        description: Texto a buscar en el nombre del municipio
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *          maximum: 100
+ *          default: 15
+ *        description: Maximo de resultados
+ *      responses:
+ *        '200':
+ *          description: Lista de municipios coincidentes
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/MunicipalitiesAutocompleteResponse'
+ *        '401':
+ *          description: No autenticado
+ *        '403':
+ *          description: Sin permiso
+ *        '400':
+ *          description: Error de validacion
+ */
+router.get('/', [
+  readLimiter,
+  authMidleware,
+  validateGetAll,
+  checkRol([ROLE.USER, ROLE.ADMIN], MUN.VIEW_ALL)], getAll);
 
 /**
  * Get detail from municipality id
