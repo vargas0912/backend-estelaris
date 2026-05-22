@@ -1,8 +1,8 @@
-const rateLimit = require('express-rate-limit');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 
 // Limitar por usuario autenticado; si no hay token (ruta pública), caer a IP
 const keyGenerator = (req) =>
-  req.user?.id ? `user_${req.user.id}` : req.ip;
+  req.user?.id ? `user_${req.user.id}` : ipKeyGenerator(req);
 
 /**
  * Middleware condicional que bypasea el rate limiting en entorno de test
