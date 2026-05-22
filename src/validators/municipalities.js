@@ -23,4 +23,19 @@ const validateGetRecordByState = [
   }
 ];
 
-module.exports = { validateGetRecord, validateGetRecordByState };
+const validateGetAll = [
+  check('search')
+    .exists().withMessage('SEARCH_NOT_EXISTS').bail()
+    .notEmpty().withMessage('SEARCH_IS_EMPTY').bail()
+    .isString().trim(),
+  check('limit')
+    .optional()
+    .isInt({ min: 1, max: 100 }).withMessage('limit debe ser un entero entre 1 y 100')
+    .toInt()
+    .default(15),
+  (req, res, next) => {
+    return validateResults(req, res, next);
+  }
+];
+
+module.exports = { validateGetRecord, validateGetRecordByState, validateGetAll };
