@@ -2,6 +2,12 @@ const { customers, customerAddresses, municipalities, branches, users } = requir
 const { Op } = require('sequelize');
 const { encrypt } = require('../utils/handlePassword');
 const { ROLE } = require('../constants/roles');
+const { SORT_WHITELIST } = require('../constants/customers');
+
+const sanitizeSort = (sortBy, sortOrder) => ({
+  safeSortBy: SORT_WHITELIST.includes(sortBy) ? sortBy : 'id',
+  safeSortOrder: sortOrder === 'ASC' ? 'ASC' : 'DESC'
+});
 
 const attributes = [
   'id', 'name', 'email', 'phone', 'mobile', 'tax_id', 'is_international',
@@ -13,8 +19,9 @@ const municipalityAttributes = ['id', 'name'];
 const branchAttributes = ['id', 'name'];
 const userAttributes = ['id', 'email', 'role'];
 
-const getAllCustomers = async(page = 1, limit = 20, search = '') => {
+const getAllCustomers = async(page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC') => {
   const offset = (page - 1) * limit;
+  const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
   const where = search ? { name: { [Op.like]: `%${search}%` } } : {};
   const { count, rows } = await customers.findAndCountAll({
     attributes,
@@ -36,6 +43,7 @@ const getAllCustomers = async(page = 1, limit = 20, search = '') => {
         attributes: userAttributes
       }
     ],
+    order: [[safeSortBy, safeSortOrder]],
     limit,
     offset,
     distinct: true
@@ -78,8 +86,9 @@ const getCustomer = async(id) => {
   return result;
 };
 
-const getCustomersByBranch = async(branchId, page = 1, limit = 20, search = '') => {
+const getCustomersByBranch = async(branchId, page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC') => {
   const offset = (page - 1) * limit;
+  const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
   const where = { branch_id: branchId };
   if (search) where.name = { [Op.like]: `%${search}%` };
   const { count, rows } = await customers.findAndCountAll({
@@ -98,6 +107,7 @@ const getCustomersByBranch = async(branchId, page = 1, limit = 20, search = '') 
         required: true
       }
     ],
+    order: [[safeSortBy, safeSortOrder]],
     limit,
     offset,
     distinct: true
@@ -106,8 +116,9 @@ const getCustomersByBranch = async(branchId, page = 1, limit = 20, search = '') 
   return { customers: rows, total: count };
 };
 
-const getCustomersByMunicipality = async(municipalityId, page = 1, limit = 20, search = '') => {
+const getCustomersByMunicipality = async(municipalityId, page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC') => {
   const offset = (page - 1) * limit;
+  const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
   const where = { municipality_id: municipalityId };
   if (search) where.name = { [Op.like]: `%${search}%` };
   const { count, rows } = await customers.findAndCountAll({
@@ -126,6 +137,7 @@ const getCustomersByMunicipality = async(municipalityId, page = 1, limit = 20, s
         attributes: branchAttributes
       }
     ],
+    order: [[safeSortBy, safeSortOrder]],
     limit,
     offset,
     distinct: true

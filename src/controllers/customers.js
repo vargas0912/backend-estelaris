@@ -23,7 +23,7 @@ const getRecords = async(req, res) => {
     const { page = 1, limit = 20, search = '' } = data;
     const pageNum = Number(page);
     const limitNum = Number(limit);
-    const { customers, total } = await getAllCustomers(pageNum, limitNum, search);
+    const { customers, total } = await getAllCustomers(pageNum, limitNum, search, data.sortBy, data.sortOrder);
     res.send({
       customers,
       pagination: { total, page: pageNum, limit: limitNum, totalPages: Math.ceil(total / limitNum) }
@@ -65,7 +65,7 @@ const getRecordsByBranch = async(req, res) => {
     const { branchId, page = 1, limit = 20, search = '' } = data;
     const pageNum = Number(page);
     const limitNum = Number(limit);
-    const { customers, total } = await getCustomersByBranch(branchId, pageNum, limitNum, search);
+    const { customers, total } = await getCustomersByBranch(branchId, pageNum, limitNum, search, data.sortBy, data.sortOrder);
     res.send({
       customers,
       pagination: { total, page: pageNum, limit: limitNum, totalPages: Math.ceil(total / limitNum) }
@@ -86,7 +86,7 @@ const getRecordsByMunicipality = async(req, res) => {
     const { municipalityId, page = 1, limit = 20, search = '' } = data;
     const pageNum = Number(page);
     const limitNum = Number(limit);
-    const { customers, total } = await getCustomersByMunicipality(municipalityId, pageNum, limitNum, search);
+    const { customers, total } = await getCustomersByMunicipality(municipalityId, pageNum, limitNum, search, data.sortBy, data.sortOrder);
     res.send({
       customers,
       pagination: { total, page: pageNum, limit: limitNum, totalPages: Math.ceil(total / limitNum) }

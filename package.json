@@ -56,7 +56,7 @@
     "testSequencer": "./testSequencer.js"
   },
   "lint-staged": {
-    "*.(js)": "pnpm run lint:fix"
+    "*.(js)": "eslint --fix --ignore-path .gitignore"
   },
   "pnpm": {
     "overrides": {
