@@ -13,7 +13,10 @@ const data = [
 
   // Municipios
   { name: MUN.NAME_VIEW, codeName: MUN.VIEW_ALL, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: MUN.NAME_VIEW_STATE, codeName: MUN.NAME_VIEW_STATE, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: MUN.NAME_VIEW_STATE, codeName: MUN.VIEW_STATE, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: MUN.NAME_ADD, codeName: MUN.ADD, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: MUN.NAME_UPDATE, codeName: MUN.UPDATE, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: MUN.NAME_DELETE, codeName: MUN.DELETE, module: MUN.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Sucursales
   { name: BR.NAME_ADD, codeName: BR.ADD, module: BR.MODULE_NAME, created_at: fecha, updated_at: fecha },

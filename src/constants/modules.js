@@ -67,7 +67,13 @@ const MUNICIPALITIES = Object.freeze({
   VIEW_ALL: 'view_municipality',
   NAME_VIEW: 'Ver municipios',
   VIEW_STATE: 'view_state',
-  NAME_VIEW_STATE: 'Ver municipios por estado'
+  NAME_VIEW_STATE: 'Ver municipios por estado',
+  ADD: 'create_municipality',
+  NAME_ADD: 'Crear municipio',
+  UPDATE: 'update_municipality',
+  NAME_UPDATE: 'Modificar municipio',
+  DELETE: 'delete_municipality',
+  NAME_DELETE: 'Eliminar municipio'
 });
 
 const POSITION = Object.freeze({

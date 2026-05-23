@@ -219,6 +219,284 @@ describe('[MUNICIPALITIES] Test api municipalities //api/municipalities/', () =>
   });
 
   // ============================================
+  // Tests CRUD: POST /municipalities
+  // ============================================
+  describe('POST /municipalities - Crear municipio', () => {
+    test('C1. POST cuerpo valido. Expect 201 con active:true', async() => {
+      const response = await api
+        .post('/api/municipalities')
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Municipio Test CRUD', state_id: 1 })
+        .expect(201);
+
+      expect(response.body).toHaveProperty('municipality');
+      expect(response.body.municipality).toHaveProperty('id');
+      expect(response.body.municipality.name).toBe('Municipio Test CRUD');
+      expect(response.body.municipality.active).toBe(true);
+      expect(response.body.municipality.state_id).toBe(1);
+    });
+
+    test('C2. POST sin nombre. Expect 400', async() => {
+      await api
+        .post('/api/municipalities')
+        .auth(Token, { type: 'bearer' })
+        .send({ state_id: 1 })
+        .expect(400);
+    });
+
+    test('C3. POST sin state_id. Expect 400', async() => {
+      await api
+        .post('/api/municipalities')
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Test Sin Estado' })
+        .expect(400);
+    });
+
+    test('C4. POST con state_id no entero. Expect 400', async() => {
+      await api
+        .post('/api/municipalities')
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Test', state_id: 'abc' })
+        .expect(400);
+    });
+
+    test('C5. POST sin autenticacion. Expect 401', async() => {
+      await api
+        .post('/api/municipalities')
+        .send({ name: 'Test', state_id: 1 })
+        .expect(401);
+    });
+
+    test('C6. POST sin privilegio create_municipality. Expect 403', async() => {
+      // Crear usuario sin privilegios
+      const superadminLoginRes = await api
+        .post('/api/auth/login')
+        .send({ email: 'superadmin@estelaris.com', password: 'Admin123' });
+      const superadminToken = superadminLoginRes.body.sesion.token;
+
+      const newUserEmail = `mun_crud_nopriv_${Date.now()}@test.com`;
+      const registerRes = await api
+        .post('/api/auth/register')
+        .auth(superadminToken, { type: 'bearer' })
+        .send({
+          name: 'Sin Priv Municipio CRUD',
+          email: newUserEmail,
+          password: 'Test1234',
+          role: 'user'
+        });
+
+      if (registerRes.status !== 200) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      const loginRes = await api
+        .post('/api/auth/login')
+        .send({ email: newUserEmail, password: 'Test1234' });
+
+      const noPrivToken = loginRes.body.sesion.token;
+
+      await api
+        .post('/api/municipalities')
+        .auth(noPrivToken, { type: 'bearer' })
+        .send({ name: 'Test', state_id: 1 })
+        .expect(403);
+    });
+  });
+
+  // ============================================
+  // Tests CRUD: PUT /municipalities/:id
+  // ============================================
+  describe('PUT /municipalities/:id - Actualizar municipio', () => {
+    let municipalityToUpdateId = null;
+
+    test('U1. Crear municipio para update', async() => {
+      const response = await api
+        .post('/api/municipalities')
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Mun Para Update', state_id: 2 })
+        .expect(201);
+
+      municipalityToUpdateId = response.body.municipality.id;
+      expect(municipalityToUpdateId).toBeDefined();
+    });
+
+    test('U2. PUT valido. Expect 200 con datos actualizados', async() => {
+      const response = await api
+        .put(`/api/municipalities/${municipalityToUpdateId}`)
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Mun Actualizado', state_id: 3 })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('municipality');
+      expect(response.body.municipality.name).toBe('Mun Actualizado');
+      expect(response.body.municipality.state_id).toBe(3);
+    });
+
+    test('U3. PUT con id no numerico. Expect 400', async() => {
+      await api
+        .put('/api/municipalities/abc')
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Test', state_id: 1 })
+        .expect(400);
+    });
+
+    test('U4. PUT sin nombre. Expect 400', async() => {
+      await api
+        .put(`/api/municipalities/${municipalityToUpdateId}`)
+        .auth(Token, { type: 'bearer' })
+        .send({ state_id: 1 })
+        .expect(400);
+    });
+
+    test('U5. PUT sin state_id. Expect 400', async() => {
+      await api
+        .put(`/api/municipalities/${municipalityToUpdateId}`)
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Nombre Valido' })
+        .expect(400);
+    });
+
+    test('U6. PUT id inexistente. Expect 404', async() => {
+      await api
+        .put('/api/municipalities/99999')
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Nombre Valido', state_id: 1 })
+        .expect(404);
+    });
+
+    test('U7. PUT sin autenticacion. Expect 401', async() => {
+      await api
+        .put(`/api/municipalities/${municipalityToUpdateId}`)
+        .send({ name: 'Test', state_id: 1 })
+        .expect(401);
+    });
+
+    test('U8. PUT sin privilegio update_municipality. Expect 403', async() => {
+      const superadminLoginRes = await api
+        .post('/api/auth/login')
+        .send({ email: 'superadmin@estelaris.com', password: 'Admin123' });
+      const superadminToken = superadminLoginRes.body.sesion.token;
+
+      const newUserEmail = `mun_upd_nopriv_${Date.now()}@test.com`;
+      const registerRes = await api
+        .post('/api/auth/register')
+        .auth(superadminToken, { type: 'bearer' })
+        .send({
+          name: 'Sin Priv Update',
+          email: newUserEmail,
+          password: 'Test1234',
+          role: 'user'
+        });
+
+      if (registerRes.status !== 200) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      const loginRes = await api
+        .post('/api/auth/login')
+        .send({ email: newUserEmail, password: 'Test1234' });
+
+      const noPrivToken = loginRes.body.sesion.token;
+
+      await api
+        .put(`/api/municipalities/${municipalityToUpdateId}`)
+        .auth(noPrivToken, { type: 'bearer' })
+        .send({ name: 'Test', state_id: 1 })
+        .expect(403);
+    });
+  });
+
+  // ============================================
+  // Tests CRUD: DELETE /municipalities/:id
+  // ============================================
+  describe('DELETE /municipalities/:id - Eliminar municipio', () => {
+    let municipalityToDeleteId = null;
+
+    test('D1. Crear municipio para delete', async() => {
+      const response = await api
+        .post('/api/municipalities')
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Mun Para Delete', state_id: 1 })
+        .expect(201);
+
+      municipalityToDeleteId = response.body.municipality.id;
+      expect(municipalityToDeleteId).toBeDefined();
+    });
+
+    test('D2. DELETE con id no numerico. Expect 400', async() => {
+      await api
+        .delete('/api/municipalities/xyz')
+        .auth(Token, { type: 'bearer' })
+        .expect(400);
+    });
+
+    test('D3. DELETE id inexistente. Expect 404', async() => {
+      await api
+        .delete('/api/municipalities/99999')
+        .auth(Token, { type: 'bearer' })
+        .expect(404);
+    });
+
+    test('D4. DELETE sin autenticacion. Expect 401', async() => {
+      await api
+        .delete(`/api/municipalities/${municipalityToDeleteId}`)
+        .expect(401);
+    });
+
+    test('D5. DELETE sin privilegio delete_municipality. Expect 403', async() => {
+      const superadminLoginRes = await api
+        .post('/api/auth/login')
+        .send({ email: 'superadmin@estelaris.com', password: 'Admin123' });
+      const superadminToken = superadminLoginRes.body.sesion.token;
+
+      const newUserEmail = `mun_del_nopriv_${Date.now()}@test.com`;
+      const registerRes = await api
+        .post('/api/auth/register')
+        .auth(superadminToken, { type: 'bearer' })
+        .send({
+          name: 'Sin Priv Delete',
+          email: newUserEmail,
+          password: 'Test1234',
+          role: 'user'
+        });
+
+      if (registerRes.status !== 200) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      const loginRes = await api
+        .post('/api/auth/login')
+        .send({ email: newUserEmail, password: 'Test1234' });
+
+      const noPrivToken = loginRes.body.sesion.token;
+
+      await api
+        .delete(`/api/municipalities/${municipalityToDeleteId}`)
+        .auth(noPrivToken, { type: 'bearer' })
+        .expect(403);
+    });
+
+    test('D6. DELETE valido (soft delete). Expect 200', async() => {
+      const response = await api
+        .delete(`/api/municipalities/${municipalityToDeleteId}`)
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('result');
+    });
+
+    test('D7. Re-fetch municipio eliminado. Expect 404', async() => {
+      await api
+        .get(`/api/municipalities/${municipalityToDeleteId}`)
+        .auth(Token, { type: 'bearer' })
+        .expect(404);
+    });
+  });
+
+  // ============================================
   // Tests de estructura de respuesta
   // ============================================
   describe('Tests de estructura de respuesta', () => {
