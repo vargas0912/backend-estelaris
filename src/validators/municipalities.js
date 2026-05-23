@@ -18,6 +18,7 @@ const validateGetRecordByState = [
     .exists().withMessage(MUNICIPALITY_VALIDATORS.STATE_NOT_EXISTS).bail()
     .notEmpty().withMessage(MUNICIPALITY_VALIDATORS.STATE_IS_EMPTY).bail(),
   ...paginationChecks,
+  check('search').optional().isString().trim(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }

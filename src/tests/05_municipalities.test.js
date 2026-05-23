@@ -70,6 +70,41 @@ describe('[MUNICIPALITIES] Test api municipalities //api/municipalities/', () =>
     expect(response.body.municipalities.length).toBe(0);
   });
 
+  test('4b. Buscar municipios por estado con search. Expect 200', async() => {
+    const response = await api
+      .get('/api/municipalities/state/1?search=a')
+      .auth(Token, { type: 'bearer' })
+      .expect(200);
+
+    expect(response.body).toHaveProperty('municipalities');
+    expect(Array.isArray(response.body.municipalities)).toBe(true);
+    expect(response.body).toHaveProperty('pagination');
+  });
+
+  test('4c. Buscar municipios por estado sin resultados. Expect 200 con array vacio', async() => {
+    const response = await api
+      .get('/api/municipalities/state/1?search=xxxxxxxxxnotfound')
+      .auth(Token, { type: 'bearer' })
+      .expect(200);
+
+    expect(response.body.municipalities.length).toBe(0);
+    expect(response.body.pagination.total).toBe(0);
+  });
+
+  test('4d. Buscar sin search retorna todos (comportamiento previo). Expect 200', async() => {
+    const withSearch = await api
+      .get('/api/municipalities/state/1?search=')
+      .auth(Token, { type: 'bearer' })
+      .expect(200);
+
+    const withoutSearch = await api
+      .get('/api/municipalities/state/1')
+      .auth(Token, { type: 'bearer' })
+      .expect(200);
+
+    expect(withSearch.body.pagination.total).toBe(withoutSearch.body.pagination.total);
+  });
+
   // ============================================
   // Tests de autenticación
   // ============================================
