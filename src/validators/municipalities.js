@@ -38,4 +38,46 @@ const validateGetAll = [
   }
 ];
 
-module.exports = { validateGetRecord, validateGetRecordByState, validateGetAll };
+const valiAddRecord = [
+  check('name')
+    .exists().withMessage('NAME_NOT_EXISTS').bail()
+    .notEmpty().withMessage('NAME_IS_EMPTY').bail()
+    .isString().withMessage('NAME_MUST_BE_STRING'),
+  check('state_id')
+    .exists().withMessage('STATE_ID_NOT_EXISTS').bail()
+    .notEmpty().withMessage('STATE_ID_IS_EMPTY').bail()
+    .isInt().withMessage('STATE_ID_MUST_BE_INT').toInt(),
+  (req, res, next) => {
+    return validateResults(req, res, next);
+  }
+];
+
+const valiUpdateRecord = [
+  check('id')
+    .exists().withMessage('ID_NOT_EXISTS').bail()
+    .notEmpty().withMessage('ID_IS_EMPTY').bail()
+    .isInt().withMessage('ID_MUST_BE_INT').toInt(),
+  check('name')
+    .exists().withMessage('NAME_NOT_EXISTS').bail()
+    .notEmpty().withMessage('NAME_IS_EMPTY').bail()
+    .isString().withMessage('NAME_MUST_BE_STRING'),
+  check('state_id')
+    .exists().withMessage('STATE_ID_NOT_EXISTS').bail()
+    .notEmpty().withMessage('STATE_ID_IS_EMPTY').bail()
+    .isInt().withMessage('STATE_ID_MUST_BE_INT').toInt(),
+  (req, res, next) => {
+    return validateResults(req, res, next);
+  }
+];
+
+const validateDeleteRecord = [
+  check('id')
+    .exists().withMessage('ID_NOT_EXISTS').bail()
+    .notEmpty().withMessage('ID_IS_EMPTY').bail()
+    .isInt().withMessage('ID_MUST_BE_INT').toInt(),
+  (req, res, next) => {
+    return validateResults(req, res, next);
+  }
+];
+
+module.exports = { validateGetRecord, validateGetRecordByState, validateGetAll, valiAddRecord, valiUpdateRecord, validateDeleteRecord };

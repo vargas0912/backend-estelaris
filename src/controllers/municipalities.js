@@ -2,7 +2,7 @@ const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
 const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
-const { getMunicipality, getMunicipalitiesByStateId, getAll: getAllMunicipalities } = require('../services/municipalities');
+const { getMunicipality, getMunicipalitiesByStateId, getAll: getAllMunicipalities, addMunicipality, updateMunicipality, deleteMunicipality } = require('../services/municipalities');
 
 /**
  * Obtener detalle de un registro
@@ -49,4 +49,61 @@ const getAll = async(req, res) => {
   }
 };
 
-module.exports = { getById, getByStateId, getAll };
+/**
+ * Agregar un nuevo municipio
+ * @param {*} req
+ * @param {*} res
+ */
+const addRecord = async(req, res) => {
+  try {
+    const data = matchedData(req);
+    const municipality = await addMunicipality(data);
+    res.status(201).send({ municipality });
+  } catch (error) {
+    handleHttpError(res, `ERROR_ADDING_RECORD --> ${error}`, 400);
+  }
+};
+
+/**
+ * Actualizar un municipio
+ * @param {*} req
+ * @param {*} res
+ */
+const updateRecord = async(req, res) => {
+  try {
+    const data = matchedData(req);
+    const municipality = await updateMunicipality(data.id, data);
+
+    if (!municipality) {
+      handleHttpError(res, `MUNICIPALITY ${data.id} NOT EXISTS`, 404);
+      return;
+    }
+
+    res.send({ municipality });
+  } catch (error) {
+    handleHttpError(res, `ERROR_UPDATE_RECORD --> ${error}`, 400);
+  }
+};
+
+/**
+ * Eliminar un municipio (soft delete)
+ * @param {*} req
+ * @param {*} res
+ */
+const deleteRecord = async(req, res) => {
+  try {
+    const { id } = matchedData(req);
+    const result = await deleteMunicipality(id);
+
+    if (!result) {
+      handleHttpError(res, `MUNICIPALITY ${id} NOT EXISTS`, 404);
+      return;
+    }
+
+    res.send({ result });
+  } catch (error) {
+    handleHttpError(res, `ERROR_DELETE_RECORD --> ${error}`, 400);
+  }
+};
+
+module.exports = { getById, getByStateId, getAll, addRecord, updateRecord, deleteRecord };

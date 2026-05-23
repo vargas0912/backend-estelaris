@@ -63,4 +63,43 @@ const getAll = async(search, limit = 15) => {
   return { municipalities: rows };
 };
 
-module.exports = { getMunicipalitiesByStateId, getMunicipality, getAll };
+const addMunicipality = async(body) => {
+  const { name } = body;
+  // eslint-disable-next-line camelcase
+  const state_id = body.state_id;
+  const key = name.toLowerCase().replace(/ /g, '_');
+  // eslint-disable-next-line camelcase
+  const result = await municipalities.create({ key, name, state_id, active: true });
+  return result;
+};
+
+const updateMunicipality = async(id, body) => {
+  const { name } = body;
+  // eslint-disable-next-line camelcase
+  const state_id = body.state_id;
+  const data = await municipalities.findByPk(id);
+
+  if (!data) {
+    return null;
+  }
+
+  data.name = name;
+  // eslint-disable-next-line camelcase
+  data.state_id = state_id;
+
+  const result = await data.save();
+  return result;
+};
+
+const deleteMunicipality = async(id) => {
+  const data = await municipalities.findByPk(id);
+
+  if (!data) {
+    return null;
+  }
+
+  await data.destroy();
+  return data;
+};
+
+module.exports = { getMunicipalitiesByStateId, getMunicipality, getAll, addMunicipality, updateMunicipality, deleteMunicipality };

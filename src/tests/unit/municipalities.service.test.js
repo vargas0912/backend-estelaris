@@ -3,7 +3,10 @@ const { municipalities, states } = require('../../models/index');
 const {
   getMunicipalitiesByStateId,
   getMunicipality,
-  getAll
+  getAll,
+  addMunicipality,
+  updateMunicipality,
+  deleteMunicipality
 } = require('../../services/municipalities');
 
 // Mock de los modelos
@@ -11,7 +14,9 @@ jest.mock('../../models/index', () => ({
   municipalities: {
     findAll: jest.fn(),
     findAndCountAll: jest.fn(),
-    findOne: jest.fn()
+    findOne: jest.fn(),
+    create: jest.fn(),
+    findByPk: jest.fn()
   },
   states: {}
 }));
@@ -634,6 +639,162 @@ describe('Municipalities Service - Unit Tests', () => {
           ]
         })
       );
+    });
+  });
+
+  // ============================================
+  // Tests para addMunicipality
+  // ============================================
+  describe('addMunicipality', () => {
+    test('2.1 debe llamar create con active:true y key derivado del nombre', async() => {
+      const mockResult = {
+        id: 100,
+        name: 'San Juan',
+        key: 'san_juan',
+        state_id: 14,
+        active: true
+      };
+      municipalities.create.mockResolvedValue(mockResult);
+
+      const result = await addMunicipality({ name: 'San Juan', state_id: 14 });
+
+      expect(municipalities.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'San Juan',
+          state_id: 14,
+          active: true,
+          key: 'san_juan'
+        })
+      );
+      expect(result).toEqual(mockResult);
+    });
+
+    test('debe derivar key con espacios convertidos a guiones bajos', async() => {
+      const mockResult = { id: 101, name: 'La Paz Norte', key: 'la_paz_norte', state_id: 3, active: true };
+      municipalities.create.mockResolvedValue(mockResult);
+
+      await addMunicipality({ name: 'La Paz Norte', state_id: 3 });
+
+      expect(municipalities.create).toHaveBeenCalledWith(
+        expect.objectContaining({ key: 'la_paz_norte' })
+      );
+    });
+
+    test('debe derivar key en minusculas', async() => {
+      const mockResult = { id: 102, name: 'GUANAJUATO', key: 'guanajuato', state_id: 11, active: true };
+      municipalities.create.mockResolvedValue(mockResult);
+
+      await addMunicipality({ name: 'GUANAJUATO', state_id: 11 });
+
+      expect(municipalities.create).toHaveBeenCalledWith(
+        expect.objectContaining({ key: 'guanajuato' })
+      );
+    });
+
+    test('debe propagar error si create falla', async() => {
+      municipalities.create.mockRejectedValue(new Error('DB create error'));
+
+      await expect(addMunicipality({ name: 'X', state_id: 1 })).rejects.toThrow('DB create error');
+    });
+  });
+
+  // ============================================
+  // Tests para updateMunicipality
+  // ============================================
+  describe('updateMunicipality', () => {
+    test('2.2 debe retornar null si findByPk retorna null (no encontrado)', async() => {
+      municipalities.findByPk.mockResolvedValue(null);
+
+      const result = await updateMunicipality(99999, { name: 'Nuevo Nombre', state_id: 1 });
+
+      expect(municipalities.findByPk).toHaveBeenCalledWith(99999);
+      expect(result).toBeNull();
+    });
+
+    test('debe llamar save() y retornar el registro actualizado', async() => {
+      const mockInstance = {
+        id: 5,
+        name: 'Viejo Nombre',
+        state_id: 10,
+        save: jest.fn().mockResolvedValue({ id: 5, name: 'Nuevo Nombre', state_id: 12 })
+      };
+      municipalities.findByPk.mockResolvedValue(mockInstance);
+
+      const result = await updateMunicipality(5, { name: 'Nuevo Nombre', state_id: 12 });
+
+      expect(mockInstance.name).toBe('Nuevo Nombre');
+      expect(mockInstance.state_id).toBe(12);
+      expect(mockInstance.save).toHaveBeenCalledTimes(1);
+      expect(result).toBeDefined();
+    });
+
+    test('no debe modificar key ni active al actualizar', async() => {
+      const mockInstance = {
+        id: 5,
+        name: 'Original',
+        state_id: 1,
+        key: 'original',
+        active: true,
+        save: jest.fn().mockResolvedValue({})
+      };
+      municipalities.findByPk.mockResolvedValue(mockInstance);
+
+      await updateMunicipality(5, { name: 'Modificado', state_id: 2 });
+
+      expect(mockInstance.key).toBe('original');
+      expect(mockInstance.active).toBe(true);
+    });
+
+    test('debe propagar error si save() falla', async() => {
+      const mockInstance = {
+        id: 5,
+        name: 'X',
+        state_id: 1,
+        save: jest.fn().mockRejectedValue(new Error('Save failed'))
+      };
+      municipalities.findByPk.mockResolvedValue(mockInstance);
+
+      await expect(updateMunicipality(5, { name: 'Y', state_id: 2 })).rejects.toThrow('Save failed');
+    });
+  });
+
+  // ============================================
+  // Tests para deleteMunicipality
+  // ============================================
+  describe('deleteMunicipality', () => {
+    test('2.3 debe llamar destroy() en la instancia y retornar el registro', async() => {
+      const mockInstance = {
+        id: 3,
+        name: 'A Borrar',
+        destroy: jest.fn().mockResolvedValue()
+      };
+      municipalities.findByPk.mockResolvedValue(mockInstance);
+
+      const result = await deleteMunicipality(3);
+
+      expect(municipalities.findByPk).toHaveBeenCalledWith(3);
+      expect(mockInstance.destroy).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(mockInstance);
+    });
+
+    test('debe retornar null si findByPk retorna null (no encontrado)', async() => {
+      municipalities.findByPk.mockResolvedValue(null);
+
+      const result = await deleteMunicipality(99999);
+
+      expect(municipalities.findByPk).toHaveBeenCalledWith(99999);
+      expect(result).toBeNull();
+    });
+
+    test('debe propagar error si destroy() falla', async() => {
+      const mockInstance = {
+        id: 3,
+        name: 'X',
+        destroy: jest.fn().mockRejectedValue(new Error('Destroy failed'))
+      };
+      municipalities.findByPk.mockResolvedValue(mockInstance);
+
+      await expect(deleteMunicipality(3)).rejects.toThrow('Destroy failed');
     });
   });
 

@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetRecord, validateGetRecordByState, validateGetAll } = require('../validators/municipalities');
+const { validateGetRecord, validateGetRecordByState, validateGetAll, valiAddRecord, valiUpdateRecord, validateDeleteRecord } = require('../validators/municipalities');
 
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
-const { readLimiter } = require('../middlewares/rateLimiters');
+const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
-const { getById, getByStateId, getAll } = require('../controllers/municipalities');
+const { getById, getByStateId, getAll, addRecord, updateRecord, deleteRecord } = require('../controllers/municipalities');
 
 const { MUNICIPALITIES: MUN } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
@@ -147,5 +147,144 @@ router.get('/state/:stateId', [
   authMidleware,
   validateGetRecordByState,
   checkRol([ROLE.USER, ROLE.ADMIN], MUN.VIEW_ALL)], getByStateId);
+
+/**
+ * @openapi
+ * /municipalities:
+ *      post:
+ *          tags:
+ *              - municipalities
+ *          summary: Crear nuevo municipio
+ *          description: Crear nuevo municipio previo inicio de sesion
+ *          security:
+ *              - bearerAuth: []
+ *          requestBody:
+ *              required: true
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          required:
+ *                              - name
+ *                              - state_id
+ *                          properties:
+ *                              name:
+ *                                  type: string
+ *                                  description: Nombre del municipio
+ *                              state_id:
+ *                                  type: integer
+ *                                  description: Identificador del estado al que pertenece
+ *          responses:
+ *              '201':
+ *                  description: Municipio creado correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/municipalities'
+ *              '400':
+ *                  description: Error de validacion
+ *              '401':
+ *                  description: No autenticado
+ *              '403':
+ *                  description: Sin permiso
+ */
+router.post('/', [
+  writeLimiter,
+  authMidleware,
+  valiAddRecord,
+  checkRol([ROLE.USER, ROLE.ADMIN], MUN.ADD)
+], addRecord);
+
+/**
+ * @openapi
+ * /municipalities/{id}:
+ *      put:
+ *          tags:
+ *              - municipalities
+ *          summary: Actualizar municipio
+ *          description: Actualizar datos de un municipio previo inicio de sesion
+ *          security:
+ *              - bearerAuth: []
+ *          parameters:
+ *          - name: id
+ *            in: path
+ *            description: Identificador del municipio
+ *            required: true
+ *            schema:
+ *              type: integer
+ *          requestBody:
+ *              required: true
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          required:
+ *                              - name
+ *                              - state_id
+ *                          properties:
+ *                              name:
+ *                                  type: string
+ *                                  description: Nuevo nombre del municipio
+ *                              state_id:
+ *                                  type: integer
+ *                                  description: Identificador del estado al que pertenece
+ *          responses:
+ *              '200':
+ *                  description: Municipio actualizado correctamente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/municipalities'
+ *              '400':
+ *                  description: Error de validacion
+ *              '401':
+ *                  description: No autenticado
+ *              '403':
+ *                  description: Sin permiso
+ *              '404':
+ *                  description: Municipio no encontrado
+ */
+router.put('/:id', [
+  writeLimiter,
+  authMidleware,
+  valiUpdateRecord,
+  checkRol([ROLE.USER, ROLE.ADMIN], MUN.UPDATE)
+], updateRecord);
+
+/**
+ * @openapi
+ * /municipalities/{id}:
+ *      delete:
+ *          tags:
+ *              - municipalities
+ *          summary: Eliminacion de municipio
+ *          description: Eliminacion logica de un municipio
+ *          security:
+ *              - bearerAuth: []
+ *          parameters:
+ *          - name: id
+ *            in: path
+ *            description: Identificador del municipio
+ *            required: true
+ *            schema:
+ *              type: integer
+ *          responses:
+ *              '200':
+ *                  description: El municipio se ha marcado como eliminado satisfactoriamente
+ *              '400':
+ *                  description: Id de municipio invalido
+ *              '401':
+ *                  description: No autenticado
+ *              '403':
+ *                  description: Sin permiso
+ *              '404':
+ *                  description: Municipio no encontrado
+ */
+router.delete('/:id', [
+  deleteLimiter,
+  authMidleware,
+  validateDeleteRecord,
+  checkRol([ROLE.USER, ROLE.ADMIN], MUN.DELETE)
+], deleteRecord);
 
 module.exports = router;
