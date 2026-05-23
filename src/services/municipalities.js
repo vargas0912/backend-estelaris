@@ -4,13 +4,15 @@ const { municipalities, states } = require('../models/index');
 const attributes = ['id', 'name', 'created_at', 'updated_at'];
 const stateAttributes = ['id', 'name'];
 
-const getMunicipalitiesByStateId = async(stateId, page = 1, limit = 20) => {
+const getMunicipalitiesByStateId = async(stateId, page = 1, limit = 20, search = '') => {
   const offset = (page - 1) * limit;
+  // eslint-disable-next-line camelcase
+  const where = { state_id: stateId };
+  if (search) where.name = { [Op.like]: `%${search}%` };
+
   const { count, rows } = await municipalities.findAndCountAll({
     attributes,
-    where: {
-      state_id: stateId
-    },
+    where,
     include: [
       {
         model: states,

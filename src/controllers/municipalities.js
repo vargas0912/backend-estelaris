@@ -28,10 +28,10 @@ const getById = async(req, res) => {
 const getByStateId = async(req, res) => {
   try {
     const data = matchedData(req);
-    const { stateId } = data;
+    const { stateId, search } = data;
     const { page, limit } = getPaginationParams(data);
 
-    const { municipalities, total } = await getMunicipalitiesByStateId(stateId, page, limit);
+    const { municipalities, total } = await getMunicipalitiesByStateId(stateId, page, limit, search);
 
     res.send(buildPaginationResponse('municipalities', municipalities, total, page, limit));
   } catch (error) {
