@@ -7,10 +7,11 @@ const attributes = ['id', 'name', 'email', 'phone', 'hire_date', 'active', 'user
 const positionAttributes = ['id', 'name'];
 const branchAttributes = ['id', 'name'];
 
-const getAllEmployees = async (branchId = null, page = 1, limit = 20, search = '') => {
+const getAllEmployees = async (branchId = null, page = 1, limit = 20, search = '', active = null) => {
   const offset = (page - 1) * limit;
   const where = branchId !== null ? { branch_id: branchId } : {};
   if (search) where.name = { [Op.like]: `%${search}%` };
+  if (active !== null) where.active = active;
 
   const { count, rows } = await employees.findAndCountAll({
     attributes,
@@ -61,10 +62,11 @@ const getEmployee = async (id) => {
   return result;
 };
 
-const getEmployeesByBranch = async (branchId, page = 1, limit = 20, search = '') => {
+const getEmployeesByBranch = async (branchId, page = 1, limit = 20, search = '', active = null) => {
   const offset = (page - 1) * limit;
   const where = { branch_id: branchId };
   if (search) where.name = { [Op.like]: `%${search}%` };
+  if (active !== null) where.active = active;
 
   const { count, rows } = await employees.findAndCountAll({
     attributes,

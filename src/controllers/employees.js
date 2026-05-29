@@ -14,7 +14,8 @@ const getRecords = async(req, res) => {
     const data = matchedData(req);
     const { page, limit } = getPaginationParams(data);
     const search = data.search ?? '';
-    const { employees, total } = await getAllEmployees(req.branchId, page, limit, search);
+    const active = data.active ?? null;
+    const { employees, total } = await getAllEmployees(req.branchId, page, limit, search, active);
     res.send(buildPaginationResponse('employees', employees, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
@@ -53,7 +54,8 @@ const getRecordsByBranch = async (req, res) => {
     const data = matchedData(req);
     const { page, limit } = getPaginationParams(data);
     const search = data.search ?? '';
-    const { employees, total } = await getEmployeesByBranch(data.branch_id, page, limit, search);
+    const active = data.active ?? null;
+    const { employees, total } = await getEmployeesByBranch(data.branch_id, page, limit, search, active);
     res.send(buildPaginationResponse('employees', employees, total, page, limit));
   } catch (error) {
     handleHttpError(res, `ERROR_GET_RECORDS_BY_BRANCH -> ${error}`);
