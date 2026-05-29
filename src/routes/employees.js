@@ -43,6 +43,11 @@ const { ROLE } = require('../constants/roles');
  *          schema:
  *            type: string
  *          description: Texto para filtrar resultados
+ *        - in: query
+ *          name: active
+ *          schema:
+ *            type: boolean
+ *          description: Filtrar por estado activo/inactivo. Omitir para obtener todos.
  *      responses:
  *        '200':
  *          description: Lista de empleados paginada
@@ -186,6 +191,11 @@ router.delete('/:id/revoke-access', [
  *        schema:
  *          type: string
  *        description: Texto para filtrar resultados
+ *      - in: query
+ *        name: active
+ *        schema:
+ *          type: boolean
+ *        description: Filtrar por estado activo/inactivo. Omitir para obtener todos.
  *      responses:
  *        '200':
  *          description: Lista de empleados de la sucursal paginada

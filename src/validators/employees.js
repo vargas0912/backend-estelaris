@@ -7,6 +7,7 @@ const { EMPLOYEES_VALIDATORS } = require('../constants/employees');
 const validateGetAll = [
   ...paginationChecks,
   check('search').optional().isString().trim(),
+  check('active').optional().isBoolean().toBoolean(),
   (req, res, next) => validateResults(req, res, next)
 ];
 
@@ -26,6 +27,7 @@ const validateGetByBranch = [
     .isInt().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_INVALID).bail(),
   ...paginationChecks,
   check('search').optional().isString().trim(),
+  check('active').optional().isBoolean().toBoolean(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }
