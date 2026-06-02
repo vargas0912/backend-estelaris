@@ -120,4 +120,11 @@ const validateVerifyPassword = [
   (req, res, next) => validateResults(req, res, next)
 ];
 
-module.exports = { validateRegister, validateLogin, validateGetUser, validateGetUsers, validateUpdateUser, validateChangePassword, validateVerifyPassword };
+const validateResetPassword = [
+  check('id')
+    .exists().withMessage(USER.ID_NOT_EXISTS).bail()
+    .isInt({ min: 1 }).withMessage('ID_MUST_BE_NUMERIC').bail(),
+  (req, res, next) => validateResults(req, res, next)
+];
+
+module.exports = { validateRegister, validateLogin, validateGetUser, validateGetUsers, validateUpdateUser, validateChangePassword, validateVerifyPassword, validateResetPassword };

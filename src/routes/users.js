@@ -5,9 +5,9 @@ const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
-const { validateGetUser, validateGetUsers, validateUpdateUser, validateChangePassword } = require('../validators/auth');
+const { validateGetUser, validateGetUsers, validateUpdateUser, validateChangePassword, validateResetPassword } = require('../validators/auth');
 
-const { getRecords, updateRecord, deleteRecord, getRecord, changePasswordRecord } = require('../controllers/user');
+const { getRecords, updateRecord, deleteRecord, getRecord, changePasswordRecord, resetPasswordRecord } = require('../controllers/user');
 
 const { ROLE } = require('../constants/roles');
 const { USERS } = require('../constants/privileges');
@@ -139,6 +139,46 @@ router.get('/:id', [
   validateGetUser,
   checkRol([ROLE.ADMIN, ROLE.SUPERADMIN], USERS.VIEW_ALL)
 ], getRecord);
+
+/**
+ * @openapi
+ * /users/{id}/reset-password:
+ *    post:
+ *      tags:
+ *        - users
+ *      summary: Reset de contraseña (solo superadmin)
+ *      description: Genera una contraseña temporal segura para el usuario indicado. Solo superadmin puede ejecutarlo. No puede usarse sobre otro superadmin.
+ *      security:
+ *        - bearerAuth: []
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          description: ID del usuario al que se le resetea la contraseña
+ *          required: true
+ *          schema:
+ *            type: integer
+ *      responses:
+ *        '200':
+ *          description: Contraseña temporal generada
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  temporaryPassword:
+ *                    type: string
+ *                    example: "Xk9#mP2vQr7!"
+ *        '403':
+ *          description: Caller no es superadmin o target es superadmin
+ *        '404':
+ *          description: Usuario no encontrado
+ */
+router.post('/:id/reset-password', [
+  writeLimiter,
+  authMidleware,
+  validateResetPassword,
+  checkRol([ROLE.SUPERADMIN], USERS.RESET_PASSWORD)
+], resetPasswordRecord);
 
 /**
  * Register new user

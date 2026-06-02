@@ -2,8 +2,9 @@ const { matchedData } = require('express-validator');
 const { users } = require('../models/index');
 const { handleHttpError } = require('../utils/handleErorr');
 const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
-const { getUsers, getUser, changePassword } = require('../services/users');
+const { getUsers, getUser, changePassword, resetPassword } = require('../services/users');
 const { ERR_SECURITY, USER: USER_ERRORS } = require('../constants/errors');
+const { ROLE } = require('../constants/roles');
 const { pick, USER_UPDATABLE_FIELDS, USER_ADMIN_UPDATABLE_FIELDS } = require('../utils/fieldWhitelist');
 
 /**
@@ -183,4 +184,26 @@ const changePasswordRecord = async(req, res) => {
   }
 };
 
-module.exports = { getRecord, getRecords, updateRecord, deleteRecord, changePasswordRecord };
+const resetPasswordRecord = async(req, res) => {
+  try {
+    const { id } = matchedData(req);
+
+    const targetUser = await users.findByPk(id);
+    if (!targetUser) {
+      handleHttpError(res, 'USER_NOT_FOUND', 404);
+      return;
+    }
+
+    if (targetUser.role === ROLE.SUPERADMIN) {
+      handleHttpError(res, ERR_SECURITY.FORBIDDEN_CANNOT_RESET_SUPERADMIN, 403);
+      return;
+    }
+
+    const result = await resetPassword(req.user.id, id);
+    res.send(result);
+  } catch (error) {
+    handleHttpError(res, `ERROR_RESET_PASSWORD -> ${error}`);
+  }
+};
+
+module.exports = { getRecord, getRecords, updateRecord, deleteRecord, changePasswordRecord, resetPasswordRecord };
