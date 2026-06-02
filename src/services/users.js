@@ -1,4 +1,5 @@
-const { users } = require('../models/index');
+const crypto = require('crypto');
+const { users, userAuditLogs } = require('../models/index');
 const { Op } = require('sequelize');
 const { encrypt, compare } = require('../utils/handlePassword');
 const { tokenSign } = require('../utils/handleJwt');
@@ -89,11 +90,56 @@ const changePassword = async(userId, currentPassword, newPassword) => {
   return true;
 };
 
+const generateSecurePassword = () => {
+  const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const lower = 'abcdefghijklmnopqrstuvwxyz';
+  const digits = '0123456789';
+  const symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+  const all = upper + lower + digits + symbols;
+
+  const pick = (set) => set[crypto.randomInt(set.length)];
+
+  const chars = [
+    pick(upper),
+    pick(lower),
+    pick(digits),
+    pick(symbols),
+    ...Array.from({ length: 8 }, () => pick(all))
+  ];
+
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = crypto.randomInt(i + 1);
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+
+  return chars.join('');
+};
+
+const resetPassword = async(callerId, targetUserId) => {
+  const user = await users.findByPk(targetUserId);
+  if (!user) return null;
+
+  const temporaryPassword = generateSecurePassword();
+  const hashed = await encrypt(temporaryPassword);
+
+  await users.update({ password: hashed }, { where: { id: targetUserId } });
+
+  await userAuditLogs.create({
+    action: 'reset_password',
+    caller_id: callerId,
+    target_user_id: targetUserId
+  });
+
+  return { temporaryPassword };
+};
+
 module.exports = {
   getUsers,
   getUser,
   registerUser,
   registerSuperAdmin,
   findByEmail,
-  changePassword
+  changePassword,
+  generateSecurePassword,
+  resetPassword
 };
