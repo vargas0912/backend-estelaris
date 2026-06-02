@@ -159,17 +159,17 @@ router.get('/:id', [
  *            type: integer
  *      responses:
  *        '200':
- *          description: Contraseña temporal generada
+ *          description: Contraseña temporal generada (mostrar una sola vez al admin)
  *          content:
  *            application/json:
  *              schema:
- *                type: object
- *                properties:
- *                  temporaryPassword:
- *                    type: string
- *                    example: "Xk9#mP2vQr7!"
+ *                $ref: '#/components/schemas/resetPasswordResponse'
+ *        '400':
+ *          description: ID inválido (no numérico)
+ *        '401':
+ *          description: Token ausente o inválido
  *        '403':
- *          description: Caller no es superadmin o target es superadmin
+ *          description: Caller no es superadmin, o target es superadmin (privilege escalation bloqueada)
  *        '404':
  *          description: Usuario no encontrado
  */

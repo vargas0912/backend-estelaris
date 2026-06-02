@@ -102,6 +102,16 @@ const swaggerDefinition = {
           }
         }
       },
+      resetPasswordResponse: {
+        type: 'object',
+        properties: {
+          temporaryPassword: {
+            type: 'string',
+            description: 'Contraseña temporal generada — comunicar al usuario por canal seguro, no se vuelve a mostrar',
+            example: 'Xk9#mP2vQr7!wQ8z'
+          }
+        }
+      },
       users: {
         type: 'object',
         properties: {
