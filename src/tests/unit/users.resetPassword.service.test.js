@@ -86,7 +86,7 @@ describe('Users Service - resetPassword', () => {
 
     expect(encrypt).toHaveBeenCalledTimes(1);
     expect(users.update).toHaveBeenCalledWith(
-      { password: 'hashedPass' },
+      { password: 'hashedPass', must_change_password: true },
       { where: { id: 2 } }
     );
   });

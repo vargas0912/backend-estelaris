@@ -96,6 +96,7 @@ describe('[USERS] Change password //api/users/change-password', () => {
       .expect(200);
 
     expect(res.body.message).toBe('PASSWORD_CHANGED_SUCCESSFULLY');
+    expect(res.body.must_change_password).toBe(false);
   });
 
   test('6. Login with old password fails after change', async() => {

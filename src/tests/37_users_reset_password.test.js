@@ -126,4 +126,52 @@ describe('[USERS] Reset Password //api/users/:id/reset-password', () => {
       .auth(superadminToken, { type: 'bearer' })
       .expect(400);
   });
+
+  test('10. Login after reset includes must_change_password: true', async() => {
+    const resetRes = await api
+      .post(`/api/users/${regularUserId}/reset-password`)
+      .auth(superadminToken, { type: 'bearer' })
+      .expect(200);
+
+    const loginRes = await api
+      .post('/api/auth/login')
+      .send({ email: 'reset.target@test.com', password: resetRes.body.temporaryPassword })
+      .expect(200);
+
+    expect(loginRes.body.sesion.user.must_change_password).toBe(true);
+  });
+
+  test('11. After change-password, must_change_password resets to false', async() => {
+    const resetRes = await api
+      .post(`/api/users/${regularUserId}/reset-password`)
+      .auth(superadminToken, { type: 'bearer' })
+      .expect(200);
+
+    const tempPassword = resetRes.body.temporaryPassword;
+    const newPassword = 'Secure99!newpass';
+
+    const changeRes = await api
+      .put('/api/users/change-password')
+      .auth(
+        (await api.post('/api/auth/login')
+          .send({ email: 'reset.target@test.com', password: tempPassword })
+          .expect(200)).body.sesion.token,
+        { type: 'bearer' }
+      )
+      .send({
+        current_password: tempPassword,
+        new_password: newPassword,
+        confirm_password: newPassword
+      })
+      .expect(200);
+
+    expect(changeRes.body.must_change_password).toBe(false);
+
+    const loginAfter = await api
+      .post('/api/auth/login')
+      .send({ email: 'reset.target@test.com', password: newPassword })
+      .expect(200);
+
+    expect(loginAfter.body.sesion.user.must_change_password).toBe(false);
+  });
 });

@@ -85,7 +85,7 @@ const changePassword = async(userId, currentPassword, newPassword) => {
   if (!isMatch) return false;
 
   const hashed = await encrypt(newPassword);
-  await users.update({ password: hashed }, { where: { id: userId } });
+  await users.update({ password: hashed, must_change_password: false }, { where: { id: userId } });
 
   return true;
 };
@@ -122,7 +122,7 @@ const resetPassword = async(callerId, targetUserId) => {
   const temporaryPassword = generateSecurePassword();
   const hashed = await encrypt(temporaryPassword);
 
-  await users.update({ password: hashed }, { where: { id: targetUserId } });
+  await users.update({ password: hashed, must_change_password: true }, { where: { id: targetUserId } });
 
   await userAuditLogs.create({
     action: 'reset_password',

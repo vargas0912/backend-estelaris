@@ -178,7 +178,7 @@ const changePasswordRecord = async(req, res) => {
       return;
     }
 
-    res.send({ message: 'PASSWORD_CHANGED_SUCCESSFULLY' });
+    res.send({ message: 'PASSWORD_CHANGED_SUCCESSFULLY', must_change_password: false });
   } catch (error) {
     handleHttpError(res, `ERROR_CHANGE_PASSWORD -> ${error}`, 400);
   }
