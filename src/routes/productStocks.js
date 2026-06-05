@@ -183,6 +183,12 @@ router.get('/product/:product_id', [
  *        schema:
  *          type: string
  *        description: Texto para filtrar resultados
+ *      - in: query
+ *        name: in_stock
+ *        required: false
+ *        schema:
+ *          type: boolean
+ *        description: Si es true, devuelve solo inventarios con cantidad mayor a cero (disponibles para venta/traspaso)
  *      responses:
  *        '200':
  *          description: Lista de inventarios de la sucursal paginada

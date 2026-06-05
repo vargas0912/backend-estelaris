@@ -1,4 +1,5 @@
 const { productStocks, products, branches } = require('../../models/index');
+const { Op } = require('sequelize');
 const {
   getAllProductStocks,
   getStocksByProduct,
@@ -153,6 +154,23 @@ describe('ProductStocks Service - Unit Tests', () => {
 
       expect(result.stocks).toEqual([]);
       expect(result.total).toBe(0);
+    });
+
+    test('debe filtrar por cantidad mayor a cero cuando inStock=true', async () => {
+      const mockStocks = [
+        { id: 1, product_id: 'TEST-001', branch_id: 1, quantity: 100 },
+        { id: 3, product_id: 'TEST-002', branch_id: 1, quantity: 75 }
+      ];
+
+      productStocks.findAndCountAll.mockResolvedValue({ count: 2, rows: mockStocks });
+
+      await getStocksByBranch(1, 1, 20, '', 'id', 'DESC', true);
+
+      expect(productStocks.findAndCountAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { branch_id: 1, quantity: { [Op.gt]: 0 } }
+        })
+      );
     });
   });
 
