@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Sistema de administracion de mercancias Estelaris",
   "main": "index.js",
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@11.5.1",
   "scripts": {
     "start": "node ./app.js",
     "dev": "nodemon ./app.js",
@@ -57,10 +57,5 @@
   },
   "lint-staged": {
     "*.(js)": "eslint --fix --ignore-path .gitignore"
-  },
-  "pnpm": {
-    "overrides": {
-      "yaml@>=2.0.0 <2.8.3": ">=2.8.3"
-    }
   }
 }
