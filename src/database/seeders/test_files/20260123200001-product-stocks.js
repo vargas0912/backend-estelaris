@@ -13,6 +13,7 @@ module.exports = {
         min_stock: 10,
         max_stock: 200,
         location: 'A-01-01',
+        bar_code: 'TEST-001-1',
         last_count_date: new Date(),
         created_at: new Date(),
         updated_at: new Date()
