@@ -55,6 +55,19 @@ module.exports = {
         last_count_date: null,
         created_at: new Date(),
         updated_at: new Date()
+      },
+      // TEST-001 en sucursal 1 con cantidad cero (para filtro in_stock)
+      {
+        id: 5,
+        product_id: 'TEST-001',
+        branch_id: 1,
+        quantity: 0,
+        min_stock: 5,
+        max_stock: 50,
+        location: 'D-04-01',
+        last_count_date: null,
+        created_at: new Date(),
+        updated_at: new Date()
       }
     ];
 

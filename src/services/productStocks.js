@@ -106,7 +106,7 @@ const getStocksByProduct = async (productId, page = 1, limit = 20, search = '') 
   return { stocks: rows, total: count };
 };
 
-const getStocksByBranch = async (branchId, page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC') => {
+const getStocksByBranch = async (branchId, page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC', inStock = null) => {
   const offset = (page - 1) * limit;
   const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
 
@@ -122,9 +122,12 @@ const getStocksByBranch = async (branchId, page = 1, limit = 20, search = '', so
       : {})
   };
 
+  const where = { branch_id: branchId };
+  if (inStock) where.quantity = { [Op.gt]: 0 };
+
   const { count, rows } = await productStocks.findAndCountAll({
     attributes,
-    where: { branch_id: branchId },
+    where,
     include: [productInclude],
     order: buildSortOrder(safeSortBy, safeSortOrder),
     limit,

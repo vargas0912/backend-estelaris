@@ -40,6 +40,7 @@ const validateGetByBranch = [
   ...paginationChecks,
   ...sortChecks(SORT_WHITELIST),
   check('search').optional().isString().trim(),
+  check('in_stock').optional().isBoolean().toBoolean(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }

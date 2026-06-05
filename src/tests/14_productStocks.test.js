@@ -125,6 +125,56 @@ describe('[PRODUCT STOCKS] Test api productStocks //api/productStocks/', () => {
   });
 
   // ============================================
+  // Tests de filtro in_stock
+  // ============================================
+  describe('[in_stock filter] GET /productStocks/branch/:branch_id', () => {
+    test('A. Valor inválido in_stock=yes debe retornar 400', async () => {
+      await api
+        .get('/api/productStocks/branch/1?in_stock=yes')
+        .auth(Token, { type: 'bearer' })
+        .expect(400);
+    });
+
+    test('B. in_stock=true solo retorna stocks con quantity > 0', async () => {
+      const response = await api
+        .get('/api/productStocks/branch/1?in_stock=true')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('stocks');
+      expect(Array.isArray(response.body.stocks)).toBe(true);
+      expect(response.body.stocks.length).toBeGreaterThan(0);
+      response.body.stocks.forEach((stock) => {
+        expect(Number(stock.quantity)).toBeGreaterThan(0);
+      });
+    });
+
+    test('C. Sin parámetro retorna todos los stocks (incluyendo quantity=0)', async () => {
+      const response = await api
+        .get('/api/productStocks/branch/1')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('stocks');
+      expect(Array.isArray(response.body.stocks)).toBe(true);
+      const hasZeroStock = response.body.stocks.some((s) => Number(s.quantity) === 0);
+      expect(hasZeroStock).toBe(true);
+    });
+
+    test('D. in_stock=false incluye stocks con quantity=0', async () => {
+      const response = await api
+        .get('/api/productStocks/branch/1?in_stock=false')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('stocks');
+      expect(Array.isArray(response.body.stocks)).toBe(true);
+      const hasZeroStock = response.body.stocks.some((s) => Number(s.quantity) === 0);
+      expect(hasZeroStock).toBe(true);
+    });
+  });
+
+  // ============================================
   // Tests de autenticación
   // ============================================
   describe('Tests de autenticacion', () => {
