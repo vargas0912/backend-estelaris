@@ -172,6 +172,17 @@ describe('[PRODUCT STOCKS] Test api productStocks //api/productStocks/', () => {
       const hasZeroStock = response.body.stocks.some((s) => Number(s.quantity) === 0);
       expect(hasZeroStock).toBe(true);
     });
+
+    test('E. search por bar_code exacto retorna solo el stock correspondiente', async () => {
+      const response = await api
+        .get('/api/productStocks/branch/1?search=TEST-001-1')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('stocks');
+      expect(response.body.stocks.length).toBe(1);
+      expect(response.body.stocks[0].bar_code).toBe('TEST-001-1');
+    });
   });
 
   // ============================================

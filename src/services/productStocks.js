@@ -114,16 +114,18 @@ const getStocksByBranch = async (branchId, page = 1, limit = 20, search = '', so
     model: products,
     as: 'product',
     attributes: productAttributes,
-    ...(search
-      ? {
-          where: { [Op.or]: [{ id: { [Op.like]: `%${search}%` } }, { name: { [Op.like]: `%${search}%` } }] },
-          required: true
-        }
-      : {})
+    required: !!search
   };
 
   const where = { branch_id: branchId };
   if (inStock) where.quantity = { [Op.gt]: 0 };
+  if (search) {
+    where[Op.or] = [
+      { bar_code: search },
+      { '$product.id$': { [Op.like]: `%${search}%` } },
+      { '$product.name$': { [Op.like]: `%${search}%` } }
+    ];
+  }
 
   const { count, rows } = await productStocks.findAndCountAll({
     attributes,
