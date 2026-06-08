@@ -1,12 +1,12 @@
 const { sequelize } = require('../models');
 
-const getDashboardKpis = async () => {
+const getDashboardKpis = async (months = 6) => {
   const [results] = await sequelize.query(`
     SELECT
-      COUNT(CASE WHEN status = 'Pagado'    AND deleted_at IS NULL THEN 1 END) AS ventas_saldadas,
-      COUNT(CASE WHEN status = 'Pendiente' AND deleted_at IS NULL THEN 1 END) AS ventas_pendientes,
-      COUNT(CASE WHEN status = 'Cancelado' AND deleted_at IS NULL THEN 1 END) AS ventas_canceladas,
-      COALESCE(SUM(CASE WHEN status = 'Pagado'    AND deleted_at IS NULL THEN sales_total ELSE 0 END), 0) AS ingreso_total,
+      COUNT(CASE WHEN status = 'Pagado'    THEN 1 END) AS ventas_saldadas,
+      COUNT(CASE WHEN status = 'Pendiente' THEN 1 END) AS ventas_pendientes,
+      COUNT(CASE WHEN status = 'Cancelado' THEN 1 END) AS ventas_canceladas,
+      COALESCE(SUM(CASE WHEN status = 'Pagado' THEN sales_total ELSE 0 END), 0) AS ingreso_total,
       (SELECT COALESCE(SUM(si.amount - si.paid_amount), 0)
        FROM sale_installments si
        INNER JOIN sales s2 ON s2.id = si.sale_id AND s2.deleted_at IS NULL AND s2.status = 'Pendiente'
@@ -21,7 +21,9 @@ const getDashboardKpis = async () => {
        WHERE si.status = 'Pendiente' AND si.due_date < CURDATE()) AS monto_moroso,
       (SELECT COUNT(*) FROM customers WHERE is_active = 1 AND deleted_at IS NULL) AS clientes_activos
     FROM sales
-  `);
+    WHERE deleted_at IS NULL
+      AND sales_date >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL :months MONTH), '%Y-%m-01')
+  `, { replacements: { months } });
   return results[0];
 };
 

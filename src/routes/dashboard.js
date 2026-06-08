@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateTrends, validateTopProducts, validateExpensesByMonth, validateRecentSales, validateSalesByBranch } = require('../validators/dashboard');
+const { validateKpis, validateTrends, validateTopProducts, validateExpensesByMonth, validateRecentSales, validateSalesByBranch } = require('../validators/dashboard');
 const authMiddleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 const { readLimiter } = require('../middlewares/rateLimiters');
@@ -19,8 +19,20 @@ const { ROLE } = require('../constants/roles');
  *     description: |
  *       Retorna métricas globales calculadas sobre todas las sucursales:
  *       conteos por status, ingreso total, cartera pendiente, ventas morosas y clientes activos.
+ *       Los conteos de ventas e ingreso se filtran por el período indicado; cartera pendiente,
+ *       morosos y clientes activos reflejan siempre el estado actual.
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: months
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 24
+ *           default: 6
+ *         description: Cantidad de meses hacia atrás a considerar para las métricas de ventas
  *     responses:
  *       '200':
  *         description: KPIs calculados correctamente
@@ -31,12 +43,15 @@ const { ROLE } = require('../constants/roles');
  *               properties:
  *                 kpis:
  *                   $ref: '#/components/schemas/dashboardKpis'
+ *       '422':
+ *         description: Parámetro months inválido
  *       '500':
  *         description: Error interno al calcular los KPIs
  */
 router.get('/kpis',
   readLimiter,
   authMiddleware,
+  validateKpis,
   checkRol([ROLE.ADMIN], DASHBOARD.VIEW),
   getKpis
 );

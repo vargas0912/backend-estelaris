@@ -1,6 +1,11 @@
 const { query } = require('express-validator');
 const validateResults = require('../utils/handleValidator');
 
+const validateKpis = [
+  query('months').optional().isInt({ min: 1, max: 24 }).toInt(),
+  (req, res, next) => validateResults(req, res, next)
+];
+
 const validateTrends = [
   query('months').optional().isInt({ min: 1, max: 24 }).toInt(),
   (req, res, next) => validateResults(req, res, next)
@@ -27,4 +32,4 @@ const validateSalesByBranch = [
   (req, res, next) => validateResults(req, res, next)
 ];
 
-module.exports = { validateTrends, validateTopProducts, validateExpensesByMonth, validateRecentSales, validateSalesByBranch };
+module.exports = { validateKpis, validateTrends, validateTopProducts, validateExpensesByMonth, validateRecentSales, validateSalesByBranch };
