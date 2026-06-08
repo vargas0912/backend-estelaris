@@ -19,7 +19,7 @@ describe('Dashboard Service - Unit Tests', () => {
   });
 
   describe('getDashboardKpis', () => {
-    test('debe retornar KPIs del dashboard', async() => {
+    test('debe retornar KPIs del dashboard con months por defecto', async() => {
       const mockKpis = {
         ventas_saldadas: 50,
         ventas_pendientes: 10,
@@ -36,7 +36,21 @@ describe('Dashboard Service - Unit Tests', () => {
       const result = await getDashboardKpis();
 
       expect(result).toEqual(mockKpis);
-      expect(sequelize.query).toHaveBeenCalledTimes(1);
+      expect(sequelize.query).toHaveBeenCalledWith(
+        expect.stringContaining('DATE_SUB'),
+        expect.objectContaining({ replacements: { months: 6 } })
+      );
+    });
+
+    test('debe usar cantidad de meses personalizada', async() => {
+      sequelize.query.mockResolvedValue([[{}]]);
+
+      await getDashboardKpis(12);
+
+      expect(sequelize.query).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ replacements: { months: 12 } })
+      );
     });
 
     test('debe retornar valores por defecto con BD vacía', async() => {

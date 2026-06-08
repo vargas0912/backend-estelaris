@@ -4,7 +4,8 @@ const { getDashboardKpis, getDashboardTrends, getTopProducts, getExpensesByMonth
 
 const getKpis = async (req, res) => {
   try {
-    const kpis = await getDashboardKpis();
+    const { months = 6 } = matchedData(req);
+    const kpis = await getDashboardKpis(months);
     res.send({ kpis });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_DASHBOARD_KPIS -> ${error}`);
