@@ -22,8 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     email: {
       type: DataTypes.STRING(100),
-      allowNull: false,
-      unique: true
+      allowNull: false
     },
     phone: {
       type: DataTypes.STRING(20),
@@ -35,8 +34,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     tax_id: {
       type: DataTypes.STRING(20),
-      allowNull: true,
-      unique: true
+      allowNull: true
     },
     is_international: {
       type: DataTypes.BOOLEAN,
