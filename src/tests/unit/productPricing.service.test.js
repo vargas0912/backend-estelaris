@@ -27,8 +27,8 @@ describe('ProductPricing Service - Unit Tests', () => {
     jest.clearAllMocks();
     // Default: settings present with standard values
     getSystemSetting.mockImplementation((key) => {
-      if (key === 'pricing.base_price_percentage') return Promise.resolve({ value: '25' });
-      if (key === 'pricing.credit_price_percentage') return Promise.resolve({ value: '35' });
+      if (key === 'base_price_percentage') return Promise.resolve({ value: '25' });
+      if (key === 'credit_price_percentage') return Promise.resolve({ value: '35' });
       return Promise.resolve(null);
     });
     products.update.mockResolvedValue([1]);

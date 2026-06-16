@@ -34,8 +34,8 @@ const updatePricesFromPurchase = async (details) => {
 
   // Task 2.3 + 4.4 — Read settings in parallel, fall back to defaults
   const [baseSetting, creditSetting] = await Promise.all([
-    getSystemSetting('pricing.base_price_percentage'),
-    getSystemSetting('pricing.credit_price_percentage')
+    getSystemSetting('base_price_percentage'),
+    getSystemSetting('credit_price_percentage')
   ]);
 
   const rawBase = baseSetting ? parseFloat(baseSetting.value) : NaN;
@@ -93,11 +93,12 @@ const updatePricesFromPurchase = async (details) => {
   );
 
   const results = await Promise.allSettled(perProductTasks);
+  const groupKeys = Array.from(groups.keys());
 
   // Collect thrown failures (not sentinel errors — those land in updated)
   results.forEach((r, idx) => {
     if (r.status === 'rejected') {
-      const productId = Array.from(groups.keys())[idx];
+      const productId = groupKeys[idx];
       failed.push({ productId, error: r.reason?.message || String(r.reason) });
       console.error(`[PricingEngine] Product ${productId} failed:`, r.reason?.message);
     }
