@@ -3,6 +3,7 @@ const { sequelize } = require('../models/index');
 const { Op } = require('sequelize');
 const { updateFromPurchase } = require('./productStocks');
 const accountingEngine = require('./accountingEngine.service');
+const { updatePricesFromPurchase } = require('./productPricing');
 const { SORT_WHITELIST } = require('../constants/purchases');
 
 const sanitizeSort = (sortBy, sortOrder) => ({
@@ -353,6 +354,11 @@ const receivePurchase = async (id, userId) => {
     // Fire and forget — no bloquea, no lanza si falla
     accountingEngine.generateFromPurchase(id).catch(err =>
       console.error('[AccountingEngine] Error generando póliza:', err.message)
+    );
+
+    // Fire and forget — actualiza precios de productos a partir de la compra recibida
+    updatePricesFromPurchase(purchase.details).catch(err =>
+      console.error('[PricingEngine] updatePricesFromPurchase failed:', err.message)
     );
 
     return result;
