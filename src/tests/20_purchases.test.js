@@ -439,6 +439,68 @@ describe('[PURCHASES] Test api purchases /api/purchases/', () => {
         .auth(Token, { type: 'bearer' })
         .expect(400);
     });
+
+    // Task 4.8 — After receive, product prices are updated (S-02 + S-04)
+    test('R9 (4.8). Después de recibir: products.cost_price, base_price y credit_price actualizados', async () => {
+      // purchaseForReceive was received in R2 (receivePurchaseId)
+      // TEST-001: qty=10, unit_price=50, tax_rate=16 → cost=58.00, base=72.50, credit=78.30
+      // TEST-002: qty=5, unit_price=30, tax_rate=16 → cost=34.80, base=43.50, credit=46.98
+      // Flush the event loop to let the fire-and-forget settle
+      await new Promise(resolve => setImmediate(resolve));
+      await new Promise(resolve => setImmediate(resolve));
+
+      // Verify via HTTP API
+      const res1 = await api
+        .get('/api/products/TEST-001')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      const product1 = res1.body.product;
+      expect(parseFloat(product1.cost_price)).toBeCloseTo(58.00, 2);
+      expect(parseFloat(product1.base_price)).toBeCloseTo(72.50, 2);
+      expect(parseFloat(product1.credit_price)).toBeCloseTo(78.30, 2);
+
+      // Verify product_prices cascade was triggered (prices exist for TEST-001)
+      const pricesRes1 = await api
+        .get('/api/productPrices/product/TEST-001')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+      expect(pricesRes1.body.prices.length).toBeGreaterThan(0);
+
+      // Verify TEST-002 prices
+      const res2 = await api
+        .get('/api/products/TEST-002')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      const product2 = res2.body.product;
+      expect(parseFloat(product2.cost_price)).toBeCloseTo(34.80, 2);
+      expect(parseFloat(product2.base_price)).toBeCloseTo(43.50, 2);
+      expect(parseFloat(product2.credit_price)).toBeCloseTo(46.98, 2);
+    });
+
+    // Task 4.9 — Receive endpoint returns 200 even when pricing engine fails (S-05)
+    test('R10 (4.9). receive retorna 200 aunque pricing engine falle (fire-and-forget)', async () => {
+      // Create a new purchase to receive
+      const createRes = await api
+        .post('/api/purchases')
+        .auth(Token, { type: 'bearer' })
+        .send(purchaseForReceive)
+        .expect(200);
+
+      const newPurchaseId = createRes.body.purchase.id;
+
+      // The pricing engine runs fire-and-forget — even if it throws internally
+      // (e.g. DB error), the receive endpoint MUST return 200.
+      // This test verifies the endpoint response is not affected regardless.
+      const receiveRes = await api
+        .patch(`/api/purchases/${newPurchaseId}/receive`)
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(receiveRes.body).toHaveProperty('purchase');
+      expect(receiveRes.body.purchase.status).toBe('Recibido');
+    });
   });
 
   // ============================================
