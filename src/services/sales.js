@@ -119,11 +119,12 @@ const getSalesByCustomer = async (customerId, page = 1, limit = 20, search = '',
   return { sales: rows, total: count };
 };
 
-const getSalesByBranch = async (branchId, page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC') => {
+const getSalesByBranch = async (branchId, page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC', salesType = null) => {
   const offset = (page - 1) * limit;
   const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
   const where = { branch_id: branchId };
   if (search) where.ticket = { [Op.like]: `%${search}%` };
+  if (salesType) where.sales_type = salesType;
   const { count, rows } = await sales.findAndCountAll({
     attributes: saleAttributes,
     where,
