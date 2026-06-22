@@ -105,10 +105,11 @@ router.get('/trends',
  *   get:
  *     tags:
  *       - dashboard
- *     summary: Top productos por ingreso
+ *     summary: Top productos por unidades vendidas o ingreso
  *     description: |
- *       Retorna los N productos con mayor ingreso total en los últimos M meses,
- *       calculado sobre ventas no canceladas. Ordenado por ingreso_total DESC.
+ *       Retorna los N productos con mayor ranking en los últimos M meses,
+ *       calculado sobre ventas no canceladas. El criterio de ordenamiento
+ *       se controla con `sort_by` (default: `unidades_vendidas`).
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -130,9 +131,17 @@ router.get('/trends',
  *           maximum: 24
  *           default: 3
  *         description: Cantidad de meses hacia atrás a considerar
+ *       - name: sort_by
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [unidades_vendidas, ingreso_total]
+ *           default: unidades_vendidas
+ *         description: Campo por el cual ordenar el ranking de productos (DESC)
  *     responses:
  *       '200':
- *         description: Arreglo de productos ordenado por ingreso DESC
+ *         description: Arreglo de productos ordenado por el criterio indicado (DESC)
  *         content:
  *           application/json:
  *             schema:

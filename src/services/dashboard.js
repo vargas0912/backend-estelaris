@@ -44,7 +44,13 @@ const getDashboardTrends = async (months = 6) => {
   return results;
 };
 
-const getTopProducts = async (limit = 10, months = 3) => {
+const TOP_PRODUCTS_SORT_COLUMNS = {
+  unidades_vendidas: 'unidades_vendidas',
+  ingreso_total: 'ingreso_total'
+};
+
+const getTopProducts = async (limit = 10, months = 3, sortBy = 'unidades_vendidas') => {
+  const orderColumn = TOP_PRODUCTS_SORT_COLUMNS[sortBy] || 'unidades_vendidas';
   const [results] = await sequelize.query(`
     SELECT
       sd.product_id,
@@ -58,7 +64,7 @@ const getTopProducts = async (limit = 10, months = 3) => {
       AND s.sales_date >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL :months MONTH), '%Y-%m-01')
     INNER JOIN products p ON p.id = sd.product_id AND p.deleted_at IS NULL
     GROUP BY sd.product_id, p.name
-    ORDER BY ingreso_total DESC
+    ORDER BY ${orderColumn} DESC
     LIMIT :limit
   `, { replacements: { limit, months } });
   return results;

@@ -24,8 +24,8 @@ const getTrends = async (req, res) => {
 
 const getTopProductsHandler = async (req, res) => {
   try {
-    const { limit = 10, months = 3 } = matchedData(req);
-    const products = await getTopProducts(limit, months);
+    const { limit = 10, months = 3, sort_by: sortBy = 'unidades_vendidas' } = matchedData(req);
+    const products = await getTopProducts(limit, months, sortBy);
     res.send({ products });
   } catch (error) {
     handleHttpError(res, `ERROR_GET_TOP_PRODUCTS -> ${error}`);
