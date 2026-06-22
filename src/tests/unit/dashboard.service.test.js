@@ -141,10 +141,21 @@ describe('Dashboard Service - Unit Tests', () => {
       );
     });
 
-    test('debe ordenar por ingreso total descendente', async() => {
+    test('debe ordenar por unidades_vendidas por defecto', async() => {
       sequelize.query.mockResolvedValue([[]]);
 
       await getTopProducts(5);
+
+      expect(sequelize.query).toHaveBeenCalledWith(
+        expect.stringContaining('ORDER BY unidades_vendidas DESC'),
+        expect.any(Object)
+      );
+    });
+
+    test('debe ordenar por ingreso_total cuando se indica', async() => {
+      sequelize.query.mockResolvedValue([[]]);
+
+      await getTopProducts(5, 3, 'ingreso_total');
 
       expect(sequelize.query).toHaveBeenCalledWith(
         expect.stringContaining('ORDER BY ingreso_total DESC'),
