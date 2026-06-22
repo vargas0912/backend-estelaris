@@ -14,6 +14,7 @@ const validateTrends = [
 const validateTopProducts = [
   query('limit').optional().isInt({ min: 1, max: 50 }).toInt(),
   query('months').optional().isInt({ min: 1, max: 24 }).toInt(),
+  query('sort_by').optional().isIn(['ingreso_total', 'unidades_vendidas']),
   (req, res, next) => validateResults(req, res, next)
 ];
 
