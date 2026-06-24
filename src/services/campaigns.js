@@ -37,6 +37,7 @@ const getAllCampaigns = async (filters = {}, page = 1, limit = 20) => {
       {
         model: CampaignProducts,
         as: 'campaignProducts',
+        separate: true,
         include: [
           {
             model: Products,
@@ -79,17 +80,20 @@ const getActiveCampaigns = async (page = 1, limit = 20) => {
       {
         model: CampaignProducts,
         as: 'campaignProducts',
+        separate: true,
         include: [
           {
             model: Products,
-            as: 'product'
+            as: 'product',
+            attributes: ['id', 'name', 'base_price', 'credit_price', 'bar_code']
           }
         ]
       },
       {
         model: Branches,
         as: 'branches',
-        through: { attributes: [] }
+        through: { attributes: [] },
+        attributes: ['id', 'name']
       }
     ],
     order: [['priority', 'DESC']],
