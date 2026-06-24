@@ -81,6 +81,7 @@ const purchaseIncludes = [
   {
     model: purchaseDetails,
     as: 'details',
+    separate: true,
     attributes: detailAttributes,
     include: detailIncludes
   }
@@ -95,8 +96,7 @@ const getAllPurchases = async (branchId, page = 1, limit = 20) => {
     include: purchaseIncludes,
     order: [['purch_date', 'DESC']],
     limit,
-    offset,
-    distinct: true
+    offset
   });
   return { purchases: rows, total: count };
 };
@@ -119,8 +119,7 @@ const getPurchasesBySupplier = async (supplierId, page = 1, limit = 20) => {
     include: purchaseIncludes,
     order: [['purch_date', 'DESC']],
     limit,
-    offset,
-    distinct: true
+    offset
   });
   return { purchases: rows, total: count };
 };
@@ -138,7 +137,7 @@ const getPurchasesByBranch = async (branchId, page = 1, limit = 20, search = '',
     supplierInclude,
     { model: branches, as: 'branch', attributes: branchAttributes },
     { model: users, as: 'user', attributes: userAttributes },
-    { model: purchaseDetails, as: 'details', attributes: detailAttributes, include: detailIncludes }
+    { model: purchaseDetails, as: 'details', separate: true, attributes: detailAttributes, include: detailIncludes }
   ];
   const { count, rows } = await purchases.findAndCountAll({
     attributes: purchaseAttributes,
@@ -146,8 +145,7 @@ const getPurchasesByBranch = async (branchId, page = 1, limit = 20, search = '',
     include: includes,
     order: buildSortOrder(safeSortBy, safeSortOrder),
     limit,
-    offset,
-    distinct: true
+    offset
   });
   return { purchases: rows, total: count };
 };
