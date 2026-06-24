@@ -58,8 +58,7 @@ const getAllProductStocks = async (branchId = null, page = 1, limit = 20, search
       }
     ],
     limit,
-    offset,
-    distinct: true
+    offset
   });
   return { stocks: rows, total: count };
 };
@@ -100,8 +99,7 @@ const getStocksByProduct = async (productId, page = 1, limit = 20, search = '') 
       }
     ],
     limit,
-    offset,
-    distinct: true
+    offset
   });
   return { stocks: rows, total: count };
 };
@@ -110,31 +108,32 @@ const getStocksByBranch = async (branchId, page = 1, limit = 20, search = '', so
   const offset = (page - 1) * limit;
   const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
 
-  const productInclude = {
-    model: products,
-    as: 'product',
-    attributes: productAttributes,
-    required: !!search
-  };
-
   const where = { branch_id: branchId };
   if (inStock) where.quantity = { [Op.gt]: 0 };
   if (search) {
+    const matchingProducts = await products.findAll({
+      where: {
+        [Op.or]: [
+          { id: { [Op.like]: `%${search}%` } },
+          { name: { [Op.like]: `%${search}%` } }
+        ]
+      },
+      attributes: ['id']
+    });
+    const productIds = matchingProducts.map(p => p.id);
     where[Op.or] = [
       { bar_code: search },
-      { '$product.id$': { [Op.like]: `%${search}%` } },
-      { '$product.name$': { [Op.like]: `%${search}%` } }
+      ...(productIds.length ? [{ product_id: { [Op.in]: productIds } }] : [])
     ];
   }
 
   const { count, rows } = await productStocks.findAndCountAll({
     attributes,
     where,
-    include: [productInclude],
+    include: [{ model: products, as: 'product', attributes: productAttributes }],
     order: buildSortOrder(safeSortBy, safeSortOrder),
     limit,
-    offset,
-    distinct: true
+    offset
   });
   return { stocks: rows, total: count };
 };
