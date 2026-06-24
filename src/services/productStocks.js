@@ -1,6 +1,8 @@
-const { productStocks, stockMovements, products, branches } = require('../models/index');
+const { productStocks, stockMovements, products, branches, sequelize } = require('../models/index');
 const { Op } = require('sequelize');
 const { SORT_WHITELIST } = require('../constants/productStocks');
+
+const sanitizeFulltext = (str) => str.replace(/[+\-><()~*"@]/g, ' ').trim();
 
 const sanitizeSort = (sortBy, sortOrder) => ({
   safeSortBy: SORT_WHITELIST.includes(sortBy) ? sortBy : 'id',
@@ -40,13 +42,21 @@ const getAllProductStocks = async (branchId = null, page = 1, limit = 20, search
     attributes: productAttributes,
     ...(search
       ? {
-          where: { [Op.or]: [{ id: { [Op.like]: `%${search}%` } }, { name: { [Op.like]: `%${search}%` } }] },
+          where: {
+            [Op.or]: [
+              { id: { [Op.like]: `%${search}%` } },
+              sequelize.where(
+                sequelize.literal('MATCH(`product`.`name`) AGAINST(:ftq IN BOOLEAN MODE)'),
+                { [Op.gt]: 0 }
+              )
+            ]
+          },
           required: true
         }
       : {})
   };
 
-  const { count, rows } = await productStocks.findAndCountAll({
+  const queryOptions = {
     attributes,
     where,
     include: [
@@ -59,7 +69,10 @@ const getAllProductStocks = async (branchId = null, page = 1, limit = 20, search
     ],
     limit,
     offset
-  });
+  };
+  if (search) queryOptions.replacements = { ftq: sanitizeFulltext(search) + '*' };
+
+  const { count, rows } = await productStocks.findAndCountAll(queryOptions);
   return { stocks: rows, total: count };
 };
 
