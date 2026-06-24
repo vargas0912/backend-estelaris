@@ -1,5 +1,7 @@
-const { products, productCategories, campaigns: Campaigns, campaignProducts: CampaignProducts, campaignProductBranches: CampaignProductBranches, branches: Branches } = require('../models/index');
+const { products, productCategories, campaigns: Campaigns, campaignProducts: CampaignProducts, campaignProductBranches: CampaignProductBranches, branches: Branches, sequelize } = require('../models/index');
 const { Op } = require('sequelize');
+
+const sanitizeFulltext = (str) => str.replace(/[+\-><()~*"@]/g, ' ').trim();
 
 const attributes = [
   'id',
@@ -29,9 +31,17 @@ const categoryAttributes = ['id', 'name'];
 const getAllProducts = async(page = 1, limit = 20, search = '') => {
   const offset = (page - 1) * limit;
   const where = search
-    ? { [Op.or]: [{ id: { [Op.like]: `%${search}%` } }, { name: { [Op.like]: `%${search}%` } }] }
+    ? {
+        [Op.or]: [
+          { id: { [Op.like]: `%${search}%` } },
+          sequelize.where(
+            sequelize.literal('MATCH(products.name) AGAINST(:ftq IN BOOLEAN MODE)'),
+            { [Op.gt]: 0 }
+          )
+        ]
+      }
     : {};
-  const { count, rows } = await products.findAndCountAll({
+  const queryOptions = {
     attributes,
     where,
     include: [
@@ -44,7 +54,9 @@ const getAllProducts = async(page = 1, limit = 20, search = '') => {
     limit,
     offset,
     distinct: true
-  });
+  };
+  if (search) queryOptions.replacements = { ftq: sanitizeFulltext(search) + '*' };
+  const { count, rows } = await products.findAndCountAll(queryOptions);
   return { products: rows, total: count };
 };
 
