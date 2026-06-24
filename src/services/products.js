@@ -35,7 +35,7 @@ const getAllProducts = async(page = 1, limit = 20, search = '') => {
         [Op.or]: [
           { id: { [Op.like]: `%${search}%` } },
           sequelize.where(
-            sequelize.literal('MATCH(name) AGAINST(:ftq IN BOOLEAN MODE)'),
+            sequelize.literal('MATCH(products.name) AGAINST(:ftq IN BOOLEAN MODE)'),
             { [Op.gt]: 0 }
           )
         ]
