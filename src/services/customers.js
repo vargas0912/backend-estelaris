@@ -1,8 +1,16 @@
-const { customers, customerAddresses, municipalities, branches, users } = require('../models/index');
+const { customers, customerAddresses, municipalities, branches, users, sequelize } = require('../models/index');
 const { Op } = require('sequelize');
 const { encrypt } = require('../utils/handlePassword');
 const { ROLE } = require('../constants/roles');
 const { SORT_WHITELIST } = require('../constants/customers');
+
+const sanitizeFulltext = (str) => str.replace(/[+\-><()~*"@]/g, ' ').trim();
+
+const buildNameSearch = (search) =>
+  sequelize.where(
+    sequelize.literal('MATCH(customers.name) AGAINST(:ftq IN BOOLEAN MODE)'),
+    { [Op.gt]: 0 }
+  );
 
 const sanitizeSort = (sortBy, sortOrder) => ({
   safeSortBy: SORT_WHITELIST.includes(sortBy) ? sortBy : 'id',
@@ -22,8 +30,8 @@ const userAttributes = ['id', 'email', 'role'];
 const getAllCustomers = async(page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC') => {
   const offset = (page - 1) * limit;
   const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
-  const where = search ? { name: { [Op.like]: `%${search}%` } } : {};
-  const { count, rows } = await customers.findAndCountAll({
+  const where = search ? buildNameSearch(search) : {};
+  const queryOptions = {
     attributes,
     where,
     include: [
@@ -47,7 +55,9 @@ const getAllCustomers = async(page = 1, limit = 20, search = '', sortBy = 'id', 
     limit,
     offset,
     distinct: true
-  });
+  };
+  if (search) queryOptions.replacements = { ftq: sanitizeFulltext(search) + '*' };
+  const { count, rows } = await customers.findAndCountAll(queryOptions);
 
   return { customers: rows, total: count };
 };
@@ -90,8 +100,8 @@ const getCustomersByBranch = async(branchId, page = 1, limit = 20, search = '', 
   const offset = (page - 1) * limit;
   const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
   const where = { branch_id: branchId };
-  if (search) where.name = { [Op.like]: `%${search}%` };
-  const { count, rows } = await customers.findAndCountAll({
+  if (search) where[Op.and] = [buildNameSearch(search)];
+  const queryOptions = {
     attributes,
     where,
     include: [
@@ -111,7 +121,9 @@ const getCustomersByBranch = async(branchId, page = 1, limit = 20, search = '', 
     limit,
     offset,
     distinct: true
-  });
+  };
+  if (search) queryOptions.replacements = { ftq: sanitizeFulltext(search) + '*' };
+  const { count, rows } = await customers.findAndCountAll(queryOptions);
 
   return { customers: rows, total: count };
 };
@@ -120,8 +132,8 @@ const getCustomersByMunicipality = async(municipalityId, page = 1, limit = 20, s
   const offset = (page - 1) * limit;
   const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
   const where = { municipality_id: municipalityId };
-  if (search) where.name = { [Op.like]: `%${search}%` };
-  const { count, rows } = await customers.findAndCountAll({
+  if (search) where[Op.and] = [buildNameSearch(search)];
+  const queryOptions = {
     attributes,
     where,
     include: [
@@ -141,7 +153,9 @@ const getCustomersByMunicipality = async(municipalityId, page = 1, limit = 20, s
     limit,
     offset,
     distinct: true
-  });
+  };
+  if (search) queryOptions.replacements = { ftq: sanitizeFulltext(search) + '*' };
+  const { count, rows } = await customers.findAndCountAll(queryOptions);
 
   return { customers: rows, total: count };
 };
