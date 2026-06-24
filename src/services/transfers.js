@@ -26,6 +26,7 @@ const transferIncludes = [
   {
     model: transferDetails,
     as: 'details',
+    separate: true,
     attributes: detailAttributes,
     include: [{ model: products, as: 'product', attributes: productAttributes }]
   }
@@ -59,8 +60,7 @@ const getAllTransfers = async (reqBranchId, page = 1, limit = 20) => {
     include: transferIncludes,
     order: [['transfer_date', 'DESC']],
     limit,
-    offset,
-    distinct: true
+    offset
   });
   return { transfers: rows, total: count };
 };
@@ -77,8 +77,7 @@ const getTransfersByFromBranch = async (paramBranchId, reqBranchId, page = 1, li
     include: transferIncludes,
     order: [['transfer_date', 'DESC']],
     limit,
-    offset,
-    distinct: true
+    offset
   });
   return { transfers: rows, total: count };
 };
@@ -95,8 +94,7 @@ const getTransfersByToBranch = async (paramBranchId, reqBranchId, page = 1, limi
     include: transferIncludes,
     order: [['transfer_date', 'DESC']],
     limit,
-    offset,
-    distinct: true
+    offset
   });
   return { transfers: rows, total: count };
 };

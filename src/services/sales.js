@@ -64,10 +64,11 @@ const saleIncludes = [
   {
     model: saleDetails,
     as: 'details',
+    separate: true,
     attributes: detailAttributes,
     include: [{ model: products, as: 'product', attributes: productAttributes }]
   },
-  { model: saleInstallments, as: 'installments', attributes: installmentAttributes }
+  { model: saleInstallments, as: 'installments', separate: true, attributes: installmentAttributes }
 ];
 
 const PERIOD_DAYS = { Semanal: 7, Quincenal: 15, Mensual: 30 };
@@ -88,8 +89,7 @@ const getAllSales = async (branchId, page = 1, limit = 20, search = '', sortBy =
     include: saleIncludes,
     order: [[safeSortBy, safeSortOrder]],
     limit,
-    offset,
-    distinct: true
+    offset
   });
   return { sales: rows, total: count };
 };
@@ -113,8 +113,7 @@ const getSalesByCustomer = async (customerId, page = 1, limit = 20, search = '',
     include: saleIncludes,
     order: [['sales_date', 'DESC']],
     limit,
-    offset,
-    distinct: true
+    offset
   });
   return { sales: rows, total: count };
 };
@@ -131,8 +130,7 @@ const getSalesByBranch = async (branchId, page = 1, limit = 20, search = '', sor
     include: saleIncludes,
     order: [[safeSortBy, safeSortOrder]],
     limit,
-    offset,
-    distinct: true
+    offset
   });
   return { sales: rows, total: count };
 };
@@ -140,7 +138,17 @@ const getSalesByBranch = async (branchId, page = 1, limit = 20, search = '', sor
 const getOverdueSales = async (page = 1, limit = 20, search = '') => {
   const offset = (page - 1) * limit;
   const today = new Date().toISOString().split('T')[0];
+
+  const overdueRows = await saleInstallments.findAll({
+    where: { status: 'Pendiente', due_date: { [Op.lt]: today } },
+    attributes: ['sale_id'],
+    group: ['sale_id']
+  });
+  const overdueSaleIds = overdueRows.map(r => r.sale_id);
+  if (overdueSaleIds.length === 0) return { sales: [], total: 0 };
+
   const where = {
+    id: { [Op.in]: overdueSaleIds },
     sales_type: 'Credito',
     status: 'Pendiente'
   };
@@ -155,18 +163,14 @@ const getOverdueSales = async (page = 1, limit = 20, search = '') => {
       {
         model: saleInstallments,
         as: 'installments',
+        separate: true,
         attributes: installmentAttributes,
-        where: {
-          status: 'Pendiente',
-          due_date: { [Op.lt]: today }
-        },
-        required: true
+        where: { status: 'Pendiente', due_date: { [Op.lt]: today } }
       }
     ],
     order: [['due_date', 'ASC']],
     limit,
-    offset,
-    distinct: true
+    offset
   });
   return { sales: rows, total: count };
 };

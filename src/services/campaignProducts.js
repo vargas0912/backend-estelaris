@@ -20,6 +20,7 @@ const getProductsByCampaign = async(campaignId, page = 1, limit = 20, search = '
       {
         model: CampaignProductBranches,
         as: 'branchOverrides',
+        separate: true,
         include: [
           {
             model: Branches,
@@ -30,8 +31,7 @@ const getProductsByCampaign = async(campaignId, page = 1, limit = 20, search = '
       }
     ],
     limit,
-    offset,
-    distinct: true
+    offset
   });
 
   return { products: rows, total: count };
