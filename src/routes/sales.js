@@ -62,6 +62,12 @@ const branchScope = require('../middlewares/branchScope');
  *          schema:
  *            type: string
  *          description: Texto para filtrar resultados
+ *        - in: query
+ *          name: sales_type
+ *          schema:
+ *            type: string
+ *            enum: [Contado, Credito]
+ *          description: Filtrar por tipo de venta (opcional)
  *      responses:
  *        '200':
  *          description: Lista de ventas paginada

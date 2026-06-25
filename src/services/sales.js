@@ -78,11 +78,12 @@ const sanitizeSort = (sortBy, sortOrder) => ({
   safeSortOrder: sortOrder === 'ASC' ? 'ASC' : 'DESC'
 });
 
-const getAllSales = async (branchId, page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC') => {
+const getAllSales = async (branchId, page = 1, limit = 20, search = '', sortBy = 'id', sortOrder = 'DESC', salesType = null) => {
   const offset = (page - 1) * limit;
   const { safeSortBy, safeSortOrder } = sanitizeSort(sortBy, sortOrder);
   const where = branchId ? { branch_id: branchId } : {};
   if (search) where.ticket = { [Op.like]: `%${search}%` };
+  if (salesType) where.sales_type = salesType;
   const { count, rows } = await sales.findAndCountAll({
     attributes: saleAttributes,
     where,

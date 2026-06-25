@@ -6,6 +6,7 @@ const { paginationChecks, sortChecks } = require('./shared');
 const validateGetAll = [
   ...paginationChecks,
   check('search').optional().isString().trim(),
+  check('sales_type').optional().isIn(['Contado', 'Credito']).withMessage('sales_type must be Contado or Credito'),
   ...sortChecks(SORT_WHITELIST),
   (req, res, next) => validateResults(req, res, next)
 ];
