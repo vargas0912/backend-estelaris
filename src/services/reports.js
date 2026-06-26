@@ -152,6 +152,7 @@ const getAccountsReceivable = async (branchId) => {
     sequelize.query(`
       SELECT
         s.id              AS saleId,
+        s.ticket          AS ticket,
         s.customer_id     AS customerId,
         c.name            AS customerName,
         s.sales_date      AS salesDate,
@@ -271,6 +272,7 @@ const getAccountsReceivable = async (branchId) => {
 
     return {
       saleId: sale.saleId,
+      ticket: sale.ticket || null,
       customerId: sale.customerId,
       customerName: sale.customerName,
       salesDate: sale.salesDate,
