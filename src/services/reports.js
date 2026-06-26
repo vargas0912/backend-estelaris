@@ -8,6 +8,7 @@ const getDailyMovement = async (branchId, date) => {
     sequelize.query(`
       SELECT
         sd.sale_id          AS saleId,
+        s.ticket            AS ticket,
         p.name              AS productName,
         c.name              AS customerName,
         TRIM(CONCAT(ca.street,
@@ -35,6 +36,7 @@ const getDailyMovement = async (branchId, date) => {
     sequelize.query(`
       SELECT
         sd.sale_id    AS saleId,
+        s.ticket      AS ticket,
         sd.qty,
         p.name        AS productName,
         c.name        AS customerName,
@@ -70,6 +72,7 @@ const getDailyMovement = async (branchId, date) => {
     sequelize.query(`
       SELECT
         sp.sale_id          AS saleId,
+        s.ticket            AS ticket,
         c.name              AS customerName,
         sp.payment_date     AS paymentDate,
         sp.payment_amount   AS amount,
