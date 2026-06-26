@@ -27,7 +27,7 @@ class Server {
   }
 
   stop() {
-    this.app.close();
+    if (this.httpServer) this.httpServer.close();
   }
 
   async dbConnect() {
@@ -158,11 +158,16 @@ class Server {
   }
 
   listen() {
-    this.app.listen(this.port, () => {
+    this.httpServer = this.app.listen(this.port, () => {
       logger.info(`Server running on port ${this.port}`);
       logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
       logger.info(`Swagger documentation available at: http://localhost:${this.port}/documentation`);
     });
+
+    // Railway's load balancer closes idle keep-alive connections after ~75s.
+    // Node.js must close its end first to avoid mid-request ERR_NETWORK_CHANGED.
+    this.httpServer.keepAliveTimeout = 120000; // 120s > Railway LB timeout
+    this.httpServer.headersTimeout = 125000; // must be > keepAliveTimeout
   }
 }
 
