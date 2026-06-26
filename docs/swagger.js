@@ -1795,6 +1795,7 @@ const swaggerDefinition = {
               type: 'object',
               properties: {
                 saleId: { type: 'integer' },
+                ticket: { type: 'string', nullable: true, maxLength: 20, description: 'Número de ticket de la venta (null si no aplica)' },
                 productName: { type: 'string' },
                 customerName: { type: 'string' },
                 customerAddress: { type: 'string', nullable: true },
@@ -1812,6 +1813,7 @@ const swaggerDefinition = {
               type: 'object',
               properties: {
                 saleId: { type: 'integer' },
+                ticket: { type: 'string', nullable: true, maxLength: 20, description: 'Número de ticket de la venta (null si no aplica)' },
                 qty: { type: 'number', format: 'decimal' },
                 productName: { type: 'string' },
                 customerName: { type: 'string' },
@@ -1840,6 +1842,7 @@ const swaggerDefinition = {
               type: 'object',
               properties: {
                 saleId: { type: 'integer' },
+                ticket: { type: 'string', nullable: true, maxLength: 20, description: 'Número de ticket de la venta (null si no aplica)' },
                 customerName: { type: 'string' },
                 paymentDate: { type: 'string', format: 'date' },
                 amount: { type: 'number', format: 'decimal' },
