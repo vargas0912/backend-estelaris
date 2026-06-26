@@ -3,6 +3,12 @@ const { Op } = require('sequelize');
 
 const sanitizeFulltext = (str) => str.replace(/[+\-><()~*"@]/g, ' ').trim();
 
+const buildFulltextQuery = (search) => {
+  const words = sanitizeFulltext(search).split(/\s+/).filter(Boolean);
+  if (words.length === 0) return '';
+  return words.map((w, i) => i === words.length - 1 ? `+${w}*` : `+${w}`).join(' ');
+};
+
 const attributes = [
   'id',
   'barcode',
@@ -30,14 +36,17 @@ const categoryAttributes = ['id', 'name'];
 
 const getAllProducts = async(page = 1, limit = 20, search = '') => {
   const offset = (page - 1) * limit;
+  const useFulltext = search && search.length >= 3;
   const where = search
     ? {
         [Op.or]: [
           { id: { [Op.like]: `%${search}%` } },
-          sequelize.where(
-            sequelize.literal('MATCH(products.name) AGAINST(:ftq IN BOOLEAN MODE)'),
-            { [Op.gt]: 0 }
-          )
+          useFulltext
+            ? sequelize.where(
+              sequelize.literal('MATCH(products.name) AGAINST(:ftq IN BOOLEAN MODE)'),
+              { [Op.gt]: 0 }
+            )
+            : { name: { [Op.like]: `%${search}%` } }
         ]
       }
     : {};
@@ -55,7 +64,7 @@ const getAllProducts = async(page = 1, limit = 20, search = '') => {
     offset,
     distinct: true
   };
-  if (search) queryOptions.replacements = { ftq: sanitizeFulltext(search) + '*' };
+  if (useFulltext) queryOptions.replacements = { ftq: buildFulltextQuery(search) };
   const { count, rows } = await products.findAndCountAll(queryOptions);
   return { products: rows, total: count };
 };

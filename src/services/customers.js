@@ -6,11 +6,22 @@ const { SORT_WHITELIST } = require('../constants/customers');
 
 const sanitizeFulltext = (str) => str.replace(/[+\-><()~*"@]/g, ' ').trim();
 
-const buildNameSearch = (search) =>
-  sequelize.where(
+const buildFulltextQuery = (search) => {
+  const words = sanitizeFulltext(search).split(/\s+/).filter(Boolean);
+  if (words.length === 0) return '';
+  // Each word required (+); last word gets prefix wildcard (*) for incremental search
+  return words.map((w, i) => i === words.length - 1 ? `+${w}*` : `+${w}`).join(' ');
+};
+
+const buildNameSearch = (search) => {
+  if (search.length < 3) {
+    return { name: { [Op.like]: `%${search}%` } };
+  }
+  return sequelize.where(
     sequelize.literal('MATCH(customers.name) AGAINST(:ftq IN BOOLEAN MODE)'),
     { [Op.gt]: 0 }
   );
+};
 
 const sanitizeSort = (sortBy, sortOrder) => ({
   safeSortBy: SORT_WHITELIST.includes(sortBy) ? sortBy : 'id',
@@ -56,7 +67,7 @@ const getAllCustomers = async(page = 1, limit = 20, search = '', sortBy = 'id', 
     offset,
     distinct: true
   };
-  if (search) queryOptions.replacements = { ftq: sanitizeFulltext(search) + '*' };
+  if (search && search.length >= 3) queryOptions.replacements = { ftq: buildFulltextQuery(search) };
   const { count, rows } = await customers.findAndCountAll(queryOptions);
 
   return { customers: rows, total: count };
@@ -122,7 +133,7 @@ const getCustomersByBranch = async(branchId, page = 1, limit = 20, search = '', 
     offset,
     distinct: true
   };
-  if (search) queryOptions.replacements = { ftq: sanitizeFulltext(search) + '*' };
+  if (search && search.length >= 3) queryOptions.replacements = { ftq: buildFulltextQuery(search) };
   const { count, rows } = await customers.findAndCountAll(queryOptions);
 
   return { customers: rows, total: count };
@@ -154,7 +165,7 @@ const getCustomersByMunicipality = async(municipalityId, page = 1, limit = 20, s
     offset,
     distinct: true
   };
-  if (search) queryOptions.replacements = { ftq: sanitizeFulltext(search) + '*' };
+  if (search && search.length >= 3) queryOptions.replacements = { ftq: buildFulltextQuery(search) };
   const { count, rows } = await customers.findAndCountAll(queryOptions);
 
   return { customers: rows, total: count };
