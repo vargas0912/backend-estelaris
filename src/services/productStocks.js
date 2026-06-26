@@ -4,6 +4,12 @@ const { SORT_WHITELIST } = require('../constants/productStocks');
 
 const sanitizeFulltext = (str) => str.replace(/[+\-><()~*"@]/g, ' ').trim();
 
+const buildFulltextQuery = (search) => {
+  const words = sanitizeFulltext(search).split(/\s+/).filter(Boolean);
+  if (words.length === 0) return '';
+  return words.map((w, i) => i === words.length - 1 ? `+${w}*` : `+${w}`).join(' ');
+};
+
 const sanitizeSort = (sortBy, sortOrder) => ({
   safeSortBy: SORT_WHITELIST.includes(sortBy) ? sortBy : 'id',
   safeSortOrder: sortOrder === 'ASC' ? 'ASC' : 'DESC'
@@ -45,10 +51,12 @@ const getAllProductStocks = async (branchId = null, page = 1, limit = 20, search
           where: {
             [Op.or]: [
               { id: { [Op.like]: `%${search}%` } },
-              sequelize.where(
-                sequelize.literal('MATCH(`product`.`name`) AGAINST(:ftq IN BOOLEAN MODE)'),
-                { [Op.gt]: 0 }
-              )
+              search.length >= 3
+                ? sequelize.where(
+                  sequelize.literal('MATCH(`product`.`name`) AGAINST(:ftq IN BOOLEAN MODE)'),
+                  { [Op.gt]: 0 }
+                )
+                : { name: { [Op.like]: `%${search}%` } }
             ]
           },
           required: true
@@ -70,7 +78,7 @@ const getAllProductStocks = async (branchId = null, page = 1, limit = 20, search
     limit,
     offset
   };
-  if (search) queryOptions.replacements = { ftq: sanitizeFulltext(search) + '*' };
+  if (search && search.length >= 3) queryOptions.replacements = { ftq: buildFulltextQuery(search) };
 
   const { count, rows } = await productStocks.findAndCountAll(queryOptions);
   return { stocks: rows, total: count };
