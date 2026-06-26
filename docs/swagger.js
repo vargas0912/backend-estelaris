@@ -1711,6 +1711,7 @@ const swaggerDefinition = {
               type: 'object',
               properties: {
                 saleId: { type: 'integer' },
+                ticket: { type: 'string', nullable: true, maxLength: 20, description: 'Número de ticket de la venta (null si no aplica)' },
                 customerId: { type: 'integer' },
                 customerName: { type: 'string' },
                 salesDate: { type: 'string', format: 'date' },
