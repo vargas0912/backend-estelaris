@@ -464,6 +464,12 @@ const LOYALTY = Object.freeze({
   NAME_ADJUST_POINTS: 'Ajustar puntos de clientes'
 });
 
+const STOCK_MOVEMENT = Object.freeze({
+  MODULE_NAME: 'stockMovements',
+  VIEW_BY_PRODUCT: 'view_stock_movements_by_product',
+  NAME_VIEW_BY_PRODUCT: 'Ver movimientos de inventario por producto'
+});
+
 const REPORTS = Object.freeze({
   MODULE_NAME: 'reports',
   VIEW_DAILY_MOVEMENT: 'view_daily_movement',
@@ -510,5 +516,6 @@ module.exports = {
   ACCOUNTING_VOUCHER,
   ACCOUNTING_REPORT,
   LOYALTY,
-  REPORTS
+  REPORTS,
+  STOCK_MOVEMENT
 };

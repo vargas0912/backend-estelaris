@@ -22,8 +22,11 @@ const getAllMovements = async (filters = {}) => {
   return result;
 };
 
-const getMovementsByProduct = async (productId) => {
-  const result = await stockMovements.findAll({
+const getMovementsByProduct = async (productId, page = 1, limit = 20, sortOrder = 'ASC') => {
+  const offset = (page - 1) * limit;
+  const order = sortOrder === 'DESC' ? 'DESC' : 'ASC';
+
+  const { count, rows } = await stockMovements.findAndCountAll({
     attributes: movementAttributes,
     where: { product_id: productId },
     include: [
@@ -33,10 +36,12 @@ const getMovementsByProduct = async (productId) => {
         attributes: ['id', 'name']
       }
     ],
-    order: [['created_at', 'DESC']]
+    order: [['created_at', order]],
+    limit,
+    offset
   });
 
-  return result;
+  return { movements: rows, total: count };
 };
 
 const getMovementsByBranch = async (branchId) => {
