@@ -4,7 +4,7 @@ const {
   CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR, PRODUCT: PRD, POSITION: POS, PRICE_LIST: PL,
   PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP, PURCH_PAYMENT: PP_PAY, TRANSFER: TRANSF,
   SALE_PAYMENT: SL_PAY, DRIVER: DRV, LOYALTY: LY, ACCOUNTING_REPORT: AC_RPT, ACCOUNTING_ACCOUNT: AC_AC,
-  REPORTS: REPORT
+  REPORTS: REPORT, STOCK_MOVEMENT: SM
 } = require('../../../constants/modules');
 
 const data = [
@@ -203,7 +203,10 @@ const data = [
   // reports
   { name: REPORT.NAME_DAILY_MOVEMENT, codeName: REPORT.VIEW_DAILY_MOVEMENT, module: REPORT.MODULE_NAME, created_at: fecha, updated_at: fecha },
   { name: REPORT.NAME_ACCOUNTS_RECEIVABLE, codeName: REPORT.VIEW_ACCOUNTS_RECEIVABLE, module: REPORT.MODULE_NAME, created_at: fecha, updated_at: fecha },
-  { name: REPORT.NAME_INVENTORY, codeName: REPORT.VIEW_INVENTORY, module: REPORT.MODULE_NAME, created_at: fecha, updated_at: fecha }
+  { name: REPORT.NAME_INVENTORY, codeName: REPORT.VIEW_INVENTORY, module: REPORT.MODULE_NAME, created_at: fecha, updated_at: fecha },
+
+  // Movimientos de inventario
+  { name: SM.NAME_VIEW_BY_PRODUCT, codeName: SM.VIEW_BY_PRODUCT, module: SM.MODULE_NAME, created_at: fecha, updated_at: fecha }
 
 ];
 
