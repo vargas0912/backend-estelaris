@@ -4,7 +4,7 @@ const {
   productStocks, stockMovements, campaignProducts, accountingVouchers: avModel
 } = require('../models/index');
 const { sequelize } = require('../models/index');
-const { Op } = require('sequelize');
+const { Op, literal } = require('sequelize');
 const accountingEngine = require('./accountingEngine.service');
 const { cancelVoucher } = require('./accountingVouchers');
 const { TICKET_CONFIG, SORT_WHITELIST } = require('../constants/sales');
@@ -140,16 +140,12 @@ const getOverdueSales = async (page = 1, limit = 20, search = '') => {
   const offset = (page - 1) * limit;
   const today = new Date().toISOString().split('T')[0];
 
-  const overdueRows = await saleInstallments.findAll({
-    where: { status: 'Pendiente', due_date: { [Op.lt]: today } },
-    attributes: ['sale_id'],
-    group: ['sale_id']
-  });
-  const overdueSaleIds = overdueRows.map(r => r.sale_id);
-  if (overdueSaleIds.length === 0) return { sales: [], total: 0 };
-
   const where = {
-    id: { [Op.in]: overdueSaleIds },
+    id: {
+      [Op.in]: literal(
+        `(SELECT DISTINCT sale_id FROM sale_installments WHERE status = 'Pendiente' AND due_date < '${today}')`
+      )
+    },
     sales_type: 'Credito',
     status: 'Pendiente'
   };
