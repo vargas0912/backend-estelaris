@@ -165,7 +165,7 @@ const getOverdueSales = async (page = 1, limit = 20, search = '') => {
         where: { status: 'Pendiente', due_date: { [Op.lt]: today } }
       }
     ],
-    order: [['due_date', 'ASC']],
+    order: [['due_date', 'DESC']],
     limit,
     offset
   });
