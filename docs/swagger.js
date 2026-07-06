@@ -1239,6 +1239,7 @@ const swaggerDefinition = {
           sales_total: { type: 'number', format: 'decimal' },
           due_payment: { type: 'number', format: 'decimal', description: 'Contado=0. Crédito=(sales_total - anticipo_amount) inicialmente.' },
           due_date: { type: 'string', format: 'date', nullable: true, description: 'sales_date + total_days_term (solo crédito)' },
+          settlement_discount: { type: 'number', format: 'decimal', nullable: true, description: 'Monto descontado en liquidación anticipada. NULL si no aplica, 0 si se liquidó sin descuento.' },
           status: { type: 'string', enum: ['Pendiente', 'Pagado', 'Cancelado'] },
           delivery_status: { type: 'string', enum: ['Entregado', 'Pendiente'], default: 'Pendiente', description: 'Entregado=cliente retira en tienda, Pendiente=requiere envío posterior (saleDeliveries)' },
           notes: { type: 'string', nullable: true },
@@ -1287,8 +1288,8 @@ const swaggerDefinition = {
           notes: { type: 'string', nullable: true },
           payment_type: {
             type: 'string',
-            enum: ['Anticipo', 'Abono'],
-            description: 'Asignado automáticamente por el backend. Anticipo: pago inicial al crear la venta. Abono: pago posterior al saldo pendiente.'
+            enum: ['Anticipo', 'Abono', 'Liquidacion'],
+            description: 'Asignado automáticamente por el backend. Anticipo: pago inicial al crear la venta. Abono: pago posterior al saldo pendiente. Liquidacion: liquidación anticipada de la venta a precio negociado.'
           },
           created_at: { type: 'string', format: 'date-time' },
           updated_at: { type: 'string', format: 'date-time' }

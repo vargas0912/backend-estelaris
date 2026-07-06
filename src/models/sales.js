@@ -131,6 +131,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true
     },
+    settlement_discount: {
+      type: DataTypes.DECIMAL(12, 2),
+      allowNull: true,
+      defaultValue: null
+    },
     modified_by: {
       type: DataTypes.INTEGER,
       allowNull: true

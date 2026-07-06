@@ -7,7 +7,8 @@ const {
   validateGetByCustomer,
   validateGetByBranch,
   valiAddRecord,
-  valiUpdateRecord
+  valiUpdateRecord,
+  valiSettleRecord
 } = require('../validators/sales');
 
 const authMidleware = require('../middlewares/session');
@@ -23,7 +24,9 @@ const {
   addRecord,
   updateRecord,
   cancelRecord,
-  deleteRecord
+  deleteRecord,
+  settleRecord,
+  getSettlementRecords
 } = require('../controllers/sales');
 
 const { SALE } = require('../constants/modules');
@@ -267,6 +270,65 @@ router.get('/overdue', [
 
 /**
  * @openapi
+ * /sales/settlements:
+ *    get:
+ *      tags:
+ *        - sales
+ *      summary: Ventas liquidadas anticipadamente
+ *      description: |
+ *        Lista paginada de ventas a crédito que fueron liquidadas con pronto pago
+ *        (settlement_discount IS NOT NULL). Incluye tanto liquidaciones con descuento
+ *        como las realizadas al precio completo (settlement_discount = 0).
+ *        Ordenadas por updated_at DESC.
+ *      security:
+ *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            default: 1
+ *          description: Número de página
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *            maximum: 100
+ *            default: 20
+ *          description: Registros por página
+ *        - in: query
+ *          name: search
+ *          schema:
+ *            type: string
+ *          description: Texto para filtrar por ticket
+ *      responses:
+ *        '200':
+ *          description: Lista de ventas liquidadas paginada
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  sales:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/sales'
+ *                  pagination:
+ *                    $ref: '#/components/schemas/pagination'
+ *        '403':
+ *          description: Sin privilegio view_sale_settlements
+ */
+router.get('/settlements', [
+  readLimiter,
+  authMidleware,
+  validateGetAll,
+  checkRol([ROLE.USER, ROLE.ADMIN], SALE.VIEW_SETTLEMENTS)
+], getSettlementRecords);
+
+/**
+ * @openapi
  * /sales/{id}:
  *    get:
  *      tags:
@@ -457,6 +519,83 @@ router.put('/:id', [
   valiUpdateRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], SALE.UPDATE)
 ], updateRecord);
+
+/**
+ * @openapi
+ * /sales/{id}/settle:
+ *    put:
+ *      tags:
+ *        - sales
+ *      summary: Liquidar venta a crédito anticipadamente (pronto pago)
+ *      description: |
+ *        Cierra una venta a crédito Pendiente en una transacción atómica al monto negociado.
+ *        Requiere privilege settle_sale y header X-Branch-ID.
+ *        Marca todos los installments pendientes como Pagado al valor nominal.
+ *        Crea un pago de tipo Liquidacion con el monto negociado.
+ *        Calcula settlement_discount = due_payment - settlement_amount.
+ *        Un settlement_amount igual a due_payment resulta en settlement_discount = 0 (válido).
+ *        Genera póliza contable vía accountingEngine de forma asíncrona.
+ *      security:
+ *        - bearerAuth: []
+ *        - branchHeader: []
+ *      parameters:
+ *      - name: id
+ *        in: path
+ *        required: true
+ *        schema:
+ *          type: integer
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              required:
+ *                - settlement_amount
+ *                - payment_date
+ *                - payment_method
+ *              properties:
+ *                settlement_amount:
+ *                  type: number
+ *                  format: decimal
+ *                  description: Monto negociado de liquidación. Debe ser mayor a 0 y <= due_payment.
+ *                payment_date:
+ *                  type: string
+ *                  format: date
+ *                payment_method:
+ *                  type: string
+ *                  enum: [Efectivo, Transferencia, Vale despensa, Tarjeta]
+ *                reference_number:
+ *                  type: string
+ *                  maxLength: 100
+ *                  nullable: true
+ *                notes:
+ *                  type: string
+ *                  nullable: true
+ *      responses:
+ *        '200':
+ *          description: Venta liquidada. settlement_discount refleja el monto descontado (0 si se pagó precio completo).
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  sale:
+ *                    $ref: '#/components/schemas/sales'
+ *        '400':
+ *          description: Datos inválidos, venta no es crédito, no está Pendiente, o monto fuera de rango
+ *        '403':
+ *          description: Sin privilegio settle_sale
+ *        '404':
+ *          description: Venta no encontrada
+ */
+router.put('/:id/settle', [
+  writeLimiter,
+  authMidleware,
+  branchScope,
+  valiSettleRecord,
+  checkRol([ROLE.USER, ROLE.ADMIN], SALE.SETTLE)
+], settleRecord);
 
 /**
  * @openapi

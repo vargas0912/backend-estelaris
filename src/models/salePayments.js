@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     payment_type: {
-      type: DataTypes.ENUM('Anticipo', 'Abono'),
+      type: DataTypes.ENUM('Anticipo', 'Abono', 'Liquidacion'),
       allowNull: false,
       defaultValue: 'Abono'
     }

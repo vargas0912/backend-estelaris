@@ -319,7 +319,11 @@ const SALE = Object.freeze({
   DELETE: 'delete_sale',
   NAME_DELETE: 'Eliminar venta',
   VIEW_OVERDUE: 'view_overdue_sales',
-  NAME_VIEW_OVERDUE: 'Ver ventas morosas'
+  NAME_VIEW_OVERDUE: 'Ver ventas morosas',
+  SETTLE: 'settle_sale',
+  NAME_SETTLE: 'Liquidar venta (pronto pago)',
+  VIEW_SETTLEMENTS: 'view_sale_settlements',
+  NAME_VIEW_SETTLEMENTS: 'Ver liquidaciones anticipadas'
 });
 
 const SALE_PAYMENT = Object.freeze({

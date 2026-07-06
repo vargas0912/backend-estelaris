@@ -17,6 +17,12 @@ const {
   saleCreateWithCampaign
 } = require('./helper/salesData');
 
+const settleBody = (amount) => ({
+  settlement_amount: amount,
+  payment_date: '2026-07-01',
+  payment_method: 'Efectivo'
+});
+
 let Token = '';
 let contadoSaleId = null;
 let creditoSaleId = null;
@@ -558,6 +564,309 @@ describe('[SALES] Test api sales /api/sales/', () => {
         .expect(200);
 
       expect(afterRes.body.data.sold_quantity).toBe(soldBefore);
+    });
+  });
+
+  // ============================================
+  // PUT /api/sales/:id/settle
+  // ============================================
+  describe('PUT /api/sales/:id/settle', () => {
+    let discountSaleId = null;
+    let discountSaleDue = null;
+    let fullSettleSaleId = null;
+    let fullSettleSaleDue = null;
+    let alreadyPaidSaleId = null;
+    let contadoGuardId = null;
+    let amountGuardSaleId = null;
+    let amountGuardSaleDue = null;
+
+    beforeAll(async () => {
+      // Sale for discounted settlement (test 40)
+      const r1 = await api
+        .post('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(saleCreateCredito(customerId, addressId, purchaseId))
+        .expect(200);
+      discountSaleId = r1.body.sale.id;
+      discountSaleDue = parseFloat(r1.body.sale.due_payment);
+
+      // Sale for full-price early closure (test 41)
+      const r2 = await api
+        .post('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(saleCreateCredito(customerId, addressId, purchaseId))
+        .expect(200);
+      fullSettleSaleId = r2.body.sale.id;
+      fullSettleSaleDue = parseFloat(r2.body.sale.due_payment);
+
+      // Pre-settle a sale for the SALE_NOT_SETTLEABLE guard (test 44)
+      const r3 = await api
+        .post('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(saleCreateCredito(customerId, addressId, purchaseId))
+        .expect(200);
+      const preSettleDue = parseFloat(r3.body.sale.due_payment);
+      await api
+        .put(`/api/sales/${r3.body.sale.id}/settle`)
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(settleBody(preSettleDue))
+        .expect(200);
+      alreadyPaidSaleId = r3.body.sale.id;
+
+      // Contado sale for SALE_NOT_CREDIT guard (test 43)
+      const r4 = await api
+        .post('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(saleCreateContado(customerId, addressId, purchaseId))
+        .expect(200);
+      contadoGuardId = r4.body.sale.id;
+
+      // Credit sale for amount guard tests (tests 45, 46)
+      const r5 = await api
+        .post('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(saleCreateCredito(customerId, addressId, purchaseId))
+        .expect(200);
+      amountGuardSaleId = r5.body.sale.id;
+      amountGuardSaleDue = parseFloat(r5.body.sale.due_payment);
+    });
+
+    test('40. Liquidación con descuento. Expect 200, settlement_discount > 0', async () => {
+      const settleAmount = parseFloat((discountSaleDue - 50).toFixed(2));
+
+      const response = await api
+        .put(`/api/sales/${discountSaleId}/settle`)
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(settleBody(settleAmount))
+        .expect(200);
+
+      expect(response.body).toHaveProperty('sale');
+      const sale = response.body.sale;
+      expect(parseFloat(sale.due_payment)).toBe(0);
+      expect(sale.status).toBe('Pagado');
+      expect(sale.settlement_discount).not.toBeNull();
+      expect(parseFloat(sale.settlement_discount)).toBeCloseTo(discountSaleDue - settleAmount, 2);
+
+      // Verify all installments are Pagado
+      expect(sale.installments.every(i => i.status === 'Pagado')).toBe(true);
+    });
+
+    test('41. Liquidación precio completo (settlement_discount = 0). Expect 200', async () => {
+      const response = await api
+        .put(`/api/sales/${fullSettleSaleId}/settle`)
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(settleBody(fullSettleSaleDue))
+        .expect(200);
+
+      expect(response.body).toHaveProperty('sale');
+      const sale = response.body.sale;
+      expect(parseFloat(sale.due_payment)).toBe(0);
+      expect(sale.status).toBe('Pagado');
+      expect(parseFloat(sale.settlement_discount)).toBe(0);
+
+      // This sale should appear in GET /settlements
+      const listRes = await api
+        .get('/api/sales/settlements')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+      expect(listRes.body.sales.some(s => s.id === fullSettleSaleId)).toBe(true);
+    });
+
+    test('42. Guard: venta no encontrada. Expect 404', async () => {
+      await api
+        .put('/api/sales/99999/settle')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(settleBody(100))
+        .expect(404);
+    });
+
+    test('43. Guard: SALE_NOT_CREDIT (venta de contado). Expect 400', async () => {
+      const response = await api
+        .put(`/api/sales/${contadoGuardId}/settle`)
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(settleBody(100))
+        .expect(400);
+
+      expect(response.body.error).toBe('SALE_NOT_CREDIT');
+    });
+
+    test('44. Guard: SALE_NOT_SETTLEABLE (ya liquidada). Expect 400', async () => {
+      const response = await api
+        .put(`/api/sales/${alreadyPaidSaleId}/settle`)
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(settleBody(100))
+        .expect(400);
+
+      expect(response.body.error).toBe('SALE_NOT_SETTLEABLE');
+    });
+
+    test('45. Guard: INVALID_SETTLEMENT_AMOUNT (amount > due_payment). Expect 400', async () => {
+      const response = await api
+        .put(`/api/sales/${amountGuardSaleId}/settle`)
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(settleBody(amountGuardSaleDue + 100))
+        .expect(400);
+
+      expect(response.body.error).toBe('INVALID_SETTLEMENT_AMOUNT');
+    });
+
+    test('46. Guard: INVALID_SETTLEMENT_AMOUNT (amount = 0). Expect 400', async () => {
+      await api
+        .put(`/api/sales/${amountGuardSaleId}/settle`)
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(settleBody(0))
+        .expect(400);
+    });
+
+    test('47. Guard: sin X-Branch-ID. Expect 400', async () => {
+      const r = await api
+        .post('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(saleCreateCredito(customerId, addressId, purchaseId))
+        .expect(200);
+
+      await api
+        .put(`/api/sales/${r.body.sale.id}/settle`)
+        .auth(Token, { type: 'bearer' })
+        // No x-branch-id header
+        .send(settleBody(100))
+        .expect(400);
+    });
+  });
+
+  // ============================================
+  // GET /api/sales/settlements
+  // ============================================
+  describe('GET /api/sales/settlements', () => {
+    test('50. Lista ventas liquidadas. Expect 200, contiene ventas con settlement_discount', async () => {
+      const response = await api
+        .get('/api/sales/settlements')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('sales');
+      expect(response.body).toHaveProperty('pagination');
+      expect(Array.isArray(response.body.sales)).toBe(true);
+      expect(response.body.sales.length).toBeGreaterThan(0);
+      // All returned sales must have settlement_discount set (not null)
+      expect(response.body.sales.every(s => s.settlement_discount !== null)).toBe(true);
+    });
+
+    test('51. Excluye ventas no liquidadas (settlement_discount = null). Expect 200', async () => {
+      // Create a new credit sale without settling it
+      const r = await api
+        .post('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(saleCreateCredito(customerId, addressId, purchaseId))
+        .expect(200);
+
+      const unsettledId = r.body.sale.id;
+
+      const response = await api
+        .get('/api/sales/settlements')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      // The unsettled sale must NOT appear in settlements
+      expect(response.body.sales.some(s => s.id === unsettledId)).toBe(false);
+    });
+
+    test('52. Paginación respetada. Expect 200 con limit=1', async () => {
+      const response = await api
+        .get('/api/sales/settlements?page=1&limit=1')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body.sales.length).toBeLessThanOrEqual(1);
+      expect(response.body.pagination).toHaveProperty('total');
+      expect(response.body.pagination).toHaveProperty('page');
+      expect(response.body.pagination).toHaveProperty('limit');
+    });
+
+    test('53. Sin token. Expect 401', async () => {
+      await api
+        .get('/api/sales/settlements')
+        .expect(401);
+    });
+
+    test('54. Sin privilegio view_sale_settlements. Expect 403', async () => {
+      const superadminLoginRes = await api.post('/api/auth/login').send({ email: 'superadmin@estelaris.com', password: 'Admin123' });
+      const superadminTok = superadminLoginRes.body.sesion.token;
+
+      const userRes = await api.post('/api/auth/register').auth(superadminTok, { type: 'bearer' }).send({
+        name: 'No Settle Privilege User',
+        email: 'no_settle_priv@test.com',
+        role: 'user',
+        password: 'Test1234'
+      });
+
+      let noPrivToken = '';
+      if (userRes.status === 200) {
+        const loginRes = await api.post('/api/auth/login').send({ email: 'no_settle_priv@test.com', password: 'Test1234' });
+        if (loginRes.status === 200) noPrivToken = loginRes.body.sesion.token;
+      }
+
+      if (!noPrivToken) return;
+
+      await api
+        .get('/api/sales/settlements')
+        .auth(noPrivToken, { type: 'bearer' })
+        .expect(403);
+    });
+  });
+
+  // ============================================
+  // Privilege checks for settle endpoint
+  // ============================================
+  describe('PUT /api/sales/:id/settle - privilege check', () => {
+    test('55. Sin privilegio settle_sale. Expect 403', async () => {
+      const superadminLoginRes = await api.post('/api/auth/login').send({ email: 'superadmin@estelaris.com', password: 'Admin123' });
+      const superadminTok = superadminLoginRes.body.sesion.token;
+
+      const userRes = await api.post('/api/auth/register').auth(superadminTok, { type: 'bearer' }).send({
+        name: 'No Settle Action User',
+        email: 'no_settle_action@test.com',
+        role: 'user',
+        password: 'Test1234'
+      });
+
+      let noPrivToken = '';
+      if (userRes.status === 200) {
+        const loginRes = await api.post('/api/auth/login').send({ email: 'no_settle_action@test.com', password: 'Test1234' });
+        if (loginRes.status === 200) noPrivToken = loginRes.body.sesion.token;
+      }
+
+      if (!noPrivToken) return;
+
+      const r = await api
+        .post('/api/sales')
+        .auth(Token, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(saleCreateCredito(customerId, addressId, purchaseId));
+
+      if (r.status !== 200) return;
+
+      await api
+        .put(`/api/sales/${r.body.sale.id}/settle`)
+        .auth(noPrivToken, { type: 'bearer' })
+        .set('x-branch-id', '1')
+        .send(settleBody(100))
+        .expect(403);
     });
   });
 });

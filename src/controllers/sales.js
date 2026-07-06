@@ -11,7 +11,9 @@ const {
   createSale,
   updateSale,
   cancelSale,
-  deleteSale
+  deleteSale,
+  settleSale,
+  getSettledSales
 } = require('../services/sales');
 
 const getRecords = async (req, res) => {
@@ -166,6 +168,42 @@ const deleteRecord = async (req, res) => {
   }
 };
 
+const settleRecord = async (req, res) => {
+  try {
+    const data = matchedData(req);
+    const userId = req.user.id;
+    // superadmin has req.branchId = null (branchScope skips header) — fall back to header
+    const branchId = req.branchId || parseInt(req.headers['x-branch-id'], 10);
+
+    if (!branchId || isNaN(branchId)) {
+      handleHttpError(res, 'BRANCH_ID_REQUIRED', 400);
+      return;
+    }
+
+    const result = await settleSale(data.id, data, userId, branchId);
+
+    if (result.error) {
+      return handleHttpError(res, result.error, result.error === 'NOT_FOUND' ? 404 : 400);
+    }
+
+    res.send({ sale: result });
+  } catch (error) {
+    handleHttpError(res, `ERROR_SETTLE_RECORD --> ${error}`, 400);
+  }
+};
+
+const getSettlementRecords = async (req, res) => {
+  try {
+    const data = matchedData(req);
+    const { page, limit } = getPaginationParams(data);
+    const search = data.search ?? '';
+    const { sales, total } = await getSettledSales(page, limit, search);
+    res.send(buildPaginationResponse('sales', sales, total, page, limit));
+  } catch (error) {
+    handleHttpError(res, `ERROR_GET_SETTLEMENTS --> ${error}`);
+  }
+};
+
 module.exports = {
   getRecords,
   getRecord,
@@ -175,5 +213,7 @@ module.exports = {
   addRecord,
   updateRecord,
   cancelRecord,
-  deleteRecord
+  deleteRecord,
+  settleRecord,
+  getSettlementRecords
 };

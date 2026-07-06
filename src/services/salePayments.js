@@ -11,7 +11,7 @@ const userAttributes = ['id', 'name', 'email'];
 
 const saleAttributes = [
   'id', 'customer_id', 'sales_date', 'status', 'sales_total',
-  'due_payment', 'sales_type'
+  'due_payment', 'sales_type', 'settlement_discount'
 ];
 
 const branchAttributes = ['id', 'name'];

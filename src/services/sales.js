@@ -34,7 +34,7 @@ const saleAttributes = [
   'user_id', 'price_list_id', 'sales_date', 'sales_type', 'payment_periods',
   'total_days_term', 'ticket', 'invoice', 'subtotal', 'discount_amount', 'anticipo_amount',
   'points_redeemed', 'points_discount', 'points_earned',
-  'tax_amount', 'sales_total', 'due_payment', 'due_date', 'status', 'delivery_status', 'notes',
+  'tax_amount', 'sales_total', 'due_payment', 'due_date', 'settlement_discount', 'status', 'delivery_status', 'notes',
   'created_at', 'updated_at'
 ];
 
@@ -668,6 +668,91 @@ const deleteSale = async (id, userId) => {
   }
 };
 
+const settleSale = async (id, body, userId, branchId) => {
+  const {
+    settlement_amount: settlementAmount,
+    payment_date: paymentDate,
+    payment_method: paymentMethod,
+    reference_number: referenceNumber,
+    notes
+  } = body;
+
+  // Pre-transaction guards
+  const sale = await sales.findByPk(id, { attributes: saleAttributes });
+  if (!sale) return { error: 'NOT_FOUND' };
+  if (sale.sales_type !== 'Credito') return { error: 'SALE_NOT_CREDIT' };
+  if (sale.status !== 'Pendiente') return { error: 'SALE_NOT_SETTLEABLE' };
+
+  const amount = parseFloat(settlementAmount);
+  const currentDue = parseFloat(sale.due_payment);
+  if (amount <= 0 || amount > currentDue) return { error: 'INVALID_SETTLEMENT_AMOUNT' };
+
+  const transaction = await sequelize.transaction();
+  try {
+    const saleForUpdate = await sales.findByPk(id, { lock: transaction.LOCK.UPDATE, transaction });
+
+    // Re-validate inside lock
+    if (saleForUpdate.status !== 'Pendiente') {
+      await transaction.rollback();
+      return { error: 'SALE_NOT_SETTLEABLE' };
+    }
+
+    // Bulk close all pending installments at face value
+    await saleInstallments.update(
+      { status: 'Pagado', paid_amount: sequelize.col('amount'), paid_date: paymentDate },
+      { where: { sale_id: id, status: 'Pendiente' }, transaction }
+    );
+
+    // Create Liquidacion payment
+    const payment = await salePayments.create({
+      sale_id: id,
+      payment_amount: amount,
+      payment_date: paymentDate,
+      payment_method: paymentMethod,
+      reference_number: referenceNumber || null,
+      user_id: userId,
+      branch_id: branchId,
+      notes: notes || null,
+      payment_type: 'Liquidacion'
+    }, { transaction });
+
+    // Update sale: due_payment=0, status=Pagado, settlement_discount=discount
+    const settlementDiscount = parseFloat((currentDue - amount).toFixed(2));
+    await saleForUpdate.update(
+      { due_payment: 0, status: 'Pagado', settlement_discount: settlementDiscount },
+      { transaction }
+    );
+
+    await transaction.commit();
+
+    // Fire and forget
+    accountingEngine.generateFromSalePayment(payment.id).catch(err =>
+      console.error('[AccountingEngine] Error generando póliza de liquidación:', err.message)
+    );
+
+    return await getSale(id);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+
+const getSettledSales = async (page = 1, limit = 20, search = '') => {
+  const offset = (page - 1) * limit;
+  const where = { settlement_discount: { [Op.not]: null } };
+  if (search) where.ticket = { [Op.like]: `%${search}%` };
+
+  const { count, rows } = await sales.findAndCountAll({
+    attributes: saleAttributes,
+    where,
+    include: saleIncludes,
+    order: [['updated_at', 'DESC']],
+    limit,
+    offset
+  });
+  return { sales: rows, total: count };
+};
+
 module.exports = {
   getAllSales,
   getSale,
@@ -678,5 +763,7 @@ module.exports = {
   updateSale,
   cancelSale,
   deleteSale,
+  settleSale,
+  getSettledSales,
   generateTicket
 };
