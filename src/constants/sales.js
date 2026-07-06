@@ -89,7 +89,16 @@ const SALES_VALIDATORS = Object.freeze({
   ANTICIPO_AMOUNT_INVALID: 'El anticipo debe ser un número decimal mayor o igual a 0',
   ANTICIPO_EXCEEDS_TOTAL: 'El anticipo no puede ser mayor al total de la venta',
   ANTICIPO_PAYMENT_METHOD_REQUIRED: 'El método de pago del anticipo es requerido cuando el anticipo es mayor a 0',
-  ANTICIPO_PAYMENT_METHOD_INVALID: "El método de pago del anticipo debe ser: 'Efectivo', 'Transferencia', 'Vale despensa' o 'Tarjeta'"
+  ANTICIPO_PAYMENT_METHOD_INVALID: "El método de pago del anticipo debe ser: 'Efectivo', 'Transferencia', 'Vale despensa' o 'Tarjeta'",
+
+  // settlement (liquidación anticipada)
+  SETTLEMENT_AMOUNT_NOT_EXISTS: 'El monto de liquidación es requerido',
+  SETTLEMENT_AMOUNT_INVALID: 'El monto de liquidación debe ser un número decimal mayor a 0',
+  SETTLEMENT_PAYMENT_DATE_NOT_EXISTS: 'La fecha de pago es requerida',
+  SETTLEMENT_PAYMENT_DATE_INVALID: 'La fecha de pago debe ser una fecha válida',
+  SETTLEMENT_PAYMENT_METHOD_NOT_EXISTS: 'El método de pago es requerido',
+  SETTLEMENT_PAYMENT_METHOD_INVALID: "El método de pago debe ser: 'Efectivo', 'Transferencia', 'Vale despensa' o 'Tarjeta'",
+  SETTLEMENT_REFERENCE_INVALID: 'El número de referencia debe ser texto con máximo 100 caracteres'
 });
 
 const TICKET_CONFIG = Object.freeze({

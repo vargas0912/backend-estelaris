@@ -3,6 +3,35 @@ const validateResults = require('../utils/handleValidator');
 const { SALES_VALIDATORS, SORT_WHITELIST } = require('../constants/sales');
 const { paginationChecks, sortChecks } = require('./shared');
 
+const valiSettleRecord = [
+  check('id')
+    .exists().withMessage(SALES_VALIDATORS.ID_NOT_EXISTS).bail()
+    .notEmpty().withMessage(SALES_VALIDATORS.ID_IS_EMPTY).bail()
+    .isInt({ min: 1 }).withMessage(SALES_VALIDATORS.ID_INVALID).bail()
+    .toInt(),
+  check('settlement_amount')
+    .exists().withMessage(SALES_VALIDATORS.SETTLEMENT_AMOUNT_NOT_EXISTS).bail()
+    .notEmpty().withMessage(SALES_VALIDATORS.SETTLEMENT_AMOUNT_NOT_EXISTS).bail()
+    .isDecimal({ decimal_digits: '0,2', force_decimal: false }).withMessage(SALES_VALIDATORS.SETTLEMENT_AMOUNT_INVALID).bail()
+    .custom(val => parseFloat(val) > 0).withMessage(SALES_VALIDATORS.SETTLEMENT_AMOUNT_INVALID),
+  check('payment_date')
+    .exists().withMessage(SALES_VALIDATORS.SETTLEMENT_PAYMENT_DATE_NOT_EXISTS).bail()
+    .notEmpty().withMessage(SALES_VALIDATORS.SETTLEMENT_PAYMENT_DATE_NOT_EXISTS).bail()
+    .isDate().withMessage(SALES_VALIDATORS.SETTLEMENT_PAYMENT_DATE_INVALID).bail(),
+  check('payment_method')
+    .exists().withMessage(SALES_VALIDATORS.SETTLEMENT_PAYMENT_METHOD_NOT_EXISTS).bail()
+    .notEmpty().withMessage(SALES_VALIDATORS.SETTLEMENT_PAYMENT_METHOD_NOT_EXISTS).bail()
+    .isIn(['Efectivo', 'Transferencia', 'Vale despensa', 'Tarjeta']).withMessage(SALES_VALIDATORS.SETTLEMENT_PAYMENT_METHOD_INVALID).bail(),
+  check('reference_number')
+    .optional({ nullable: true })
+    .isString().withMessage(SALES_VALIDATORS.SETTLEMENT_REFERENCE_INVALID).bail()
+    .isLength({ max: 100 }).withMessage(SALES_VALIDATORS.SETTLEMENT_REFERENCE_INVALID).bail(),
+  check('notes')
+    .optional({ nullable: true })
+    .isString().withMessage(SALES_VALIDATORS.NOTES_INVALID).bail(),
+  (req, res, next) => validateResults(req, res, next)
+];
+
 const validateGetAll = [
   ...paginationChecks,
   check('search').optional().isString().trim(),
@@ -162,5 +191,6 @@ module.exports = {
   validateGetByCustomer,
   validateGetByBranch,
   valiAddRecord,
-  valiUpdateRecord
+  valiUpdateRecord,
+  valiSettleRecord
 };

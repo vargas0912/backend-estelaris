@@ -3,7 +3,7 @@ const {
   BRANCH: BR, EMPlOYEE: EMP, PRIVILEGE: PRV, USERS: USR, MUNICIPALITIES: MUN, CAMPAIGN: CMP, CAMPAIGN_PRODUCT: CMPPROD,
   CUSTOMER: CUST, CUSTOMER_ADDRESS: CUSTADDR, PRODUCT_CATEGORY: CATP, USER_BRANCH: UBR, PRODUCT: PRD, POSITION: POS, PRICE_LIST: PL,
   PRODUCT_PRICE: PP, PURCHASE: PURCH, PRODUCT_STOCK: PS, SUPPLIER: SUP, PURCH_PAYMENT: PP_PAY, TRANSFER: TRANSF,
-  SALE_PAYMENT: SL_PAY, DRIVER: DRV, LOYALTY: LY, ACCOUNTING_REPORT: AC_RPT, ACCOUNTING_ACCOUNT: AC_AC,
+  SALE: SL, SALE_PAYMENT: SL_PAY, DRIVER: DRV, LOYALTY: LY, ACCOUNTING_REPORT: AC_RPT, ACCOUNTING_ACCOUNT: AC_AC,
   REPORTS: REPORT, STOCK_MOVEMENT: SM
 } = require('../../../constants/modules');
 
@@ -167,6 +167,8 @@ const data = [
   // { name: SL.NAME_CANCEL, codeName: SL.CANCEL, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
   // { name: SL.NAME_DELETE, codeName: SL.DELETE, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
   // { name: SL.NAME_VIEW_OVERDUE, codeName: SL.VIEW_OVERDUE, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SL.NAME_SETTLE, codeName: SL.SETTLE, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
+  { name: SL.NAME_VIEW_SETTLEMENTS, codeName: SL.VIEW_SETTLEMENTS, module: SL.MODULE_NAME, created_at: fecha, updated_at: fecha },
 
   // Cobros de Venta
   { name: SL_PAY.NAME_ALL, codeName: SL_PAY.VIEW_ALL, module: SL_PAY.MODULE_NAME, created_at: fecha, updated_at: fecha },
