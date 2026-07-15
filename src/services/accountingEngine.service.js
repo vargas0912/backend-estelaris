@@ -10,6 +10,8 @@ const {
   expenses,
   salePayments,
   purchasePayments,
+  payrollPeriods,
+  payrollLines,
   branches,
   users,
   pointTransactions,
@@ -555,10 +557,92 @@ const generateFromPurchasePayment = async (paymentId) => {
   }
 };
 
+/**
+ * Genera póliza contable a partir de un período de nómina pagado.
+ *
+ * Por cada línea de nómina: Cargo 611 (Sueldos y Salarios) → net_pay
+ * Por cada método de pago:  Abono [111 Caja | 112 Bancos]  → subtotal agrupado
+ */
+const generateFromPayroll = async (periodId) => {
+  const existing = await accountingVouchers.findOne({
+    where: { reference_type: 'payroll-period', reference_id: periodId }
+  });
+  if (existing) return existing;
+
+  const period = await payrollPeriods.findByPk(periodId);
+
+  if (!period) throw new Error('NOT_FOUND');
+
+  const lines = await payrollLines.findAll({
+    where: { payroll_period_id: periodId, status: 'Pagado' }
+  });
+
+  if (!lines.length) return null;
+
+  const [acc611, acc111, acc112, openPeriod] = await Promise.all([
+    findAccount('611'),
+    findAccount('111'),
+    findAccount('112'),
+    findOpenPeriod(period.payment_date)
+  ]);
+
+  const accountingLines = [];
+
+  let totalEfectivo = 0;
+  let totalTransferencia = 0;
+
+  for (const line of lines) {
+    const net = parseFloat(line.net_pay);
+    accountingLines.push({
+      account_id: acc611.id,
+      debit: net,
+      credit: 0,
+      description: `Nómina empleado #${line.employee_id}`
+    });
+    if (line.payment_method === 'Efectivo') {
+      totalEfectivo += net;
+    } else {
+      totalTransferencia += net;
+    }
+  }
+
+  totalEfectivo = Math.round(totalEfectivo * 100) / 100;
+  totalTransferencia = Math.round(totalTransferencia * 100) / 100;
+
+  if (totalEfectivo > 0) {
+    accountingLines.push({ account_id: acc111.id, debit: 0, credit: totalEfectivo, description: 'Caja' });
+  }
+  if (totalTransferencia > 0) {
+    accountingLines.push({ account_id: acc112.id, debit: 0, credit: totalTransferencia, description: 'Bancos' });
+  }
+  const t = await sequelize.transaction();
+
+  try {
+    const voucher = await createVoucherWithLines({
+      type: 'egreso',
+      period: openPeriod,
+      branchId: period.branch_id,
+      date: period.payment_date,
+      description: `Nómina: ${period.name}`,
+      referenceType: 'payroll-period',
+      referenceId: periodId,
+      userId: period.user_id,
+      lines: accountingLines
+    }, t);
+
+    await t.commit();
+    return voucher;
+  } catch (error) {
+    await t.rollback();
+    throw error;
+  }
+};
+
 module.exports = {
   generateFromSale,
   generateFromPurchase,
   generateFromExpense,
   generateFromSalePayment,
-  generateFromPurchasePayment
+  generateFromPurchasePayment,
+  generateFromPayroll
 };

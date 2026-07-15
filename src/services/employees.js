@@ -3,7 +3,7 @@ const { sequelize } = require('../models/index');
 const { encrypt } = require('../utils/handlePassword');
 const { Op } = require('sequelize');
 
-const attributes = ['id', 'name', 'email', 'phone', 'hire_date', 'active', 'user_id', 'branch_id', 'created_at', 'updated_at'];
+const attributes = ['id', 'name', 'email', 'phone', 'hire_date', 'base_salary', 'active', 'user_id', 'branch_id', 'created_at', 'updated_at'];
 const positionAttributes = ['id', 'name'];
 const branchAttributes = ['id', 'name'];
 
@@ -99,7 +99,7 @@ const addNewEmployee = async (body) => {
 };
 
 const updateEmployee = async (id, req) => {
-  const { name, email, phone, hire_date: hireDate, position_id: positionId, branch_id: branchId, active } = req;
+  const { name, email, phone, hire_date: hireDate, position_id: positionId, branch_id: branchId, active, base_salary: baseSalary } = req;
 
   const data = await employees.findByPk(id);
 
@@ -118,6 +118,7 @@ const updateEmployee = async (id, req) => {
   data.position_id = positionId || data.position_id;
   data.branch_id = branchId || data.branch_id;
   data.active = active !== undefined ? active : data.active;
+  if (baseSalary !== undefined) data.base_salary = baseSalary;
 
   const result = await data.save();
   return result;

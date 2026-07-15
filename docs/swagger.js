@@ -366,6 +366,11 @@ const swaggerDefinition = {
             nullable: true,
             description: 'ID del usuario de sistema vinculado. NULL si el empleado no tiene acceso.'
           },
+          base_salary: {
+            type: 'number',
+            format: 'decimal',
+            description: 'Salario base del empleado'
+          },
           signature: {
             type: 'string'
           },
@@ -397,8 +402,8 @@ const swaggerDefinition = {
             type: 'array',
             minItems: 1,
             items: { type: 'string' },
-            description: 'Codenames de privileges a asignar.',
-            example: ['view_driver_deliveries', 'update_driver_delivery']
+            description: 'Codenames de privileges a asignar. Para el portal de empleado incluir los privileges del módulo `me`: view_me_profile, view_me_payroll, view_me_vacations, request_vacation, view_me_loans, request_loan.',
+            example: ['view_me_profile', 'view_me_payroll', 'view_me_vacations', 'request_vacation', 'view_me_loans', 'request_loan']
           }
         }
       },
@@ -427,7 +432,7 @@ const swaggerDefinition = {
             type: 'array',
             items: { type: 'string' },
             description: 'Codenames de los privileges asignados',
-            example: ['view_driver_deliveries', 'update_driver_delivery']
+            example: ['view_me_profile', 'view_me_payroll', 'view_me_vacations', 'request_vacation', 'view_me_loans', 'request_loan']
           }
         }
       },
@@ -1882,6 +1887,97 @@ const swaggerDefinition = {
               payments: { type: 'number', format: 'decimal', description: 'Suma de abonos recibidos' }
             }
           }
+        }
+      },
+      payrollPeriods: {
+        type: 'object',
+        description: 'Período de nómina de una sucursal',
+        properties: {
+          id: { type: 'integer' },
+          branch_id: { type: 'integer' },
+          name: { type: 'string', example: '1ra Quincena Julio 2026' },
+          start_date: { type: 'string', format: 'date' },
+          end_date: { type: 'string', format: 'date' },
+          payment_date: { type: 'string', format: 'date' },
+          frequency: { type: 'string', enum: ['Quincenal', 'Mensual', 'Semanal'] },
+          status: { type: 'string', enum: ['Borrador', 'Aprobado', 'Pagado'], description: 'Borrador: editable | Aprobado: en proceso | Pagado: definitivo' },
+          total_gross: { type: 'number', format: 'decimal', description: 'Suma de salarios brutos de todas las líneas' },
+          total_deductions: { type: 'number', format: 'decimal', description: 'Suma de deducciones (préstamos + otros)' },
+          total_net: { type: 'number', format: 'decimal', description: 'Suma de salarios netos a pagar' },
+          user_id: { type: 'integer', description: 'Usuario que generó el período' },
+          lines: { type: 'array', description: 'Líneas de nómina (solo en GET individual)', items: { $ref: '#/components/schemas/payrollLines' } },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      payrollLines: {
+        type: 'object',
+        description: 'Línea de nómina por empleado en un período',
+        properties: {
+          id: { type: 'integer' },
+          payroll_period_id: { type: 'integer' },
+          employee_id: { type: 'integer' },
+          base_salary: { type: 'number', format: 'decimal' },
+          worked_days: { type: 'number', format: 'decimal' },
+          gross_pay: { type: 'number', format: 'decimal', description: 'Salario bruto calculado' },
+          loan_deduction: { type: 'number', format: 'decimal', description: 'Total descontado por préstamos activos en este período' },
+          other_deductions: { type: 'number', format: 'decimal' },
+          net_pay: { type: 'number', format: 'decimal', description: 'Monto neto a pagar al empleado' },
+          payment_method: { type: 'string', enum: ['Efectivo', 'Transferencia'] },
+          reference_number: { type: 'string', nullable: true },
+          status: { type: 'string', enum: ['Pendiente', 'Pagado'] },
+          notes: { type: 'string', nullable: true },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      employeeLoans: {
+        type: 'object',
+        description: 'Préstamo o anticipo a un empleado',
+        properties: {
+          id: { type: 'integer' },
+          employee_id: { type: 'integer' },
+          branch_id: { type: 'integer' },
+          amount: { type: 'number', format: 'decimal', description: 'Monto original del préstamo' },
+          balance: { type: 'number', format: 'decimal', description: 'Saldo pendiente por recuperar' },
+          reason: { type: 'string', nullable: true },
+          disbursement_date: { type: 'string', format: 'date' },
+          installment_amount: { type: 'number', format: 'decimal', description: 'Descuento fijo por período de nómina' },
+          status: { type: 'string', enum: ['Pendiente', 'Activo', 'Liquidado', 'Cancelado'], description: 'Pendiente: esperando aprobación | Activo: se descuenta en nómina | Liquidado: saldo=0 | Cancelado' },
+          approved_by: { type: 'integer', nullable: true, description: 'Usuario que aprobó el préstamo' },
+          user_id: { type: 'integer', description: 'Usuario que registró o solicitó el préstamo' },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      loanPayments: {
+        type: 'object',
+        description: 'Abono a préstamo de empleado (generado automáticamente al pagar nómina)',
+        properties: {
+          id: { type: 'integer' },
+          loan_id: { type: 'integer' },
+          payroll_line_id: { type: 'integer', nullable: true, description: 'ID de la línea de nómina que generó el abono. NULL si fue abono manual.' },
+          amount: { type: 'number', format: 'decimal' },
+          payment_date: { type: 'string', format: 'date' },
+          notes: { type: 'string', nullable: true },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      employeeVacations: {
+        type: 'object',
+        description: 'Solicitud de vacaciones de un empleado',
+        properties: {
+          id: { type: 'integer' },
+          employee_id: { type: 'integer' },
+          start_date: { type: 'string', format: 'date' },
+          end_date: { type: 'string', format: 'date' },
+          days: { type: 'integer', description: 'Número de días de la solicitud' },
+          reason: { type: 'string', nullable: true },
+          status: { type: 'string', enum: ['Pendiente', 'Aprobado', 'Rechazado'] },
+          approved_by: { type: 'integer', nullable: true, description: 'Usuario que aprobó o rechazó la solicitud' },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
         }
       }
     }

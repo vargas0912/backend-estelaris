@@ -53,6 +53,7 @@ const valiAddRecord = [
     .exists().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_IS_EMPTY).bail(),
   check('active'),
+  check('base_salary').optional().isFloat({ min: 0 }),
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -81,6 +82,7 @@ const valiUpdateRecord = [
     .exists().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_IS_EMPTY).bail(),
   check('active'),
+  check('base_salary').optional().isFloat({ min: 0 }),
   (req, res, next) => {
     return validateResults(req, res, next);
   }

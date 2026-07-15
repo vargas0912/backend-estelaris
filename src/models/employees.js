@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.sales, { as: 'sales', foreignKey: 'employee_id' });
       this.hasMany(models.saleDeliveries, { as: 'drivenDeliveries', foreignKey: 'driver_id' });
       this.belongsTo(models.users, { foreignKey: 'user_id', as: 'user' });
+      this.hasMany(models.payrollLines, { as: 'payrollLines', foreignKey: 'employee_id' });
+      this.hasMany(models.employeeLoans, { as: 'loans', foreignKey: 'employee_id' });
+      this.hasMany(models.employeeVacations, { as: 'vacations', foreignKey: 'employee_id' });
     }
   }
 
@@ -29,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
       unique: true
+    },
+    base_salary: {
+      type: DataTypes.DECIMAL(12, 2),
+      defaultValue: 0.00
     }
   }, {
     sequelize,

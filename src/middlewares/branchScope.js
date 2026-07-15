@@ -6,7 +6,8 @@ const { BRANCH_SCOPE } = require('../constants/errors');
 const branchScope = async(req, res, next) => {
   try {
     if (req.user.role === ROLE.SUPERADMIN) {
-      req.branchId = null;
+      const branchId = parseInt(req.headers['x-branch-id'], 10);
+      req.branchId = (!branchId || isNaN(branchId)) ? null : branchId;
       return next();
     }
 
