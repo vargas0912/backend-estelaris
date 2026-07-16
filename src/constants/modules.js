@@ -25,7 +25,9 @@ const EMPlOYEE = Object.freeze({
   GRANT_ACCESS: 'grant_employee_access',
   NAME_GRANT_ACCESS: 'Habilitar acceso de empleado',
   REVOKE_ACCESS: 'revoke_employee_access',
-  NAME_REVOKE_ACCESS: 'Revocar acceso de empleado'
+  NAME_REVOKE_ACCESS: 'Revocar acceso de empleado',
+  ASSIGN_ACCESS: 'assign_employee_access',
+  NAME_ASSIGN_ACCESS: 'Asignar usuario existente a empleado'
 });
 
 const PRIVILEGE = Object.freeze({

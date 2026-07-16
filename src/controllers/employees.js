@@ -2,7 +2,7 @@ const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
 const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
-const { getAllEmployees, getEmployee, getEmployeesByBranch, addNewEmployee, updateEmployee, deleteEmployee, grantEmployeeAccess, revokeEmployeeAccess } = require('../services/employees');
+const { getAllEmployees, getEmployee, getEmployeesByBranch, addNewEmployee, updateEmployee, deleteEmployee, grantEmployeeAccess, assignEmployeeAccess, revokeEmployeeAccess } = require('../services/employees');
 
 /**
  * Obtener lista de registros
@@ -123,6 +123,27 @@ const grantAccess = async (req, res) => {
   }
 };
 
+const assignAccess = async (req, res) => {
+  try {
+    const { id, user_id: userId, privileges } = matchedData(req);
+    const result = await assignEmployeeAccess(id, userId, privileges);
+
+    if (result.error === 'EMPLOYEE_NOT_FOUND' || result.error === 'USER_NOT_FOUND') {
+      handleHttpError(res, result.error, 404);
+      return;
+    }
+
+    if (result.error) {
+      handleHttpError(res, result.error, 422);
+      return;
+    }
+
+    res.status(201).send(result);
+  } catch (error) {
+    handleHttpError(res, `ERROR_ASSIGN_ACCESS --> ${error}`, 400);
+  }
+};
+
 const revokeAccess = async (req, res) => {
   try {
     const { id } = matchedData(req);
@@ -144,4 +165,4 @@ const revokeAccess = async (req, res) => {
   }
 };
 
-module.exports = { getRecord, getRecords, getRecordsByBranch, addRecord, updateRecord, deleteRecord, grantAccess, revokeAccess };
+module.exports = { getRecord, getRecords, getRecordsByBranch, addRecord, updateRecord, deleteRecord, grantAccess, assignAccess, revokeAccess };

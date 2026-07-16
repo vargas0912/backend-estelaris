@@ -436,6 +436,52 @@ const swaggerDefinition = {
           }
         }
       },
+      assignEmployeeAccessRequest: {
+        type: 'object',
+        required: ['user_id', 'privileges'],
+        properties: {
+          user_id: {
+            type: 'integer',
+            description: 'ID de un user existente, sin ningún employee vinculado todavía.'
+          },
+          privileges: {
+            type: 'array',
+            minItems: 1,
+            items: { type: 'string' },
+            description: 'Codenames de privileges a asignar. Para el portal de empleado incluir los privileges del módulo `me`: view_me_profile, view_me_payroll, view_me_vacations, request_vacation, view_me_loans, request_loan.',
+            example: ['view_me_profile', 'view_me_payroll', 'view_me_vacations', 'request_vacation', 'view_me_loans', 'request_loan']
+          }
+        }
+      },
+      assignEmployeeAccessResponse: {
+        type: 'object',
+        description: 'Resultado de asignar un usuario existente a un empleado',
+        properties: {
+          employee: {
+            type: 'object',
+            properties: {
+              id: { type: 'integer' },
+              name: { type: 'string' },
+              user_id: { type: 'integer', description: 'ID del user vinculado' }
+            }
+          },
+          user: {
+            type: 'object',
+            properties: {
+              id: { type: 'integer' },
+              name: { type: 'string' },
+              email: { type: 'string', format: 'email' },
+              role: { type: 'string', example: 'user' }
+            }
+          },
+          privileges: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Codenames de los privileges asignados (solo los que el usuario no tenía ya)',
+            example: ['view_me_profile', 'view_me_payroll', 'view_me_vacations', 'request_vacation', 'view_me_loans', 'request_loan']
+          }
+        }
+      },
       pagination: {
         type: 'object',
         properties: {

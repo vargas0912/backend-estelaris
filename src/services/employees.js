@@ -181,6 +181,59 @@ const grantEmployeeAccess = async (id, email, password, privilegeCodenames) => {
   }
 };
 
+const assignEmployeeAccess = async (id, userId, privilegeCodenames) => {
+  const employee = await employees.findByPk(id);
+  if (!employee) return { error: 'EMPLOYEE_NOT_FOUND' };
+  if (employee.user_id) return { error: 'EMPLOYEE_ALREADY_HAS_ACCESS' };
+
+  const user = await users.findByPk(userId);
+  if (!user) return { error: 'USER_NOT_FOUND' };
+
+  const linkedEmployee = await employees.findOne({ where: { user_id: userId }, attributes: ['id'] });
+  if (linkedEmployee) return { error: 'USER_ALREADY_LINKED_TO_EMPLOYEE' };
+
+  const matchedPrivileges = await privileges.findAll({
+    where: { codename: { [Op.in]: privilegeCodenames } },
+    attributes: ['id', 'codename']
+  });
+
+  if (matchedPrivileges.length !== privilegeCodenames.length) {
+    return { error: 'INVALID_PRIVILEGES' };
+  }
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    const existingPrivileges = await userprivileges.findAll({
+      where: { user_id: userId, privilege_id: { [Op.in]: matchedPrivileges.map(p => p.id) } },
+      attributes: ['privilege_id'],
+      transaction
+    });
+    const existingIds = new Set(existingPrivileges.map(p => p.privilege_id));
+    const newPrivileges = matchedPrivileges.filter(p => !existingIds.has(p.id));
+
+    if (newPrivileges.length) {
+      await userprivileges.bulkCreate(
+        newPrivileges.map(p => ({ user_id: user.id, privilege_id: p.id })),
+        { transaction }
+      );
+    }
+
+    await employee.update({ user_id: user.id }, { transaction });
+
+    await transaction.commit();
+
+    return {
+      employee: { id: employee.id, name: employee.name, user_id: user.id },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      privileges: matchedPrivileges.map(p => p.codename)
+    };
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+
 const revokeEmployeeAccess = async (id) => {
   const employee = await employees.findByPk(id);
   if (!employee) return { error: 'EMPLOYEE_NOT_FOUND' };
@@ -201,4 +254,4 @@ const revokeEmployeeAccess = async (id) => {
   }
 };
 
-module.exports = { getAllEmployees, getEmployee, getEmployeesByBranch, addNewEmployee, updateEmployee, deleteEmployee, grantEmployeeAccess, revokeEmployeeAccess };
+module.exports = { getAllEmployees, getEmployee, getEmployeesByBranch, addNewEmployee, updateEmployee, deleteEmployee, grantEmployeeAccess, assignEmployeeAccess, revokeEmployeeAccess };
