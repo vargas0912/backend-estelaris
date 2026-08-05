@@ -53,6 +53,7 @@ const valiAddRecord = [
     .exists().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_IS_EMPTY).bail(),
   check('active'),
+  check('base_salary').optional().isFloat({ min: 0 }),
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -81,6 +82,7 @@ const valiUpdateRecord = [
     .exists().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_NOT_EXISTS).bail()
     .notEmpty().withMessage(EMPLOYEES_VALIDATORS.BRANCH_ID_IS_EMPTY).bail(),
   check('active'),
+  check('base_salary').optional().isFloat({ min: 0 }),
   (req, res, next) => {
     return validateResults(req, res, next);
   }
@@ -106,4 +108,20 @@ const valiGrantAccess = [
   }
 ];
 
-module.exports = { validateGetAll, validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord, valiGrantAccess };
+const valiAssignAccess = [
+  check('id')
+    .exists().withMessage(EMPLOYEES_VALIDATORS.ID_NOT_EXISTS).bail()
+    .notEmpty().withMessage(EMPLOYEES_VALIDATORS.ID_IS_EMPTY).bail(),
+  check('user_id')
+    .exists().withMessage(EMPLOYEES_VALIDATORS.ACCESS_USER_ID_NOT_EXISTS).bail()
+    .notEmpty().withMessage(EMPLOYEES_VALIDATORS.ACCESS_USER_ID_IS_EMPTY).bail()
+    .isInt({ min: 1 }).withMessage(EMPLOYEES_VALIDATORS.ACCESS_USER_ID_INVALID).bail(),
+  check('privileges')
+    .exists().withMessage(EMPLOYEES_VALIDATORS.ACCESS_PRIVILEGES_NOT_EXISTS).bail()
+    .isArray({ min: 1 }).withMessage(EMPLOYEES_VALIDATORS.ACCESS_PRIVILEGES_INVALID).bail(),
+  (req, res, next) => {
+    return validateResults(req, res, next);
+  }
+];
+
+module.exports = { validateGetAll, validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord, valiGrantAccess, valiAssignAccess };

@@ -25,7 +25,9 @@ const EMPlOYEE = Object.freeze({
   GRANT_ACCESS: 'grant_employee_access',
   NAME_GRANT_ACCESS: 'Habilitar acceso de empleado',
   REVOKE_ACCESS: 'revoke_employee_access',
-  NAME_REVOKE_ACCESS: 'Revocar acceso de empleado'
+  NAME_REVOKE_ACCESS: 'Revocar acceso de empleado',
+  ASSIGN_ACCESS: 'assign_employee_access',
+  NAME_ASSIGN_ACCESS: 'Asignar usuario existente a empleado'
 });
 
 const PRIVILEGE = Object.freeze({
@@ -484,7 +486,60 @@ const REPORTS = Object.freeze({
   NAME_INVENTORY: 'Ver reporte de inventario'
 });
 
+const PAYROLL = Object.freeze({
+  MODULE_NAME: 'payroll',
+  VIEW_ALL: 'view_payroll',
+  NAME_ALL: 'Ver nómina',
+  ADD: 'create_payroll',
+  NAME_ADD: 'Registrar período de nómina',
+  APPROVE: 'approve_payroll',
+  NAME_APPROVE: 'Aprobar y pagar nómina',
+  DELETE: 'delete_payroll',
+  NAME_DELETE: 'Eliminar período de nómina'
+});
+
+const EMPLOYEE_LOAN = Object.freeze({
+  MODULE_NAME: 'employeeLoans',
+  VIEW_ALL: 'view_employee_loans',
+  NAME_ALL: 'Ver préstamos de empleados',
+  ADD: 'create_employee_loan',
+  NAME_ADD: 'Registrar préstamo de empleado',
+  APPROVE: 'approve_employee_loan',
+  NAME_APPROVE: 'Aprobar préstamo de empleado',
+  DELETE: 'delete_employee_loan',
+  NAME_DELETE: 'Eliminar préstamo de empleado'
+});
+
+const EMPLOYEE_VACATION = Object.freeze({
+  MODULE_NAME: 'employeeVacations',
+  VIEW_ALL: 'view_employee_vacations',
+  NAME_ALL: 'Ver solicitudes de vacaciones',
+  ADD: 'create_employee_vacation',
+  NAME_ADD: 'Registrar solicitud de vacaciones',
+  APPROVE: 'approve_employee_vacation',
+  NAME_APPROVE: 'Aprobar/rechazar vacaciones',
+  DELETE: 'delete_employee_vacation',
+  NAME_DELETE: 'Eliminar solicitud de vacaciones'
+});
+
+const ME = Object.freeze({
+  MODULE_NAME: 'me',
+  VIEW_PROFILE: 'view_me_profile',
+  NAME_VIEW_PROFILE: 'Ver perfil propio',
+  VIEW_PAYROLL: 'view_me_payroll',
+  NAME_VIEW_PAYROLL: 'Ver recibos de nómina propios',
+  VIEW_VACATIONS: 'view_me_vacations',
+  NAME_VIEW_VACATIONS: 'Ver solicitudes de vacaciones propias',
+  REQUEST_VACATION: 'request_vacation',
+  NAME_REQUEST_VACATION: 'Solicitar vacaciones',
+  VIEW_LOANS: 'view_me_loans',
+  NAME_VIEW_LOANS: 'Ver préstamos propios',
+  REQUEST_LOAN: 'request_loan',
+  NAME_REQUEST_LOAN: 'Solicitar préstamo'
+});
+
 module.exports = {
+  ME,
   BRANCH,
   EMPlOYEE,
   PRIVILEGE,
@@ -521,5 +576,8 @@ module.exports = {
   ACCOUNTING_REPORT,
   LOYALTY,
   REPORTS,
-  STOCK_MOVEMENT
+  STOCK_MOVEMENT,
+  PAYROLL,
+  EMPLOYEE_LOAN,
+  EMPLOYEE_VACATION
 };

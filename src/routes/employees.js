@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateGetAll, validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord, valiGrantAccess } = require('../validators/employees');
+const { validateGetAll, validateGetRecord, validateGetByBranch, valiAddRecord, valiUpdateRecord, valiGrantAccess, valiAssignAccess } = require('../validators/employees');
 
 const authMidleware = require('../middlewares/session');
 const branchScope = require('../middlewares/branchScope');
 const checkRol = require('../middlewares/rol');
+const payrollModuleGuard = require('../middlewares/payrollModuleGuard');
 const { readLimiter, writeLimiter, deleteLimiter, searchLimiter } = require('../middlewares/rateLimiters');
 
-const { getRecord, getRecords, getRecordsByBranch, addRecord, updateRecord, deleteRecord, grantAccess, revokeAccess } = require('../controllers/employees');
+const { getRecord, getRecords, getRecordsByBranch, addRecord, updateRecord, deleteRecord, grantAccess, assignAccess, revokeAccess } = require('../controllers/employees');
 const { EMPlOYEE } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
 
@@ -115,6 +116,52 @@ router.post('/:id/grant-access', [
   valiGrantAccess,
   checkRol([ROLE.ADMIN], EMPlOYEE.GRANT_ACCESS)
 ], grantAccess);
+
+/**
+ * @openapi
+ * /employees/{id}/assign-access:
+ *    post:
+ *      tags:
+ *        - employees
+ *      summary: Asignar un usuario existente a un empleado
+ *      description: Vincula un user existente (sin employee asociado) al empleado y le asigna los privileges indicados. Todo en una transacción atómica. Requiere que el módulo de nómina esté activo.
+ *      security:
+ *        - bearerAuth: []
+ *      parameters:
+ *      - name: id
+ *        in: path
+ *        required: true
+ *        schema:
+ *          type: number
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/assignEmployeeAccessRequest'
+ *      responses:
+ *        '201':
+ *          description: Usuario asignado exitosamente
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/assignEmployeeAccessResponse'
+ *        '400':
+ *          description: Error de validación
+ *        '404':
+ *          description: EMPLOYEE_NOT_FOUND | USER_NOT_FOUND
+ *        '422':
+ *          description: EMPLOYEE_ALREADY_HAS_ACCESS | USER_ALREADY_LINKED_TO_EMPLOYEE | INVALID_PRIVILEGES
+ *        '503':
+ *          description: PAYROLL_MODULE_DISABLED — el módulo de nómina no está activo
+ */
+router.post('/:id/assign-access', [
+  writeLimiter,
+  authMidleware,
+  payrollModuleGuard,
+  valiAssignAccess,
+  checkRol([ROLE.ADMIN], EMPlOYEE.ASSIGN_ACCESS)
+], assignAccess);
 
 /**
  * @openapi
