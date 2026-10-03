@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 const { transfers, transferDetails, branches, users, employees, products, productStocks, sequelize } = require('../models/index');
-const { updateFromTransfer, revertFromTransfer } = require('./productStocks');
+const { updateFromTransfer, revertFromTransfer, buildLotWhere } = require('./productStocks');
 
 const transferAttributes = [
   'id', 'from_branch_id', 'to_branch_id', 'transfer_date', 'status',
@@ -218,10 +218,10 @@ const dispatchTransfer = async (id, userId, reqBranchId) => {
   const transaction = await sequelize.transaction();
 
   try {
-    // Verificar stock suficiente en origen (SELECT FOR UPDATE)
+    // Verificar stock suficiente en el lote de origen (SELECT FOR UPDATE)
     for (const detail of transfer.details) {
       const stock = await productStocks.findOne({
-        where: { product_id: detail.product_id, branch_id: transfer.from_branch_id },
+        where: buildLotWhere(detail.product_id, detail.purch_id, transfer.from_branch_id),
         transaction,
         lock: transaction.LOCK.UPDATE
       });

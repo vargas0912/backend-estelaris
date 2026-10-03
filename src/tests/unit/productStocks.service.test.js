@@ -1,4 +1,4 @@
-const { productStocks, products, branches } = require('../../models/index');
+const { productStocks, products, branches, stockMovements } = require('../../models/index');
 const { Op } = require('sequelize');
 const {
   getAllProductStocks,
@@ -6,7 +6,8 @@ const {
   getStocksByBranch,
   addNewProductStock,
   updateProductStock,
-  deleteProductStock
+  deleteProductStock,
+  revertFromTransfer
 } = require('../../services/productStocks');
 
 // Mock del modelo
@@ -26,6 +27,9 @@ jest.mock('../../models/index', () => ({
   branches: {
     findAll: jest.fn(),
     findOne: jest.fn()
+  },
+  stockMovements: {
+    create: jest.fn()
   }
 }));
 
@@ -494,6 +498,34 @@ describe('ProductStocks Service - Unit Tests', () => {
       await updateProductStock(1, { quantity: -5 });
 
       expect(mockStock.quantity).toBe(-5);
+    });
+  });
+
+  describe('revertFromTransfer', () => {
+    test('debe regresar el stock al lote (bar_code) del ítem, no a cualquier lote del producto', async () => {
+      const lot = { quantity: '4.000', save: jest.fn() };
+      productStocks.findOne.mockResolvedValue(lot);
+      stockMovements.create.mockResolvedValue({});
+      const transaction = { LOCK: { UPDATE: 'UPDATE' } };
+
+      await revertFromTransfer(10, [{ product_id: 'EREN', purch_id: 7, qty: '5.000' }], 1, 1, transaction);
+
+      expect(productStocks.findOne).toHaveBeenCalledWith(expect.objectContaining({
+        where: { bar_code: 'EREN-7', branch_id: 1 }
+      }));
+      expect(lot.quantity).toBe(9);
+      expect(lot.save).toHaveBeenCalledWith({ transaction });
+    });
+
+    test('debe lanzar error y no registrar movimiento si el lote no existe en origen', async () => {
+      productStocks.findOne.mockResolvedValue(null);
+      const transaction = { LOCK: { UPDATE: 'UPDATE' } };
+
+      await expect(
+        revertFromTransfer(10, [{ product_id: 'EREN', purch_id: 7, qty: '5.000' }], 1, 1, transaction)
+      ).rejects.toThrow('LOT_NOT_FOUND');
+
+      expect(stockMovements.create).not.toHaveBeenCalled();
     });
   });
 });

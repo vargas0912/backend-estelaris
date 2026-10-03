@@ -258,6 +258,13 @@ const updateFromPurchase = async (purchaseId, details, branchId, userId, transac
   }
 };
 
+// Un movimiento con purch_id opera sobre su lote (bar_code); sin purch_id, fallback a product+branch
+const buildLotWhere = (productId, purchId, branchId) => (
+  purchId
+    ? { bar_code: `${productId}-${purchId}`, branch_id: branchId }
+    : { product_id: productId, branch_id: branchId }
+);
+
 /**
  * Descuenta stock en origen (dispatch) e ingresa en destino (receive) para transferencias.
  *
@@ -276,14 +283,8 @@ const updateFromTransfer = async (action, transferId, details, fromBranchId, toB
     const productId = detail.product_id;
 
     if (action === 'dispatch') {
-      // Si el ítem tiene purch_id, operar por lote (bar_code); si no, fallback a product+branch
-      const dispatchBarCode = detail.purch_id ? `${productId}-${detail.purch_id}` : null;
-      const dispatchWhere = dispatchBarCode
-        ? { bar_code: dispatchBarCode, branch_id: fromBranchId }
-        : { product_id: productId, branch_id: fromBranchId };
-
       const originStock = await productStocks.findOne({
-        where: dispatchWhere,
+        where: buildLotWhere(productId, detail.purch_id, fromBranchId),
         transaction,
         lock: transaction.LOCK.UPDATE
       });
@@ -309,12 +310,9 @@ const updateFromTransfer = async (action, transferId, details, fromBranchId, toB
 
       if (qtyReceived > 0) {
         const receiveBarCode = detail.purch_id ? `${productId}-${detail.purch_id}` : null;
-        const receiveWhere = receiveBarCode
-          ? { bar_code: receiveBarCode, branch_id: toBranchId }
-          : { product_id: productId, branch_id: toBranchId };
 
         const [destStock, created] = await productStocks.findOrCreate({
-          where: receiveWhere,
+          where: buildLotWhere(productId, detail.purch_id, toBranchId),
           defaults: {
             product_id: productId,
             quantity: qtyReceived,
@@ -358,16 +356,18 @@ const revertFromTransfer = async (transferId, details, fromBranchId, userId, tra
     const qty = parseFloat(detail.qty);
 
     const originStock = await productStocks.findOne({
-      where: { product_id: productId, branch_id: fromBranchId },
+      where: buildLotWhere(productId, detail.purch_id, fromBranchId),
       transaction,
       lock: transaction.LOCK.UPDATE
     });
 
-    if (originStock) {
-      originStock.quantity = parseFloat((parseFloat(originStock.quantity) + qty).toFixed(3));
-      originStock.last_count_date = today;
-      await originStock.save({ transaction });
+    if (!originStock) {
+      throw new Error(`LOT_NOT_FOUND for product ${productId}`);
     }
+
+    originStock.quantity = parseFloat((parseFloat(originStock.quantity) + qty).toFixed(3));
+    originStock.last_count_date = today;
+    await originStock.save({ transaction });
 
     await stockMovements.create({
       product_id: productId,
@@ -391,5 +391,6 @@ module.exports = {
   deleteProductStock,
   updateFromPurchase,
   updateFromTransfer,
-  revertFromTransfer
+  revertFromTransfer,
+  buildLotWhere
 };
