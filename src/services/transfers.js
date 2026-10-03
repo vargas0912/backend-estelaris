@@ -118,8 +118,8 @@ const createTransfer = async (body, userId, reqBranchId) => {
     return { error: 'SAME_BRANCH_NOT_ALLOWED' };
   }
 
-  // Validar que todos los productos existen y están activos
-  const productIds = items.map(i => i.product_id);
+  // Validar que todos los productos existen y están activos (un producto puede venir en varios lotes)
+  const productIds = [...new Set(items.map(i => i.product_id))];
   const foundProducts = await products.findAll({
     where: { id: productIds, is_active: true },
     attributes: ['id']

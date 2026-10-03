@@ -220,8 +220,52 @@ router.get('/:id', [
  *    post:
  *      tags: [transfers]
  *      summary: Crear transferencia en Borrador
+ *      description: Cada línea opera sobre un lote (product_id + purch_id). No se permite repetir el mismo lote en varias líneas.
  *      security:
  *        - bearerAuth: []
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              required: [from_branch_id, to_branch_id, transfer_date, items]
+ *              properties:
+ *                from_branch_id:
+ *                  type: integer
+ *                to_branch_id:
+ *                  type: integer
+ *                transfer_date:
+ *                  type: string
+ *                  format: date
+ *                driver_id:
+ *                  type: integer
+ *                  nullable: true
+ *                transport_plate:
+ *                  type: string
+ *                  nullable: true
+ *                notes:
+ *                  type: string
+ *                  nullable: true
+ *                items:
+ *                  type: array
+ *                  minItems: 1
+ *                  items:
+ *                    type: object
+ *                    required: [product_id, purch_id, qty, unit_cost]
+ *                    properties:
+ *                      product_id:
+ *                        type: string
+ *                      purch_id:
+ *                        type: integer
+ *                        minimum: 1
+ *                        description: Compra de origen del lote (bar_code = product_id-purch_id)
+ *                      qty:
+ *                        type: number
+ *                      unit_cost:
+ *                        type: number
+ *                      notes:
+ *                        type: string
+ *                        nullable: true
  *      responses:
  *        '200':
  *          description: Transferencia creada en estado Borrador
@@ -230,7 +274,7 @@ router.get('/:id', [
  *              schema:
  *                $ref: '#/components/schemas/transfers'
  *        '400':
- *          description: Error de validación
+ *          description: Error de validación (incluye ítem sin purch_id o lote repetido)
  */
 router.post('/', [
   writeLimiter,

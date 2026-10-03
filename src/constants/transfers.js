@@ -48,7 +48,9 @@ const TRANSFERS_VALIDATORS = Object.freeze({
   ITEM_UNIT_COST_INVALID: 'El costo unitario debe ser un número decimal positivo',
 
   // items.*.purch_id
-  ITEM_PURCH_ID_INVALID: 'El id de compra de origen debe ser un número entero',
+  ITEM_PURCH_ID_REQUIRED: 'El lote (id de compra de origen) es requerido en cada artículo',
+  ITEM_PURCH_ID_INVALID: 'El id de compra de origen debe ser un número entero positivo',
+  ITEMS_DUPLICATE_LOT: 'No se puede repetir el mismo lote (producto y compra de origen) en varias líneas',
 
   // items.*.notes
   ITEM_NOTES_INVALID: 'Las observaciones del ítem deben ser texto',

@@ -55,7 +55,14 @@ const valiAddRecord = [
     .isString().withMessage(TRANSFERS_VALIDATORS.NOTES_INVALID).bail(),
   check('items')
     .exists().withMessage(TRANSFERS_VALIDATORS.ITEMS_NOT_EXISTS).bail()
-    .isArray({ min: 1 }).withMessage(TRANSFERS_VALIDATORS.ITEMS_INVALID).bail(),
+    .isArray({ min: 1 }).withMessage(TRANSFERS_VALIDATORS.ITEMS_INVALID).bail()
+    .custom(items => {
+      // Normaliza para que "07", "+7" y 7 cuenten como el mismo lote; los ítems mal formados los reportan sus propios checks
+      const lots = items
+        .filter(item => item && typeof item === 'object' && item.product_id && item.purch_id != null)
+        .map(item => `${String(item.product_id)}-${Number(item.purch_id)}`);
+      return new Set(lots).size === lots.length;
+    }).withMessage(TRANSFERS_VALIDATORS.ITEMS_DUPLICATE_LOT).bail(),
   check('items.*.product_id')
     .isString().withMessage(TRANSFERS_VALIDATORS.ITEM_PRODUCT_ID_INVALID).bail()
     .notEmpty().withMessage(TRANSFERS_VALIDATORS.ITEM_PRODUCT_ID_INVALID).bail()
@@ -67,8 +74,10 @@ const valiAddRecord = [
     .isDecimal({ decimal_digits: '0,2', force_decimal: false }).withMessage(TRANSFERS_VALIDATORS.ITEM_UNIT_COST_INVALID).bail()
     .custom(val => parseFloat(val) >= 0).withMessage(TRANSFERS_VALIDATORS.ITEM_UNIT_COST_INVALID),
   check('items.*.purch_id')
-    .optional({ nullable: true })
-    .isInt().withMessage(TRANSFERS_VALIDATORS.ITEM_PURCH_ID_INVALID),
+    .exists({ values: 'null' }).withMessage(TRANSFERS_VALIDATORS.ITEM_PURCH_ID_REQUIRED).bail()
+    .not().isArray().withMessage(TRANSFERS_VALIDATORS.ITEM_PURCH_ID_INVALID).bail()
+    .isInt({ min: 1 }).withMessage(TRANSFERS_VALIDATORS.ITEM_PURCH_ID_INVALID).bail()
+    .toInt(),
   check('items.*.notes')
     .optional({ nullable: true })
     .isString().withMessage(TRANSFERS_VALIDATORS.ITEM_NOTES_INVALID),
