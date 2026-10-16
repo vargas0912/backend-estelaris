@@ -1,5 +1,6 @@
 const request = require('supertest');
 const server = require('../../app');
+const { TRANSFERS_VALIDATORS } = require('../constants/transfers');
 
 const {
   transferCreate,
@@ -7,6 +8,9 @@ const {
   transferNoToBranch,
   transferSameBranch,
   transferNoItems,
+  transferNoPurchId,
+  transferDuplicateLot,
+  transferTwoLotsSameProduct,
   transferUpdate,
   receiveAllItems,
   receivePartialItems,
@@ -18,11 +22,38 @@ let transferId = null; // Borrador, se usa en update/delete
 let dispatchTransferId = null; // Para dispatch + receive tests
 let detailId = null; // Detail del dispatchTransfer
 let detailQty = null; // Qty del detail para calcular receive
+let lotPurchId = null; // Lote principal de TEST-001 en FROM_BRANCH
+let secondLotPurchId = null; // Segundo lote de TEST-001 en FROM_BRANCH
 
 const FROM_BRANCH = 1;
 const TO_BRANCH = 2;
 
 const api = request(server.app);
+
+// Crea y recibe una compra en FROM_BRANCH → genera el lote TEST-001-{purchId}
+const createReceivedLot = async (qty) => {
+  const purchaseRes = await api
+    .post('/api/purchases')
+    .auth(Token, { type: 'bearer' })
+    .send({
+      supplier_id: 1,
+      branch_id: FROM_BRANCH,
+      purch_date: '2026-03-01',
+      purch_type: 'Contado',
+      payment_method: 'Efectivo',
+      items: [{ product_id: 'TEST-001', qty, unit_price: 100.00 }]
+    })
+    .expect(200);
+
+  const purchId = purchaseRes.body.purchase.id;
+
+  await api
+    .patch(`/api/purchases/${purchId}/receive`)
+    .auth(Token, { type: 'bearer' })
+    .expect(200);
+
+  return purchId;
+};
 
 const testUser = {
   email: 'superadmin@estelaris.com',
@@ -41,6 +72,11 @@ const testUser = {
  *   4. Sin to_branch_id → 400
  *   5. Items vacíos → 400
  *   6. Sin token → 401
+ *   27. Ítem sin purch_id (lote) → 400
+ *   28. Mismo lote repetido en dos líneas → 400
+ *   29. Dos lotes distintos del mismo producto → 200
+ *   30. purch_id no positivo o en arreglo (0, -1, [n]) → 400
+ *   31. Mismo lote con purch_id en distinto formato ("07" vs 7) → 400
  *
  * GET /api/transfers
  *   7. Listar todos → 200
@@ -83,11 +119,14 @@ describe('[TRANSFERS] Test api transfers /api/transfers/', () => {
 
     Token = loginRes.body.sesion.token;
 
+    lotPurchId = await createReceivedLot(100);
+    secondLotPurchId = await createReceivedLot(10);
+
     // Crear transferencia para dispatch/receive tests
     const dispatchRes = await api
       .post('/api/transfers')
       .auth(Token, { type: 'bearer' })
-      .send(transferCreate(FROM_BRANCH, TO_BRANCH))
+      .send(transferCreate(FROM_BRANCH, TO_BRANCH, lotPurchId))
       .expect(200);
 
     dispatchTransferId = dispatchRes.body.transfer.id;
@@ -103,7 +142,7 @@ describe('[TRANSFERS] Test api transfers /api/transfers/', () => {
       const response = await api
         .post('/api/transfers')
         .auth(Token, { type: 'bearer' })
-        .send(transferCreate(FROM_BRANCH, TO_BRANCH))
+        .send(transferCreate(FROM_BRANCH, TO_BRANCH, lotPurchId))
         .expect(200);
 
       expect(response.body).toHaveProperty('transfer');
@@ -121,7 +160,7 @@ describe('[TRANSFERS] Test api transfers /api/transfers/', () => {
       await api
         .post('/api/transfers')
         .auth(Token, { type: 'bearer' })
-        .send(transferSameBranch(FROM_BRANCH))
+        .send(transferSameBranch(FROM_BRANCH, lotPurchId))
         .expect(400);
     });
 
@@ -129,7 +168,7 @@ describe('[TRANSFERS] Test api transfers /api/transfers/', () => {
       await api
         .post('/api/transfers')
         .auth(Token, { type: 'bearer' })
-        .send(transferNoFromBranch(TO_BRANCH))
+        .send(transferNoFromBranch(TO_BRANCH, lotPurchId))
         .expect(400);
     });
 
@@ -137,7 +176,7 @@ describe('[TRANSFERS] Test api transfers /api/transfers/', () => {
       await api
         .post('/api/transfers')
         .auth(Token, { type: 'bearer' })
-        .send(transferNoToBranch(FROM_BRANCH))
+        .send(transferNoToBranch(FROM_BRANCH, lotPurchId))
         .expect(400);
     });
 
@@ -152,8 +191,69 @@ describe('[TRANSFERS] Test api transfers /api/transfers/', () => {
     test('6. Sin token. Expect 401', async () => {
       await api
         .post('/api/transfers')
-        .send(transferCreate(FROM_BRANCH, TO_BRANCH))
+        .send(transferCreate(FROM_BRANCH, TO_BRANCH, lotPurchId))
         .expect(401);
+    });
+
+    test('27. Ítem sin purch_id (lote). Expect 400', async () => {
+      const response = await api
+        .post('/api/transfers')
+        .auth(Token, { type: 'bearer' })
+        .send(transferNoPurchId(FROM_BRANCH, TO_BRANCH))
+        .expect(400);
+
+      expect(response.body.errors.map(e => e.msg)).toContain(TRANSFERS_VALIDATORS.ITEM_PURCH_ID_REQUIRED);
+    });
+
+    test('28. Mismo lote repetido en dos líneas. Expect 400', async () => {
+      const response = await api
+        .post('/api/transfers')
+        .auth(Token, { type: 'bearer' })
+        .send(transferDuplicateLot(FROM_BRANCH, TO_BRANCH, lotPurchId))
+        .expect(400);
+
+      expect(response.body.errors.map(e => e.msg)).toContain(TRANSFERS_VALIDATORS.ITEMS_DUPLICATE_LOT);
+    });
+
+    test.each([0, -1, 'array'])('30. purch_id inválido (%p). Expect 400', async (value) => {
+      const purchId = value === 'array' ? [lotPurchId] : value;
+
+      const response = await api
+        .post('/api/transfers')
+        .auth(Token, { type: 'bearer' })
+        .send(transferCreate(FROM_BRANCH, TO_BRANCH, purchId))
+        .expect(400);
+
+      expect(response.body.errors.map(e => e.msg)).toContain(TRANSFERS_VALIDATORS.ITEM_PURCH_ID_INVALID);
+    });
+
+    test('31. Mismo lote con purch_id en distinto formato ("07" vs 7). Expect 400', async () => {
+      const payload = transferDuplicateLot(FROM_BRANCH, TO_BRANCH, lotPurchId);
+      payload.items[1].purch_id = `0${lotPurchId}`;
+
+      const response = await api
+        .post('/api/transfers')
+        .auth(Token, { type: 'bearer' })
+        .send(payload)
+        .expect(400);
+
+      expect(response.body.errors.map(e => e.msg)).toContain(TRANSFERS_VALIDATORS.ITEMS_DUPLICATE_LOT);
+    });
+
+    test('29. Dos lotes distintos del mismo producto. Expect 200', async () => {
+      const response = await api
+        .post('/api/transfers')
+        .auth(Token, { type: 'bearer' })
+        .send(transferTwoLotsSameProduct(FROM_BRANCH, TO_BRANCH, lotPurchId, secondLotPurchId))
+        .expect(200);
+
+      expect(response.body.transfer.details.length).toBe(2);
+
+      // Cleanup: eliminar el borrador
+      await api
+        .delete(`/api/transfers/${response.body.transfer.id}`)
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
     });
   });
 
@@ -279,7 +379,7 @@ describe('[TRANSFERS] Test api transfers /api/transfers/', () => {
         to_branch_id: TO_BRANCH,
         transfer_date: '2026-03-02',
         items: [
-          { product_id: 'TEST-001', qty: 999999, unit_cost: 100.00 }
+          { product_id: 'TEST-001', purch_id: lotPurchId, qty: 999999, unit_cost: 100.00 }
         ]
       };
 
@@ -326,7 +426,7 @@ describe('[TRANSFERS] Test api transfers /api/transfers/', () => {
       const partialRes = await api
         .post('/api/transfers')
         .auth(Token, { type: 'bearer' })
-        .send(transferCreate(FROM_BRANCH, TO_BRANCH))
+        .send(transferCreate(FROM_BRANCH, TO_BRANCH, lotPurchId))
         .expect(200);
 
       const partialId = partialRes.body.transfer.id;
@@ -354,7 +454,7 @@ describe('[TRANSFERS] Test api transfers /api/transfers/', () => {
       const exceedRes = await api
         .post('/api/transfers')
         .auth(Token, { type: 'bearer' })
-        .send(transferCreate(FROM_BRANCH, TO_BRANCH))
+        .send(transferCreate(FROM_BRANCH, TO_BRANCH, lotPurchId))
         .expect(200);
 
       const exceedId = exceedRes.body.transfer.id;
@@ -406,7 +506,7 @@ describe('[TRANSFERS] Test api transfers /api/transfers/', () => {
       const createRes = await api
         .post('/api/transfers')
         .auth(Token, { type: 'bearer' })
-        .send(transferCreate(FROM_BRANCH, TO_BRANCH))
+        .send(transferCreate(FROM_BRANCH, TO_BRANCH, lotPurchId))
         .expect(200);
 
       const cancelId = createRes.body.transfer.id;
