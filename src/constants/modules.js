@@ -538,8 +538,25 @@ const ME = Object.freeze({
   NAME_REQUEST_LOAN: 'Solicitar préstamo'
 });
 
+const PRIVILEGE_TEMPLATE = Object.freeze({
+  MODULE_NAME: 'privilegeTemplates',
+  VIEW: 'view_privilege_template',
+  NAME_VIEW: 'Ver plantillas de privilegios',
+  ADD: 'create_privilege_template',
+  NAME_ADD: 'Crear plantillas de privilegios',
+  UPDATE: 'update_privilege_template',
+  NAME_UPDATE: 'Modificar plantillas de privilegios',
+  DELETE: 'delete_privilege_template',
+  NAME_DELETE: 'Eliminar plantillas de privilegios',
+  APPLY: 'apply_privilege_template',
+  NAME_APPLY: 'Aplicar plantilla de privilegios a usuario',
+  SYNC: 'sync_privilege_template',
+  NAME_SYNC: 'Sincronizar plantilla de privilegios con usuarios'
+});
+
 module.exports = {
   ME,
+  PRIVILEGE_TEMPLATE,
   BRANCH,
   EMPlOYEE,
   PRIVILEGE,
