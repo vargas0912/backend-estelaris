@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.transfers, { as: 'dispatchedTransfers', foreignKey: 'user_id' });
       this.hasMany(models.transfers, { as: 'receivedTransfers', foreignKey: 'received_by' });
       this.hasOne(models.employees, { foreignKey: 'user_id', as: 'employee' });
+      this.belongsTo(models.privilegeTemplates, { as: 'template', foreignKey: 'template_id' });
     }
   }
   users.init({
@@ -26,7 +27,9 @@ module.exports = (sequelize, DataTypes) => {
     must_change_password: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
-    }
+    },
+    template_id: DataTypes.INTEGER,
+    template_applied_version: DataTypes.INTEGER
   }, {
     sequelize,
     paranoid: true,
