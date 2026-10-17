@@ -185,6 +185,85 @@ const swaggerDefinition = {
           }
         }
       },
+      privilegeTemplate: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          name: { type: 'string' },
+          description: { type: 'string', nullable: true },
+          version: { type: 'integer', description: 'Aumenta solo cuando cambia el conjunto de privilegios' },
+          privileges_count: { type: 'integer', description: 'Solo en el listado' },
+          users_count: { type: 'integer', description: 'Solo en el listado' },
+          privileges: {
+            type: 'array',
+            description: 'Solo en el detalle',
+            items: { $ref: '#/components/schemas/privileges' }
+          },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      privilegeTemplateRequest: {
+        type: 'object',
+        properties: {
+          name: { type: 'string', example: 'Vendedor' },
+          description: { type: 'string', example: 'Privilegios base del vendedor' },
+          privileges: {
+            type: 'array',
+            items: { type: 'integer' },
+            description: 'IDs de privilegios (obligatorio al crear, opcional al actualizar)',
+            example: [1, 2, 3]
+          }
+        }
+      },
+      privilegeTemplateApplyRequest: {
+        type: 'object',
+        required: ['user_id', 'mode'],
+        properties: {
+          user_id: { type: 'integer', description: 'Usuario destino' },
+          mode: { type: 'string', enum: ['replace', 'merge'] }
+        }
+      },
+      privilegeTemplateSyncRequest: {
+        type: 'object',
+        required: ['confirm'],
+        properties: {
+          confirm: { type: 'boolean', enum: [true], description: 'Debe ser true' },
+          user_ids: {
+            type: 'array',
+            items: { type: 'integer' },
+            description: 'Opcional. Si se omite se sincronizan los usuarios desactualizados'
+          }
+        }
+      },
+      privilegeTemplateSyncPreview: {
+        type: 'object',
+        properties: {
+          template: {
+            type: 'object',
+            properties: { id: { type: 'integer' }, name: { type: 'string' }, version: { type: 'integer' } }
+          },
+          privilege_ids: { type: 'array', items: { type: 'integer' } },
+          outdated_count: { type: 'integer' },
+          users: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                id: { type: 'integer' },
+                name: { type: 'string' },
+                email: { type: 'string' },
+                role: { type: 'string' },
+                applied_version: { type: 'integer', nullable: true },
+                out_of_date: { type: 'boolean' },
+                added: { type: 'array', items: { type: 'integer' } },
+                removed: { type: 'array', items: { type: 'integer' } },
+                kept_manual: { type: 'array', items: { type: 'integer' } }
+              }
+            }
+          }
+        }
+      },
       states: {
         type: 'object',
         properties: {
