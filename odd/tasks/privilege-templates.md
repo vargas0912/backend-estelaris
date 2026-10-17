@@ -27,7 +27,7 @@ Migrations, models, constants, privilege seeds, service, validator, controller, 
 
 ## Tasks
 - [x] T1 Migrations + models + privilege constants/seeds/migration for new codenames (route: delegated writer; trigger: 2+ non-trivial files)
-- [ ] T2 Service layer + unit tests
+- [x] T2 Service layer + unit tests
 - [ ] T3 Validator + controller + route + swagger/JSDoc + integration tests
 
 ## Acceptance criteria
@@ -36,11 +36,17 @@ Migrations, models, constants, privilege seeds, service, validator, controller, 
 - Sync without `confirm: true` is rejected.
 
 ## Progress / evidence
-### T1 (done)
+### T1 (done) commit 0ad3e1e
 - Route: delegated writer. Migrations 20260716000001-3, models privilegetemplates/privilegetemplateitems, users/userprivileges columns+associations, constants (modules.js PRIVILEGE_TEMPLATE, privileges.js).
 - Privilege codenames inserted by migration only (same pattern as add-me-privileges / assign-employee-access); NOT added to json_files/privileges.js because test seeds run after migrations and would duplicate rows (no unique index).
 - Test-first exception: schema/constants only, no runnable RED.
 - Verification: `pnpm lint` clean; `pnpm test` 61 suites / 1459 tests passed.
 
+### T2 (done)
+- Route: delegated writer. `src/services/privilege-templates.js` (list/get/create/update/delete/apply/sync-preview/sync) + `src/tests/unit/privilege-templates.service.test.js` (23 tests).
+- RED observed: unit test failed with module-not-found before the service existed (single-file run, RED only). GREEN: 23/23.
+- Sync implemented as a diff (destroy stale/duplicate source rows, insert missing) instead of delete-all+insert; same net result without churning soft-deleted rows.
+- Verification: `pnpm lint` clean; `pnpm test` 62 suites / 1482 tests passed.
+
 ## Next step
-T2
+T3
