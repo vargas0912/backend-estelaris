@@ -268,11 +268,12 @@ const cancelNotification = async(id) => {
 
 /**
  * Lists sent notifications with per-recipient status and, when filtering by batch, a summary.
- * @param {{ batch_id?: string, user_id?: number, page?: number, limit?: number }} [filters]
+ * @param {{ batch_id?: string, user_id?: number, created_by?: number, page?: number, limit?: number }} [filters]
  * @returns {Promise<{ rows: object[], count: number, summary: object|null }>}
  */
-const getSentNotifications = async({ batch_id: batchId, user_id: userId, page = 1, limit = 20 } = {}) => {
+const getSentNotifications = async({ batch_id: batchId, user_id: userId, created_by: createdBy, page = 1, limit = 20 } = {}) => {
   const where = {};
+  if (createdBy) where.created_by = createdBy;
   if (batchId) where.batch_id = batchId;
   if (userId) where.user_id = userId;
 
@@ -292,10 +293,11 @@ const getSentNotifications = async({ batch_id: batchId, user_id: userId, page = 
 
   let summary = null;
   if (batchId) {
+    const scope = createdBy ? { batch_id: batchId, created_by: createdBy } : { batch_id: batchId };
     const [total, read, pending] = await Promise.all([
-      notifications.count({ where: { batch_id: batchId } }),
-      notifications.count({ where: { batch_id: batchId, read_at: { [Op.ne]: null } } }),
-      notifications.count({ where: { batch_id: batchId, read_at: null, cancelled_at: null } })
+      notifications.count({ where: scope }),
+      notifications.count({ where: { ...scope, read_at: { [Op.ne]: null } } }),
+      notifications.count({ where: { ...scope, read_at: null, cancelled_at: null } })
     ]);
     summary = { total, read, pending };
   }

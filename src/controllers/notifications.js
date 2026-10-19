@@ -1,5 +1,6 @@
 const { matchedData } = require('express-validator');
 
+const { ROLE } = require('../constants/roles');
 const { handleHttpError } = require('../utils/handleErorr');
 const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
@@ -44,13 +45,18 @@ const addRecord = async(req, res) => {
 };
 
 /**
- * GET /notifications/sent - Sent notifications with status and batch summary.
+ * GET /notifications/sent - Sent notifications with status and batch summary (admins only see their own).
  */
 const getSentRecords = async(req, res) => {
   try {
     const data = matchedData(req);
     const { page, limit } = getPaginationParams(data);
-    const { rows, count, summary } = await getSentNotifications({ ...data, page, limit });
+    const { rows, count, summary } = await getSentNotifications({
+      ...data,
+      created_by: req.user.role === ROLE.SUPERADMIN ? undefined : req.user.id,
+      page,
+      limit
+    });
 
     res.send({ ...buildPaginationResponse('notifications', rows, count, page, limit), summary });
   } catch (error) {

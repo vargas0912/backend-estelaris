@@ -314,6 +314,20 @@ describe('Notifications Service - Unit Tests', () => {
       expect(notifications.findAndCountAll.mock.calls[0][0].where).toEqual({ batch_id: 'b-1', user_id: 5 });
     });
 
+    test('con created_by filtra la lista y los tres conteos del resumen', async() => {
+      notifications.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
+      notifications.count.mockResolvedValue(0);
+
+      const result = await getSentNotifications({ batch_id: 'b-1', created_by: 9 });
+
+      expect(notifications.findAndCountAll.mock.calls[0][0].where).toEqual({ batch_id: 'b-1', created_by: 9 });
+      expect(notifications.count).toHaveBeenCalledTimes(3);
+      notifications.count.mock.calls.forEach(([args]) => {
+        expect(args.where).toMatchObject({ batch_id: 'b-1', created_by: 9 });
+      });
+      expect(result.summary).toEqual({ total: 0, read: 0, pending: 0 });
+    });
+
     test('sin batch_id no calcula resumen', async() => {
       notifications.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 

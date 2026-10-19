@@ -19,6 +19,7 @@ const api = request(server.app);
 
 let superToken = '';
 const sender = { token: '', id: null };
+const sender2 = { token: '', id: null };
 const adminNoPriv = { token: '', id: null };
 const userA = { token: '', id: null };
 const userB = { token: '', id: null };
@@ -64,6 +65,7 @@ describe('[NOTIFICATIONS] Test api /api/notifications', () => {
     superToken = sesion.token;
 
     await setup('sender', 'admin', sender);
+    await setup('sender2', 'admin', sender2);
     await setup('adminNoPriv', 'admin', adminNoPriv);
     await setup('userA', 'user', userA);
     await setup('userB', 'user', userB);
@@ -71,8 +73,10 @@ describe('[NOTIFICATIONS] Test api /api/notifications', () => {
 
     const priv = await privileges.findOne({ where: { codename: 'create_notification' }, raw: true });
     expect(priv).not.toBeNull();
-    const grant = await post({ token: superToken }, '/api/privileges/user', { user_id: sender.id, privilege_id: priv.id });
-    expect(grant.status).toBe(200);
+    for (const admin of [sender, sender2]) {
+      const grant = await post({ token: superToken }, '/api/privileges/user', { user_id: admin.id, privilege_id: priv.id });
+      expect(grant.status).toBe(200);
+    }
 
     for (const user of [userA, userB]) {
       const assigned = await post({ token: superToken }, '/api/userBranches', { user_id: user.id, branch_id: BRANCH_ID });
@@ -383,6 +387,29 @@ describe('[NOTIFICATIONS] Test api /api/notifications', () => {
       expect(response.body.notifications.length).toBeGreaterThan(0);
       expect(response.body.notifications.every(n => n.user_id === userA.id)).toBe(true);
       expect(response.body.summary).toBeNull();
+    });
+
+    test('cada admin solo ve lo que creo; superadmin ve todo', async() => {
+      const own = await create({ title: 'De A', body: 'x', user_ids: [userA.id, userB.id] });
+      const foreign = await create({ title: 'De B', body: 'x', user_ids: [userA.id] }, sender2);
+
+      const listB = await get(sender2, '/api/notifications/sent?limit=100');
+      expect(listB.body.notifications.every(n => n.created_by === sender2.id)).toBe(true);
+      expect(listB.body.notifications.map(n => n.batch_id)).toContain(foreign.batch_id);
+      expect(listB.body.notifications.map(n => n.batch_id)).not.toContain(own.batch_id);
+
+      const foreignBatch = await get(sender2, `/api/notifications/sent?batch_id=${own.batch_id}`);
+      expect(foreignBatch.status).toBe(200);
+      expect(foreignBatch.body.notifications).toHaveLength(0);
+      expect(foreignBatch.body.summary).toEqual({ total: 0, read: 0, pending: 0 });
+
+      const ownBatch = await get(sender2, `/api/notifications/sent?batch_id=${foreign.batch_id}`);
+      expect(ownBatch.body.summary).toEqual({ total: 1, read: 0, pending: 1 });
+
+      const superOwn = await get({ token: superToken }, `/api/notifications/sent?batch_id=${own.batch_id}`);
+      expect(superOwn.body.summary).toEqual({ total: 2, read: 0, pending: 2 });
+      const superForeign = await get({ token: superToken }, `/api/notifications/sent?batch_id=${foreign.batch_id}`);
+      expect(superForeign.body.summary.total).toBe(1);
     });
 
     test('batch_id invalido. Expect 400', async() => {

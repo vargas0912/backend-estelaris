@@ -130,7 +130,7 @@ router.patch('/read-all', [writeLimiter, authMidleware, validateNoInput], readAl
  *      tags:
  *        - notifications
  *      summary: Notificaciones enviadas
- *      description: Lista por destinatario con status (scheduled, delivered, read, cancelled). Con batch_id incluye resumen del lote. Requiere create_notification
+ *      description: Lista por destinatario con status (scheduled, delivered, read, cancelled). Con batch_id incluye resumen del lote. Un admin solo ve lo que creo (resumen incluido); superadmin ve todo. Requiere create_notification
  *      security:
  *        - bearerAuth: []
  *      parameters:
