@@ -30,4 +30,4 @@ Delegated direct: one writer (2+ non-trivial files, reading prepares write).
 
 - T2: service + unit tests. RED observed (module not found), then GREEN: `jest src/tests/unit/notifications.service.test.js` 29 passed (isolated run only for RED/GREEN iteration; full suite runs at pre-commit and in T3). Commit: 2cc1b09
 
-- T3: validator, controller, routes (+ swagger schemas and @openapi), integration tests (src/tests/notifications.test.js, 36 tests) with helper notificationsData.js. RED observed (36 failing before routes existed), then GREEN under the full suite. Verification: `pnpm lint` clean; `pnpm test` full suite all passing (see final result in commit hook output). Commit: T3_HASH
+- T3: validator, controller, routes (+ swagger schemas and @openapi), integration tests (src/tests/notifications.test.js, 36 tests) with helper notificationsData.js. RED observed (36 failing before routes existed), then GREEN under the full suite. Verification: `pnpm lint` clean; `pnpm test` full suite all passing (see final result in commit hook output). Commit: e8e71dd
