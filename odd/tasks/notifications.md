@@ -34,4 +34,4 @@ Delegated direct: one writer (2+ non-trivial files, reading prepares write).
 
 - T3: validator, controller, routes (+ swagger schemas and @openapi), integration tests (src/tests/notifications.test.js, 36 tests) with helper notificationsData.js. RED observed (36 failing before routes existed), then GREEN under the full suite. Verification: `pnpm lint` clean; `pnpm test` full suite all passing (see final result in commit hook output). Commit: e8e71dd
 
-- T4: RED observed (unit test failing 1/30 before change). GREEN: lint clean, full `pnpm test` passing. 39_ prefix was free (highest was 38). Commit: T4_HASH
+- T4: RED observed (unit test failing 1/30 before change). GREEN: lint clean, full `pnpm test` passing. 39_ prefix was free (highest was 38). Commit: b55ba55
