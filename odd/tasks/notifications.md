@@ -16,7 +16,7 @@ Admins create one-off reminders for users (individual or by branch). Reminders c
 
 ## Tasks
 - [x] T1 Migration + model + users associations + privilege constants/seeders
-- [ ] T2 Service + unit tests
+- [x] T2 Service + unit tests
 - [ ] T3 Validator + controller + route (+ swagger) + integration tests
 
 ## Route
@@ -26,4 +26,6 @@ Delegated direct: one writer (2+ non-trivial files, reading prepares write).
 `pnpm test` (full suite) and `pnpm lint`.
 
 ## Progress / evidence
-- T1: migrations (create table + privilege create_notification), model, users associations, constants. Observed: `NODE_ENV=test pnpm run db:reset` migrates OK; `pnpm lint` clean. Project is CommonJS (not ESM), privileges are seeded via migration (as privilege-templates), no seeder files needed. Commit: T1_HASH
+- T1: migrations (create table + privilege create_notification), model, users associations, constants. Observed: `NODE_ENV=test pnpm run db:reset` migrates OK; `pnpm lint` clean. Project is CommonJS (not ESM), privileges are seeded via migration (as privilege-templates), no seeder files needed. Commit: a1ac0df
+
+- T2: service + unit tests. RED observed (module not found), then GREEN: `jest src/tests/unit/notifications.service.test.js` 29 passed (isolated run only for RED/GREEN iteration; full suite runs at pre-commit and in T3). Commit: T2_HASH
