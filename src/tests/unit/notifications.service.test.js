@@ -40,6 +40,7 @@ const past = () => new Date(Date.now() - HOUR);
 const makeRow = (overrides = {}) => ({
   id: 1,
   user_id: 5,
+  created_by: 1,
   scheduled_at: null,
   cancelled_at: null,
   read_at: null,
@@ -279,6 +280,30 @@ describe('Notifications Service - Unit Tests', () => {
       notifications.findByPk.mockResolvedValue(makeRow({ scheduled_at: past() }));
       await expect(cancelNotification(1))
         .rejects.toMatchObject({ status: 409, message: 'NOTIFICATION_ALREADY_DELIVERED' });
+    });
+
+    test('no creador no edita ni cancela (404) y la fila no cambia', async() => {
+      const row = makeRow({ scheduled_at: future() });
+      notifications.findByPk.mockResolvedValue(row);
+
+      await expect(updateNotification(1, { title: 'x' }, 2)).rejects.toMatchObject({ status: 404, message: 'NOTIFICATION_NOT_FOUND' });
+      await expect(cancelNotification(1, 2)).rejects.toMatchObject({ status: 404, message: 'NOTIFICATION_NOT_FOUND' });
+      expect(row.update).not.toHaveBeenCalled();
+    });
+
+    test('el creador si puede editar y cancelar', async() => {
+      const row = makeRow({ scheduled_at: future() });
+      notifications.findByPk.mockResolvedValue(row);
+
+      await updateNotification(1, { title: 'x' }, 1);
+      await cancelNotification(1, 1);
+
+      expect(row.update).toHaveBeenCalledTimes(2);
+    });
+
+    test('el chequeo de propiedad precede al de entrega', async() => {
+      notifications.findByPk.mockResolvedValue(makeRow({ scheduled_at: past() }));
+      await expect(cancelNotification(1, 2)).rejects.toMatchObject({ status: 404 });
     });
 
     test('no cancela dos veces (409)', async() => {

@@ -21,6 +21,8 @@ Admins create one-off reminders for users (individual or by branch). Reminders c
 
 - [x] T4 Scope GET /sent to creator (created_by = caller, superadmin sees all); rename test to 39_notifications.test.js
 
+- [x] T5 Restrict edit and cancel to creator (non-owner 404, superadmin exempt)
+
 ## Route
 Delegated direct: one writer (2+ non-trivial files, reading prepares write).
 
@@ -35,3 +37,5 @@ Delegated direct: one writer (2+ non-trivial files, reading prepares write).
 - T3: validator, controller, routes (+ swagger schemas and @openapi), integration tests (src/tests/notifications.test.js, 36 tests) with helper notificationsData.js. RED observed (36 failing before routes existed), then GREEN under the full suite. Verification: `pnpm lint` clean; `pnpm test` full suite all passing (see final result in commit hook output). Commit: e8e71dd
 
 - T4: RED observed (unit test failing 1/30 before change). GREEN: lint clean, full `pnpm test` passing. 39_ prefix was free (highest was 38). Commit: b55ba55
+
+- T5: RED observed for unit (2 failing) and integration (1 failing, full suite 3 failed). GREEN: lint clean, full `pnpm test` passing. Non-owner returns 404, same as read/archive of foreign notifications (no 403 ownership convention found). Commit: T5_HASH

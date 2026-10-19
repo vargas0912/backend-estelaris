@@ -300,7 +300,7 @@ router.patch('/:id/archive', [writeLimiter, authMidleware, validateIdParam], arc
  *      tags:
  *        - notifications
  *      summary: Cancelar
- *      description: Cancela una notificacion mientras scheduled_at sea futuro. Requiere create_notification
+ *      description: Cancela una notificacion mientras scheduled_at sea futuro. Solo el creador puede hacerlo (superadmin exento; un no creador recibe 404). Requiere create_notification
  *      security:
  *        - bearerAuth: []
  *      parameters:
@@ -344,7 +344,7 @@ router.patch('/:id/cancel', [
  *      tags:
  *        - notifications
  *      summary: Editar
- *      description: Edita title, body, scheduled_at o due_at mientras scheduled_at sea futuro. Requiere create_notification
+ *      description: Edita title, body, scheduled_at o due_at mientras scheduled_at sea futuro. Solo el creador puede hacerlo (superadmin exento; un no creador recibe 404). Requiere create_notification
  *      security:
  *        - bearerAuth: []
  *      parameters:

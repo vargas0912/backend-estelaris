@@ -208,13 +208,15 @@ const archiveNotification = async(id, userId) => {
 };
 
 /**
- * Loads a notification that can still be modified by the sender.
- * @throws {Error} 404 NOT_FOUND | 409 ALREADY_CANCELLED | 409 ALREADY_DELIVERED
+ * Loads a notification that can still be modified by its creator.
+ * @param {number} id Notification id
+ * @param {number|null} [createdBy] Owner filter; null/undefined skips it (superadmin)
+ * @throws {Error} 404 NOT_FOUND (also for non owners) | 409 ALREADY_CANCELLED | 409 ALREADY_DELIVERED
  */
-const findModifiable = async(id) => {
+const findModifiable = async(id, createdBy) => {
   const row = await notifications.findByPk(id);
 
-  if (!row) {
+  if (!row || (createdBy && row.created_by !== createdBy)) {
     throw fail(ERR.NOT_FOUND, 404);
   }
   if (row.cancelled_at) {
@@ -231,10 +233,11 @@ const findModifiable = async(id) => {
  * Edits title, body, scheduled_at or due_at while the notification is still scheduled.
  * @param {number} id Notification id
  * @param {object} data Candidate fields (non editable ones are ignored)
+ * @param {number|null} [createdBy] Owner filter (null/undefined for superadmin)
  * @returns {Promise<object>}
  */
-const updateNotification = async(id, data) => {
-  const row = await findModifiable(id);
+const updateNotification = async(id, data, createdBy) => {
+  const row = await findModifiable(id, createdBy);
 
   const changes = {};
   EDITABLE_FIELDS.forEach(field => {
@@ -256,10 +259,11 @@ const updateNotification = async(id, data) => {
 /**
  * Cancels a notification while it is still scheduled.
  * @param {number} id Notification id
+ * @param {number|null} [createdBy] Owner filter (null/undefined for superadmin)
  * @returns {Promise<object>}
  */
-const cancelNotification = async(id) => {
-  const row = await findModifiable(id);
+const cancelNotification = async(id, createdBy) => {
+  const row = await findModifiable(id, createdBy);
 
   await row.update({ cancelled_at: new Date() });
 

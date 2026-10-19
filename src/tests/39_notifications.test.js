@@ -339,6 +339,24 @@ describe('[NOTIFICATIONS] Test api /api/notifications', () => {
       expect(again.body.error).toBe('NOTIFICATION_ALREADY_CANCELLED');
     });
 
+    test('otro admin no edita ni cancela lo ajeno (404) y la fila no cambia; superadmin si puede', async() => {
+      const result = await create({ title: 'Mia', body: 'x', user_ids: [userA.id], scheduled_at: inFuture(4) });
+      const row = await notifications.findOne({ where: { batch_id: result.batch_id } });
+
+      await patch(sender2, `/api/notifications/${row.id}`, { title: 'Hackeada' }).expect(404);
+      await patch(sender2, `/api/notifications/${row.id}/cancel`, {}).expect(404);
+      const untouched = await notifications.findByPk(row.id);
+      expect(untouched.title).toBe('Mia');
+      expect(untouched.cancelled_at).toBeNull();
+
+      await patch(sender, `/api/notifications/${row.id}`, { title: 'Editada por creador' }).expect(200);
+
+      await patch({ token: superToken }, `/api/notifications/${row.id}`, { title: 'Editada por super' }).expect(200);
+      expect((await notifications.findByPk(row.id)).title).toBe('Editada por super');
+      await patch({ token: superToken }, `/api/notifications/${row.id}/cancel`, {}).expect(200);
+      expect((await notifications.findByPk(row.id)).cancelled_at).not.toBeNull();
+    });
+
     test('notificacion inexistente. Expect 404', async() => {
       await patch(sender, '/api/notifications/999999', { title: 'x' }).expect(404);
       await patch(sender, '/api/notifications/999999/cancel', {}).expect(404);

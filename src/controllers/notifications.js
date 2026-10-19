@@ -31,6 +31,13 @@ const sendError = (res, error, prefix) => {
 };
 
 /**
+ * Owner filter for sender-side operations: superadmin is exempt.
+ * @param {object} user Authenticated user
+ * @returns {number|undefined}
+ */
+const ownerScope = (user) => (user.role === ROLE.SUPERADMIN ? undefined : user.id);
+
+/**
  * POST /notifications - Creates one notification per recipient (user_ids | branch_id).
  */
 const addRecord = async(req, res) => {
@@ -53,7 +60,7 @@ const getSentRecords = async(req, res) => {
     const { page, limit } = getPaginationParams(data);
     const { rows, count, summary } = await getSentNotifications({
       ...data,
-      created_by: req.user.role === ROLE.SUPERADMIN ? undefined : req.user.id,
+      created_by: ownerScope(req.user),
       page,
       limit
     });
@@ -70,7 +77,7 @@ const getSentRecords = async(req, res) => {
 const updateRecord = async(req, res) => {
   try {
     const { id, ...data } = matchedData(req);
-    const notification = await updateNotification(id, data);
+    const notification = await updateNotification(id, data, ownerScope(req.user));
 
     res.send({ notification });
   } catch (error) {
@@ -84,7 +91,7 @@ const updateRecord = async(req, res) => {
 const cancelRecord = async(req, res) => {
   try {
     const { id } = matchedData(req);
-    const notification = await cancelNotification(id);
+    const notification = await cancelNotification(id, ownerScope(req.user));
 
     res.send({ notification });
   } catch (error) {
