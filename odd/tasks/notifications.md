@@ -38,4 +38,4 @@ Delegated direct: one writer (2+ non-trivial files, reading prepares write).
 
 - T4: RED observed (unit test failing 1/30 before change). GREEN: lint clean, full `pnpm test` passing. 39_ prefix was free (highest was 38). Commit: b55ba55
 
-- T5: RED observed for unit (2 failing) and integration (1 failing, full suite 3 failed). GREEN: lint clean, full `pnpm test` passing. Non-owner returns 404, same as read/archive of foreign notifications (no 403 ownership convention found). Commit: T5_HASH
+- T5: RED observed for unit (2 failing) and integration (1 failing, full suite 3 failed). GREEN: lint clean, full `pnpm test` passing. Non-owner returns 404, same as read/archive of foreign notifications (no 403 ownership convention found). Commit: 324cc05
