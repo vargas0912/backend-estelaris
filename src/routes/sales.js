@@ -29,9 +29,10 @@ const {
   getSettlementRecords
 } = require('../controllers/sales');
 
-const { SALE } = require('../constants/modules');
+const { SALE, SALE_PAYMENT } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
 const branchScope = require('../middlewares/branchScope');
+const customDateGuard = require('../middlewares/customDateGuard');
 
 /**
  * @openapi
@@ -585,7 +586,7 @@ router.put('/:id', [
  *        '400':
  *          description: Datos inválidos, venta no es crédito, no está Pendiente, o monto fuera de rango
  *        '403':
- *          description: Sin privilegio settle_sale
+ *          description: Sin privilegio settle_sale, o payment_date distinta de hoy sin set_custom_payment_date
  *        '404':
  *          description: Venta no encontrada
  */
@@ -594,7 +595,8 @@ router.put('/:id/settle', [
   authMidleware,
   branchScope,
   valiSettleRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], SALE.SETTLE)
+  checkRol([ROLE.USER, ROLE.ADMIN], SALE.SETTLE),
+  customDateGuard({ field: 'payment_date', privilege: SALE_PAYMENT.CUSTOM_DATE })
 ], settleRecord);
 
 /**

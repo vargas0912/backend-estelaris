@@ -305,7 +305,9 @@ const TRANSFER = Object.freeze({
   RECEIVE: 'receive_transfer',
   NAME_RECEIVE: 'Recibir transferencia',
   DELETE: 'delete_transfer',
-  NAME_DELETE: 'Eliminar transferencia'
+  NAME_DELETE: 'Eliminar transferencia',
+  CUSTOM_DATE: 'set_custom_transfer_date',
+  NAME_CUSTOM_DATE: 'Definir fecha libre en transferencias'
 });
 
 const SALE = Object.freeze({
@@ -335,7 +337,9 @@ const SALE_PAYMENT = Object.freeze({
   ADD: 'create_sale_payment',
   NAME_ADD: 'Registrar cobro de venta',
   DELETE: 'delete_sale_payment',
-  NAME_DELETE: 'Eliminar cobro de venta'
+  NAME_DELETE: 'Eliminar cobro de venta',
+  CUSTOM_DATE: 'set_custom_payment_date',
+  NAME_CUSTOM_DATE: 'Definir fecha libre en cobros y liquidaciones'
 });
 
 const SALE_DELIVERY = Object.freeze({
@@ -403,7 +407,9 @@ const EXPENSE = Object.freeze({
   UPDATE: 'update_expense',
   NAME_UPDATE: 'Modificar gasto',
   DELETE: 'delete_expense',
-  NAME_DELETE: 'Eliminar gasto'
+  NAME_DELETE: 'Eliminar gasto',
+  CUSTOM_DATE: 'set_custom_expense_date',
+  NAME_CUSTOM_DATE: 'Definir fecha libre en gastos'
 });
 
 const ACCOUNTING_ACCOUNT = Object.freeze({

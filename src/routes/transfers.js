@@ -14,6 +14,8 @@ const {
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 const branchScope = require('../middlewares/branchScope');
+const customDateGuard = require('../middlewares/customDateGuard');
+const { transfers } = require('../models/index');
 const { readLimiter, writeLimiter, deleteLimiter, searchLimiter } = require('../middlewares/rateLimiters');
 
 const {
@@ -275,13 +277,16 @@ router.get('/:id', [
  *                $ref: '#/components/schemas/transfers'
  *        '400':
  *          description: Error de validación (incluye ítem sin purch_id o lote repetido)
+ *        '403':
+ *          description: transfer_date distinta de hoy sin el privilegio set_custom_transfer_date
  */
 router.post('/', [
   writeLimiter,
   authMidleware,
   branchScope,
   valiAddRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.ADD)
+  checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.ADD),
+  customDateGuard({ field: 'transfer_date', privilege: TRANSFER.CUSTOM_DATE })
 ], addRecord);
 
 /**
@@ -307,13 +312,20 @@ router.post('/', [
  *                $ref: '#/components/schemas/transfers'
  *        '409':
  *          description: La transferencia no puede modificarse en su estado actual
+ *        '403':
+ *          description: transfer_date distinta de hoy sin el privilegio set_custom_transfer_date
  */
 router.put('/:id', [
   writeLimiter,
   authMidleware,
   branchScope,
   valiUpdateRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.UPDATE)
+  checkRol([ROLE.USER, ROLE.ADMIN], TRANSFER.UPDATE),
+  customDateGuard({
+    field: 'transfer_date',
+    privilege: TRANSFER.CUSTOM_DATE,
+    currentDate: async(req) => (await transfers.findByPk(req.params.id, { attributes: ['transfer_date'] }))?.transfer_date
+  })
 ], updateRecord);
 
 /**

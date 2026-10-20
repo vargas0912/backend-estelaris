@@ -6,8 +6,10 @@ const { validateGetAll, validateGetRecord, validateGetByBranch, valiAddRecord, v
 const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 const branchScope = require('../middlewares/branchScope');
+const customDateGuard = require('../middlewares/customDateGuard');
 const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
+const { getExpense } = require('../services/expenses');
 const { getRecords, getRecord, getRecordsByBranch, addRecord, updateRecord, deleteRecord } = require('../controllers/expenses');
 const { EXPENSE } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
@@ -209,13 +211,16 @@ router.get('/:id', [
  *                        $ref: '#/components/schemas/expenses'
  *              '400':
  *                  description: Error al registrar el gasto
+ *              '403':
+ *                  description: trans_date distinta de hoy sin el privilegio set_custom_expense_date
  */
 router.post('/', [
   writeLimiter,
   authMidleware,
   branchScope,
   valiAddRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], EXPENSE.ADD)
+  checkRol([ROLE.USER, ROLE.ADMIN], EXPENSE.ADD),
+  customDateGuard({ field: 'trans_date', privilege: EXPENSE.CUSTOM_DATE })
 ], addRecord);
 
 /**
@@ -259,12 +264,19 @@ router.post('/', [
  *                        $ref: '#/components/schemas/expenses'
  *              '400':
  *                  description: Error al actualizar el gasto
+ *              '403':
+ *                  description: trans_date distinta de hoy sin el privilegio set_custom_expense_date
  */
 router.put('/:id', [
   writeLimiter,
   authMidleware,
   valiUpdateRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], EXPENSE.UPDATE)
+  checkRol([ROLE.USER, ROLE.ADMIN], EXPENSE.UPDATE),
+  customDateGuard({
+    field: 'trans_date',
+    privilege: EXPENSE.CUSTOM_DATE,
+    currentDate: async(req) => (await getExpense(req.params.id))?.trans_date
+  })
 ], updateRecord);
 
 /**
