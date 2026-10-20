@@ -21,7 +21,7 @@ const {
 } = require('../controllers/salePayments');
 
 const branchScope = require('../middlewares/branchScope');
-const paymentDateGuard = require('../middlewares/paymentDateGuard');
+const customDateGuard = require('../middlewares/customDateGuard');
 
 const { SALE_PAYMENT } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
@@ -222,7 +222,7 @@ router.post('/', [
   branchScope,
   valiAddRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], SALE_PAYMENT.ADD),
-  paymentDateGuard
+  customDateGuard({ field: 'payment_date', privilege: SALE_PAYMENT.CUSTOM_DATE })
 ], addRecord);
 
 /**

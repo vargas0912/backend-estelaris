@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const { transfers, transferDetails, branches, users, employees, products, productStocks, sequelize } = require('../models/index');
+const { getTodayInSystemTimezone } = require('../utils/timezone');
 const { updateFromTransfer, revertFromTransfer, buildLotWhere } = require('./productStocks');
 
 const transferAttributes = [
@@ -288,7 +289,7 @@ const receiveTransfer = async (id, receivedItems, userId, reqBranchId) => {
 
     transfer.status = 'Recibido';
     transfer.received_by = userId;
-    transfer.received_at = new Date().toISOString().slice(0, 10);
+    transfer.received_at = await getTodayInSystemTimezone();
     await transfer.save({ transaction });
 
     // Refrescar details con qty_received actualizados

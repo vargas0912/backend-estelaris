@@ -29,10 +29,10 @@ const {
   getSettlementRecords
 } = require('../controllers/sales');
 
-const { SALE } = require('../constants/modules');
+const { SALE, SALE_PAYMENT } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
 const branchScope = require('../middlewares/branchScope');
-const paymentDateGuard = require('../middlewares/paymentDateGuard');
+const customDateGuard = require('../middlewares/customDateGuard');
 
 /**
  * @openapi
@@ -596,7 +596,7 @@ router.put('/:id/settle', [
   branchScope,
   valiSettleRecord,
   checkRol([ROLE.USER, ROLE.ADMIN], SALE.SETTLE),
-  paymentDateGuard
+  customDateGuard({ field: 'payment_date', privilege: SALE_PAYMENT.CUSTOM_DATE })
 ], settleRecord);
 
 /**
