@@ -21,6 +21,7 @@ const {
 } = require('../controllers/salePayments');
 
 const branchScope = require('../middlewares/branchScope');
+const paymentDateGuard = require('../middlewares/paymentDateGuard');
 
 const { SALE_PAYMENT } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
@@ -212,13 +213,16 @@ router.get('/:id', [
  *                    $ref: '#/components/schemas/salePayments'
  *        '422':
  *          description: La venta no es cobrable o el monto excede el saldo
+ *        '403':
+ *          description: payment_date distinta de hoy sin el privilegio set_custom_payment_date
  */
 router.post('/', [
   writeLimiter,
   authMidleware,
   branchScope,
   valiAddRecord,
-  checkRol([ROLE.USER, ROLE.ADMIN], SALE_PAYMENT.ADD)
+  checkRol([ROLE.USER, ROLE.ADMIN], SALE_PAYMENT.ADD),
+  paymentDateGuard
 ], addRecord);
 
 /**

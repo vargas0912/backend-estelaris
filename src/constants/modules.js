@@ -335,7 +335,9 @@ const SALE_PAYMENT = Object.freeze({
   ADD: 'create_sale_payment',
   NAME_ADD: 'Registrar cobro de venta',
   DELETE: 'delete_sale_payment',
-  NAME_DELETE: 'Eliminar cobro de venta'
+  NAME_DELETE: 'Eliminar cobro de venta',
+  CUSTOM_DATE: 'set_custom_payment_date',
+  NAME_CUSTOM_DATE: 'Definir fecha libre en cobros y liquidaciones'
 });
 
 const SALE_DELIVERY = Object.freeze({
