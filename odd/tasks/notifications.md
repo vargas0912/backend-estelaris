@@ -42,4 +42,4 @@ Delegated direct: one writer (2+ non-trivial files, reading prepares write).
 
 - T5: RED observed for unit (2 failing) and integration (1 failing, full suite 3 failed). GREEN: lint clean, full `pnpm test` passing. Non-owner returns 404, same as read/archive of foreign notifications (no 403 ownership convention found). Commit: 324cc05
 
-- T6: RED observed for unit (3 failing) and integration (3 failing, full suite 6 failed). GREEN: lint clean, full `pnpm test` passing. Model association name `recipient` unchanged; mapped in service; include uses `paranoid: false` and attributes exactly id/name/email. Commit: T6_HASH
+- T6: RED observed for unit (3 failing) and integration (3 failing, full suite 6 failed). GREEN: lint clean, full `pnpm test` passing. Model association name `recipient` unchanged; mapped in service; include uses `paranoid: false` and attributes exactly id/name/email. Commit: aac7b3d
