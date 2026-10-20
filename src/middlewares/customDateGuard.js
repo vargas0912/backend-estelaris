@@ -1,16 +1,19 @@
 const { getOneUserPrivilege } = require('../services/user-privileges');
 const { getTodayInSystemTimezone } = require('../utils/timezone');
 const { handleHttpError } = require('../utils/handleErorr');
+const logger = require('../utils/logger');
 
 const { ERR_SECURITY } = require('../constants/errors');
 const { ROLE } = require('../constants/roles');
 
-const toDay = (value) => String(value).slice(0, 10);
+const toDay = (value) => (value instanceof Date ? value.toISOString() : String(value)).slice(0, 10);
 
 /**
  * Only users holding `privilege` (or superadmin) may send `field` with a date
  * other than today (system timezone). On updates, `currentDate` returns the
- * stored date so an unchanged date is not rejected. Must run after the validator.
+ * stored date so an unchanged date is not rejected (only looked up when the user
+ * lacks the privilege). Infrastructure failures answer 500, never 403.
+ * Must run after the validator.
  * @param {{ field: string, privilege: string, currentDate?: (req) => Promise<string|null> }} options
  */
 const customDateGuard = ({ field, privilege, currentDate }) => async(req, res, next) => {
@@ -26,6 +29,10 @@ const customDateGuard = ({ field, privilege, currentDate }) => async(req, res, n
       return next();
     }
 
+    if (await getOneUserPrivilege(user.id, privilege)) {
+      return next();
+    }
+
     if (currentDate) {
       const stored = await currentDate(req);
       if (stored && toDay(stored) === toDay(date)) {
@@ -33,13 +40,10 @@ const customDateGuard = ({ field, privilege, currentDate }) => async(req, res, n
       }
     }
 
-    if (!await getOneUserPrivilege(user.id, privilege)) {
-      return handleHttpError(res, ERR_SECURITY.NOT_PRIVILEGE, 403);
-    }
-
-    next();
+    handleHttpError(res, ERR_SECURITY.NOT_PRIVILEGE, 403);
   } catch (error) {
-    handleHttpError(res, ERR_SECURITY.NOT_PERMISION, 403);
+    logger.error(`[customDateGuard] ${field}: ${error.message}`);
+    handleHttpError(res, ERR_SECURITY.GUARD_FAILURE, 500);
   }
 };
 

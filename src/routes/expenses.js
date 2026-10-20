@@ -9,7 +9,7 @@ const branchScope = require('../middlewares/branchScope');
 const customDateGuard = require('../middlewares/customDateGuard');
 const { readLimiter, writeLimiter, deleteLimiter } = require('../middlewares/rateLimiters');
 
-const { getExpense } = require('../services/expenses');
+const { expenses } = require('../models/index');
 const { getRecords, getRecord, getRecordsByBranch, addRecord, updateRecord, deleteRecord } = require('../controllers/expenses');
 const { EXPENSE } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
@@ -275,7 +275,7 @@ router.put('/:id', [
   customDateGuard({
     field: 'trans_date',
     privilege: EXPENSE.CUSTOM_DATE,
-    currentDate: async(req) => (await getExpense(req.params.id))?.trans_date
+    currentDate: async(req) => (await expenses.findByPk(req.params.id, { attributes: ['trans_date'] }))?.trans_date
   })
 ], updateRecord);
 

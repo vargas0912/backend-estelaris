@@ -1,5 +1,6 @@
 jest.mock('../../services/user-privileges');
 jest.mock('../../services/systemSettings');
+jest.mock('../../utils/logger');
 
 const { getOneUserPrivilege } = require('../../services/user-privileges');
 const { getSystemSetting } = require('../../services/systemSettings');
@@ -57,11 +58,42 @@ describe('[customDateGuard]', () => {
     expect(next).toHaveBeenCalled();
   });
 
+  test('con privilegio no consulta la fecha almacenada', async() => {
+    getOneUserPrivilege.mockResolvedValue(true);
+    const currentDate = jest.fn();
+    const { next } = await run(ROLE.USER, '2020-01-01', { currentDate });
+    expect(next).toHaveBeenCalled();
+    expect(currentDate).not.toHaveBeenCalled();
+  });
+
   test('update con la fecha ya almacenada pasa sin privilegio', async() => {
+    getOneUserPrivilege.mockResolvedValue(false);
     const currentDate = jest.fn().mockResolvedValue('2020-01-01');
     const { next } = await run(ROLE.USER, '2020-01-01', { currentDate });
     expect(next).toHaveBeenCalled();
-    expect(getOneUserPrivilege).not.toHaveBeenCalled();
+  });
+
+  test('fecha almacenada como Date se compara por dia', async() => {
+    getOneUserPrivilege.mockResolvedValue(false);
+    const currentDate = jest.fn().mockResolvedValue(new Date('2020-01-01T00:00:00.000Z'));
+    const { next } = await run(ROLE.USER, '2020-01-01', { currentDate });
+    expect(next).toHaveBeenCalled();
+  });
+
+  test('registro inexistente (sin fecha almacenada) y sin privilegio recibe 403', async() => {
+    getOneUserPrivilege.mockResolvedValue(false);
+    const currentDate = jest.fn().mockResolvedValue(undefined);
+    const { res, next } = await run(ROLE.USER, '2020-01-01', { currentDate });
+    expect(next).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(403);
+  });
+
+  test('fallo al consultar la fecha almacenada devuelve 500, no 403', async() => {
+    getOneUserPrivilege.mockResolvedValue(false);
+    const currentDate = jest.fn().mockRejectedValue(new Error('db'));
+    const { res, next } = await run(ROLE.USER, '2020-01-01', { currentDate });
+    expect(next).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(500);
   });
 
   test('update que cambia la fecha almacenada sin privilegio recibe 403', async() => {
@@ -72,11 +104,11 @@ describe('[customDateGuard]', () => {
     expect(res.status).toHaveBeenCalledWith(403);
   });
 
-  test('error al consultar privilegios devuelve 403', async() => {
+  test('error al consultar privilegios devuelve 500', async() => {
     getOneUserPrivilege.mockRejectedValue(new Error('db'));
     const { res, next } = await run(ROLE.USER, '2020-01-01');
     expect(next).not.toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.status).toHaveBeenCalledWith(500);
   });
 
   test('timezone invalido en settings usa el default y no rompe la fecha de hoy', async() => {
