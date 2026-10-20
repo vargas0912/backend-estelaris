@@ -152,6 +152,15 @@ describe('Notifications Service - Unit Tests', () => {
       expect(result).toEqual({ rows: [{ id: 1 }], count: 1 });
     });
 
+    test('getMyNotifications incluye al creador (paranoid false, solo id/name/email)', async() => {
+      notifications.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
+
+      await getMyNotifications(5);
+
+      const [include] = notifications.findAndCountAll.mock.calls[0][0].include;
+      expect(include).toMatchObject({ as: 'creator', paranoid: false, attributes: ['id', 'name', 'email'] });
+    });
+
     test('sin unread no filtra read_at', async() => {
       notifications.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
       await getMyNotifications(5);
@@ -173,6 +182,17 @@ describe('Notifications Service - Unit Tests', () => {
 
       await expect(markAsRead(1, 5)).rejects.toMatchObject({ status: 404, message: 'NOTIFICATION_NOT_FOUND' });
       expect(notifications.findOne.mock.calls[0][0].where).toMatchObject({ id: 1, user_id: 5, cancelled_at: null });
+    });
+
+    test('markAsRead y archive buscan la fila con el creador incluido', async() => {
+      notifications.findOne.mockResolvedValue(makeRow());
+
+      await markAsRead(1, 5);
+      await archiveNotification(1, 5);
+
+      notifications.findOne.mock.calls.forEach(([args]) => {
+        expect(args.include[0]).toMatchObject({ as: 'creator', paranoid: false, attributes: ['id', 'name', 'email'] });
+      });
     });
 
     test('fija read_at la primera vez', async() => {

@@ -25,6 +25,8 @@ Admins create one-off reminders for users (individual or by branch). Reminders c
 
 - [x] T6 Expose recipient as `user` ({id,name,email}) in GET /sent (no `recipient`), soft-deleted users included, no view_users dependency
 
+- [x] T7 Include sender as `creator` ({id,name,email}, paranoid false) in /me, /:id/read, /:id/archive; swagger timestamps aligned to createdAt/updatedAt/deletedAt
+
 ## Route
 Delegated direct: one writer (2+ non-trivial files, reading prepares write).
 
@@ -43,3 +45,5 @@ Delegated direct: one writer (2+ non-trivial files, reading prepares write).
 - T5: RED observed for unit (2 failing) and integration (1 failing, full suite 3 failed). GREEN: lint clean, full `pnpm test` passing. Non-owner returns 404, same as read/archive of foreign notifications (no 403 ownership convention found). Commit: 324cc05
 
 - T6: RED observed for unit (3 failing) and integration (3 failing, full suite 6 failed). GREEN: lint clean, full `pnpm test` passing. Model association name `recipient` unchanged; mapped in service; include uses `paranoid: false` and attributes exactly id/name/email. Commit: aac7b3d
+
+- T7: RED observed for unit (2 failing) and integration (3 failing, full suite 5 failed). GREEN: lint clean, full `pnpm test` passing. Observed real timestamp keys in API JSON: createdAt, updatedAt, deletedAt (null); no created_at/updated_at. No script regenerates docs/openapi.json in package.json (not edited). Commit: T7_HASH

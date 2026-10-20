@@ -3,6 +3,9 @@ const { Op } = require('sequelize');
 const { sequelize, notifications, users, userBranches } = require('../models/index');
 const { NOTIFICATION_ERRORS: ERR } = require('../constants/privileges');
 
+// Remitente expuesto al usuario: solo estos campos, incluso si el admin fue dado de baja
+const creatorInclude = () => ({ model: users, as: 'creator', attributes: ['id', 'name', 'email'], paranoid: false });
+
 const EDITABLE_FIELDS = ['title', 'body', 'scheduled_at', 'due_at'];
 
 /**
@@ -128,6 +131,7 @@ const getMyNotifications = async(userId, { unread = false, page = 1, limit = 20 
 
   const { count, rows } = await notifications.findAndCountAll({
     where,
+    include: [creatorInclude()],
     order: [['created_at', 'DESC'], ['id', 'DESC']],
     limit,
     offset: (page - 1) * limit
@@ -151,7 +155,8 @@ const countMyUnread = async(userId) => notifications.count({
  */
 const findOwnVisible = async(id, userId) => {
   const row = await notifications.findOne({
-    where: { id, user_id: userId, ...visibleWhere(new Date()) }
+    where: { id, user_id: userId, ...visibleWhere(new Date()) },
+    include: [creatorInclude()]
   });
 
   if (!row) {

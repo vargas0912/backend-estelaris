@@ -38,7 +38,7 @@ const { NOTIFICATIONS: N } = require('../constants/privileges');
  *      tags:
  *        - notifications
  *      summary: Mis notificaciones
- *      description: Notificaciones visibles (no canceladas y ya vencidas) del usuario autenticado; las archivadas se ocultan
+ *      description: Notificaciones visibles (no canceladas y ya vencidas) del usuario autenticado; las archivadas se ocultan. Cada item incluye creator ({ id, name, email }) sin requerir view_users
  *      security:
  *        - bearerAuth: []
  *      parameters:
@@ -234,7 +234,7 @@ router.post('/', [
  *      tags:
  *        - notifications
  *      summary: Marcar como leida
- *      description: Fija read_at en el servidor; idempotente, conserva la primera lectura. Solo notificaciones propias
+ *      description: Fija read_at en el servidor; idempotente, conserva la primera lectura. Solo notificaciones propias. Devuelve la fila con creator ({ id, name, email })
  *      security:
  *        - bearerAuth: []
  *      parameters:
@@ -267,7 +267,7 @@ router.patch('/:id/read', [writeLimiter, authMidleware, validateIdParam], readRe
  *      tags:
  *        - notifications
  *      summary: Archivar
- *      description: Oculta la notificacion de /me. Solo notificaciones propias
+ *      description: Oculta la notificacion de /me. Solo notificaciones propias. Devuelve la fila con creator ({ id, name, email })
  *      security:
  *        - bearerAuth: []
  *      parameters:

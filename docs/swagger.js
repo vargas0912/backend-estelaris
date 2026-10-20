@@ -216,8 +216,19 @@ const swaggerDefinition = {
               email: { type: 'string' }
             }
           },
-          created_at: { type: 'string', format: 'date-time' },
-          updated_at: { type: 'string', format: 'date-time' }
+          creator: {
+            type: 'object',
+            nullable: true,
+            description: 'Remitente (admin que la creo). Presente en GET /notifications/me, PATCH /:id/read y PATCH /:id/archive (incluye usuarios dados de baja)',
+            properties: {
+              id: { type: 'integer' },
+              name: { type: 'string' },
+              email: { type: 'string' }
+            }
+          },
+          createdAt: { type: 'string', format: 'date-time' },
+          updatedAt: { type: 'string', format: 'date-time' },
+          deletedAt: { type: 'string', format: 'date-time', nullable: true }
         }
       },
       notificationCreateRequest: {

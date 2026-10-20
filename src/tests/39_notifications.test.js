@@ -186,6 +186,53 @@ describe('[NOTIFICATIONS] Test api /api/notifications', () => {
       expect(response.body.pagination).toMatchObject({ page: 1, limit: 20 });
     });
 
+    test('/me incluye creator {id,name,email} sin requerir view_users y usa createdAt/updatedAt', async() => {
+      const viewUsers = await privileges.findOne({ where: { codename: 'view_users' }, raw: true });
+      expect(await userprivileges.count({ where: { user_id: userB.id, privilege_id: viewUsers.id } })).toBe(0);
+
+      const response = await get(userB, '/api/notifications/me');
+
+      expect(response.status).toBe(200);
+      const item = response.body.notifications.find(n => n.batch_id === batch.batch_id);
+      expect(item.creator).toEqual({ id: sender.id, name: buildUser('sender', 'admin').name, email: buildUser('sender').email });
+      expect(item).toHaveProperty('createdAt');
+      expect(item).toHaveProperty('updatedAt');
+      expect(item).toHaveProperty('deletedAt', null);
+      expect(item).not.toHaveProperty('created_at');
+      expect(item).not.toHaveProperty('updated_at');
+    });
+
+    test('creator sigue presente si el admin fue dado de baja', async() => {
+      const ghostAdmin = { token: '', id: null };
+      await setup('ghostAdmin', 'admin', ghostAdmin);
+      const row = await notifications.create({
+        user_id: userC.id, created_by: ghostAdmin.id, title: 'Huerfana', body: 'x', batch_id: '00000000-0000-4000-8000-000000000001'
+      });
+      await users.destroy({ where: { id: ghostAdmin.id } });
+
+      const list = await get(userC, '/api/notifications/me');
+      const item = list.body.notifications.find(n => n.id === row.id);
+      expect(item.creator).toMatchObject({ id: ghostAdmin.id, email: buildUser('ghostAdmin').email });
+    });
+
+    test('read y archive devuelven la fila con creator', async() => {
+      const result = await create({ title: 'Con creador', body: 'x', user_ids: [userC.id] });
+      const row = await notifications.findOne({ where: { batch_id: result.batch_id } });
+      const expected = { id: sender.id, name: buildUser('sender', 'admin').name, email: buildUser('sender').email };
+
+      const read = await patch(userC, `/api/notifications/${row.id}/read`, {});
+      expect(read.body.notification.creator).toEqual(expected);
+      const firstReadAt = read.body.notification.read_at;
+      expect(firstReadAt).not.toBeNull();
+
+      const again = await patch(userC, `/api/notifications/${row.id}/read`, {});
+      expect(Math.floor(new Date(again.body.notification.read_at).getTime() / 1000)).toBe(Math.floor(new Date(firstReadAt).getTime() / 1000));
+
+      const archived = await patch(userC, `/api/notifications/${row.id}/archive`, {});
+      expect(archived.body.notification.creator).toEqual(expected);
+      expect(archived.body.notification.archived_at).not.toBeNull();
+    });
+
     test('/me/count coincide con las no leidas', async() => {
       const list = await get(userB, '/api/notifications/me?unread=true');
       const count = await get(userB, '/api/notifications/me/count');
