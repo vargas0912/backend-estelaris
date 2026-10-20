@@ -211,8 +211,8 @@ router.get('/:id', [
  *                        $ref: '#/components/schemas/expenses'
  *              '400':
  *                  description: Error al registrar el gasto
- *        '403':
- *          description: trans_date distinta de hoy sin el privilegio set_custom_expense_date
+ *              '403':
+ *                  description: trans_date distinta de hoy sin el privilegio set_custom_expense_date
  */
 router.post('/', [
   writeLimiter,
@@ -264,8 +264,8 @@ router.post('/', [
  *                        $ref: '#/components/schemas/expenses'
  *              '400':
  *                  description: Error al actualizar el gasto
- *        '403':
- *          description: trans_date distinta de hoy sin el privilegio set_custom_expense_date
+ *              '403':
+ *                  description: trans_date distinta de hoy sin el privilegio set_custom_expense_date
  */
 router.put('/:id', [
   writeLimiter,
