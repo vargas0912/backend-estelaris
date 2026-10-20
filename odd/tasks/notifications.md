@@ -46,4 +46,4 @@ Delegated direct: one writer (2+ non-trivial files, reading prepares write).
 
 - T6: RED observed for unit (3 failing) and integration (3 failing, full suite 6 failed). GREEN: lint clean, full `pnpm test` passing. Model association name `recipient` unchanged; mapped in service; include uses `paranoid: false` and attributes exactly id/name/email. Commit: aac7b3d
 
-- T7: RED observed for unit (2 failing) and integration (3 failing, full suite 5 failed). GREEN: lint clean, full `pnpm test` passing. Observed real timestamp keys in API JSON: createdAt, updatedAt, deletedAt (null); no created_at/updated_at. No script regenerates docs/openapi.json in package.json (not edited). Commit: T7_HASH
+- T7: RED observed for unit (2 failing) and integration (3 failing, full suite 5 failed). GREEN: lint clean, full `pnpm test` passing. Observed real timestamp keys in API JSON: createdAt, updatedAt, deletedAt (null); no created_at/updated_at. No script regenerates docs/openapi.json in package.json (not edited). Commit: f111fae
