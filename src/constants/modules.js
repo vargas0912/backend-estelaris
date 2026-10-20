@@ -554,9 +554,16 @@ const PRIVILEGE_TEMPLATE = Object.freeze({
   NAME_SYNC: 'Sincronizar plantilla de privilegios con usuarios'
 });
 
+const NOTIFICATION = Object.freeze({
+  MODULE_NAME: 'notifications',
+  CREATE: 'create_notification',
+  NAME_CREATE: 'Crear y administrar notificaciones'
+});
+
 module.exports = {
   ME,
   PRIVILEGE_TEMPLATE,
+  NOTIFICATION,
   BRANCH,
   EMPlOYEE,
   PRIVILEGE,

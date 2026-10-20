@@ -185,6 +185,84 @@ const swaggerDefinition = {
           }
         }
       },
+      notification: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          user_id: { type: 'integer', description: 'Destinatario' },
+          created_by: { type: 'integer', description: 'Administrador que la creo' },
+          title: { type: 'string' },
+          body: { type: 'string' },
+          scheduled_at: { type: 'string', format: 'date-time', nullable: true },
+          due_at: { type: 'string', format: 'date-time', nullable: true },
+          read_at: { type: 'string', format: 'date-time', nullable: true, description: 'Lo fija el servidor, solo la primera vez' },
+          cancelled_at: { type: 'string', format: 'date-time', nullable: true },
+          archived_at: { type: 'string', format: 'date-time', nullable: true },
+          batch_id: { type: 'string', format: 'uuid', description: 'Agrupa los envios masivos' },
+          ref_type: { type: 'string', nullable: true, example: 'sale' },
+          ref_id: { type: 'integer', nullable: true, description: 'Informativo, sin FK' },
+          status: {
+            type: 'string',
+            enum: ['scheduled', 'delivered', 'read', 'cancelled'],
+            description: 'Solo en GET /notifications/sent'
+          },
+          user: {
+            type: 'object',
+            nullable: true,
+            description: 'Destinatario. Solo en GET /notifications/sent, igual que status (incluye usuarios dados de baja)',
+            properties: {
+              id: { type: 'integer' },
+              name: { type: 'string' },
+              email: { type: 'string' }
+            }
+          },
+          creator: {
+            type: 'object',
+            nullable: true,
+            description: 'Remitente (admin que la creo). Presente en GET /notifications/me, PATCH /:id/read y PATCH /:id/archive (incluye usuarios dados de baja)',
+            properties: {
+              id: { type: 'integer' },
+              name: { type: 'string' },
+              email: { type: 'string' }
+            }
+          },
+          createdAt: { type: 'string', format: 'date-time' },
+          updatedAt: { type: 'string', format: 'date-time' },
+          deletedAt: { type: 'string', format: 'date-time', nullable: true }
+        }
+      },
+      notificationCreateRequest: {
+        type: 'object',
+        required: ['title', 'body'],
+        description: 'Se requiere exactamente uno de user_ids o branch_id',
+        properties: {
+          title: { type: 'string', example: 'Cobrar factura 123' },
+          body: { type: 'string', example: 'Llamar al cliente antes del viernes' },
+          user_ids: { type: 'array', items: { type: 'integer' }, example: [2, 3] },
+          branch_id: { type: 'integer', description: 'Selector de destinatarios: todos los usuarios de la sucursal' },
+          scheduled_at: { type: 'string', format: 'date-time', nullable: true },
+          due_at: { type: 'string', format: 'date-time', nullable: true },
+          ref_type: { type: 'string', example: 'sale' },
+          ref_id: { type: 'integer' }
+        }
+      },
+      notificationUpdateRequest: {
+        type: 'object',
+        properties: {
+          title: { type: 'string' },
+          body: { type: 'string' },
+          scheduled_at: { type: 'string', format: 'date-time', description: 'Debe ser futura' },
+          due_at: { type: 'string', format: 'date-time', nullable: true }
+        }
+      },
+      notificationBatchSummary: {
+        type: 'object',
+        properties: {
+          total: { type: 'integer' },
+          read: { type: 'integer' },
+          pending: { type: 'integer', description: 'No leidas y no canceladas' }
+        }
+      },
       privilegeTemplate: {
         type: 'object',
         properties: {
