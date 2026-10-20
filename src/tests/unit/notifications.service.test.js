@@ -353,6 +353,36 @@ describe('Notifications Service - Unit Tests', () => {
       expect(result.summary).toEqual({ total: 0, read: 0, pending: 0 });
     });
 
+    test('expone el destinatario como user y no como recipient', async() => {
+      notifications.findAndCountAll.mockResolvedValue({
+        count: 1,
+        rows: [rowOf({ id: 1, scheduled_at: null, read_at: null, cancelled_at: null, recipient: { id: 5, name: 'A', email: 'a@x.com' } })]
+      });
+
+      const result = await getSentNotifications({});
+
+      expect(result.rows[0].user).toEqual({ id: 5, name: 'A', email: 'a@x.com' });
+      expect(result.rows[0]).not.toHaveProperty('recipient');
+    });
+
+    test('user es null si no hay destinatario', async() => {
+      notifications.findAndCountAll.mockResolvedValue({
+        count: 1,
+        rows: [rowOf({ id: 1, scheduled_at: null, read_at: null, cancelled_at: null, recipient: null })]
+      });
+
+      expect((await getSentNotifications({})).rows[0].user).toBeNull();
+    });
+
+    test('el include incluye usuarios dados de baja y solo id, name, email', async() => {
+      notifications.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
+
+      await getSentNotifications({});
+
+      const [include] = notifications.findAndCountAll.mock.calls[0][0].include;
+      expect(include).toMatchObject({ as: 'recipient', paranoid: false, attributes: ['id', 'name', 'email'] });
+    });
+
     test('sin batch_id no calcula resumen', async() => {
       notifications.findAndCountAll.mockResolvedValue({ count: 0, rows: [] });
 

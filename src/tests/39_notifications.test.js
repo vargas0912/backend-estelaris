@@ -1,6 +1,6 @@
 const request = require('supertest');
 const server = require('../../app');
-const { notifications, privileges } = require('../models/index');
+const { notifications, privileges, users, userprivileges } = require('../models/index');
 
 const {
   superadminLogin,
@@ -388,8 +388,38 @@ describe('[NOTIFICATIONS] Test api /api/notifications', () => {
         [rows[2].id]: 'cancelled'
       });
       expect(response.body.summary).toEqual({ total: 3, read: 1, pending: 1 });
-      expect(response.body.notifications[0].recipient).toHaveProperty('email');
-      expect(response.body.notifications[0].recipient).not.toHaveProperty('password');
+      const [first] = response.body.notifications;
+      expect(Object.keys(first.user).sort()).toEqual(['email', 'id', 'name']);
+      expect(first.user.id).toBe(first.user_id);
+      expect(first).not.toHaveProperty('recipient');
+    });
+
+    test('user se llena sin privilegio view_users (solo create_notification)', async() => {
+      const viewUsers = await privileges.findOne({ where: { codename: 'view_users' }, raw: true });
+      const granted = await userprivileges.count({ where: { user_id: sender.id, privilege_id: viewUsers.id } });
+      expect(granted).toBe(0);
+
+      const result = await create({ title: 'Sin view_users', body: 'x', user_ids: [userA.id] });
+      const response = await get(sender, `/api/notifications/sent?batch_id=${result.batch_id}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.notifications[0].user).toMatchObject({ id: userA.id, email: buildUser('userA').email });
+    });
+
+    test('destinatario dado de baja (soft delete) sigue apareciendo en user', async() => {
+      const ghost = { token: '', id: null };
+      await setup('ghost', 'user', ghost);
+      const result = await create({ title: 'Fantasma', body: 'x', user_ids: [ghost.id] });
+      await users.destroy({ where: { id: ghost.id } });
+
+      const response = await get(sender, `/api/notifications/sent?batch_id=${result.batch_id}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.notifications[0].user).toEqual({
+        id: ghost.id,
+        name: buildUser('ghost').name,
+        email: buildUser('ghost').email
+      });
     });
 
     test('un recibido sin leer figura como delivered', async() => {

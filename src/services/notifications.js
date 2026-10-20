@@ -271,7 +271,7 @@ const cancelNotification = async(id, createdBy) => {
 };
 
 /**
- * Lists sent notifications with per-recipient status and, when filtering by batch, a summary.
+ * Lists sent notifications with per-recipient status, the recipient as `user` ({ id, name, email }, soft-deleted included) and, when filtering by batch, a summary.
  * @param {{ batch_id?: string, user_id?: number, created_by?: number, page?: number, limit?: number }} [filters]
  * @returns {Promise<{ rows: object[], count: number, summary: object|null }>}
  */
@@ -283,7 +283,7 @@ const getSentNotifications = async({ batch_id: batchId, user_id: userId, created
 
   const { count, rows } = await notifications.findAndCountAll({
     where,
-    include: [{ model: users, as: 'recipient', attributes: ['id', 'name', 'email'] }],
+    include: [{ model: users, as: 'recipient', attributes: ['id', 'name', 'email'], paranoid: false }],
     order: [['id', 'DESC']],
     limit,
     offset: (page - 1) * limit
@@ -291,8 +291,8 @@ const getSentNotifications = async({ batch_id: batchId, user_id: userId, created
 
   const now = new Date();
   const items = rows.map(row => {
-    const plain = row.toJSON();
-    return { ...plain, status: computeStatus(plain, now) };
+    const { recipient, ...plain } = row.toJSON();
+    return { ...plain, user: recipient || null, status: computeStatus(plain, now) };
   });
 
   let summary = null;

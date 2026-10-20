@@ -206,6 +206,16 @@ const swaggerDefinition = {
             enum: ['scheduled', 'delivered', 'read', 'cancelled'],
             description: 'Solo en GET /notifications/sent'
           },
+          user: {
+            type: 'object',
+            nullable: true,
+            description: 'Destinatario. Solo en GET /notifications/sent, igual que status (incluye usuarios dados de baja)',
+            properties: {
+              id: { type: 'integer' },
+              name: { type: 'string' },
+              email: { type: 'string' }
+            }
+          },
           created_at: { type: 'string', format: 'date-time' },
           updated_at: { type: 'string', format: 'date-time' }
         }
