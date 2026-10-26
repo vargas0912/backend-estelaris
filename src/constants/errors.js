@@ -2,6 +2,7 @@ const ERR_SECURITY = Object.freeze({
   NOT_PERMISION: 'ERROR_NOT_PERMISSION',
   NOT_PRIVILEGE: 'NOT_PRIVILEGE',
   GUARD_FAILURE: 'ERROR_DATE_GUARD',
+  DATE_CONFLICT: 'Se detectó un conflicto entre la fecha de tu equipo y la fecha del sistema. El administrador del sistema será notificado.',
   FORBIDDEN_ROLE_HIERARCHY: 'No tiene permisos para modificar usuarios con ese rol',
   FORBIDDEN_CANNOT_CREATE_SUPERADMIN: 'Solo un superadmin puede crear o elevar a superadmin',
   FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES: 'Solo un superadmin puede modificar privilegios de superadmin',

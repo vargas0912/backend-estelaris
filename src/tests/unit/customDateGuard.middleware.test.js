@@ -1,12 +1,15 @@
 jest.mock('../../services/user-privileges');
 jest.mock('../../services/systemSettings');
 jest.mock('../../utils/logger');
+jest.mock('../../services/notifications');
 
 const { getOneUserPrivilege } = require('../../services/user-privileges');
 const { getSystemSetting } = require('../../services/systemSettings');
+const { notifyDateConflict } = require('../../services/notifications');
 const customDateGuard = require('../../middlewares/customDateGuard');
 const { getTodayInSystemTimezone } = require('../../utils/timezone');
 const { ROLE } = require('../../constants/roles');
+const { ERR_SECURITY } = require('../../constants/errors');
 
 const TZ = 'America/Mexico_City';
 const PRIVILEGE = 'set_custom_expense_date';
@@ -49,7 +52,36 @@ describe('[customDateGuard]', () => {
     const { res, next } = await run(ROLE.USER, '2020-01-01');
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.send).toHaveBeenCalledWith({ error: ERR_SECURITY.DATE_CONFLICT });
     expect(getOneUserPrivilege).toHaveBeenCalledWith(7, PRIVILEGE);
+    expect(notifyDateConflict).toHaveBeenCalledWith(expect.objectContaining({
+      user: expect.objectContaining({ id: 7 }),
+      field: 'trans_date',
+      sentDate: '2020-01-01',
+      systemDate: today()
+    }));
+  });
+
+  test('si falla la notificacion igual responde 403', async() => {
+    getOneUserPrivilege.mockResolvedValue(false);
+    notifyDateConflict.mockRejectedValue(new Error('db down'));
+    const { res, next } = await run(ROLE.USER, '2020-01-01');
+    expect(next).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(403);
+  });
+
+  test('fecha de ayer a +-5 min de la medianoche pasa; fuera de la tolerancia no', async() => {
+    const midnight = new Date('2026-03-10T06:00:00Z'); // 00:00 en America/Mexico_City (UTC-6)
+    jest.useFakeTimers().setSystemTime(new Date(midnight.getTime() + 3 * 60 * 1000));
+    const near = await run(ROLE.USER, '2026-03-09');
+    expect(near.next).toHaveBeenCalled();
+    expect(notifyDateConflict).not.toHaveBeenCalled();
+
+    jest.setSystemTime(new Date(midnight.getTime() + 10 * 60 * 1000));
+    getOneUserPrivilege.mockResolvedValue(false);
+    const far = await run(ROLE.USER, '2026-03-09');
+    expect(far.next).not.toHaveBeenCalled();
+    jest.useRealTimers();
   });
 
   test('fecha distinta y con privilegio pasa', async() => {

@@ -2,6 +2,7 @@ const { randomUUID } = require('crypto');
 const { Op } = require('sequelize');
 const { sequelize, notifications, users, userBranches } = require('../models/index');
 const { NOTIFICATION_ERRORS: ERR } = require('../constants/privileges');
+const { ROLE } = require('../constants/roles');
 
 // Remitente expuesto al usuario: solo estos campos, incluso si el admin fue dado de baja
 const creatorInclude = () => ({ model: users, as: 'creator', attributes: ['id', 'name', 'email'], paranoid: false });
@@ -114,6 +115,27 @@ const createNotifications = async(data) => {
   );
 
   return { batch_id: batchId, total: created.length, notifications: created };
+};
+
+/**
+ * Notifies the superadmins and the involved user that a date different from
+ * the system date was rejected. The involved user is the sender (created_by).
+ * @param {{ user: object, field: string, sentDate: string, systemDate: string }} data
+ * @returns {Promise<object>}
+ */
+const notifyDateConflict = async({ user, field, sentDate, systemDate }) => {
+  const superadmins = await users.findAll({ attributes: ['id'], where: { role: ROLE.SUPERADMIN } });
+  const userIds = unique([user.id, ...superadmins.map(u => u.id)]);
+  const who = user.name || user.email || `#${user.id}`;
+
+  return createNotifications({
+    user_ids: userIds,
+    created_by: user.id,
+    title: 'Conflicto de fechas detectado',
+    body: `Se rechazó una operación de ${who} (usuario #${user.id}): el campo ${field} llegó con la fecha ${sentDate} y la fecha del sistema es ${systemDate}. Revisa la fecha y hora del equipo.`,
+    ref_type: 'date_conflict',
+    ref_id: user.id
+  });
 };
 
 /**
@@ -317,6 +339,7 @@ const getSentNotifications = async({ batch_id: batchId, user_id: userId, created
 module.exports = {
   computeStatus,
   createNotifications,
+  notifyDateConflict,
   getMyNotifications,
   countMyUnread,
   markAsRead,
