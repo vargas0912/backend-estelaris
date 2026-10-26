@@ -1,6 +1,7 @@
 const { notifications, users, userBranches } = require('../../models/index');
 const {
   createNotifications,
+  notifyDateConflict,
   getMyNotifications,
   countMyUnread,
   markAsRead,
@@ -411,5 +412,36 @@ describe('Notifications Service - Unit Tests', () => {
       expect(result.summary).toBeNull();
       expect(notifications.count).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('[notifyDateConflict]', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('notifica a los superadmins y al usuario sin duplicar destinatarios', async() => {
+    users.findAll
+      .mockResolvedValueOnce([{ id: 1 }, { id: 7 }])
+      .mockResolvedValueOnce([{ id: 1 }, { id: 7 }]);
+    notifications.bulkCreate.mockImplementation(async(rows) => rows);
+
+    const result = await notifyDateConflict({
+      user: { id: 7, name: 'Ana' },
+      field: 'trans_date',
+      sentDate: '2020-01-01',
+      systemDate: '2026-03-10'
+    });
+
+    expect(result.total).toBe(2);
+    const rows = notifications.bulkCreate.mock.calls[0][0];
+    expect(rows.map(r => r.user_id).sort()).toEqual([1, 7]);
+    expect(rows[0]).toEqual(expect.objectContaining({
+      created_by: 7,
+      title: 'Conflicto de fechas detectado',
+      ref_type: 'date_conflict'
+    }));
+    expect(rows[0].body).toContain('2020-01-01');
+    expect(rows[0].body).toContain('2026-03-10');
   });
 });

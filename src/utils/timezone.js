@@ -30,4 +30,24 @@ const getTodayInSystemTimezone = async() => {
   return new Date().toLocaleDateString('en-CA', { timeZone: tz });
 };
 
-module.exports = { DEFAULT_TIMEZONE, getSystemTimezone, getTodayInSystemTimezone };
+const DATE_TOLERANCE_MS = 5 * 60 * 1000;
+
+/**
+ * Days (YYYY-MM-DD) accepted as "today" in the system timezone: the current
+ * day plus the day at now ± 5 min, so a client clock slightly off around
+ * midnight does not raise a false conflict.
+ */
+const getAcceptedDaysInSystemTimezone = async() => {
+  const tz = await getSystemTimezone();
+  const now = Date.now();
+  return new Set([-DATE_TOLERANCE_MS, 0, DATE_TOLERANCE_MS].map(
+    (offset) => new Date(now + offset).toLocaleDateString('en-CA', { timeZone: tz })
+  ));
+};
+
+module.exports = {
+  DEFAULT_TIMEZONE,
+  getSystemTimezone,
+  getTodayInSystemTimezone,
+  getAcceptedDaysInSystemTimezone
+};
