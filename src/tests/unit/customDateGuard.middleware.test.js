@@ -52,7 +52,7 @@ describe('[customDateGuard]', () => {
     const { res, next } = await run(ROLE.USER, '2020-01-01');
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(403);
-    expect(res.send).toHaveBeenCalledWith({ error: ERR_SECURITY.DATE_CONFLICT });
+    expect(res.send).toHaveBeenCalledWith({ error: ERR_SECURITY.DATE_CONFLICT, code: 'DATE_GUARD_CONFLICT' });
     expect(getOneUserPrivilege).toHaveBeenCalledWith(7, PRIVILEGE);
     expect(notifyDateConflict).toHaveBeenCalledWith(expect.objectContaining({
       user: expect.objectContaining({ id: 7 }),
