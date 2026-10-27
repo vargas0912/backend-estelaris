@@ -31,18 +31,46 @@ const swaggerDefinition = {
       }
     },
     schemas: {
-      DateGuardError: {
+      ForbiddenError: {
         type: 'object',
-        description: 'Error del guard de fecha personalizada. 403 con error "Se detectó un conflicto entre la fecha de tu equipo y la fecha del sistema. El administrador del sistema será notificado." cuando se envía una fecha distinta a la del sistema (zona horaria de system_settings, ±5 min en la medianoche) sin el privilegio correspondiente (el body incluye code "DATE_GUARD_CONFLICT"); en ese caso se notifica a los superadmins y al usuario. 500 con error "ERROR_DATE_GUARD" si falla la validación (infraestructura).',
+        required: ['error', 'code'],
+        description: 'Cuerpo estándar de toda respuesta 403. `error` es un mensaje en español de México listo para mostrar al usuario; `code` es un identificador estable para ramificar sin comparar texto.\n\nCódigos:\n- `ERROR_NOT_PERMISSION`: "No tienes permiso para realizar esta acción." (rol no permitido)\n- `NOT_PRIVILEGE`: "No cuentas con el privilegio necesario para realizar esta acción. Contacta al administrador."\n- `BRANCH_ACCESS_DENIED`: "No tienes acceso a la sucursal seleccionada."\n- `EMPLOYEE_SCOPE_NO_EMPLOYEE`: "Tu usuario no tiene un empleado asociado. Contacta al administrador."\n- `DATE_GUARD_CONFLICT`: "Se detectó un conflicto entre la fecha de tu equipo y la fecha del sistema. El administrador del sistema será notificado." (fecha distinta a la del sistema sin el privilegio set_custom_*_date; se notifica a los superadmins y al usuario)\n- `FORBIDDEN_ROLE_HIERARCHY`: "No tienes permiso para modificar usuarios con ese rol."\n- `FORBIDDEN_CANNOT_CREATE_SUPERADMIN`: "Solo un superadmin puede crear o asignar el rol de superadmin."\n- `FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES`: "Solo un superadmin puede modificar los privilegios de un superadmin."\n- `FORBIDDEN_CANNOT_RESET_SUPERADMIN`: "No es posible restablecer la contraseña de un superadmin."\n- `APIKEY_INCORRECT`, `CUSTOMHEADER_FAIL`: "No se pudo validar el acceso a la API."',
         properties: {
           error: {
             type: 'string',
-            example: 'Se detectó un conflicto entre la fecha de tu equipo y la fecha del sistema. El administrador del sistema será notificado.'
+            example: 'No cuentas con el privilegio necesario para realizar esta acción. Contacta al administrador.'
           },
           code: {
             type: 'string',
-            description: 'Código estable presente solo en el 403 por conflicto de fecha; usar en lugar de comparar el texto de error.',
-            example: 'DATE_GUARD_CONFLICT'
+            enum: [
+              'ERROR_NOT_PERMISSION',
+              'NOT_PRIVILEGE',
+              'BRANCH_ACCESS_DENIED',
+              'EMPLOYEE_SCOPE_NO_EMPLOYEE',
+              'DATE_GUARD_CONFLICT',
+              'FORBIDDEN_ROLE_HIERARCHY',
+              'FORBIDDEN_CANNOT_CREATE_SUPERADMIN',
+              'FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES',
+              'FORBIDDEN_CANNOT_RESET_SUPERADMIN',
+              'APIKEY_INCORRECT',
+              'CUSTOMHEADER_FAIL'
+            ],
+            example: 'NOT_PRIVILEGE'
+          }
+        }
+      },
+      ServerError: {
+        type: 'object',
+        required: ['error', 'code'],
+        description: 'Cuerpo estándar de un 500. `error` es un mensaje genérico (el detalle técnico solo se registra en logs); `code` identifica la operación que falló, por ejemplo ERROR_GET_RECORDS o ERROR_DATE_GUARD (falla del guard de fecha personalizada).',
+        properties: {
+          error: {
+            type: 'string',
+            example: 'Ocurrió un error inesperado. Intenta de nuevo más tarde.'
+          },
+          code: {
+            type: 'string',
+            example: 'ERROR_DATE_GUARD'
           }
         }
       },

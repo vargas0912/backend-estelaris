@@ -170,6 +170,10 @@ router.get('/:id', [
  *          description: Token ausente o inválido
  *        '403':
  *          description: Caller no es superadmin, o target es superadmin (privilege escalation bloqueada)
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  *        '404':
  *          description: Usuario no encontrado
  */
@@ -211,6 +215,10 @@ router.post('/:id/reset-password', [
  *                  description: Usuarios modificado exitosamente
  *              '403':
  *                  description: Error de validacion
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.put('/:id', [
   writeLimiter,
@@ -245,6 +253,10 @@ router.put('/:id', [
  *                  description: Usuario eliminado exitosamente
  *              '403':
  *                  description: Error de validacion
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.delete('/:id', [
   deleteLimiter,

@@ -335,6 +335,10 @@ router.get('/:id', [
  *                  description: Empleado creado correctamente
  *              '403':
  *                  description: Error al crear el nuevo empleado
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   writeLimiter,
@@ -387,6 +391,10 @@ router.post('/', [
  *                  description: Empleado modificado correctamente
  *              '403':
  *                  description: Error al actualizar el empleado
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.put('/:id', [
   writeLimiter,

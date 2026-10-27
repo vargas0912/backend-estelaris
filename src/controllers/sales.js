@@ -1,5 +1,5 @@
 const { matchedData } = require('express-validator');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleHttpError, handleServerError } = require('../utils/handleErorr');
 const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const {
@@ -25,7 +25,7 @@ const getRecords = async (req, res) => {
     const { sales, total } = await getAllSales(req.branchId, page, limit, search, data.sortBy, data.sortOrder, salesType);
     res.send(buildPaginationResponse('sales', sales, total, page, limit));
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
   }
 };
 
@@ -79,7 +79,7 @@ const getOverdueRecords = async (req, res) => {
     const { sales, total } = await getOverdueSales(page, limit, search);
     res.send(buildPaginationResponse('sales', sales, total, page, limit));
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_OVERDUE_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_OVERDUE_RECORDS', error);
   }
 };
 
@@ -200,7 +200,7 @@ const getSettlementRecords = async (req, res) => {
     const { sales, total } = await getSettledSales(page, limit, search);
     res.send(buildPaginationResponse('sales', sales, total, page, limit));
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_SETTLEMENTS --> ${error}`);
+    handleServerError(res, 'ERROR_GET_SETTLEMENTS', error);
   }
 };
 

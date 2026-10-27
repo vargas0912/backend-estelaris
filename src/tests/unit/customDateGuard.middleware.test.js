@@ -9,7 +9,7 @@ const { notifyDateConflict } = require('../../services/notifications');
 const customDateGuard = require('../../middlewares/customDateGuard');
 const { getTodayInSystemTimezone } = require('../../utils/timezone');
 const { ROLE } = require('../../constants/roles');
-const { ERR_SECURITY } = require('../../constants/errors');
+const { FORBIDDEN } = require('../../constants/forbidden');
 
 const TZ = 'America/Mexico_City';
 const PRIVILEGE = 'set_custom_expense_date';
@@ -52,7 +52,7 @@ describe('[customDateGuard]', () => {
     const { res, next } = await run(ROLE.USER, '2020-01-01');
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(403);
-    expect(res.send).toHaveBeenCalledWith({ error: ERR_SECURITY.DATE_CONFLICT, code: 'DATE_GUARD_CONFLICT' });
+    expect(res.send).toHaveBeenCalledWith({ error: FORBIDDEN.DATE_GUARD_CONFLICT, code: 'DATE_GUARD_CONFLICT' });
     expect(getOneUserPrivilege).toHaveBeenCalledWith(7, PRIVILEGE);
     expect(notifyDateConflict).toHaveBeenCalledWith(expect.objectContaining({
       user: expect.objectContaining({ id: 7 }),
@@ -126,6 +126,10 @@ describe('[customDateGuard]', () => {
     const { res, next } = await run(ROLE.USER, '2020-01-01', { currentDate });
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      error: 'Ocurrió un error inesperado. Intenta de nuevo más tarde.',
+      code: 'ERROR_DATE_GUARD'
+    });
   });
 
   test('update que cambia la fecha almacenada sin privilegio recibe 403', async() => {

@@ -1,5 +1,6 @@
 const request = require('supertest');
 const server = require('../../app');
+const { FORBIDDEN } = require('../constants/forbidden');
 
 const api = request(server.app);
 
@@ -237,7 +238,8 @@ describe('[BRANCH SCOPE] Middleware de scope por sucursal', () => {
         .set('X-Branch-ID', '99999')
         .expect(403);
 
-      expect(response.body.error).toBe('BRANCH_ACCESS_DENIED');
+      expect(response.body.code).toBe('BRANCH_ACCESS_DENIED');
+      expect(response.body.error).toBe(FORBIDDEN.BRANCH_ACCESS_DENIED);
     });
 
     test('9. Admin con X-Branch-ID de sucursal no asignada en GET /employees. Expect 403', async() => {
@@ -253,7 +255,8 @@ describe('[BRANCH SCOPE] Middleware de scope por sucursal', () => {
         .set('X-Branch-ID', '99999')
         .expect(403);
 
-      expect(response.body.error).toBe('BRANCH_ACCESS_DENIED');
+      expect(response.body.code).toBe('BRANCH_ACCESS_DENIED');
+      expect(response.body.error).toBe(FORBIDDEN.BRANCH_ACCESS_DENIED);
     });
   });
 

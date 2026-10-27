@@ -56,6 +56,10 @@ const { PRIVILEGE_TEMPLATES: PT } = require('../constants/privileges');
  *                      $ref: '#/components/schemas/privilegeTemplate'
  *        '403':
  *          description: Sin permisos
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  */
 router.get('/', [
   authMidleware,
@@ -125,6 +129,10 @@ router.get('/:id', [
  *          description: Error de validacion o privilegios inexistentes
  *        '403':
  *          description: Sin permisos
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   authMidleware,
@@ -231,6 +239,10 @@ router.delete('/:id', [
  *          description: Error de validacion
  *        '403':
  *          description: Solo un superadmin puede modificar privilegios de un superadmin
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  *        '404':
  *          description: Usuario o plantilla no encontrado
  */

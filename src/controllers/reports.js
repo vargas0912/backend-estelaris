@@ -1,5 +1,5 @@
 const { matchedData } = require('express-validator');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleServerError } = require('../utils/handleErorr');
 const { getDailyMovement, getAccountsReceivable, getInventoryReport } = require('../services/reports');
 
 const getDailyMovementReport = async (req, res) => {
@@ -8,7 +8,7 @@ const getDailyMovementReport = async (req, res) => {
     const report = await getDailyMovement(branchId, date);
     res.send({ report });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_DAILY_MOVEMENT -> ${error}`);
+    handleServerError(res, 'ERROR_GET_DAILY_MOVEMENT', error);
   }
 };
 
@@ -18,7 +18,7 @@ const getAccountsReceivableReport = async (req, res) => {
     const report = await getAccountsReceivable(branchId);
     res.send({ report });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_ACCOUNTS_RECEIVABLE -> ${error}`);
+    handleServerError(res, 'ERROR_GET_ACCOUNTS_RECEIVABLE', error);
   }
 };
 
@@ -28,7 +28,7 @@ const getInventoryReportController = async (req, res) => {
     const report = await getInventoryReport(branchId, startDate, endDate);
     res.send({ report });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_INVENTORY_REPORT -> ${error}`);
+    handleServerError(res, 'ERROR_GET_INVENTORY_REPORT', error);
   }
 };
 

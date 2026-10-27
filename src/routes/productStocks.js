@@ -303,6 +303,10 @@ router.get('/purchase/:purch_id', [
  *                        $ref: '#/components/schemas/productStocks'
  *              '403':
  *                  description: Error al crear el inventario
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   writeLimiter,
@@ -358,6 +362,10 @@ router.post('/', [
  *                        $ref: '#/components/schemas/productStocks'
  *              '403':
  *                  description: Error al actualizar el inventario
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.put('/:id', [
   writeLimiter,

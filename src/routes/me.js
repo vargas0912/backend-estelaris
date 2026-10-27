@@ -43,6 +43,10 @@ const payrollPost = (priv, ...validators) => [writeLimiter, ...baseMiddleware, p
  *         description: Datos del empleado
  *       '403':
  *         description: Usuario sin empleado vinculado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ForbiddenError'
  */
 router.get('/profile', [
   readLimiter,

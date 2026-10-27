@@ -1,7 +1,6 @@
 const { matchedData } = require('express-validator');
 
-const { handleHttpError } = require('../utils/handleErorr');
-const { ERR_SECURITY } = require('../constants/errors');
+const { handleHttpError, handleForbidden } = require('../utils/handleErorr');
 const { PRIVILEGE_TEMPLATE_ERRORS: ERR } = require('../constants/privileges');
 const { ROLE } = require('../constants/roles');
 const { users } = require('../models/index');
@@ -123,7 +122,7 @@ const applyTemplateRecord = async(req, res) => {
     }
 
     if (targetUser.role === ROLE.SUPERADMIN && req.user.role !== ROLE.SUPERADMIN) {
-      handleHttpError(res, ERR_SECURITY.FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES, 403);
+      handleForbidden(res, 'FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES');
       return;
     }
 

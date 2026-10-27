@@ -1,5 +1,5 @@
 const { matchedData } = require('express-validator');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleHttpError, handleServerError } = require('../utils/handleErorr');
 const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const { getAllEmployees, getEmployee, getEmployeesByBranch, addNewEmployee, updateEmployee, deleteEmployee, grantEmployeeAccess, assignEmployeeAccess, revokeEmployeeAccess } = require('../services/employees');
@@ -18,7 +18,7 @@ const getRecords = async(req, res) => {
     const { employees, total } = await getAllEmployees(req.branchId, page, limit, search, active);
     res.send(buildPaginationResponse('employees', employees, total, page, limit));
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
   }
 };
 
@@ -58,7 +58,7 @@ const getRecordsByBranch = async (req, res) => {
     const { employees, total } = await getEmployeesByBranch(data.branch_id, page, limit, search, active);
     res.send(buildPaginationResponse('employees', employees, total, page, limit));
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS_BY_BRANCH -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS_BY_BRANCH', error);
   }
 };
 

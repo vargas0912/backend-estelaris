@@ -1,5 +1,5 @@
 const { matchedData } = require('express-validator');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleHttpError, handleServerError } = require('../utils/handleErorr');
 const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const { getAllExpenses, getExpensesByBranch, getExpense, addExpense, updateExpense, deleteExpense } = require('../services/expenses');
@@ -12,7 +12,7 @@ const getRecords = async(req, res) => {
     const { expenses, total } = await getAllExpenses(page, limit, search, data.sortBy, data.sortOrder);
     res.send(buildPaginationResponse('expenses', expenses, total, page, limit));
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
   }
 };
 

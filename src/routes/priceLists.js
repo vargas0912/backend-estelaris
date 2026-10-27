@@ -120,6 +120,10 @@ router.get('/:id', [
  *                        $ref: '#/components/schemas/priceLists'
  *              '403':
  *                  description: Error al crear la lista de precios
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   writeLimiter,
@@ -173,6 +177,10 @@ router.post('/', [
  *                        $ref: '#/components/schemas/priceLists'
  *              '403':
  *                  description: Error al actualizar la lista de precios
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.put('/:id', [
   writeLimiter,

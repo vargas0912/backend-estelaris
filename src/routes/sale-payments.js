@@ -218,13 +218,13 @@ router.get('/:id', [
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/components/schemas/DateGuardError'
+ *                $ref: '#/components/schemas/ForbiddenError'
  *        '500':
  *          description: Falla al validar la fecha (ERROR_DATE_GUARD)
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/components/schemas/DateGuardError'
+ *                $ref: '#/components/schemas/ServerError'
  */
 router.post('/', [
   writeLimiter,

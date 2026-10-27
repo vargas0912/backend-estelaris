@@ -2,7 +2,7 @@ const { matchedData } = require('express-validator');
 const { compare } = require('../utils/handlePassword');
 const { tokenSign, JWT_EXPIRY_MS } = require('../utils/handleJwt');
 const { users, branches } = require('../models/index');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleHttpError, handleServerError } = require('../utils/handleErorr');
 const { registerUser, registerSuperAdmin } = require('../services/users');
 const { LOGIN, USER } = require('../constants/errors');
 const { ROLE } = require('../constants/roles');
@@ -20,7 +20,7 @@ const registerAdminCtrl = async(req, res) => {
 
     res.send({ superAdmin });
   } catch (error) {
-    handleHttpError(res, USER.ERROR_REGISTER_SUPER_USER);
+    handleServerError(res, USER.ERROR_REGISTER_SUPER_USER, error);
   }
 };
 
@@ -37,7 +37,7 @@ const registerCtrl = async(req, res) => {
 
     res.send({ user });
   } catch (error) {
-    handleHttpError(res, USER.ERROR_REGISTER_USER);
+    handleServerError(res, USER.ERROR_REGISTER_USER, error);
   }
 };
 

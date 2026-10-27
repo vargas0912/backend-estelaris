@@ -1,5 +1,5 @@
 const { matchedData } = require('express-validator');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleServerError } = require('../utils/handleErorr');
 const { getDashboardKpis, getDashboardTrends, getTopProducts, getExpensesByMonth, getExpensesByBranch, getRecentSales, getSalesByBranch } = require('../services/dashboard');
 
 const getKpis = async (req, res) => {
@@ -8,7 +8,7 @@ const getKpis = async (req, res) => {
     const kpis = await getDashboardKpis(months);
     res.send({ kpis });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_DASHBOARD_KPIS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_DASHBOARD_KPIS', error);
   }
 };
 
@@ -18,7 +18,7 @@ const getTrends = async (req, res) => {
     const trends = await getDashboardTrends(months);
     res.send({ trends });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_DASHBOARD_TRENDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_DASHBOARD_TRENDS', error);
   }
 };
 
@@ -28,7 +28,7 @@ const getTopProductsHandler = async (req, res) => {
     const products = await getTopProducts(limit, months, sortBy);
     res.send({ products });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_TOP_PRODUCTS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_TOP_PRODUCTS', error);
   }
 };
 
@@ -38,7 +38,7 @@ const getExpensesByMonthHandler = async (req, res) => {
     const expensesByMonth = await getExpensesByMonth(months);
     res.send({ expensesByMonth });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_EXPENSES_BY_MONTH -> ${error}`);
+    handleServerError(res, 'ERROR_GET_EXPENSES_BY_MONTH', error);
   }
 };
 
@@ -48,7 +48,7 @@ const getExpensesByBranchHandler = async (req, res) => {
     const expensesByBranch = await getExpensesByBranch(months);
     res.send({ expensesByBranch });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_EXPENSES_BY_BRANCH -> ${error}`);
+    handleServerError(res, 'ERROR_GET_EXPENSES_BY_BRANCH', error);
   }
 };
 
@@ -58,7 +58,7 @@ const getRecentSalesHandler = async (req, res) => {
     const recentSales = await getRecentSales(limit);
     res.send({ recentSales });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECENT_SALES -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECENT_SALES', error);
   }
 };
 
@@ -68,7 +68,7 @@ const getSalesByBranchHandler = async (req, res) => {
     const salesByBranch = await getSalesByBranch(months);
     res.send({ salesByBranch });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_SALES_BY_BRANCH -> ${error}`);
+    handleServerError(res, 'ERROR_GET_SALES_BY_BRANCH', error);
   }
 };
 

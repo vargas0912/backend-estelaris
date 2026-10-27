@@ -320,6 +320,10 @@ router.get('/overdue', [
  *                    $ref: '#/components/schemas/pagination'
  *        '403':
  *          description: Sin privilegio view_sale_settlements
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  */
 router.get('/settlements', [
   readLimiter,
@@ -590,13 +594,13 @@ router.put('/:id', [
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/components/schemas/DateGuardError'
+ *                $ref: '#/components/schemas/ForbiddenError'
  *        '500':
  *          description: Falla al validar la fecha (ERROR_DATE_GUARD)
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/components/schemas/DateGuardError'
+ *                $ref: '#/components/schemas/ServerError'
  *        '404':
  *          description: Venta no encontrada
  */

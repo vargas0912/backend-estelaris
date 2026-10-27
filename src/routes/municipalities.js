@@ -49,6 +49,10 @@ const { ROLE } = require('../constants/roles');
  *          description: No autenticado
  *        '403':
  *          description: Sin permiso
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  *        '400':
  *          description: Error de validacion
  */
@@ -192,6 +196,10 @@ router.get('/state/:stateId', [
  *                  description: No autenticado
  *              '403':
  *                  description: Sin permiso
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   writeLimiter,
@@ -246,6 +254,10 @@ router.post('/', [
  *                  description: No autenticado
  *              '403':
  *                  description: Sin permiso
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  *              '404':
  *                  description: Municipio no encontrado
  */
@@ -282,6 +294,10 @@ router.put('/:id', [
  *                  description: No autenticado
  *              '403':
  *                  description: Sin permiso
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  *              '404':
  *                  description: Municipio no encontrado
  */

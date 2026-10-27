@@ -53,6 +53,10 @@ const { ROLE } = require('../constants/roles');
  *         description: Parámetros inválidos (branch_id o date faltante/incorrecto)
  *       '403':
  *         description: Sin privilegio view_sales
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ForbiddenError'
  */
 router.get('/daily-movement', [
   readLimiter,
@@ -102,6 +106,10 @@ router.get('/daily-movement', [
  *         description: branch_id faltante o inválido
  *       '403':
  *         description: Sin privilegio view_sales
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ForbiddenError'
  */
 router.get('/accounts-receivable', [
   readLimiter,
@@ -173,6 +181,10 @@ router.get('/accounts-receivable', [
  *         description: Parámetros inválidos (branch_id, start_date o end_date faltante/incorrecto)
  *       '403':
  *         description: Sin privilegio view_inventory
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ForbiddenError'
  */
 router.get('/inventory', [
   readLimiter,

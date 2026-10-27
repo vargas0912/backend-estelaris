@@ -1,5 +1,5 @@
 const { matchedData } = require('express-validator');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleHttpError, handleServerError } = require('../utils/handleErorr');
 
 const {
   getAllCustomers,
@@ -29,7 +29,7 @@ const getRecords = async(req, res) => {
       pagination: { total, page: pageNum, limit: limitNum, totalPages: Math.ceil(total / limitNum) }
     });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
   }
 };
 

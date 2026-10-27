@@ -1,7 +1,5 @@
 const { getOneUserPrivilege } = require('../services/user-privileges');
-const { handleHttpError } = require('../utils/handleErorr');
-
-const { ERR_SECURITY } = require('../constants/errors');
+const { handleForbidden } = require('../utils/handleErorr');
 
 const { ROLE } = require('../constants/roles');
 
@@ -19,7 +17,7 @@ const checkRol = (roles, codename) => async(req, res, next) => {
     const checkValueRol = roles.some((rolSingle) => rolesByUser.includes(rolSingle));
 
     if (!checkValueRol) {
-      handleHttpError(res, ERR_SECURITY.NOT_PERMISION, 403);
+      handleForbidden(res, 'ERROR_NOT_PERMISSION');
       return;
     }
 
@@ -27,14 +25,14 @@ const checkRol = (roles, codename) => async(req, res, next) => {
       const privilege = await getOneUserPrivilege(user.id, codename);
 
       if (!privilege) {
-        handleHttpError(res, ERR_SECURITY.NOT_PRIVILEGE, 403);
+        handleForbidden(res, 'NOT_PRIVILEGE');
         return;
       }
     }
 
     next();
   } catch (error) {
-    handleHttpError(res, ERR_SECURITY.NOT_PERMISION, 403);
+    handleForbidden(res, 'ERROR_NOT_PERMISSION');
   }
 };
 

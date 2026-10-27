@@ -1,7 +1,6 @@
 const { matchedData } = require('express-validator');
 
-const { handleHttpError } = require('../utils/handleErorr');
-const { ERR_SECURITY } = require('../constants/errors');
+const { handleHttpError, handleForbidden, handleServerError } = require('../utils/handleErorr');
 const { users } = require('../models/index');
 
 const {
@@ -70,7 +69,7 @@ const getOnePrivilegeRecord = async(req, res) => {
 
     res.send({ privilege });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
   }
 };
 
@@ -80,7 +79,7 @@ const getPrivilegesByModuleRecords = async(req, res) => {
     const privileges = await getPrivilegeByModule(data.module);
     res.send({ privileges });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
   }
 };
 
@@ -89,7 +88,7 @@ const getAllPrivilegesRecords = async(req, res) => {
     const privileges = await getAllPrivileges();
     res.send({ privileges });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
   }
 };
 
@@ -102,7 +101,7 @@ const getAllUserPrivilegesRecords = async(req, res) => {
 
     res.send({ role, privileges });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
   }
 };
 
@@ -114,7 +113,7 @@ const getOneUserPrivilegeRecord = async(req, res) => {
 
     res.send({ privilege });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
   }
 };
 
@@ -139,11 +138,7 @@ const addUserPrivilegeRecord = async(req, res) => {
       targetUser.role === 'superadmin' &&
       performingUserRole !== 'superadmin'
     ) {
-      handleHttpError(
-        res,
-        ERR_SECURITY.FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES,
-        403
-      );
+      handleForbidden(res, 'FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES');
       return;
     }
 
@@ -183,11 +178,7 @@ const copyPrivilegesFromTemplateRecord = async(req, res) => {
       templateUser.role === 'superadmin' &&
       performingUserRole !== 'superadmin'
     ) {
-      handleHttpError(
-        res,
-        ERR_SECURITY.FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES,
-        403
-      );
+      handleForbidden(res, 'FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES');
       return;
     }
 
@@ -219,11 +210,7 @@ const deleteUserPrivilegeRecord = async(req, res) => {
       targetUser.role === 'superadmin' &&
       performingUserRole !== 'superadmin'
     ) {
-      handleHttpError(
-        res,
-        ERR_SECURITY.FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES,
-        403
-      );
+      handleForbidden(res, 'FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES');
       return;
     }
 

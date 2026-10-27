@@ -1,5 +1,5 @@
 const { employees } = require('../models/index');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleHttpError, handleForbidden } = require('../utils/handleErorr');
 
 /**
  * Middleware que verifica que el usuario autenticado tiene un empleado vinculado.
@@ -13,7 +13,7 @@ const employeeScope = async (req, res, next) => {
     const employee = await employees.findOne({ where: { user_id: req.user.id }, attributes: ['id', 'branch_id'] });
 
     if (!employee) {
-      return handleHttpError(res, 'EMPLOYEE_SCOPE_NO_EMPLOYEE', 403);
+      return handleForbidden(res, 'EMPLOYEE_SCOPE_NO_EMPLOYEE');
     }
 
     req.employee = employee;

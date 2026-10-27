@@ -101,6 +101,10 @@ router.get('/sale/:sale_id', [
  *                                $ref: '#/components/schemas/saleDeliveryLogs'
  *        '403':
  *          description: Sin privilege view_driver_deliveries
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  *        '404':
  *          description: No hay employee vinculado al usuario autenticado
  */
