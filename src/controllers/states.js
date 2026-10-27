@@ -1,6 +1,6 @@
 const { matchedData } = require('express-validator');
 const { states } = require('../models/index');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleServerError } = require('../utils/handleErorr');
 const { getAllStates } = require('../services/states');
 
 /**
@@ -13,7 +13,7 @@ const getRecords = async(req, res) => {
     const statesList = await getAllStates();
     res.send({ states: statesList });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
   }
 };
 
@@ -29,7 +29,7 @@ const getRecord = async(req, res) => {
     const state = await states.findByPk(id);
     res.send({ state });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORD -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORD', error);
   }
 };
 

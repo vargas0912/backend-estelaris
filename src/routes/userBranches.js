@@ -153,6 +153,10 @@ router.get('/:id', [
  *                  description: La asignación ya existe
  *              '403':
  *                  description: Sin permisos
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   writeLimiter,

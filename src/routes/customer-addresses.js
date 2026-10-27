@@ -155,6 +155,10 @@ router.get('/customer/:customerId', [
  *                  description: Dirección creada correctamente
  *              '403':
  *                  description: Error al crear la nueva dirección
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   writeLimiter,
@@ -194,6 +198,10 @@ router.post('/', [
  *                  description: Dirección modificada correctamente
  *              '403':
  *                  description: Error al actualizar la dirección
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.put('/:id', [
   writeLimiter,

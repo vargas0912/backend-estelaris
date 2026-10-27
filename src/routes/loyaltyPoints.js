@@ -66,6 +66,10 @@ const { ROLE } = require('../constants/roles');
  *          description: No autorizado
  *        '403':
  *          description: Sin privilegio view_loyalty_config
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  */
 router.get('/configs', [
   readLimiter,
@@ -139,6 +143,10 @@ router.get('/config', [
  *          description: No autorizado
  *        '403':
  *          description: Sin privilegio create_loyalty_config
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/config', [
   writeLimiter,
@@ -187,6 +195,10 @@ router.post('/config', [
  *          description: No autorizado
  *        '403':
  *          description: Sin privilegio edit_loyalty_config
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  */
 router.put('/config/:id', [
   writeLimiter,
@@ -229,6 +241,10 @@ router.put('/config/:id', [
  *          description: No autorizado
  *        '403':
  *          description: Sin privilegio view_loyalty_points
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  */
 router.get('/customer/:customerId', [
   readLimiter,
@@ -299,6 +315,10 @@ router.get('/customer/:customerId', [
  *          description: No autorizado
  *        '403':
  *          description: Sin privilegio view_loyalty_points
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  */
 router.get('/customer/:customerId/transactions', [
   readLimiter,
@@ -361,6 +381,10 @@ router.get('/customer/:customerId/transactions', [
  *          description: No autorizado
  *        '403':
  *          description: Sin privilegio adjust_loyalty_points
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/customer/:customerId/adjust', [
   writeLimiter,
@@ -395,6 +419,10 @@ router.post('/customer/:customerId/adjust', [
  *          description: No autorizado
  *        '403':
  *          description: Sin privilegio view_loyalty_config
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/expire', [
   writeLimiter,

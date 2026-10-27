@@ -1,13 +1,5 @@
 const ERR_SECURITY = Object.freeze({
-  NOT_PERMISION: 'ERROR_NOT_PERMISSION',
-  NOT_PRIVILEGE: 'NOT_PRIVILEGE',
-  GUARD_FAILURE: 'ERROR_DATE_GUARD',
-  DATE_CONFLICT_CODE: 'DATE_GUARD_CONFLICT',
-  DATE_CONFLICT: 'Se detectó un conflicto entre la fecha de tu equipo y la fecha del sistema. El administrador del sistema será notificado.',
-  FORBIDDEN_ROLE_HIERARCHY: 'No tiene permisos para modificar usuarios con ese rol',
-  FORBIDDEN_CANNOT_CREATE_SUPERADMIN: 'Solo un superadmin puede crear o elevar a superadmin',
-  FORBIDDEN_CANNOT_MODIFY_SUPERADMIN_PRIVILEGES: 'Solo un superadmin puede modificar privilegios de superadmin',
-  FORBIDDEN_CANNOT_RESET_SUPERADMIN: 'FORBIDDEN_CANNOT_RESET_SUPERADMIN'
+  GUARD_FAILURE: 'ERROR_DATE_GUARD'
 });
 
 const LOGIN = Object.freeze({
@@ -93,8 +85,7 @@ const USER_BRANCHES_VALIDATORS = Object.freeze({
 });
 
 const BRANCH_SCOPE = Object.freeze({
-  BRANCH_ID_REQUIRED: 'BRANCH_ID_REQUIRED',
-  BRANCH_ACCESS_DENIED: 'BRANCH_ACCESS_DENIED'
+  BRANCH_ID_REQUIRED: 'BRANCH_ID_REQUIRED'
 });
 
 module.exports = { ERR_SECURITY, LOGIN, USER, SESSION, REGISTER, CUSTOMERS_VALIDATORS, CUSTOMER_ADDRESSES_VALIDATORS, USER_BRANCHES_VALIDATORS, BRANCH_SCOPE };

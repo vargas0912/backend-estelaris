@@ -1,9 +1,9 @@
 const { matchedData } = require('express-validator');
 const { users } = require('../models/index');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleHttpError, handleForbidden, handleServerError } = require('../utils/handleErorr');
 const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 const { getUsers, getUser, changePassword, resetPassword } = require('../services/users');
-const { ERR_SECURITY, USER: USER_ERRORS } = require('../constants/errors');
+const { USER: USER_ERRORS } = require('../constants/errors');
 const { ROLE } = require('../constants/roles');
 const { pick, USER_UPDATABLE_FIELDS, USER_ADMIN_UPDATABLE_FIELDS } = require('../utils/fieldWhitelist');
 
@@ -47,7 +47,7 @@ const getRecords = async(req, res) => {
     const { users, total } = await getUsers(page, limit, search);
     res.send(buildPaginationResponse('users', users, total, page, limit));
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
   }
 };
 
@@ -64,7 +64,7 @@ const getRecord = async(req, res) => {
 
     res.send({ user });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORD -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORD', error);
   }
 };
 
@@ -84,7 +84,7 @@ const updateRecord = async(req, res) => {
     // Validar jerarquía de roles
     const performingUserRole = req.user.role;
     if (!validateRoleHierarchy(performingUserRole, userFound.role)) {
-      handleHttpError(res, ERR_SECURITY.FORBIDDEN_ROLE_HIERARCHY, 403);
+      handleForbidden(res, 'FORBIDDEN_ROLE_HIERARCHY');
       return;
     }
 
@@ -100,7 +100,7 @@ const updateRecord = async(req, res) => {
     if (cleanData.role && cleanData.role !== userFound.role) {
       // NO permitir que alguien eleve a superadmin (solo superadmin puede)
       if (cleanData.role === 'superadmin' && performingUserRole !== 'superadmin') {
-        handleHttpError(res, ERR_SECURITY.FORBIDDEN_CANNOT_CREATE_SUPERADMIN, 403);
+        handleForbidden(res, 'FORBIDDEN_CANNOT_CREATE_SUPERADMIN');
         return;
       }
     }
@@ -139,7 +139,7 @@ const deleteRecord = async(req, res) => {
     // Validar jerarquía de roles
     const performingUserRole = req.user.role;
     if (!validateRoleHierarchy(performingUserRole, targetUser.role)) {
-      handleHttpError(res, ERR_SECURITY.FORBIDDEN_ROLE_HIERARCHY, 403);
+      handleForbidden(res, 'FORBIDDEN_ROLE_HIERARCHY');
       return;
     }
 
@@ -195,14 +195,14 @@ const resetPasswordRecord = async(req, res) => {
     }
 
     if (targetUser.role === ROLE.SUPERADMIN) {
-      handleHttpError(res, ERR_SECURITY.FORBIDDEN_CANNOT_RESET_SUPERADMIN, 403);
+      handleForbidden(res, 'FORBIDDEN_CANNOT_RESET_SUPERADMIN');
       return;
     }
 
     const result = await resetPassword(req.user.id, id);
     res.send(result);
   } catch (error) {
-    handleHttpError(res, `ERROR_RESET_PASSWORD -> ${error}`);
+    handleServerError(res, 'ERROR_RESET_PASSWORD', error);
   }
 };
 

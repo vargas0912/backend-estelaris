@@ -1,6 +1,7 @@
 const request = require('supertest');
 const server = require('../../app');
 const { userprivileges, users, privileges } = require('../models/index');
+const { FORBIDDEN } = require('../constants/forbidden');
 
 const {
   superadminLogin,
@@ -97,7 +98,8 @@ describe('[PRIVILEGE-TEMPLATES] Test api //api/privilege-templates', () => {
     test('admin sin privilegio view_privilege_template. Expect 403', async() => {
       const response = await api.get('/api/privilege-templates').auth(adminNoPriv.token, { type: 'bearer' });
       expect(response.status).toBe(403);
-      expect(response.body.error).toBe('NOT_PRIVILEGE');
+      expect(response.body.code).toBe('NOT_PRIVILEGE');
+      expect(response.body.error).toBe(FORBIDDEN.NOT_PRIVILEGE);
     });
 
     test('admin con privilegio view puede listar. Expect 200', async() => {

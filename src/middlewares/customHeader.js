@@ -1,3 +1,5 @@
+const { handleForbidden } = require('../utils/handleErorr');
+
 /**
  * @param {Request} req Request param
  * @param {Response} res Response param
@@ -12,12 +14,10 @@ const customHeader = (req, res, next) => {
     if (apiKey === apiValue) {
       next();
     } else {
-      res.status(403);
-      res.send({ error: `APIKEY INCORRECT (${apiKey})` });
+      handleForbidden(res, 'APIKEY_INCORRECT');
     }
   } catch (error) {
-    res.status(403);
-    res.send({ error: 'CUSTOMHEADER FAIL' });
+    handleForbidden(res, 'CUSTOMHEADER_FAIL');
   }
 };
 

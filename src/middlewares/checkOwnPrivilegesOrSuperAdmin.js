@@ -1,6 +1,5 @@
 const { getOneUserPrivilege } = require('../services/user-privileges');
-const { handleHttpError } = require('../utils/handleErorr');
-const { ERR_SECURITY } = require('../constants/errors');
+const { handleForbidden } = require('../utils/handleErorr');
 const { ROLE } = require('../constants/roles');
 
 /**
@@ -36,7 +35,7 @@ const checkOwnPrivilegesOrSuperAdmin = (privilegeCodename = null) => async(req, 
       const privilege = await getOneUserPrivilege(user.id, privilegeCodename);
 
       if (!privilege) {
-        handleHttpError(res, ERR_SECURITY.NOT_PRIVILEGE, 403);
+        handleForbidden(res, 'NOT_PRIVILEGE');
         return;
       }
 
@@ -44,10 +43,10 @@ const checkOwnPrivilegesOrSuperAdmin = (privilegeCodename = null) => async(req, 
     }
 
     // Si llegamos aquí, no tiene permiso
-    handleHttpError(res, ERR_SECURITY.NOT_PERMISION, 403);
+    handleForbidden(res, 'ERROR_NOT_PERMISSION');
   } catch (error) {
     console.error('[checkOwnPrivilegesOrSuperAdmin] Error:', error);
-    handleHttpError(res, ERR_SECURITY.NOT_PERMISION, 403);
+    handleForbidden(res, 'ERROR_NOT_PERMISSION');
   }
 };
 

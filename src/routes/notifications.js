@@ -172,6 +172,10 @@ router.patch('/read-all', [writeLimiter, authMidleware, validateNoInput], readAl
  *          description: Error de validacion
  *        '403':
  *          description: Sin permisos
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  */
 
 router.get('/sent', [
@@ -218,6 +222,10 @@ router.get('/sent', [
  *          description: Error de validacion o sin destinatarios
  *        '403':
  *          description: Sin permisos
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  */
 
 router.post('/', [
@@ -324,6 +332,10 @@ router.patch('/:id/archive', [writeLimiter, authMidleware, validateIdParam], arc
  *          description: Error de validacion
  *        '403':
  *          description: Sin permisos
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  *        '404':
  *          description: Notificacion no encontrada
  *        '409':
@@ -374,6 +386,10 @@ router.patch('/:id/cancel', [
  *          description: Error de validacion
  *        '403':
  *          description: Sin permisos
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
  *        '404':
  *          description: Notificacion no encontrada
  *        '409':

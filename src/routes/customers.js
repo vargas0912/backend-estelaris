@@ -262,6 +262,10 @@ router.get('/municipality/:municipalityId', [
  *                  description: Cliente creado correctamente
  *              '403':
  *                  description: Error al crear el nuevo cliente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   writeLimiter,
@@ -342,6 +346,10 @@ router.post('/:id/activate-portal', [
  *                  description: Cliente modificado correctamente
  *              '403':
  *                  description: Error al actualizar el cliente
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.put('/:id', [
   writeLimiter,

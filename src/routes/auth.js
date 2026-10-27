@@ -38,6 +38,10 @@ const { ROLE } = require('../constants/roles');
  *                  description: No autenticado (cuando ya existe al menos un superadmin)
  *              '403':
  *                  description: Error al registrar nuevo usuario o sin permisos
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/registerSuperUser', [
   conditionalAuthForSuperAdmin,
@@ -69,6 +73,10 @@ router.post('/registerSuperUser', [
  *                  description: Usuario registrado correctamente
  *              '403':
  *                  description: Error al registrar nuevo usuario
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/register', [
   authMidleware,
@@ -101,6 +109,10 @@ registerCtrl
  *        description: Retorna el objeto del inicio de sesión'
  *      '403':
  *        description: Error al iniciar sesión '403'
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/login', validateLogin, loginCtrl);
 

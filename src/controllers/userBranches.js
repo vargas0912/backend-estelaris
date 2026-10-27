@@ -1,5 +1,5 @@
 const { matchedData } = require('express-validator');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleHttpError, handleServerError } = require('../utils/handleErorr');
 
 const {
   getBranchesByUser,
@@ -15,7 +15,7 @@ const getRecordsByUser = async(req, res) => {
     const assignments = await getBranchesByUser(userId);
     res.send({ assignments });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_USER_BRANCHES -> ${error}`);
+    handleServerError(res, 'ERROR_GET_USER_BRANCHES', error);
   }
 };
 
@@ -25,7 +25,7 @@ const getRecordsByBranch = async(req, res) => {
     const assignments = await getUsersByBranch(branchId);
     res.send({ assignments });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_BRANCH_USERS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_BRANCH_USERS', error);
   }
 };
 

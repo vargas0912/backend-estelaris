@@ -127,6 +127,10 @@ router.get('/:id', [
  *                        $ref: '#/components/schemas/positions'
  *              '403':
  *                  description: Error al crear el nuevo puesto
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   writeLimiter,
@@ -169,6 +173,10 @@ router.post('/', [
  *                        $ref: '#/components/schemas/positions'
  *              '403':
  *                  description: Error al actualizar el puesto
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.put('/:id', [
   writeLimiter,

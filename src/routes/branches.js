@@ -172,6 +172,10 @@ getRecord);
  *                  description: Sucursale creada correctamente
  *              '403':
  *                  description: Error al crear la nueva sucursal
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   writeLimiter,
@@ -210,6 +214,10 @@ router.post('/', [
  *                  description: Sucursal modificada correctamente
  *              '403':
  *                  description: Error al actualizar la sucursal
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.put('/:id', [
   writeLimiter,

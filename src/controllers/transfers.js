@@ -1,5 +1,5 @@
 const { matchedData } = require('express-validator');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleHttpError, handleForbidden, handleServerError } = require('../utils/handleErorr');
 const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const {
@@ -20,7 +20,7 @@ const getRecords = async (req, res) => {
     const { transfers, total } = await getAllTransfers(req.branchId, page, limit);
     res.send(buildPaginationResponse('transfers', transfers, total, page, limit));
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
   }
 };
 
@@ -35,7 +35,7 @@ const getRecord = async (req, res) => {
     }
 
     if (transfer.error === 'BRANCH_ACCESS_DENIED') {
-      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
+      handleForbidden(res, 'BRANCH_ACCESS_DENIED');
       return;
     }
 
@@ -52,7 +52,7 @@ const getRecordsByFromBranch = async (req, res) => {
     const result = await getTransfersByFromBranch(data.branch_id, req.branchId, page, limit);
 
     if (result && result.error === 'BRANCH_ACCESS_DENIED') {
-      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
+      handleForbidden(res, 'BRANCH_ACCESS_DENIED');
       return;
     }
 
@@ -69,7 +69,7 @@ const getRecordsByToBranch = async (req, res) => {
     const result = await getTransfersByToBranch(data.branch_id, req.branchId, page, limit);
 
     if (result && result.error === 'BRANCH_ACCESS_DENIED') {
-      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
+      handleForbidden(res, 'BRANCH_ACCESS_DENIED');
       return;
     }
 
@@ -87,7 +87,7 @@ const addRecord = async (req, res) => {
     const result = await createTransfer(data, userId, req.branchId);
 
     if (result && result.error === 'BRANCH_ACCESS_DENIED') {
-      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
+      handleForbidden(res, 'BRANCH_ACCESS_DENIED');
       return;
     }
 
@@ -113,7 +113,7 @@ const updateRecord = async (req, res) => {
     }
 
     if (result && result.error === 'BRANCH_ACCESS_DENIED') {
-      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
+      handleForbidden(res, 'BRANCH_ACCESS_DENIED');
       return;
     }
 
@@ -141,7 +141,7 @@ const dispatchRecord = async (req, res) => {
     }
 
     if (result && result.error === 'BRANCH_ACCESS_DENIED') {
-      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
+      handleForbidden(res, 'BRANCH_ACCESS_DENIED');
       return;
     }
 
@@ -174,7 +174,7 @@ const receiveRecord = async (req, res) => {
     }
 
     if (result && result.error === 'BRANCH_ACCESS_DENIED') {
-      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
+      handleForbidden(res, 'BRANCH_ACCESS_DENIED');
       return;
     }
 
@@ -212,7 +212,7 @@ const deleteRecord = async (req, res) => {
     }
 
     if (result && result.error === 'BRANCH_ACCESS_DENIED') {
-      handleHttpError(res, 'BRANCH_ACCESS_DENIED', 403);
+      handleForbidden(res, 'BRANCH_ACCESS_DENIED');
       return;
     }
 

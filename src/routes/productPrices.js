@@ -444,6 +444,10 @@ router.put('/recalculate/product/:product_id', [
  *                        $ref: '#/components/schemas/productPrices'
  *              '403':
  *                  description: Error al crear el precio
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   writeLimiter,
@@ -490,6 +494,10 @@ router.post('/', [
  *                        $ref: '#/components/schemas/productPrices'
  *              '403':
  *                  description: Error al actualizar el precio
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.put('/:id', [
   writeLimiter,

@@ -1,7 +1,6 @@
 const { saleDeliveries, employees } = require('../models/index');
 const { getOneUserPrivilege } = require('../services/user-privileges');
-const { handleHttpError } = require('../utils/handleErorr');
-const { ERR_SECURITY } = require('../constants/errors');
+const { handleForbidden } = require('../utils/handleErorr');
 const { ROLE } = require('../constants/roles');
 const { SALE_DELIVERY, DRIVER } = require('../constants/modules');
 
@@ -18,7 +17,7 @@ const checkDeliveryTransitionAccess = async (req, res, next) => {
     if (user.role === ROLE.SUPERADMIN) return next();
 
     if (user.role !== ROLE.USER) {
-      handleHttpError(res, ERR_SECURITY.NOT_PERMISION, 403);
+      handleForbidden(res, 'ERROR_NOT_PERMISSION');
       return;
     }
 
@@ -43,9 +42,9 @@ const checkDeliveryTransitionAccess = async (req, res, next) => {
       }
     }
 
-    handleHttpError(res, ERR_SECURITY.NOT_PRIVILEGE, 403);
+    handleForbidden(res, 'NOT_PRIVILEGE');
   } catch (error) {
-    handleHttpError(res, ERR_SECURITY.NOT_PERMISION, 403);
+    handleForbidden(res, 'ERROR_NOT_PERMISSION');
   }
 };
 

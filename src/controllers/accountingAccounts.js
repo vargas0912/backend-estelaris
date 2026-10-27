@@ -1,5 +1,5 @@
 const { matchedData } = require('express-validator');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleHttpError, handleServerError } = require('../utils/handleErorr');
 const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const { getAllAccounts, getAccountsTree, getAccount, addAccount, updateAccount, deleteAccount } = require('../services/accountingAccounts');
@@ -12,7 +12,7 @@ const getRecords = async (req, res) => {
     const { accounts, total } = await getAllAccounts(page, limit, search);
     res.send(buildPaginationResponse('accounts', accounts, total, page, limit));
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
   }
 };
 
@@ -21,7 +21,7 @@ const getTree = async (req, res) => {
     const tree = await getAccountsTree();
     res.send({ tree });
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_TREE -> ${error}`);
+    handleServerError(res, 'ERROR_GET_TREE', error);
   }
 };
 

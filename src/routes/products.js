@@ -190,6 +190,10 @@ router.get('/:id', [
  *                        $ref: '#/components/schemas/products'
  *              '403':
  *                  description: Error al crear el nuevo producto
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   writeLimiter,
@@ -273,6 +277,10 @@ router.post('/', [
  *                        $ref: '#/components/schemas/products'
  *              '403':
  *                  description: Error al actualizar el producto
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.put('/:id', [
   writeLimiter,

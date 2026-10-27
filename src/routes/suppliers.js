@@ -181,6 +181,10 @@ router.get('/:id', [
  *                        $ref: '#/components/schemas/suppliers'
  *              '403':
  *                  description: Error al crear el nuevo proveedor
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   writeLimiter,
@@ -256,6 +260,10 @@ router.post('/', [
  *                        $ref: '#/components/schemas/suppliers'
  *              '403':
  *                  description: Error al actualizar el proveedor
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.put('/:id', [
   writeLimiter,

@@ -1,5 +1,5 @@
 const { userBranches } = require('../models/index');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleHttpError, handleForbidden } = require('../utils/handleErorr');
 const { ROLE } = require('../constants/roles');
 const { BRANCH_SCOPE } = require('../constants/errors');
 
@@ -25,7 +25,7 @@ const branchScope = async(req, res, next) => {
     });
 
     if (!assignment) {
-      return handleHttpError(res, BRANCH_SCOPE.BRANCH_ACCESS_DENIED, 403);
+      return handleForbidden(res, 'BRANCH_ACCESS_DENIED');
     }
 
     req.branchId = branchId;

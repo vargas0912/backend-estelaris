@@ -160,6 +160,10 @@ router.get('/module/:module', [
  *                  description: Cliente registrado correctamente
  *              '403':
  *                  description: "Error de validacion"
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   authMidleware,
@@ -198,6 +202,10 @@ router.post('/', [
  *                  description: Actualización exitosa
  *              '403':
  *                  description: "Error de validacion del usuario"
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.put('/:id', [
   authMidleware,
@@ -236,6 +244,10 @@ router.put('/:id', [
  *                  description: Actualización exitosa
  *              '403':
  *                  description: "Error de validacion del usuario"
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.delete('/:id', [
   authMidleware,
@@ -362,6 +374,10 @@ router.get('/user/:userid/code/:codename', [
  *                            type: number
  *              '403':
  *                  description: Sin permisos para copiar privilegios de superadmin
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  *              '404':
  *                  description: Usuario destino o plantilla no encontrado
  */
@@ -395,6 +411,10 @@ router.post('/user/from-template', [
  *                  description: relacion registrada correctamente
  *              '403':
  *                  description: "Error de validacion"
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/user/', [
   authMidleware,
@@ -433,6 +453,10 @@ router.post('/user/', [
  *                  description: Actualización exitosa
  *              '403':
  *                  description: "Error de validacion del usuario"
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.delete('/user/:userid/privilege/:pid', [
   authMidleware,

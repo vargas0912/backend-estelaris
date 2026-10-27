@@ -1,6 +1,7 @@
 const request = require('supertest');
 const server = require('../../app');
 const { notifications, privileges, users, userprivileges } = require('../models/index');
+const { FORBIDDEN } = require('../constants/forbidden');
 
 const {
   superadminLogin,
@@ -97,7 +98,8 @@ describe('[NOTIFICATIONS] Test api /api/notifications', () => {
     test('admin sin privilegio create_notification. Expect 403 NOT_PRIVILEGE', async() => {
       const response = await post(adminNoPriv, '/api/notifications', { title: 'x', body: 'x', user_ids: [userB.id] });
       expect(response.status).toBe(403);
-      expect(response.body.error).toBe('NOT_PRIVILEGE');
+      expect(response.body.code).toBe('NOT_PRIVILEGE');
+      expect(response.body.error).toBe(FORBIDDEN.NOT_PRIVILEGE);
     });
 
     test('admin sin privilegio no ve enviadas, edita ni cancela. Expect 403', async() => {

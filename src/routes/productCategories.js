@@ -129,6 +129,10 @@ router.get('/:id', [
  *                        $ref: '#/components/schemas/productCategories'
  *              '403':
  *                  description: Error al crear la nueva categoría
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.post('/', [
   writeLimiter,
@@ -173,6 +177,10 @@ router.post('/', [
  *                        $ref: '#/components/schemas/productCategories'
  *              '403':
  *                  description: Error al actualizar la categoría
+ *                  content:
+ *                    application/json:
+ *                      schema:
+ *                        $ref: '#/components/schemas/ForbiddenError'
  */
 router.put('/:id', [
   writeLimiter,

@@ -1,5 +1,5 @@
 const { matchedData } = require('express-validator');
-const { handleHttpError } = require('../utils/handleErorr');
+const { handleHttpError, handleServerError } = require('../utils/handleErorr');
 const { getPaginationParams, buildPaginationResponse } = require('../utils/pagination');
 
 const { getAllBranches, getBranch, addNewBranch, updateBranch, deleteBranch, getPublicBranches } = require('../services/branches');
@@ -18,7 +18,7 @@ const getRecords = async(req, res) => {
 
     res.send(buildPaginationResponse('branches', branches, total, page, limit));
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_RECORDS -> ${error}`);
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
   }
 };
 
@@ -98,7 +98,7 @@ const getPublicRecords = async (req, res) => {
     const { branches, total } = await getPublicBranches(page, limit, search);
     res.send(buildPaginationResponse('branches', branches, total, page, limit));
   } catch (error) {
-    handleHttpError(res, `ERROR_GET_PUBLIC_BRANCHES -> ${error}`);
+    handleServerError(res, 'ERROR_GET_PUBLIC_BRANCHES', error);
   }
 };
 
