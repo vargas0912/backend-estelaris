@@ -21,6 +21,16 @@ describe('handleForbidden', () => {
 });
 
 describe('handleForbidden con code no registrado', () => {
+  test.each([undefined, null])('code %p responde 403 con mensaje de permiso', (code) => {
+    const logSpy = jest.spyOn(logger, 'error').mockImplementation(() => {});
+    const res = mockRes();
+    handleForbidden(res, code);
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.send).toHaveBeenCalledWith({ error: FORBIDDEN.ERROR_NOT_PERMISSION, code });
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
   test('responde 403 con mensaje de permiso y registra el error', () => {
     const logSpy = jest.spyOn(logger, 'error').mockImplementation(() => {});
     const res = mockRes();
