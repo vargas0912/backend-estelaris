@@ -278,7 +278,17 @@ router.get('/:id', [
  *        '400':
  *          description: Error de validación (incluye ítem sin purch_id o lote repetido)
  *        '403':
- *          description: transfer_date distinta de hoy sin el privilegio set_custom_transfer_date
+ *          description: transfer_date distinta de hoy sin el privilegio set_custom_transfer_date. Si es por la fecha, responde el mensaje de conflicto de fechas y notifica a los superadmins y al usuario
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/DateGuardError'
+ *        '500':
+ *          description: Falla al validar la fecha (ERROR_DATE_GUARD)
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/DateGuardError'
  */
 router.post('/', [
   writeLimiter,
@@ -313,7 +323,17 @@ router.post('/', [
  *        '409':
  *          description: La transferencia no puede modificarse en su estado actual
  *        '403':
- *          description: transfer_date distinta de hoy sin el privilegio set_custom_transfer_date
+ *          description: transfer_date distinta de hoy sin el privilegio set_custom_transfer_date. Si es por la fecha, responde el mensaje de conflicto de fechas y notifica a los superadmins y al usuario
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/DateGuardError'
+ *        '500':
+ *          description: Falla al validar la fecha (ERROR_DATE_GUARD)
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/DateGuardError'
  */
 router.put('/:id', [
   writeLimiter,

@@ -212,7 +212,17 @@ router.get('/:id', [
  *              '400':
  *                  description: Error al registrar el gasto
  *              '403':
- *                  description: trans_date distinta de hoy sin el privilegio set_custom_expense_date
+ *                description: trans_date distinta de hoy sin el privilegio set_custom_expense_date. Si es por la fecha, responde el mensaje de conflicto de fechas y notifica a los superadmins y al usuario
+ *                content:
+ *                  application/json:
+ *                    schema:
+ *                      $ref: '#/components/schemas/DateGuardError'
+ *              '500':
+ *                description: Falla al validar la fecha (ERROR_DATE_GUARD)
+ *                content:
+ *                  application/json:
+ *                    schema:
+ *                      $ref: '#/components/schemas/DateGuardError'
  */
 router.post('/', [
   writeLimiter,
@@ -265,7 +275,17 @@ router.post('/', [
  *              '400':
  *                  description: Error al actualizar el gasto
  *              '403':
- *                  description: trans_date distinta de hoy sin el privilegio set_custom_expense_date
+ *                description: trans_date distinta de hoy sin el privilegio set_custom_expense_date. Si es por la fecha, responde el mensaje de conflicto de fechas y notifica a los superadmins y al usuario
+ *                content:
+ *                  application/json:
+ *                    schema:
+ *                      $ref: '#/components/schemas/DateGuardError'
+ *              '500':
+ *                description: Falla al validar la fecha (ERROR_DATE_GUARD)
+ *                content:
+ *                  application/json:
+ *                    schema:
+ *                      $ref: '#/components/schemas/DateGuardError'
  */
 router.put('/:id', [
   writeLimiter,

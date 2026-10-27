@@ -214,7 +214,17 @@ router.get('/:id', [
  *        '422':
  *          description: La venta no es cobrable o el monto excede el saldo
  *        '403':
- *          description: payment_date distinta de hoy sin el privilegio set_custom_payment_date
+ *          description: payment_date distinta de hoy sin el privilegio set_custom_payment_date. Si es por la fecha, responde el mensaje de conflicto de fechas y notifica a los superadmins y al usuario
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/DateGuardError'
+ *        '500':
+ *          description: Falla al validar la fecha (ERROR_DATE_GUARD)
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/DateGuardError'
  */
 router.post('/', [
   writeLimiter,
