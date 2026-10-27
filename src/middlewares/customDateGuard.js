@@ -1,10 +1,9 @@
 const { getOneUserPrivilege } = require('../services/user-privileges');
 const { getAcceptedDaysInSystemTimezone, getTodayInSystemTimezone } = require('../utils/timezone');
 const { notifyDateConflict } = require('../services/notifications');
-const { handleHttpError, handleForbidden } = require('../utils/handleErorr');
+const { handleForbidden, handleServerError } = require('../utils/handleErorr');
 const logger = require('../utils/logger');
 
-const { ERR_SECURITY } = require('../constants/errors');
 const { ROLE } = require('../constants/roles');
 
 const toDay = (value) => (value instanceof Date ? value.toISOString() : String(value)).slice(0, 10);
@@ -56,7 +55,7 @@ const customDateGuard = ({ field, privilege, currentDate }) => async(req, res, n
     handleForbidden(res, 'DATE_GUARD_CONFLICT');
   } catch (error) {
     logger.error(`[customDateGuard] ${field}: ${error.message}`);
-    handleHttpError(res, ERR_SECURITY.GUARD_FAILURE, 500);
+    handleServerError(res, 'ERROR_DATE_GUARD', error);
   }
 };
 

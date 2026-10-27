@@ -126,6 +126,7 @@ describe('[customDateGuard]', () => {
     const { res, next } = await run(ROLE.USER, '2020-01-01', { currentDate });
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith(expect.objectContaining({ code: 'ERROR_DATE_GUARD' }));
   });
 
   test('update que cambia la fecha almacenada sin privilegio recibe 403', async() => {

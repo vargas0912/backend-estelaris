@@ -600,7 +600,7 @@ router.put('/:id', [
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/components/schemas/DateGuardError'
+ *                $ref: '#/components/schemas/ServerError'
  *        '404':
  *          description: Venta no encontrada
  */

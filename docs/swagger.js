@@ -59,11 +59,16 @@ const swaggerDefinition = {
           }
         }
       },
-      DateGuardError: {
+      ServerError: {
         type: 'object',
-        description: 'Cuerpo del 500 del guard de fecha personalizada (falla de validación, infraestructura). El 403 del guard usa ForbiddenError con code DATE_GUARD_CONFLICT.',
+        required: ['error', 'code'],
+        description: 'Cuerpo estándar de un 500. `error` es un mensaje genérico (el detalle técnico solo se registra en logs); `code` identifica la operación que falló, por ejemplo ERROR_GET_RECORDS o ERROR_DATE_GUARD (falla del guard de fecha personalizada).',
         properties: {
           error: {
+            type: 'string',
+            example: 'Ocurrió un error inesperado. Intenta de nuevo más tarde.'
+          },
+          code: {
             type: 'string',
             example: 'ERROR_DATE_GUARD'
           }

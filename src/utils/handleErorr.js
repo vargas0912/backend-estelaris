@@ -13,8 +13,14 @@ const handleHttpError = (res, message, code = 403) => {
  * @param {string} code Key of the FORBIDDEN catalog
  */
 const handleForbidden = (res, code) => {
+  let message = FORBIDDEN[code];
+  if (!message) {
+    // Unregistered code: fix the call site, but never answer a 403 without `error`.
+    logger.error(`handleForbidden: unknown code "${code}"`);
+    message = FORBIDDEN.ERROR_NOT_PERMISSION;
+  }
   res.status(403);
-  res.send({ error: FORBIDDEN[code], code });
+  res.send({ error: message, code });
 };
 
 /**

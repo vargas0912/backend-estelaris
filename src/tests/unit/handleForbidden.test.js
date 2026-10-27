@@ -20,6 +20,18 @@ describe('handleForbidden', () => {
   });
 });
 
+describe('handleForbidden con code no registrado', () => {
+  test('responde 403 con mensaje de permiso y registra el error', () => {
+    const logSpy = jest.spyOn(logger, 'error').mockImplementation(() => {});
+    const res = mockRes();
+    handleForbidden(res, 'TYPO_CODE');
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.send).toHaveBeenCalledWith({ error: FORBIDDEN.ERROR_NOT_PERMISSION, code: 'TYPO_CODE' });
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('TYPO_CODE'));
+    logSpy.mockRestore();
+  });
+});
+
 describe('handleServerError', () => {
   test('responde 500 con mensaje genérico y code, sin filtrar el detalle técnico', () => {
     const logSpy = jest.spyOn(logger, 'error').mockImplementation(() => {});

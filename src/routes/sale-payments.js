@@ -224,7 +224,7 @@ router.get('/:id', [
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/components/schemas/DateGuardError'
+ *                $ref: '#/components/schemas/ServerError'
  */
 router.post('/', [
   writeLimiter,
