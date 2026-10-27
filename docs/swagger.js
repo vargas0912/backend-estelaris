@@ -33,11 +33,16 @@ const swaggerDefinition = {
     schemas: {
       DateGuardError: {
         type: 'object',
-        description: 'Error del guard de fecha personalizada. 403 con error "Se detectó un conflicto entre la fecha de tu equipo y la fecha del sistema. El administrador del sistema será notificado." cuando se envía una fecha distinta a la del sistema (zona horaria de system_settings, ±5 min en la medianoche) sin el privilegio correspondiente; en ese caso se notifica a los superadmins y al usuario. 500 con error "ERROR_DATE_GUARD" si falla la validación (infraestructura).',
+        description: 'Error del guard de fecha personalizada. 403 con error "Se detectó un conflicto entre la fecha de tu equipo y la fecha del sistema. El administrador del sistema será notificado." cuando se envía una fecha distinta a la del sistema (zona horaria de system_settings, ±5 min en la medianoche) sin el privilegio correspondiente (el body incluye code "DATE_GUARD_CONFLICT"); en ese caso se notifica a los superadmins y al usuario. 500 con error "ERROR_DATE_GUARD" si falla la validación (infraestructura).',
         properties: {
           error: {
             type: 'string',
             example: 'Se detectó un conflicto entre la fecha de tu equipo y la fecha del sistema. El administrador del sistema será notificado.'
+          },
+          code: {
+            type: 'string',
+            description: 'Código estable presente solo en el 403 por conflicto de fecha; usar en lugar de comparar el texto de error.',
+            example: 'DATE_GUARD_CONFLICT'
           }
         }
       },

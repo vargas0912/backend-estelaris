@@ -53,7 +53,7 @@ const customDateGuard = ({ field, privilege, currentDate }) => async(req, res, n
 
     logger.warn(`[customDateGuard] ${field}: user ${user.id} sent ${toDay(date)} without privilege ${privilege}`);
     await notifyConflict(user, field, toDay(date));
-    handleHttpError(res, ERR_SECURITY.DATE_CONFLICT, 403);
+    handleHttpError(res, ERR_SECURITY.DATE_CONFLICT, 403, { code: ERR_SECURITY.DATE_CONFLICT_CODE });
   } catch (error) {
     logger.error(`[customDateGuard] ${field}: ${error.message}`);
     handleHttpError(res, ERR_SECURITY.GUARD_FAILURE, 500);
