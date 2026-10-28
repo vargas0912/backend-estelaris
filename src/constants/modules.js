@@ -378,6 +378,14 @@ const SYSTEM_SETTINGS = Object.freeze({
   NAME_UPDATE: 'Modificar configuración del sistema'
 });
 
+const TICKET_CONFIGS = Object.freeze({
+  MODULE_NAME: 'ticketConfigs',
+  VIEW: 'view_ticket_configs',
+  NAME_VIEW: 'Ver configuración de tickets',
+  UPDATE: 'update_ticket_config',
+  NAME_UPDATE: 'Modificar configuración de tickets'
+});
+
 const DASHBOARD = Object.freeze({
   MODULE_NAME: 'dashboard',
   VIEW: 'view_dashboard',
@@ -597,6 +605,7 @@ module.exports = {
   DRIVER,
   COMPANY_INFO,
   SYSTEM_SETTINGS,
+  TICKET_CONFIGS,
   DASHBOARD,
   EXPENSE_TYPE,
   EXPENSE,
