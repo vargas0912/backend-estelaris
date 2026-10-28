@@ -1640,6 +1640,26 @@ const swaggerDefinition = {
           updated_at: { type: 'string', format: 'date-time' }
         }
       },
+      ticketConfigs: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer', nullable: true, description: 'Null cuando se devuelven los valores por defecto del código' },
+          branch_id: { type: 'integer', nullable: true, description: 'Null = configuración global' },
+          type: { type: 'string', enum: ['sale', 'payment'] },
+          title: { type: 'string', maxLength: 100, nullable: true },
+          header_text: { type: 'string', maxLength: 255, nullable: true },
+          footer_text: { type: 'string', maxLength: 255, nullable: true, description: 'Leyenda final' },
+          show_logo: { type: 'boolean' },
+          show_iva: { type: 'boolean' },
+          show_barcode: { type: 'boolean' },
+          show_folio: { type: 'boolean' },
+          show_cashier: { type: 'boolean' },
+          show_branch_address: { type: 'boolean' },
+          paper_width: { type: 'string', enum: ['58mm', '80mm'] },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
+      },
       storage: {
         type: 'object',
         properties: {
