@@ -200,6 +200,20 @@ describe('[TICKET_CONFIGS] Test api ticket-configs /api/ticket-configs', () => {
   // PUT /api/ticket-configs/:type
   // ============================================
   describe('PUT /api/ticket-configs/:type', () => {
+    // Los tests modifican la fila global; se restaura para no contaminar otras suites ni corridas
+    afterAll(async () => {
+      await ticketConfigs.update(
+        {
+          title: 'COMPROBANTE DE ABONO',
+          footer_text: 'Conserve este comprobante',
+          show_logo: true,
+          show_barcode: true,
+          paper_width: '80mm'
+        },
+        { where: { type: 'payment', branch_id: null } }
+      );
+    });
+
     test('9. Actualizar campos. Expect 200 y resolve refleja el cambio', async () => {
       const response = await api
         .put('/api/ticket-configs/payment')
@@ -225,6 +239,37 @@ describe('[TICKET_CONFIGS] Test api ticket-configs /api/ticket-configs', () => {
 
       expect(resolved.body.config.footer_text).toBe('Gracias por su pago');
       expect(resolved.body.config.paper_width).toBe('58mm');
+    });
+
+    test('9b. null limpia un texto, solo o junto a otros campos. Expect 200 con null', async () => {
+      await api
+        .put('/api/ticket-configs/payment')
+        .auth(superadminToken, { type: 'bearer' })
+        .send({ footer_text: 'Texto temporal' })
+        .expect(200);
+
+      const alone = await api
+        .put('/api/ticket-configs/payment')
+        .auth(superadminToken, { type: 'bearer' })
+        .send({ footer_text: null })
+        .expect(200);
+
+      expect(alone.body.config.footer_text).toBeNull();
+
+      await api
+        .put('/api/ticket-configs/payment')
+        .auth(superadminToken, { type: 'bearer' })
+        .send({ footer_text: 'Texto temporal' })
+        .expect(200);
+
+      const withOther = await api
+        .put('/api/ticket-configs/payment')
+        .auth(superadminToken, { type: 'bearer' })
+        .send({ footer_text: null, show_logo: false })
+        .expect(200);
+
+      expect(withOther.body.config.footer_text).toBeNull();
+      expect(withOther.body.config.show_logo).toBe(false);
     });
 
     test('10. Body sin campos editables. Expect 400', async () => {

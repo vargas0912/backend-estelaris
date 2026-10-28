@@ -24,7 +24,9 @@ const resolveRecord = async (req, res) => {
 
 const updateRecord = async (req, res) => {
   try {
-    const { type, ...fields } = matchedData(req);
+    // includeOptionals conserva los null enviados (limpiar un texto); se filtra a lo que realmente llegó en el body
+    const { type, ...matched } = matchedData(req, { includeOptionals: true });
+    const fields = Object.fromEntries(Object.entries(matched).filter(([key]) => key in req.body));
 
     if (Object.keys(fields).length === 0) {
       handleHttpError(res, TICKET_CONFIG_VALIDATORS.NOTHING_TO_UPDATE, 400);
