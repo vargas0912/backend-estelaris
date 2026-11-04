@@ -1720,6 +1720,51 @@ const swaggerDefinition = {
           ventas_canceladas: { type: 'integer', description: 'Cantidad de ventas con status Cancelado' }
         }
       },
+      dashboardAgingLots: {
+        type: 'object',
+        description: 'Antigüedad de inventario por lote',
+        properties: {
+          buckets: {
+            type: 'array',
+            description: 'Resumen por rango de antigüedad (incluye todos los lotes con existencia)',
+            items: {
+              type: 'object',
+              properties: {
+                label: { type: 'string', example: '31-60' },
+                min_days: { type: 'integer' },
+                max_days: { type: 'integer', nullable: true, description: 'null en el rango abierto (91+)' },
+                lots: { type: 'integer', description: 'Cantidad de lotes en el rango' },
+                quantity: { type: 'number', description: 'Unidades en existencia' },
+                stock_value: { type: 'number', format: 'decimal', description: 'Capital inmovilizado (existencia × costo)' }
+              }
+            }
+          },
+          lots: {
+            type: 'array',
+            description: 'Detalle de lotes ordenado por stock_value DESC',
+            items: {
+              type: 'object',
+              properties: {
+                branch_id: { type: 'integer' },
+                branch_name: { type: 'string' },
+                product_id: { type: 'string' },
+                product_name: { type: 'string' },
+                purch_id: { type: 'integer' },
+                bar_code: { type: 'string' },
+                quantity: { type: 'number', description: 'Existencia actual del lote en la sucursal' },
+                received_date: { type: 'string', format: 'date' },
+                days_in_stock: { type: 'integer' },
+                unit_cost: { type: 'number', format: 'decimal' },
+                stock_value: { type: 'number', format: 'decimal' },
+                units_sold: { type: 'number', description: 'Unidades vendidas del lote en la sucursal (sin canceladas)' },
+                sell_through_pct: { type: 'number', description: 'vendido / (vendido + existencia) × 100' },
+                last_sale_date: { type: 'string', format: 'date', nullable: true },
+                days_since_last_sale: { type: 'integer', nullable: true, description: 'null si el lote nunca se ha vendido' }
+              }
+            }
+          }
+        }
+      },
       dashboardRecentSale: {
         type: 'object',
         description: 'Venta reciente con datos clave para KPIs',
