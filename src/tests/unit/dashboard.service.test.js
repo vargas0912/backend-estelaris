@@ -4,7 +4,8 @@ const {
   getDashboardTrends,
   getTopProducts,
   getExpensesByMonth,
-  getExpensesByBranch
+  getExpensesByBranch,
+  getAgingLots
 } = require('../../services/dashboard');
 
 jest.mock('../../models', () => ({
@@ -264,6 +265,107 @@ describe('Dashboard Service - Unit Tests', () => {
       sequelize.query.mockRejectedValue(new Error('Query failed'));
 
       await expect(getExpensesByBranch()).rejects.toThrow('Query failed');
+    });
+  });
+  describe('getAgingLots', () => {
+    const row = (overrides) => ({
+      branch_id: 1,
+      branch_name: 'Centro',
+      product_id: 'P1',
+      product_name: 'Product 1',
+      purch_id: 10,
+      bar_code: 'P1-10',
+      quantity: '5.000',
+      received_date: '2026-01-01',
+      days_in_stock: 100,
+      unit_cost: '20.0000',
+      stock_value: '100.00',
+      units_sold: '0',
+      last_sale_date: null,
+      days_since_last_sale: null,
+      ...overrides
+    });
+
+    test('debe agrupar en rangos por defecto 0-30, 31-60, 61-90 y 91+', async() => {
+      sequelize.query.mockResolvedValue([[
+        row({ purch_id: 1, days_in_stock: 10 }),
+        row({ purch_id: 2, days_in_stock: 30 }),
+        row({ purch_id: 3, days_in_stock: 31 }),
+        row({ purch_id: 4, days_in_stock: 91 }),
+        row({ purch_id: 5, days_in_stock: 400 })
+      ]]);
+
+      const result = await getAgingLots();
+
+      expect(result.buckets.map(b => b.label)).toEqual(['0-30', '31-60', '61-90', '91+']);
+      expect(result.buckets.map(b => b.lots)).toEqual([2, 1, 0, 2]);
+      expect(result.buckets[3]).toMatchObject({ min_days: 91, max_days: null, quantity: 10, stock_value: 200 });
+    });
+
+    test('debe respetar rangos personalizados', async() => {
+      sequelize.query.mockResolvedValue([[row({ days_in_stock: 45 })]]);
+
+      const result = await getAgingLots({ buckets: [15, 45] });
+
+      expect(result.buckets.map(b => b.label)).toEqual(['0-15', '16-45', '46+']);
+      expect(result.buckets.map(b => b.lots)).toEqual([0, 1, 0]);
+    });
+
+    test('el detalle solo incluye el rango mas antiguo por defecto, ordenado por capital inmovilizado', async() => {
+      sequelize.query.mockResolvedValue([[
+        row({ purch_id: 1, days_in_stock: 10, stock_value: '999.00' }),
+        row({ purch_id: 2, days_in_stock: 120, stock_value: '50.00' }),
+        row({ purch_id: 3, days_in_stock: 200, stock_value: '500.00' })
+      ]]);
+
+      const result = await getAgingLots();
+
+      expect(result.lots.map(l => l.purch_id)).toEqual([3, 2]);
+    });
+
+    test('min_days y limit deben acotar el detalle', async() => {
+      sequelize.query.mockResolvedValue([[
+        row({ purch_id: 1, days_in_stock: 10, stock_value: '300.00' }),
+        row({ purch_id: 2, days_in_stock: 50, stock_value: '200.00' }),
+        row({ purch_id: 3, days_in_stock: 70, stock_value: '100.00' })
+      ]]);
+
+      const result = await getAgingLots({ minDays: 0, limit: 2 });
+
+      expect(result.lots.map(l => l.purch_id)).toEqual([1, 2]);
+    });
+
+    test('debe calcular sell-through y dejar days_since_last_sale en null si nunca se vendio', async() => {
+      sequelize.query.mockResolvedValue([[
+        row({ purch_id: 1, quantity: '6.000', units_sold: '2' }),
+        row({ purch_id: 2, quantity: '4.000', units_sold: '0' })
+      ]]);
+
+      const result = await getAgingLots();
+      const sold = result.lots.find(l => l.purch_id === 1);
+      const unsold = result.lots.find(l => l.purch_id === 2);
+
+      expect(sold.sell_through_pct).toBe(25);
+      expect(unsold.sell_through_pct).toBe(0);
+      expect(unsold.last_sale_date).toBeNull();
+      expect(unsold.days_since_last_sale).toBeNull();
+    });
+
+    test('debe filtrar por sucursal solo cuando se indica branchId', async() => {
+      sequelize.query.mockResolvedValue([[]]);
+
+      await getAgingLots();
+      expect(sequelize.query.mock.calls[0][0]).not.toContain('ps.branch_id = :branchId');
+
+      await getAgingLots({ branchId: 3 });
+      expect(sequelize.query.mock.calls[1][0]).toContain('ps.branch_id = :branchId');
+      expect(sequelize.query.mock.calls[1][1].replacements.branchId).toBe(3);
+    });
+
+    test('debe propagar error de BD', async() => {
+      sequelize.query.mockRejectedValue(new Error('Query failed'));
+
+      await expect(getAgingLots()).rejects.toThrow('Query failed');
     });
   });
 });

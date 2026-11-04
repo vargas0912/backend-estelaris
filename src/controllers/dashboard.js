@@ -1,6 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleServerError } = require('../utils/handleErorr');
-const { getDashboardKpis, getDashboardTrends, getTopProducts, getExpensesByMonth, getExpensesByBranch, getRecentSales, getSalesByBranch } = require('../services/dashboard');
+const { getDashboardKpis, getDashboardTrends, getTopProducts, getExpensesByMonth, getExpensesByBranch, getRecentSales, getSalesByBranch, getAgingLots } = require('../services/dashboard');
 
 const getKpis = async (req, res) => {
   try {
@@ -72,4 +72,14 @@ const getSalesByBranchHandler = async (req, res) => {
   }
 };
 
-module.exports = { getKpis, getTrends, getTopProductsHandler, getExpensesByMonthHandler, getExpensesByBranchHandler, getRecentSalesHandler, getSalesByBranchHandler };
+const getAgingLotsHandler = async (req, res) => {
+  try {
+    const { buckets, min_days: minDays, limit, branch_id: branchId } = matchedData(req);
+    const agingLots = await getAgingLots({ buckets, minDays, limit, branchId });
+    res.send({ agingLots });
+  } catch (error) {
+    handleServerError(res, 'ERROR_GET_AGING_LOTS', error);
+  }
+};
+
+module.exports = { getKpis, getTrends, getTopProductsHandler, getExpensesByMonthHandler, getExpensesByBranchHandler, getRecentSalesHandler, getSalesByBranchHandler, getAgingLotsHandler };

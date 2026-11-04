@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const { validateKpis, validateTrends, validateTopProducts, validateExpensesByMonth, validateRecentSales, validateSalesByBranch } = require('../validators/dashboard');
+const { validateKpis, validateTrends, validateTopProducts, validateExpensesByMonth, validateRecentSales, validateSalesByBranch, validateAgingLots } = require('../validators/dashboard');
 const authMiddleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 const { readLimiter } = require('../middlewares/rateLimiters');
-const { getKpis, getTrends, getTopProductsHandler, getExpensesByMonthHandler, getExpensesByBranchHandler, getRecentSalesHandler, getSalesByBranchHandler } = require('../controllers/dashboard');
+const { getKpis, getTrends, getTopProductsHandler, getExpensesByMonthHandler, getExpensesByBranchHandler, getRecentSalesHandler, getSalesByBranchHandler, getAgingLotsHandler } = require('../controllers/dashboard');
 const { DASHBOARD } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
 
@@ -347,6 +347,78 @@ router.get('/sales-by-branch',
   validateSalesByBranch,
   checkRol([ROLE.ADMIN], DASHBOARD.VIEW),
   getSalesByBranchHandler
+);
+
+/**
+ * @openapi
+ * /dashboard/aging-lots:
+ *   get:
+ *     tags:
+ *       - dashboard
+ *     summary: Antigüedad de inventario por lote
+ *     description: |
+ *       Retorna el inventario con existencia agrupado por rangos de antigüedad
+ *       (días desde la recepción de la compra del lote) y el detalle de los lotes
+ *       más antiguos ordenados por capital inmovilizado (existencia × costo) DESC.
+ *       Las ventas se atribuyen al lote vía `sale_details.purch_id` y a la sucursal de la venta;
+ *       las ventas canceladas no cuentan. `sell_through_pct` = vendido / (vendido + existencia actual).
+ *       Los lotes sin `purch_id` en `product_stocks` se excluyen.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: buckets
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *           example: "30,60,90"
+ *           default: "30,60,90"
+ *         description: |
+ *           Umbrales de días, hasta 6 enteros positivos estrictamente ascendentes separados por coma.
+ *           "30,60,90" produce los rangos 0-30, 31-60, 61-90 y 91+.
+ *       - name: min_days
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 0
+ *           maximum: 3650
+ *         description: Antigüedad mínima de los lotes del detalle. Por defecto, el inicio del rango más antiguo.
+ *       - name: limit
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 200
+ *           default: 50
+ *         description: Cantidad máxima de lotes en el detalle
+ *       - name: branch_id
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: Filtra por sucursal. Sin este parámetro se consideran todas.
+ *     responses:
+ *       '200':
+ *         description: Resumen por rango de antigüedad y detalle de lotes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 agingLots:
+ *                   $ref: '#/components/schemas/dashboardAgingLots'
+ *       '400':
+ *         description: Parámetros inválidos
+ */
+router.get('/aging-lots',
+  readLimiter,
+  authMiddleware,
+  validateAgingLots,
+  checkRol([ROLE.ADMIN], DASHBOARD.VIEW),
+  getAgingLotsHandler
 );
 
 module.exports = router;

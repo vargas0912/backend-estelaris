@@ -140,4 +140,115 @@ const getSalesByBranch = async (months = 6) => {
   return results;
 };
 
-module.exports = { getDashboardKpis, getDashboardTrends, getTopProducts, getExpensesByMonth, getExpensesByBranch, getRecentSales, getSalesByBranch };
+const DEFAULT_AGING_BUCKETS = [30, 60, 90];
+
+/**
+ * Builds contiguous age ranges from ascending day thresholds.
+ * [30, 60, 90] => 0-30, 31-60, 61-90, 91+
+ */
+const buildAgingBuckets = (thresholds) => {
+  const buckets = [];
+  let min = 0;
+  thresholds.forEach((max) => {
+    buckets.push({ label: `${min}-${max}`, min_days: min, max_days: max });
+    min = max + 1;
+  });
+  buckets.push({ label: `${min}+`, min_days: min, max_days: null });
+  return buckets;
+};
+
+const round2 = (n) => Math.round(n * 100) / 100;
+
+const getAgingLots = async ({ buckets = DEFAULT_AGING_BUCKETS, minDays, limit = 50, branchId } = {}) => {
+  const bucketDefs = buildAgingBuckets(buckets);
+  const oldestBucketStart = bucketDefs[bucketDefs.length - 1].min_days;
+  const listMinDays = minDays === undefined ? oldestBucketStart : minDays;
+  const branchFilter = branchId ? 'AND ps.branch_id = :branchId' : '';
+
+  const [rows] = await sequelize.query(`
+    SELECT
+      ps.branch_id,
+      b.name AS branch_name,
+      ps.product_id,
+      p.name AS product_name,
+      ps.purch_id,
+      ps.bar_code,
+      ps.quantity,
+      COALESCE(pu.received_at, pu.purch_date) AS received_date,
+      DATEDIFF(CURDATE(), COALESCE(pu.received_at, pu.purch_date)) AS days_in_stock,
+      COALESCE(pd.unit_cost, 0) AS unit_cost,
+      ps.quantity * COALESCE(pd.unit_cost, 0) AS stock_value,
+      COALESCE(sold.units_sold, 0) AS units_sold,
+      sold.last_sale_date,
+      DATEDIFF(CURDATE(), sold.last_sale_date) AS days_since_last_sale
+    FROM product_stocks ps
+    INNER JOIN purchases pu ON pu.id = ps.purch_id AND pu.deleted_at IS NULL
+    INNER JOIN products p   ON p.id = ps.product_id AND p.deleted_at IS NULL
+    INNER JOIN branches b   ON b.id = ps.branch_id AND b.deleted_at IS NULL
+    LEFT JOIN (
+      SELECT purch_id, product_id,
+             SUM(qty * unit_price) / NULLIF(SUM(qty), 0) AS unit_cost
+      FROM purchase_details
+      GROUP BY purch_id, product_id
+    ) pd ON pd.purch_id = ps.purch_id AND pd.product_id = ps.product_id
+    LEFT JOIN (
+      SELECT sd.purch_id, sd.product_id, s.branch_id,
+             SUM(sd.qty) AS units_sold,
+             MAX(s.sales_date) AS last_sale_date
+      FROM sale_details sd
+      INNER JOIN sales s ON s.id = sd.sale_id
+        AND s.status != 'Cancelado' AND s.deleted_at IS NULL
+      GROUP BY sd.purch_id, sd.product_id, s.branch_id
+    ) sold ON sold.purch_id = ps.purch_id
+      AND sold.product_id = ps.product_id
+      AND sold.branch_id = ps.branch_id
+    WHERE ps.deleted_at IS NULL
+      AND ps.purch_id IS NOT NULL
+      AND ps.quantity > 0
+      ${branchFilter}
+  `, { replacements: { branchId } });
+
+  const lots = rows.map((r) => {
+    const quantity = Number(r.quantity);
+    const unitsSold = Number(r.units_sold);
+    const daysInStock = Number(r.days_in_stock) || 0;
+    const received = unitsSold + quantity;
+    return {
+      branch_id: r.branch_id,
+      branch_name: r.branch_name,
+      product_id: r.product_id,
+      product_name: r.product_name,
+      purch_id: r.purch_id,
+      bar_code: r.bar_code,
+      quantity,
+      received_date: r.received_date,
+      days_in_stock: daysInStock,
+      unit_cost: round2(Number(r.unit_cost)),
+      stock_value: round2(Number(r.stock_value)),
+      units_sold: unitsSold,
+      sell_through_pct: received > 0 ? round2((unitsSold / received) * 100) : 0,
+      last_sale_date: r.last_sale_date,
+      days_since_last_sale: r.days_since_last_sale === null ? null : Number(r.days_since_last_sale)
+    };
+  });
+
+  const summary = bucketDefs.map((def) => {
+    const inBucket = lots.filter(l => l.days_in_stock >= def.min_days &&
+      (def.max_days === null || l.days_in_stock <= def.max_days));
+    return {
+      ...def,
+      lots: inBucket.length,
+      quantity: round2(inBucket.reduce((acc, l) => acc + l.quantity, 0)),
+      stock_value: round2(inBucket.reduce((acc, l) => acc + l.stock_value, 0))
+    };
+  });
+
+  const list = lots
+    .filter(l => l.days_in_stock >= listMinDays)
+    .sort((a, b) => b.stock_value - a.stock_value || b.days_in_stock - a.days_in_stock)
+    .slice(0, limit);
+
+  return { buckets: summary, lots: list };
+};
+
+module.exports = { getDashboardKpis, getDashboardTrends, getTopProducts, getExpensesByMonth, getExpensesByBranch, getRecentSales, getSalesByBranch, getAgingLots };
