@@ -104,10 +104,12 @@ const deleteRecord = async(req, res) => {
 
 const grantAccess = async (req, res) => {
   try {
-    const { id, email, password, privileges } = matchedData(req);
-    const result = await grantEmployeeAccess(id, email, password, privileges);
+    // eslint-disable-next-line camelcase
+    const { id, email, template_id } = matchedData(req);
+    // eslint-disable-next-line camelcase
+    const result = await grantEmployeeAccess(id, email, template_id, req.user.id);
 
-    if (result.error === 'EMPLOYEE_NOT_FOUND') {
+    if (result.error === 'EMPLOYEE_NOT_FOUND' || result.error === 'TEMPLATE_NOT_FOUND') {
       handleHttpError(res, result.error, 404);
       return;
     }
@@ -126,7 +128,7 @@ const grantAccess = async (req, res) => {
 const assignAccess = async (req, res) => {
   try {
     const { id, user_id: userId, privileges } = matchedData(req);
-    const result = await assignEmployeeAccess(id, userId, privileges);
+    const result = await assignEmployeeAccess(id, userId, privileges, req.user.id);
 
     if (result.error === 'EMPLOYEE_NOT_FOUND' || result.error === 'USER_NOT_FOUND') {
       handleHttpError(res, result.error, 404);
@@ -147,7 +149,7 @@ const assignAccess = async (req, res) => {
 const revokeAccess = async (req, res) => {
   try {
     const { id } = matchedData(req);
-    const result = await revokeEmployeeAccess(id);
+    const result = await revokeEmployeeAccess(id, req.user.id);
 
     if (result.error === 'EMPLOYEE_NOT_FOUND') {
       handleHttpError(res, result.error, 404);

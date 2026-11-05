@@ -195,13 +195,17 @@ const deleteTemplate = async(id) => {
  * @param {number} templateId Template id
  * @param {object} user users model instance (target)
  * @param {'replace'|'merge'} mode Apply mode
+ * @param {object} [outerTransaction] Caller transaction; when given, the apply joins it
+ * (no own commit/rollback) so the caller can make it atomic with other writes.
  * @returns {Promise<{user_id: number, template_id: number, version: number, mode: string, added: number}>}
  */
-const applyTemplate = async(templateId, user, mode) => {
-  const template = await privilegeTemplates.findByPk(templateId);
+const applyTemplate = async(templateId, user, mode, outerTransaction) => {
+  const template = await privilegeTemplates.findByPk(templateId, { transaction: outerTransaction });
   if (!template) throw fail(ERR.NOT_FOUND, 404);
 
-  return sequelize.transaction(async(t) => {
+  const run = outerTransaction ? (fn) => fn(outerTransaction) : (fn) => sequelize.transaction(fn);
+
+  return run(async(t) => {
     const ids = await getTemplatePrivilegeIds(template.id, t);
 
     let existing = [];

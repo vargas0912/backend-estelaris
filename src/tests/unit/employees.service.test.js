@@ -1,4 +1,5 @@
-const { employees, users, privileges, userprivileges } = require('../../models/index');
+const { employees, users, userprivileges, privilegeTemplates, userAuditLogs } = require('../../models/index');
+const { applyTemplate } = require('../../services/privilege-templates');
 const { sequelize } = require('../../models/index');
 const {
   getAllEmployees,
@@ -34,13 +35,28 @@ jest.mock('../../models/index', () => ({
   privileges: {
     findAll: jest.fn()
   },
+  privilegeTemplates: {
+    findByPk: jest.fn()
+  },
+  userAuditLogs: {
+    create: jest.fn()
+  },
   userprivileges: {
+    findAll: jest.fn(),
     bulkCreate: jest.fn(),
     destroy: jest.fn()
   },
   sequelize: {
     transaction: jest.fn()
   }
+}));
+
+jest.mock('../../services/users', () => ({
+  generateSecurePassword: jest.fn().mockReturnValue('Temp#Passw0rd!x')
+}));
+
+jest.mock('../../services/privilege-templates', () => ({
+  applyTemplate: jest.fn().mockResolvedValue({})
 }));
 
 jest.mock('../../utils/handlePassword', () => ({
@@ -60,83 +76,99 @@ describe('Employees Service - Unit Tests', () => {
   });
 
   describe('grantEmployeeAccess', () => {
-    const mockEmployee = {
+    const mockEmployee = () => ({
       id: 1,
       name: 'Juan Pérez',
-      user_id: null
-    };
+      user_id: null,
+      update: jest.fn().mockResolvedValue({})
+    });
 
-    test('debe crear acceso exitosamente para empleado sin usuario', async() => {
-      employees.findByPk.mockResolvedValue(mockEmployee);
+    test('debe crear acceso sin plantilla y devolver contraseña temporal', async() => {
+      const employee = mockEmployee();
+      employees.findByPk.mockResolvedValue(employee);
       users.findOne.mockResolvedValue(null);
-      privileges.findAll.mockResolvedValue([
-        { id: 1, codename: 'view_products' },
-        { id: 2, codename: 'create_sales' }
-      ]);
-      users.create.mockResolvedValue({
-        id: 100,
-        name: 'Juan Pérez',
-        email: 'juan@empresa.com',
-        role: 'user'
-      });
-      userprivileges.bulkCreate.mockResolvedValue([]);
-      employees.findByPk.mockResolvedValueOnce({ ...mockEmployee, update: jest.fn().mockResolvedValue({}) });
+      users.create.mockResolvedValue({ id: 100, name: 'Juan Pérez', email: 'juan@empresa.com', role: 'user' });
+      userprivileges.findAll.mockResolvedValue([]);
 
-      const result = await grantEmployeeAccess(1, 'juan@empresa.com', 'password123', ['view_products', 'create_sales']);
+      const result = await grantEmployeeAccess(1, 'juan@empresa.com', undefined, 7);
 
+      expect(userAuditLogs.create).toHaveBeenCalledWith(
+        { action: 'grant_access', caller_id: 7, target_user_id: 100 },
+        { transaction: mockTransaction }
+      );
       expect(result.employee.user_id).toBe(100);
-      expect(result.privileges).toEqual(['view_products', 'create_sales']);
+      expect(result.privileges).toEqual([]);
+      expect(result.temporaryPassword).toBe('Temp#Passw0rd!x');
+      expect(users.create).toHaveBeenCalledWith(
+        expect.objectContaining({ password: 'hashed_password', must_change_password: true }),
+        { transaction: mockTransaction }
+      );
+      expect(applyTemplate).not.toHaveBeenCalled();
+      expect(mockTransaction.commit).toHaveBeenCalled();
+    });
+
+    test('debe aplicar la plantilla en modo replace dentro de la misma transacción', async() => {
+      employees.findByPk.mockResolvedValue(mockEmployee());
+      users.findOne.mockResolvedValue(null);
+      privilegeTemplates.findByPk.mockResolvedValue({ id: 5 });
+      const created = { id: 100, name: 'Juan Pérez', email: 'juan@empresa.com', role: 'user' };
+      users.create.mockResolvedValue(created);
+      userprivileges.findAll.mockResolvedValue([{ privileges: { codename: 'view_products' } }]);
+
+      const result = await grantEmployeeAccess(1, 'juan@empresa.com', 5);
+
+      expect(applyTemplate).toHaveBeenCalledWith(5, created, 'replace', mockTransaction);
+      expect(result.privileges).toEqual(['view_products']);
+    });
+
+    test('debe retornar TEMPLATE_NOT_FOUND sin abrir transacción', async() => {
+      employees.findByPk.mockResolvedValue(mockEmployee());
+      users.findOne.mockResolvedValue(null);
+      privilegeTemplates.findByPk.mockResolvedValue(null);
+
+      const result = await grantEmployeeAccess(1, 'juan@empresa.com', 999);
+
+      expect(result).toEqual({ error: 'TEMPLATE_NOT_FOUND' });
+      expect(sequelize.transaction).not.toHaveBeenCalled();
+      expect(users.create).not.toHaveBeenCalled();
     });
 
     test('debe retornar error si empleado no existe', async() => {
       employees.findByPk.mockResolvedValue(null);
 
-      const result = await grantEmployeeAccess(999, 'juan@empresa.com', 'pass', []);
+      const result = await grantEmployeeAccess(999, 'juan@empresa.com');
 
       expect(result).toEqual({ error: 'EMPLOYEE_NOT_FOUND' });
     });
 
     test('debe retornar error si empleado ya tiene acceso', async() => {
-      const employeeWithUser = { ...mockEmployee, user_id: 50 };
-      employees.findByPk.mockResolvedValue(employeeWithUser);
+      employees.findByPk.mockResolvedValue({ ...mockEmployee(), user_id: 50 });
 
-      const result = await grantEmployeeAccess(1, 'juan@empresa.com', 'pass', []);
+      const result = await grantEmployeeAccess(1, 'juan@empresa.com');
 
       expect(result).toEqual({ error: 'EMPLOYEE_ALREADY_HAS_ACCESS' });
     });
 
     test('debe retornar error si el email ya está en uso', async() => {
-      employees.findByPk.mockResolvedValue(mockEmployee);
+      employees.findByPk.mockResolvedValue(mockEmployee());
       users.findOne.mockResolvedValue({ id: 99, email: 'otro@empresa.com' });
 
-      const result = await grantEmployeeAccess(1, 'juan@empresa.com', 'pass', []);
+      const result = await grantEmployeeAccess(1, 'juan@empresa.com');
 
       expect(result).toEqual({ error: 'EMAIL_ALREADY_IN_USE' });
     });
 
-    test('debe retornar error si privilegios inválidos', async() => {
-      employees.findByPk.mockResolvedValue(mockEmployee);
+    test('debe hacer rollback si falla la aplicación de la plantilla', async() => {
+      employees.findByPk.mockResolvedValue(mockEmployee());
       users.findOne.mockResolvedValue(null);
-      privileges.findAll.mockResolvedValue([
-        { id: 1, codename: 'view_products' }
-      ]);
+      privilegeTemplates.findByPk.mockResolvedValue({ id: 5 });
+      users.create.mockResolvedValue({ id: 100 });
+      applyTemplate.mockRejectedValueOnce(new Error('apply failed'));
 
-      const result = await grantEmployeeAccess(1, 'juan@empresa.com', 'pass', ['view_products', 'invalid_privilege']);
-
-      expect(result).toEqual({ error: 'INVALID_PRIVILEGES' });
-    });
-
-    test('debe hacer rollback en caso de error', async() => {
-      employees.findByPk.mockResolvedValue(mockEmployee);
-      users.findOne.mockResolvedValue(null);
-      privileges.findAll.mockResolvedValue([
-        { id: 1, codename: 'view_products' }
-      ]);
-      users.create.mockRejectedValue(new Error('DB Error'));
-
-      await expect(grantEmployeeAccess(1, 'juan@empresa.com', 'pass', ['view_products'])).rejects.toThrow('DB Error');
+      await expect(grantEmployeeAccess(1, 'juan@empresa.com', 5)).rejects.toThrow('apply failed');
 
       expect(mockTransaction.rollback).toHaveBeenCalled();
+      expect(mockTransaction.commit).not.toHaveBeenCalled();
     });
   });
 
@@ -150,9 +182,13 @@ describe('Employees Service - Unit Tests', () => {
       };
       employees.findByPk.mockResolvedValue(employeeWithUser);
 
-      const result = await revokeEmployeeAccess(1);
+      const result = await revokeEmployeeAccess(1, 7);
 
       expect(result).toEqual({ revoked: true });
+      expect(userAuditLogs.create).toHaveBeenCalledWith(
+        { action: 'revoke_access', caller_id: 7, target_user_id: 100 },
+        { transaction: mockTransaction }
+      );
       expect(userprivileges.destroy).toHaveBeenCalledWith({ where: { user_id: 100 }, transaction: mockTransaction });
       expect(users.destroy).toHaveBeenCalledWith({ where: { id: 100 }, transaction: mockTransaction });
     });

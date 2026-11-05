@@ -586,24 +586,18 @@ const swaggerDefinition = {
       },
       grantEmployeeAccessRequest: {
         type: 'object',
-        required: ['email', 'password', 'privileges'],
+        required: ['email'],
         properties: {
           email: {
             type: 'string',
             format: 'email',
             description: 'Email del usuario a crear. Debe ser único en el sistema.'
           },
-          password: {
-            type: 'string',
-            minLength: 8,
-            description: 'Contraseña del usuario. Mínimo 8 caracteres.'
-          },
-          privileges: {
-            type: 'array',
-            minItems: 1,
-            items: { type: 'string' },
-            description: 'Codenames de privileges a asignar. Para el portal de empleado incluir los privileges del módulo `me`: view_me_profile, view_me_payroll, view_me_vacations, request_vacation, view_me_loans, request_loan.',
-            example: ['view_me_profile', 'view_me_payroll', 'view_me_vacations', 'request_vacation', 'view_me_loans', 'request_loan']
+          template_id: {
+            type: 'integer',
+            minimum: 1,
+            description: 'Opcional. Plantilla de privilegios a aplicar al usuario creado (misma lógica que POST /privilege-templates/{id}/apply en modo replace; queda registrada para poder usar sync). Si se omite, el usuario se crea sin privilegios. Si no existe responde 404 y no se crea nada.',
+            example: 1
           }
         }
       },
@@ -631,8 +625,13 @@ const swaggerDefinition = {
           privileges: {
             type: 'array',
             items: { type: 'string' },
-            description: 'Codenames de los privileges asignados',
-            example: ['view_me_profile', 'view_me_payroll', 'view_me_vacations', 'request_vacation', 'view_me_loans', 'request_loan']
+            description: 'Codenames de los privileges asignados por la plantilla (vacío si no se envió template_id)',
+            example: ['view_me_profile', 'view_me_payroll']
+          },
+          temporaryPassword: {
+            type: 'string',
+            description: 'Contraseña temporal generada — el usuario queda con must_change_password = true. Se devuelve una sola vez; comunicar por canal seguro.',
+            example: 'Xk9#mP2vQr7!wQ8z'
           }
         }
       },
