@@ -96,13 +96,10 @@ const valiGrantAccess = [
     .exists().withMessage(EMPLOYEES_VALIDATORS.ACCESS_EMAIL_NOT_EXISTS).bail()
     .notEmpty().withMessage(EMPLOYEES_VALIDATORS.ACCESS_EMAIL_IS_EMPTY).bail()
     .isEmail().withMessage(EMPLOYEES_VALIDATORS.ACCESS_EMAIL_INVALID).bail(),
-  check('password')
-    .exists().withMessage(EMPLOYEES_VALIDATORS.ACCESS_PASSWORD_NOT_EXISTS).bail()
-    .notEmpty().withMessage(EMPLOYEES_VALIDATORS.ACCESS_PASSWORD_IS_EMPTY).bail()
-    .isLength({ min: 8 }).withMessage(EMPLOYEES_VALIDATORS.ACCESS_PASSWORD_TOO_SHORT).bail(),
-  check('privileges')
-    .exists().withMessage(EMPLOYEES_VALIDATORS.ACCESS_PRIVILEGES_NOT_EXISTS).bail()
-    .isArray({ min: 1 }).withMessage(EMPLOYEES_VALIDATORS.ACCESS_PRIVILEGES_INVALID).bail(),
+  check('template_id')
+    .optional({ values: 'null' })
+    .isInt({ min: 1 }).withMessage(EMPLOYEES_VALIDATORS.ACCESS_TEMPLATE_ID_INVALID).bail()
+    .toInt(),
   (req, res, next) => {
     return validateResults(req, res, next);
   }

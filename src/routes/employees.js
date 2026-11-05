@@ -81,7 +81,7 @@ router.get('/', [
  *      tags:
  *        - employees
  *      summary: Habilitar acceso de sistema a un empleado
- *      description: Crea un user con role 'user', asigna los privileges indicados y vincula el user_id al employee. Todo en una transacción atómica.
+ *      description: Crea un user con role 'user' y contraseña temporal generada por el backend (must_change_password = true, devuelta una sola vez), aplica opcionalmente una plantilla de privilegios en modo replace y vincula el user_id al employee. Todo en una transacción atómica.
  *      security:
  *        - bearerAuth: []
  *      parameters:
@@ -104,11 +104,11 @@ router.get('/', [
  *              schema:
  *                $ref: '#/components/schemas/grantEmployeeAccessResponse'
  *        '400':
- *          description: Error de validación (email inválido, password corto, privileges vacío)
+ *          description: Error de validación (email inválido o template_id no entero)
  *        '404':
- *          description: Empleado no encontrado
+ *          description: EMPLOYEE_NOT_FOUND | TEMPLATE_NOT_FOUND (no se crea nada)
  *        '422':
- *          description: EMPLOYEE_ALREADY_HAS_ACCESS | EMAIL_ALREADY_IN_USE | INVALID_PRIVILEGES
+ *          description: EMPLOYEE_ALREADY_HAS_ACCESS | EMAIL_ALREADY_IN_USE
  */
 router.post('/:id/grant-access', [
   writeLimiter,

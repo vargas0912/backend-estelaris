@@ -1,6 +1,9 @@
-const { employees, positions, branches, users, privileges, userprivileges } = require('../models/index');
+const { employees, positions, branches, users, privileges, userprivileges, privilegeTemplates, userAuditLogs } = require('../models/index');
 const { sequelize } = require('../models/index');
 const { encrypt } = require('../utils/handlePassword');
+const { generateSecurePassword } = require('./users');
+const { applyTemplate } = require('./privilege-templates');
+const { PRIVILEGE_TEMPLATE_ERRORS } = require('../constants/privileges');
 const { Op } = require('sequelize');
 
 const attributes = ['id', 'name', 'email', 'phone', 'hire_date', 'base_salary', 'active', 'user_id', 'branch_id', 'created_at', 'updated_at'];
@@ -134,7 +137,7 @@ const deleteEmployee = async (id) => {
   return result;
 };
 
-const grantEmployeeAccess = async (id, email, password, privilegeCodenames) => {
+const grantEmployeeAccess = async (id, email, templateId, callerId) => {
   const employee = await employees.findByPk(id);
   if (!employee) return { error: 'EMPLOYEE_NOT_FOUND' };
   if (employee.user_id) return { error: 'EMPLOYEE_ALREADY_HAS_ACCESS' };
@@ -142,38 +145,46 @@ const grantEmployeeAccess = async (id, email, password, privilegeCodenames) => {
   const existingUser = await users.findOne({ where: { email } });
   if (existingUser) return { error: 'EMAIL_ALREADY_IN_USE' };
 
-  const matchedPrivileges = await privileges.findAll({
-    where: { codename: { [Op.in]: privilegeCodenames } },
-    attributes: ['id', 'codename']
-  });
-
-  if (matchedPrivileges.length !== privilegeCodenames.length) {
-    return { error: 'INVALID_PRIVILEGES' };
+  if (templateId !== undefined && templateId !== null) {
+    const template = await privilegeTemplates.findByPk(templateId);
+    if (!template) return { error: PRIVILEGE_TEMPLATE_ERRORS.NOT_FOUND };
   }
+
+  const temporaryPassword = generateSecurePassword();
+  const hashedPassword = await encrypt(temporaryPassword);
 
   const transaction = await sequelize.transaction();
 
   try {
-    const hashedPassword = await encrypt(password);
-
     const user = await users.create(
-      { name: employee.name, email, password: hashedPassword, role: 'user' },
+      { name: employee.name, email, password: hashedPassword, role: 'user', must_change_password: true },
       { transaction }
     );
 
-    await userprivileges.bulkCreate(
-      matchedPrivileges.map(p => ({ user_id: user.id, privilege_id: p.id })),
-      { transaction }
-    );
+    if (templateId !== undefined && templateId !== null) {
+      await applyTemplate(templateId, user, 'replace', transaction);
+    }
 
     await employee.update({ user_id: user.id }, { transaction });
+
+    await userAuditLogs.create(
+      { action: 'grant_access', caller_id: callerId, target_user_id: user.id },
+      { transaction }
+    );
+
+    const granted = await userprivileges.findAll({
+      where: { user_id: user.id },
+      include: [{ model: privileges, as: 'privileges', attributes: ['codename'], required: true }],
+      transaction
+    });
 
     await transaction.commit();
 
     return {
       employee: { id: employee.id, name: employee.name, user_id: user.id },
       user: { id: user.id, name: user.name, email: user.email, role: user.role },
-      privileges: matchedPrivileges.map(p => p.codename)
+      privileges: granted.map(g => g.privileges.codename),
+      temporaryPassword
     };
   } catch (error) {
     await transaction.rollback();
@@ -181,7 +192,7 @@ const grantEmployeeAccess = async (id, email, password, privilegeCodenames) => {
   }
 };
 
-const assignEmployeeAccess = async (id, userId, privilegeCodenames) => {
+const assignEmployeeAccess = async (id, userId, privilegeCodenames, callerId) => {
   const employee = await employees.findByPk(id);
   if (!employee) return { error: 'EMPLOYEE_NOT_FOUND' };
   if (employee.user_id) return { error: 'EMPLOYEE_ALREADY_HAS_ACCESS' };
@@ -221,6 +232,11 @@ const assignEmployeeAccess = async (id, userId, privilegeCodenames) => {
 
     await employee.update({ user_id: user.id }, { transaction });
 
+    await userAuditLogs.create(
+      { action: 'assign_access', caller_id: callerId, target_user_id: user.id },
+      { transaction }
+    );
+
     await transaction.commit();
 
     return {
@@ -234,17 +250,24 @@ const assignEmployeeAccess = async (id, userId, privilegeCodenames) => {
   }
 };
 
-const revokeEmployeeAccess = async (id) => {
+const revokeEmployeeAccess = async (id, callerId) => {
   const employee = await employees.findByPk(id);
   if (!employee) return { error: 'EMPLOYEE_NOT_FOUND' };
   if (!employee.user_id) return { error: 'EMPLOYEE_HAS_NO_ACCESS' };
 
   const transaction = await sequelize.transaction();
 
+  const userId = employee.user_id;
+
   try {
-    await userprivileges.destroy({ where: { user_id: employee.user_id }, transaction });
-    await users.destroy({ where: { id: employee.user_id }, transaction });
+    await userprivileges.destroy({ where: { user_id: userId }, transaction });
+    await users.destroy({ where: { id: userId }, transaction });
     await employee.update({ user_id: null }, { transaction });
+
+    await userAuditLogs.create(
+      { action: 'revoke_access', caller_id: callerId, target_user_id: userId },
+      { transaction }
+    );
 
     await transaction.commit();
     return { revoked: true };
