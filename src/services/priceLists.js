@@ -19,6 +19,15 @@ const getAllPriceLists = async() => {
   return rows;
 };
 
+const getActivePriceLists = async() => {
+  const rows = await priceLists.findAll({
+    attributes,
+    where: { is_active: true },
+    order: [['priority', 'DESC'], ['name', 'ASC']]
+  });
+  return rows;
+};
+
 const getPriceList = async(id) => {
   const result = await priceLists.findOne({
     attributes,
@@ -77,6 +86,7 @@ const deletePriceList = async(id) => {
 
 module.exports = {
   getAllPriceLists,
+  getActivePriceLists,
   getPriceList,
   addNewPriceList,
   updatePriceList,

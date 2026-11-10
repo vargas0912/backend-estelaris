@@ -869,4 +869,144 @@ describe('[SALES] Test api sales /api/sales/', () => {
         .expect(403);
     });
   });
+
+  // ============================================
+  // GET /api/sales/price-lists (active price lists for the sale form)
+  // ============================================
+  describe('GET /api/sales/price-lists', () => {
+    const sellerUser = { name: 'Seller Price Lists', email: 'seller_pricelists@test.com', role: 'user', password: 'Test1234' };
+    const noSaleUser = { name: 'No Sale Price Lists', email: 'nosale_pricelists@test.com', role: 'user', password: 'Test1234' };
+    let sellerToken = '';
+    let noSaleToken = '';
+    let inactiveListId = null;
+    let activeZetaId = null;
+    let activeAlfaId = null;
+
+    const registerAndLogin = async (userData) => {
+      const reg = await api.post('/api/auth/register').auth(Token, { type: 'bearer' }).send(userData).expect(200);
+      const login = await api.post('/api/auth/login').send({ email: userData.email, password: userData.password }).expect(200);
+      return { id: reg.body.user.user.id, token: login.body.sesion.token };
+    };
+
+    beforeAll(async () => {
+      const seller = await registerAndLogin(sellerUser);
+      sellerToken = seller.token;
+      noSaleToken = (await registerAndLogin(noSaleUser)).token;
+
+      const privRes = await api
+        .get('/api/privileges/module/sales')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+      const createSalePriv = privRes.body.privileges.find(p => p.codename === 'create_sale');
+
+      await api
+        .post('/api/privileges/user/')
+        .auth(Token, { type: 'bearer' })
+        .send({ user_id: seller.id, privilege_id: createSalePriv.id })
+        .expect(200);
+
+      const inactiveRes = await api
+        .post('/api/priceLists')
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Inactive list for sales combo', discount_percent: 5, is_active: false, priority: 99 })
+        .expect(200);
+      inactiveListId = inactiveRes.body.priceList.id;
+
+      // Two active lists with the same top priority, created in reverse name order,
+      // so the name ASC tie-break is observable regardless of insertion order.
+      const zetaRes = await api
+        .post('/api/priceLists')
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Zeta sales combo list', discount_percent: 0, is_active: true, priority: 1000 })
+        .expect(200);
+      activeZetaId = zetaRes.body.priceList.id;
+
+      const alfaRes = await api
+        .post('/api/priceLists')
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Alfa sales combo list', discount_percent: 0, is_active: true, priority: 1000 })
+        .expect(200);
+      activeAlfaId = alfaRes.body.priceList.id;
+    });
+
+    afterAll(async () => {
+      for (const id of [inactiveListId, activeZetaId, activeAlfaId]) {
+        if (id) await api.delete(`/api/priceLists/${id}`).auth(Token, { type: 'bearer' });
+      }
+    });
+
+    test('56. Con create_sale y sin view_price_lists. Expect 200 con listas activas', async () => {
+      await api
+        .get('/api/priceLists')
+        .auth(sellerToken, { type: 'bearer' })
+        .expect(403);
+
+      const response = await api
+        .get('/api/sales/price-lists')
+        .auth(sellerToken, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('priceLists');
+      expect(Array.isArray(response.body.priceLists)).toBe(true);
+      expect(response.body.priceLists.length).toBeGreaterThan(0);
+      expect(response.body).not.toHaveProperty('pagination');
+
+      const item = response.body.priceLists[0];
+      ['id', 'name', 'description', 'discount_percent', 'is_active', 'priority', 'created_at', 'updated_at']
+        .forEach(field => expect(item).toHaveProperty(field));
+    });
+
+    test('57. Excluye listas inactivas. Expect 200', async () => {
+      const response = await api
+        .get('/api/sales/price-lists')
+        .auth(sellerToken, { type: 'bearer' })
+        .expect(200);
+
+      const ids = response.body.priceLists.map(pl => pl.id);
+      expect(ids).toEqual(expect.arrayContaining([activeZetaId, activeAlfaId]));
+      expect(ids).not.toContain(inactiveListId);
+      expect(response.body.priceLists.every(pl => pl.is_active === true)).toBe(true);
+    });
+
+    test('57b. Ordena por priority DESC y name ASC. Expect 200', async () => {
+      const response = await api
+        .get('/api/sales/price-lists')
+        .auth(sellerToken, { type: 'bearer' })
+        .expect(200);
+
+      const lists = response.body.priceLists;
+      expect(lists.slice(0, 2).map(pl => pl.id)).toEqual([activeAlfaId, activeZetaId]);
+
+      for (let i = 1; i < lists.length; i++) {
+        const prev = lists[i - 1];
+        const curr = lists[i];
+        expect(prev.priority).toBeGreaterThanOrEqual(curr.priority);
+        if (prev.priority === curr.priority) {
+          expect(prev.name.localeCompare(curr.name)).toBeLessThanOrEqual(0);
+        }
+      }
+    });
+
+    test('58. Superadmin. Expect 200', async () => {
+      const response = await api
+        .get('/api/sales/price-lists')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(Array.isArray(response.body.priceLists)).toBe(true);
+    });
+
+    test('59. Sin privilegio create_sale. Expect 403', async () => {
+      await api
+        .get('/api/sales/price-lists')
+        .auth(noSaleToken, { type: 'bearer' })
+        .expect(403);
+    });
+
+    test('60. Sin token. Expect 401', async () => {
+      await api
+        .get('/api/sales/price-lists')
+        .expect(401);
+    });
+  });
 });
