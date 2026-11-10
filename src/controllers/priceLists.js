@@ -3,6 +3,7 @@ const { handleHttpError, handleServerError } = require('../utils/handleErorr');
 
 const {
   getAllPriceLists,
+  getActivePriceLists,
   getPriceList,
   addNewPriceList,
   updatePriceList,
@@ -17,6 +18,20 @@ const {
 const getRecords = async(req, res) => {
   try {
     const priceLists = await getAllPriceLists();
+    res.send({ priceLists });
+  } catch (error) {
+    handleServerError(res, 'ERROR_GET_RECORDS', error);
+  }
+};
+
+/**
+ * Obtener solo las listas de precios activas (catalogo para el formulario de ventas)
+ * @param {*} req Request
+ * @param {*} res Response
+ */
+const getActiveRecords = async(req, res) => {
+  try {
+    const priceLists = await getActivePriceLists();
     res.send({ priceLists });
   } catch (error) {
     handleServerError(res, 'ERROR_GET_RECORDS', error);
@@ -85,4 +100,4 @@ const deleteRecord = async(req, res) => {
   }
 };
 
-module.exports = { getRecord, getRecords, addRecord, updateRecord, deleteRecord };
+module.exports = { getRecord, getRecords, getActiveRecords, addRecord, updateRecord, deleteRecord };

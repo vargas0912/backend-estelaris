@@ -29,6 +29,7 @@ const {
   getSettlementRecords
 } = require('../controllers/sales');
 
+const { getActiveRecords: getActivePriceListRecords } = require('../controllers/priceLists');
 const { SALE, SALE_PAYMENT } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
 const branchScope = require('../middlewares/branchScope');
@@ -331,6 +332,43 @@ router.get('/settlements', [
   validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], SALE.VIEW_SETTLEMENTS)
 ], getSettlementRecords);
+
+/**
+ * @openapi
+ * /sales/price-lists:
+ *    get:
+ *      tags:
+ *        - sales
+ *      summary: Listas de precios activas para registrar ventas
+ *      description: Devuelve solo las listas de precios activas, ordenadas por prioridad, para el formulario de ventas. Requiere create_sale (no requiere view_price_lists). Sin paginacion ni filtros.
+ *      security:
+ *        - bearerAuth: []
+ *      responses:
+ *        '200':
+ *          description: Listas de precios activas ordenadas por prioridad
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  priceLists:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/priceLists'
+ *        '401':
+ *          description: Sin sesion
+ *        '403':
+ *          description: Sin privilegio create_sale
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ForbiddenError'
+ */
+router.get('/price-lists', [
+  readLimiter,
+  authMidleware,
+  checkRol([ROLE.USER, ROLE.ADMIN], SALE.ADD)
+], getActivePriceListRecords);
 
 /**
  * @openapi

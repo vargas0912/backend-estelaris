@@ -869,4 +869,113 @@ describe('[SALES] Test api sales /api/sales/', () => {
         .expect(403);
     });
   });
+
+  // ============================================
+  // GET /api/sales/price-lists (active price lists for the sale form)
+  // ============================================
+  describe('GET /api/sales/price-lists', () => {
+    const sellerUser = { name: 'Seller Price Lists', email: 'seller_pricelists@test.com', role: 'user', password: 'Test1234' };
+    const noSaleUser = { name: 'No Sale Price Lists', email: 'nosale_pricelists@test.com', role: 'user', password: 'Test1234' };
+    let sellerToken = '';
+    let noSaleToken = '';
+    let inactiveListId = null;
+
+    const registerAndLogin = async (userData) => {
+      const reg = await api.post('/api/auth/register').auth(Token, { type: 'bearer' }).send(userData).expect(200);
+      const login = await api.post('/api/auth/login').send({ email: userData.email, password: userData.password }).expect(200);
+      return { id: reg.body.user.user.id, token: login.body.sesion.token };
+    };
+
+    beforeAll(async () => {
+      const seller = await registerAndLogin(sellerUser);
+      sellerToken = seller.token;
+      noSaleToken = (await registerAndLogin(noSaleUser)).token;
+
+      const privRes = await api
+        .get('/api/privileges/module/sales')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+      const createSalePriv = privRes.body.privileges.find(p => p.codename === 'create_sale');
+
+      await api
+        .post('/api/privileges/user/')
+        .auth(Token, { type: 'bearer' })
+        .send({ user_id: seller.id, privilege_id: createSalePriv.id })
+        .expect(200);
+
+      const inactiveRes = await api
+        .post('/api/priceLists')
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Inactive list for sales combo', discount_percent: 5, is_active: false, priority: 99 })
+        .expect(200);
+      inactiveListId = inactiveRes.body.priceList.id;
+    });
+
+    afterAll(async () => {
+      if (inactiveListId) {
+        await api.delete(`/api/priceLists/${inactiveListId}`).auth(Token, { type: 'bearer' });
+      }
+    });
+
+    test('56. Con create_sale y sin view_price_lists. Expect 200 con listas activas', async () => {
+      await api
+        .get('/api/priceLists')
+        .auth(sellerToken, { type: 'bearer' })
+        .expect(403);
+
+      const response = await api
+        .get('/api/sales/price-lists')
+        .auth(sellerToken, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('priceLists');
+      expect(Array.isArray(response.body.priceLists)).toBe(true);
+      expect(response.body.priceLists.length).toBeGreaterThan(0);
+      expect(response.body).not.toHaveProperty('pagination');
+
+      const item = response.body.priceLists[0];
+      ['id', 'name', 'description', 'discount_percent', 'is_active', 'priority', 'created_at', 'updated_at']
+        .forEach(field => expect(item).toHaveProperty(field));
+    });
+
+    test('57. Excluye listas inactivas y respeta el orden de GET /priceLists. Expect 200', async () => {
+      const all = await api
+        .get('/api/priceLists')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      const response = await api
+        .get('/api/sales/price-lists')
+        .auth(sellerToken, { type: 'bearer' })
+        .expect(200);
+
+      expect(response.body.priceLists.every(pl => pl.is_active === true)).toBe(true);
+      expect(response.body.priceLists.some(pl => pl.id === inactiveListId)).toBe(false);
+
+      const expectedIds = all.body.priceLists.filter(pl => pl.is_active === true).map(pl => pl.id);
+      expect(response.body.priceLists.map(pl => pl.id)).toEqual(expectedIds);
+    });
+
+    test('58. Superadmin. Expect 200', async () => {
+      const response = await api
+        .get('/api/sales/price-lists')
+        .auth(Token, { type: 'bearer' })
+        .expect(200);
+
+      expect(Array.isArray(response.body.priceLists)).toBe(true);
+    });
+
+    test('59. Sin privilegio create_sale. Expect 403', async () => {
+      await api
+        .get('/api/sales/price-lists')
+        .auth(noSaleToken, { type: 'bearer' })
+        .expect(403);
+    });
+
+    test('60. Sin token. Expect 401', async () => {
+      await api
+        .get('/api/sales/price-lists')
+        .expect(401);
+    });
+  });
 });
