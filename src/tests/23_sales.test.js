@@ -879,6 +879,8 @@ describe('[SALES] Test api sales /api/sales/', () => {
     let sellerToken = '';
     let noSaleToken = '';
     let inactiveListId = null;
+    let activeZetaId = null;
+    let activeAlfaId = null;
 
     const registerAndLogin = async (userData) => {
       const reg = await api.post('/api/auth/register').auth(Token, { type: 'bearer' }).send(userData).expect(200);
@@ -909,11 +911,27 @@ describe('[SALES] Test api sales /api/sales/', () => {
         .send({ name: 'Inactive list for sales combo', discount_percent: 5, is_active: false, priority: 99 })
         .expect(200);
       inactiveListId = inactiveRes.body.priceList.id;
+
+      // Two active lists with the same top priority, created in reverse name order,
+      // so the name ASC tie-break is observable regardless of insertion order.
+      const zetaRes = await api
+        .post('/api/priceLists')
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Zeta sales combo list', discount_percent: 0, is_active: true, priority: 1000 })
+        .expect(200);
+      activeZetaId = zetaRes.body.priceList.id;
+
+      const alfaRes = await api
+        .post('/api/priceLists')
+        .auth(Token, { type: 'bearer' })
+        .send({ name: 'Alfa sales combo list', discount_percent: 0, is_active: true, priority: 1000 })
+        .expect(200);
+      activeAlfaId = alfaRes.body.priceList.id;
     });
 
     afterAll(async () => {
-      if (inactiveListId) {
-        await api.delete(`/api/priceLists/${inactiveListId}`).auth(Token, { type: 'bearer' });
+      for (const id of [inactiveListId, activeZetaId, activeAlfaId]) {
+        if (id) await api.delete(`/api/priceLists/${id}`).auth(Token, { type: 'bearer' });
       }
     });
 
@@ -938,22 +956,35 @@ describe('[SALES] Test api sales /api/sales/', () => {
         .forEach(field => expect(item).toHaveProperty(field));
     });
 
-    test('57. Excluye listas inactivas y respeta el orden de GET /priceLists. Expect 200', async () => {
-      const all = await api
-        .get('/api/priceLists')
-        .auth(Token, { type: 'bearer' })
-        .expect(200);
-
+    test('57. Excluye listas inactivas. Expect 200', async () => {
       const response = await api
         .get('/api/sales/price-lists')
         .auth(sellerToken, { type: 'bearer' })
         .expect(200);
 
+      const ids = response.body.priceLists.map(pl => pl.id);
+      expect(ids).toEqual(expect.arrayContaining([activeZetaId, activeAlfaId]));
+      expect(ids).not.toContain(inactiveListId);
       expect(response.body.priceLists.every(pl => pl.is_active === true)).toBe(true);
-      expect(response.body.priceLists.some(pl => pl.id === inactiveListId)).toBe(false);
+    });
 
-      const expectedIds = all.body.priceLists.filter(pl => pl.is_active === true).map(pl => pl.id);
-      expect(response.body.priceLists.map(pl => pl.id)).toEqual(expectedIds);
+    test('57b. Ordena por priority DESC y name ASC. Expect 200', async () => {
+      const response = await api
+        .get('/api/sales/price-lists')
+        .auth(sellerToken, { type: 'bearer' })
+        .expect(200);
+
+      const lists = response.body.priceLists;
+      expect(lists.slice(0, 2).map(pl => pl.id)).toEqual([activeAlfaId, activeZetaId]);
+
+      for (let i = 1; i < lists.length; i++) {
+        const prev = lists[i - 1];
+        const curr = lists[i];
+        expect(prev.priority).toBeGreaterThanOrEqual(curr.priority);
+        if (prev.priority === curr.priority) {
+          expect(prev.name.localeCompare(curr.name)).toBeLessThanOrEqual(0);
+        }
+      }
     });
 
     test('58. Superadmin. Expect 200', async () => {
