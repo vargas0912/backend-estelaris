@@ -46,6 +46,10 @@ module.exports = {
     host: process.env.MYSQL_HOST,
     dialect: 'mysql',
 
+    // Sin log de SQL en producción: cada consulta (con valores como emails de
+    // login) llenaría los logs. DB_LOGGING=true lo reactiva para depurar.
+    logging: process.env.DB_LOGGING === 'true' ? console.log : false,
+
     // Configuracion de seeds
     seederStorage: 'sequelize',
     seederStorageTableName: 'sequelizeSeeds',
