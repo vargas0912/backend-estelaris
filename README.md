@@ -91,7 +91,21 @@ npx sequelize-cli db:seed:all
 npx sequelize-cli db:seed:all --seeders-path ./src/database/seeders/test_files
 ```
 
-### Inicializacion de base de datos en produccion
+### Instalacion nueva en produccion (recomendado)
+
+Crea las tablas y carga solo los catalogos base (privilegios, listas de precios, superadmin, datos de la empresa, configuracion del sistema y catalogo contable), sin datos de prueba:
+
+```bash
+# Requiere SPADM y SPADM_PWD (minimo 12 caracteres) en el .env
+NODE_ENV=production npm run db:migrate
+NODE_ENV=production npm run db:seed:prod
+```
+
+`db:seed:prod` ejecuta primero el seeder de usuarios: si falta `SPADM_PWD`, se detiene sin cargar nada. Ejecutar los seeders **antes** de exponer la API: mientras no exista un superadmin, el endpoint de registro de superadmin es publico.
+
+Detras de un proxy inverso (nginx) definir `TRUST_PROXY=1`, para que el rate limiting y los logs usen la IP real del cliente.
+
+### Reset completo de base de datos en produccion
 
 Para inicializar la base de datos en un entorno de produccion por primera vez (o cuando se requiera un reset completo), ejecutar el siguiente comando. **Esta operacion es destructiva: elimina la base de datos existente y la recrea desde cero.**
 

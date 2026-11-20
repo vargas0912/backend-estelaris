@@ -41,6 +41,16 @@ class Server {
   }
 
   middlewares() {
+    // Proxy inverso (nginx, balanceador): cantidad de saltos de confianza para que
+    // req.ip sea la IP real del cliente (rate limiting, logs). Solo debe activarse
+    // cuando la app está detrás de un proxy; sin proxy, el cliente podría falsificar
+    // X-Forwarded-For. Acepta un número de saltos (ej. 1) o un valor de Express
+    // como 'loopback'.
+    if (process.env.TRUST_PROXY) {
+      const trustProxy = process.env.TRUST_PROXY;
+      this.app.set('trust proxy', /^\d+$/.test(trustProxy) ? Number(trustProxy) : trustProxy);
+    }
+
     // Seguridad - Helmet para headers HTTP seguros
     this.app.use(helmet({
       contentSecurityPolicy: false, // Desactivar CSP para permitir Swagger UI
@@ -61,10 +71,12 @@ class Server {
 
     // Rate limiting - DESHABILITADO EN TESTS
     if (!process.env.DISABLE_RATE_LIMIT) {
-      // Rate limiting global - 100 requests por 15 minutos
+      // Rate limiting global por IP - por defecto 100 requests por 15 minutos.
+      // Configurable con RATE_LIMIT_GLOBAL_MAX: varios usuarios detrás de la misma
+      // IP pública (ej. una sucursal) comparten este límite.
       const globalLimiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutos
-        max: 100, // Límite de 100 requests por ventana
+        max: Number(process.env.RATE_LIMIT_GLOBAL_MAX) || 100, // Límite de requests por ventana
         message: {
           error: 'Too many requests from this IP, please try again later.'
         },
