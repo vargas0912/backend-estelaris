@@ -3,7 +3,6 @@ module.exports = {
     {
       name: 'Super Admin',
       email: 'superadmin@estelaris.com',
-      password: 'Superadmin123',
       role: 'superadmin'
     }
   ]
