@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { registerAdminCtrl, registerCtrl, loginCtrl, refreshCtrl, logoutCtrl, verifyPasswordCtrl } = require('../controllers/auth');
+const { registerAdminCtrl, registerCtrl, loginCtrl, refreshCtrl, logoutCtrl, verifyPasswordCtrl, csrfCtrl } = require('../controllers/auth');
 const { validateLogin, validateRegister, validateVerifyPassword } = require('../validators/auth');
 
 const authMidleware = require('../middlewares/session');
@@ -84,6 +84,20 @@ router.post('/register', [
   checkRol([ROLE.ADMIN, ROLE.SUPERADMIN], USERS.REGISTER)],
 registerCtrl
 );
+
+/**
+ * @openapi
+ * /auth/csrf:
+ *    get:
+ *      tags:
+ *        - auth
+ *      summary: Obtener token CSRF
+ *      description: Pone la cookie legible XSRF-TOKEN. El front la copia en el header X-XSRF-TOKEN en cada POST, PUT, PATCH y DELETE. Si el token falta o no coincide, el backend responde 403 con error CSRF_TOKEN_INVALID.
+ *      responses:
+ *        '204':
+ *          description: Cookie XSRF-TOKEN entregada
+ */
+router.get('/csrf', csrfCtrl);
 
 /**
  * Login user

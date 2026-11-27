@@ -267,7 +267,8 @@ describe('Users Service - Unit Tests', () => {
         name: adminData.name,
         email: adminData.email,
         password: encryptedPassword,
-        role: adminData.role
+        role: adminData.role,
+        set: jest.fn()
       };
 
       encrypt.mockResolvedValue(encryptedPassword);
@@ -284,6 +285,22 @@ describe('Users Service - Unit Tests', () => {
       expect(tokenSign).toHaveBeenCalledWith(mockCreatedAdmin);
       expect(result).toHaveProperty('token', mockToken);
       expect(result).toHaveProperty('user', mockCreatedAdmin);
+      // Nunca devuelve el hash de la contraseña
+      expect(mockCreatedAdmin.set).toHaveBeenCalledWith('password', undefined, { strict: false });
+    });
+
+    test('no devuelve token si AUTH_ALLOW_BEARER=false', async() => {
+      const previous = process.env.AUTH_ALLOW_BEARER;
+      process.env.AUTH_ALLOW_BEARER = 'false';
+      encrypt.mockResolvedValue('hash');
+      users.create.mockResolvedValue({ id: 1, set: jest.fn() });
+
+      const result = await registerSuperAdmin({ name: 'A', email: 'a@test.com', password: 'x', role: 'superadmin' });
+
+      expect(result).not.toHaveProperty('token');
+      expect(tokenSign).not.toHaveBeenCalled();
+      if (previous === undefined) delete process.env.AUTH_ALLOW_BEARER;
+      else process.env.AUTH_ALLOW_BEARER = previous;
     });
 
     test('debe encriptar el password del superadmin', async() => {
@@ -295,7 +312,7 @@ describe('Users Service - Unit Tests', () => {
       };
 
       encrypt.mockResolvedValue('encryptedSecret');
-      users.create.mockResolvedValue({ id: 1, ...adminData });
+      users.create.mockResolvedValue({ id: 1, ...adminData, set: jest.fn() });
       tokenSign.mockResolvedValue('token');
 
       await registerSuperAdmin(adminData);

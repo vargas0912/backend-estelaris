@@ -4,6 +4,7 @@ const logger = require('../utils/logger');
 
 const { getUser } = require('../services/users');
 const { SESSION } = require('../constants/errors');
+const { allowBearer, SESSION_COOKIE_NAME } = require('../config/security');
 
 /**
  * Middleware for check sesion and privileges
@@ -15,9 +16,11 @@ const { SESSION } = require('../constants/errors');
 
 const authMidleware = async(req, res, next) => {
   try {
-    const authHeader = req.headers.authorization?.split(' ').pop();
-    const cookieToken = req.cookies?.token;
-    const token = authHeader ?? cookieToken;
+    // El navegador manda el JWT en la cookie HttpOnly. El header Bearer solo se
+    // acepta si AUTH_ALLOW_BEARER está activo (tests, Swagger, scripts).
+    const authHeader = allowBearer() ? req.headers.authorization?.split(' ').pop() : undefined;
+    const cookieToken = req.cookies?.[SESSION_COOKIE_NAME];
+    const token = authHeader || cookieToken;
 
     if (!token) {
       handleHttpError(res, SESSION.NOT_TOKEN, 401);
