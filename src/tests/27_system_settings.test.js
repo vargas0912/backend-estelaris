@@ -37,6 +37,11 @@ const regularUserData = {
  *   9. Sin valor en body → 400
  *   10. Sin token → 401
  *   11. Usuario no-superadmin → 403
+ *
+ * GET /api/system-settings/app-config
+ *   12. Superadmin → 200 solo con formats/modules, sin pricing
+ *   13. Usuario sin privilegio view_system_settings → 200 (solo pide sesión)
+ *   14. Sin token → 401
  */
 
 describe('[SYSTEM_SETTINGS] Test api system-settings /api/system-settings', () => {
@@ -203,6 +208,51 @@ describe('[SYSTEM_SETTINGS] Test api system-settings /api/system-settings', () =
         .auth(regularUserToken, { type: 'bearer' })
         .send({ value: 'DD-MM-YYYY' })
         .expect(403);
+    });
+  });
+
+  // ============================================
+  // GET /api/system-settings/app-config
+  // ============================================
+  describe('GET /api/system-settings/app-config', () => {
+    const SENSITIVE_KEYS = ['base_price_percentage', 'credit_price_percentage'];
+
+    test('12. Superadmin. Expect 200 solo con ajustes de formato y módulos', async () => {
+      const response = await api
+        .get('/api/system-settings/app-config')
+        .auth(superadminToken, { type: 'bearer' })
+        .expect(200);
+
+      expect(Array.isArray(response.body.settings)).toBe(true);
+      const keys = response.body.settings.map(s => s.key);
+      expect(keys).toEqual(expect.arrayContaining(['date_format', 'currency', 'timezone', 'decimal_places']));
+      SENSITIVE_KEYS.forEach(k => expect(keys).not.toContain(k));
+      response.body.settings.forEach(s => {
+        expect(Object.keys(s).sort()).toEqual(['data_type', 'key', 'value']);
+      });
+    });
+
+    test('13. Usuario sin privilegio view_system_settings. Expect 200 sin pricing', async () => {
+      if (!regularUserToken) {
+        console.log('Regular user token not available, skipping test');
+        expect(true).toBe(true);
+        return;
+      }
+
+      const response = await api
+        .get('/api/system-settings/app-config')
+        .auth(regularUserToken, { type: 'bearer' })
+        .expect(200);
+
+      const keys = response.body.settings.map(s => s.key);
+      expect(keys).toContain('date_format');
+      SENSITIVE_KEYS.forEach(k => expect(keys).not.toContain(k));
+    });
+
+    test('14. Sin token. Expect 401', async () => {
+      await api
+        .get('/api/system-settings/app-config')
+        .expect(401);
     });
   });
 });

@@ -7,7 +7,7 @@ const authMidleware = require('../middlewares/session');
 const checkRol = require('../middlewares/rol');
 const { readLimiter, writeLimiter, searchLimiter } = require('../middlewares/rateLimiters');
 
-const { getRecords, getRecord, updateRecord } = require('../controllers/systemSettings');
+const { getRecords, getRecord, getAppConfig, updateRecord } = require('../controllers/systemSettings');
 
 const { SYSTEM_SETTINGS } = require('../constants/modules');
 const { ROLE } = require('../constants/roles');
@@ -47,6 +47,48 @@ router.get('/', [
   validateGetAll,
   checkRol([ROLE.USER, ROLE.ADMIN], SYSTEM_SETTINGS.VIEW_ALL)
 ], getRecords);
+
+/**
+ * @openapi
+ * /system-settings/app-config:
+ *    get:
+ *      tags:
+ *        - system-settings
+ *      summary: Ajustes de formato y módulos para el frontend
+ *      description: |
+ *        Devuelve solo los ajustes no sensibles (categorías `formats` y `modules`)
+ *        que el frontend necesita para formatear fechas, moneda y decimales y para
+ *        saber qué módulos están contratados. Solo requiere sesión, no el privilegio
+ *        view_system_settings. Nunca incluye ajustes de `pricing`.
+ *      security:
+ *        - bearerAuth: []
+ *      responses:
+ *        '200':
+ *          description: Lista de ajustes (key, value, data_type)
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  settings:
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                        key:
+ *                          type: string
+ *                        value:
+ *                          type: string
+ *                        data_type:
+ *                          type: string
+ *        '401':
+ *          description: Sin sesión
+ */
+// Debe declararse antes de '/:key' para que 'app-config' no se tome como clave.
+router.get('/app-config', [
+  readLimiter,
+  authMidleware
+], getAppConfig);
 
 /**
  * @openapi

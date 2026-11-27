@@ -1,5 +1,9 @@
 const { systemSettings } = require('../models/index');
 
+// Categorías que cualquier usuario autenticado puede leer: formato y feature-flags.
+// NUNCA agregar 'pricing' (márgenes de precio y crédito) ni otra categoría sensible.
+const PUBLIC_SETTING_CATEGORIES = Object.freeze(['formats', 'modules']);
+
 const settingAttributes = [
   'id',
   'category',
@@ -61,4 +65,25 @@ const updateSystemSetting = async (key, value) => {
   return result;
 };
 
-module.exports = { getSystemSettings, getSystemSetting, updateSystemSetting };
+/**
+ * Lista solo los ajustes no sensibles (formato y módulos) que el frontend
+ * necesita para operar, sin importar los privilegios del usuario.
+ * @returns {Array} Arreglo de { key, value, data_type }.
+ */
+const getAppConfigSettings = async () => {
+  const rows = await systemSettings.findAll({
+    attributes: ['key', 'value', 'data_type'],
+    where: { category: PUBLIC_SETTING_CATEGORIES },
+    order: [['key', 'ASC']]
+  });
+
+  return rows;
+};
+
+module.exports = {
+  PUBLIC_SETTING_CATEGORIES,
+  getSystemSettings,
+  getSystemSetting,
+  getAppConfigSettings,
+  updateSystemSetting
+};

@@ -94,8 +94,9 @@ All fields are optional. Only fields present in the request body are updated.
 
 | Method | URL | Auth | Description |
 |--------|-----|------|-------------|
-| GET | `/api/system-settings` | Any authenticated user | List all settings (optional `?category=` filter) |
-| GET | `/api/system-settings/:key` | Any authenticated user | Get one setting by key |
+| GET | `/api/system-settings/app-config` | Any authenticated user | Non-sensitive settings only (`formats` + `modules`), `{ key, value, data_type }` |
+| GET | `/api/system-settings` | `view_system_settings` privilege | List all settings (optional `?category=` filter) |
+| GET | `/api/system-settings/:key` | `view_system_settings` privilege | Get one setting by key |
 | PUT | `/api/system-settings/:key` | `superadmin` only | Update the value of a setting |
 
 ### Seed data (default settings)
@@ -107,6 +108,14 @@ All fields are optional. Only fields present in the request body are updated.
 | `timezone` | `formats` | `America/Mexico_City` | `string` |
 | `decimal_places` | `formats` | `2` | `integer` |
 | `low_stock_threshold` | `inventory` | `5` | `integer` |
+
+### GET `/api/system-settings/app-config`
+
+Returns only the settings the frontend needs to work for every role: date/currency/decimal/timezone formats and module feature-flags (e.g. `payroll_module_enabled`). Requires a session but not the `view_system_settings` privilege, so that privilege can be removed from roles that must not see `pricing` values (`base_price_percentage`, `credit_price_percentage`). The whitelist lives in `PUBLIC_SETTING_CATEGORIES` (`src/services/systemSettings.js`); never add `pricing` to it.
+
+```json
+{ "settings": [ { "key": "date_format", "value": "DD/MM/YYYY", "data_type": "string" } ] }
+```
 
 ### GET `/api/system-settings`
 
