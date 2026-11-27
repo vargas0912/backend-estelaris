@@ -1,6 +1,6 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleErorr');
-const { getSystemSettings, getSystemSetting, updateSystemSetting } = require('../services/systemSettings');
+const { getSystemSettings, getSystemSetting, getAppConfigSettings, updateSystemSetting } = require('../services/systemSettings');
 
 const getRecords = async (req, res) => {
   try {
@@ -29,6 +29,15 @@ const getRecord = async (req, res) => {
   }
 };
 
+const getAppConfig = async (req, res) => {
+  try {
+    const settings = await getAppConfigSettings();
+    res.send({ settings });
+  } catch (error) {
+    handleHttpError(res, `ERROR_GET_APP_CONFIG -> ${error}`, 500);
+  }
+};
+
 const updateRecord = async (req, res) => {
   try {
     const { key } = req.params;
@@ -47,4 +56,4 @@ const updateRecord = async (req, res) => {
   }
 };
 
-module.exports = { getRecords, getRecord, updateRecord };
+module.exports = { getRecords, getRecord, getAppConfig, updateRecord };
