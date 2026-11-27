@@ -3,6 +3,7 @@ const { users, userAuditLogs } = require('../models/index');
 const { Op } = require('sequelize');
 const { encrypt, compare } = require('../utils/handlePassword');
 const { tokenSign } = require('../utils/handleJwt');
+const { allowBearer } = require('../config/security');
 
 const getUser = async(id) => {
   const data = await users.findOne({
@@ -39,10 +40,11 @@ const registerUser = async(req) => {
 
   /// const privileges = await addNewPrivilege(register.id);
 
+  // El token del usuario nuevo solo se devuelve si se aceptan headers Bearer
+  // (tests, scripts). Con la sesión solo por cookie no le sirve a quien lo crea.
   const data = {
-    token: await tokenSign(register),
+    ...(allowBearer() ? { token: await tokenSign(register) } : {}),
     user: register
-    // privileges
   };
 
   return data;
@@ -53,12 +55,11 @@ const registerSuperAdmin = async(req) => {
   const body = { ...req, password };
 
   const register = await users.create(body);
-  // register.set('password', undefined, {strict: false});
-
-  // const privileges = await addAdminPrivilege(register.id);
+  // Nunca devolver el hash de la contraseña en la respuesta
+  register.set('password', undefined, { strict: false });
 
   const data = {
-    token: await tokenSign(register),
+    ...(allowBearer() ? { token: await tokenSign(register) } : {}),
     user: register
   };
 

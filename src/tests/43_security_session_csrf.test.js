@@ -138,6 +138,20 @@ describe('[SECURITY] Sesión solo con cookie y CSRF de doble cookie', () => {
     });
   });
 
+  describe('Registro de usuarios', () => {
+    test('15. Sin Bearer, el registro no devuelve token ni el hash de la contraseña', async() => {
+      const { agent, csrf } = await browserLogin();
+      const res = await agent
+        .post('/api/auth/registerSuperUser')
+        .set('X-XSRF-TOKEN', csrf)
+        .send({ name: 'Super Dos', email: 'superdos@estelaris.com', role: 'superadmin', password: 'Admin123' })
+        .expect(200);
+      expect(res.body.superAdmin.token).toBeUndefined();
+      expect(res.body.superAdmin.user.password).toBeUndefined();
+      expect(res.body.superAdmin.user.email).toBe('superdos@estelaris.com');
+    });
+  });
+
   describe('Modos de CSRF', () => {
     test('12. CSRF_MODE=report deja pasar la petición (solo registra)', async() => {
       process.env.CSRF_MODE = 'report';
