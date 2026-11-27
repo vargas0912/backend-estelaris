@@ -41,13 +41,14 @@ El dominio `mega-estelaris.cloud` es temporal. Al cambiarlo solo hay que actuali
 
 ## Orden de despliegue en el VPS
 
+Producción corre en Docker detrás del Nginx del host, que manda `mega-estelaris.cloud/api/`
+al backend (mismo origen que el front). `FRONTEND_URL` y `TRUST_PROXY=1` ya están puestos.
+
 1. Mergear este PR (no cambia el comportamiento con los valores por defecto).
-2. Nginx sirviendo front y API en el mismo dominio (PR #239 del front).
-3. En el `.env` del backend: `FRONTEND_URL=https://mega-estelaris.cloud`,
-   `TRUST_PROXY=1`, `COOKIE_SAMESITE=lax`. Reiniciar.
-4. Crear el `.env` del front en el VPS y mergear el PR #240 del front.
-5. Revisar el log del backend un día: no debe haber líneas `[csrf] petición sin token`.
-6. En el `.env` del backend: `CSRF_MODE=enforce` y `AUTH_ALLOW_BEARER=false`. Reiniciar.
+2. Mergear el PR #240 del front y poner `COOKIE_SAMESITE=lax`. Reiniciar.
+3. Revisar el log. Mientras haya sesiones de la V1 abiertas (Bearer, sin CSRF) saldrán
+   líneas `[csrf] petición sin token`; deben desaparecer cuando todos usen la V2.
+4. `CSRF_MODE=enforce` y `AUTH_ALLOW_BEARER=false`. Reiniciar.
 
 Para volver atrás en cualquier paso basta con regresar las variables y reiniciar.
 
