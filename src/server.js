@@ -10,6 +10,8 @@ const openApiConfiguration = require('../docs/swagger');
 
 const { sequelize } = require('./models/index');
 const logger = require('./utils/logger');
+const { corsOrigins, productionWarnings } = require('./config/security');
+const { csrfProtection } = require('./middlewares/csrf');
 
 class Server {
   constructor(environment) {
@@ -57,9 +59,12 @@ class Server {
       crossOriginEmbedderPolicy: false
     }));
 
-    // CORS
+    // CORS: solo los orígenes de FRONTEND_URL (separados por coma). Si el front y la
+    // API se sirven bajo el mismo dominio (Nginx), CORS no interviene. Sin
+    // FRONTEND_URL no se permite ningún origen externo.
+    const allowedOrigins = corsOrigins();
     this.app.use(cors({
-      origin: process.env.FRONTEND_URL,
+      origin: allowedOrigins.length ? allowedOrigins : false,
       credentials: true
     }));
 
@@ -127,8 +132,8 @@ class Server {
       });
     });
 
-    // API routes
-    this.app.use('/api', require('./routes'));
+    // API routes (con protección CSRF en métodos que modifican datos)
+    this.app.use('/api', csrfProtection, require('./routes'));
   }
 
   errorHandler() {
@@ -170,6 +175,10 @@ class Server {
   }
 
   listen() {
+    if (process.env.NODE_ENV === 'production') {
+      productionWarnings().forEach((warning) => logger.warn(`[seguridad] ${warning}`));
+    }
+
     this.httpServer = this.app.listen(this.port, () => {
       logger.info(`Server running on port ${this.port}`);
       logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);

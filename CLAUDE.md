@@ -52,7 +52,9 @@ Route → authMiddleware → validator → checkRol → Controller → Service �
 
 **Model configuration:** All models use `timestamps: true`, `paranoid: true` (soft delete), `underscored: true` (snake_case columns).
 
-**Authentication:** JWT tokens (2h expiry) with payload `{ id, role }`. Header: `Authorization: Bearer <token>`.
+**Authentication:** JWT tokens (2h expiry) with payload `{ id, role }`. El navegador lo recibe y lo manda solo en la cookie HttpOnly `token`. `Authorization: Bearer <token>` se acepta únicamente con `AUTH_ALLOW_BEARER=true` (tests, Swagger, scripts); en ese caso el login también devuelve el token en el cuerpo.
+
+**CSRF:** doble cookie (`src/middlewares/csrf.js`). `GET /api/auth/csrf` pone la cookie `XSRF-TOKEN`; en POST/PUT/PATCH/DELETE el header `X-XSRF-TOKEN` debe coincidir, o responde `403 { error: 'CSRF_TOKEN_INVALID' }` con `CSRF_MODE=enforce`. Las peticiones con Bearer (permitido) no lo necesitan. Toda la configuración vive en `src/config/security.js`; ver `docs/SECURITY_SESSION_CSRF.md`.
 
 **Authorization:** Three roles: `superadmin` (bypasses checks), `admin`, `user`. Granular privileges via `userprivileges` table with codenames like `view_users`, `create_product`.
 

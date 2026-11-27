@@ -6,6 +6,8 @@ const { handleHttpError, handleServerError } = require('../utils/handleErorr');
 const { registerUser, registerSuperAdmin } = require('../services/users');
 const { LOGIN, USER } = require('../constants/errors');
 const { ROLE } = require('../constants/roles');
+const { allowBearer, sessionCookieOptions, SESSION_COOKIE_NAME, CSRF_COOKIE_NAME, csrfCookieOptions } = require('../config/security');
+const { issueCsrfToken } = require('../middlewares/csrf');
 
 /**
  * This controller is used for register user
@@ -87,19 +89,18 @@ const loginCtrl = async(req, res) => {
 
     const token = await tokenSign(user);
     const sesion = {
-      token,
+      // El token solo viaja en el cuerpo si se aceptan headers Bearer (tests, Swagger).
+      // En el navegador vive únicamente en la cookie HttpOnly.
+      ...(allowBearer() ? { token } : {}),
       expires_at: new Date(Date.now() + JWT_EXPIRY_MS).toISOString(),
       user,
       branches: branchesList
     };
 
     user.set('password', undefined, { strict: false });
-    res.cookie('token', token, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      maxAge: JWT_EXPIRY_MS
-    });
+    res.cookie(SESSION_COOKIE_NAME, token, sessionCookieOptions(JWT_EXPIRY_MS));
+    // Token CSRF nuevo con cada sesión
+    issueCsrfToken(res);
     res.send({ sesion });
   } catch (error) {
     handleHttpError(res, LOGIN.ERR_LOGIN, 400);
@@ -107,11 +108,9 @@ const loginCtrl = async(req, res) => {
 };
 
 const logoutCtrl = (req, res) => {
-  res.clearCookie('token', {
-    httpOnly: true,
-    sameSite: 'none',
-    secure: true
-  });
+  const { maxAge, ...sessionOptions } = sessionCookieOptions();
+  res.clearCookie(SESSION_COOKIE_NAME, sessionOptions);
+  res.clearCookie(CSRF_COOKIE_NAME, csrfCookieOptions());
   res.send({ message: 'Sesión cerrada' });
 };
 const refreshCtrl = async(req, res) => {
@@ -119,20 +118,23 @@ const refreshCtrl = async(req, res) => {
     const user = req.user;
     const token = await tokenSign(user);
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      maxAge: JWT_EXPIRY_MS,
-      path: '/'
-    });
+    res.cookie(SESSION_COOKIE_NAME, token, sessionCookieOptions(JWT_EXPIRY_MS));
     res.json({
-      token,
+      ...(allowBearer() ? { token } : {}),
       expires_at: new Date(Date.now() + JWT_EXPIRY_MS).toISOString()
     });
   } catch (error) {
     handleHttpError(res, 'ERROR_REFRESH_TOKEN', 400);
   }
+};
+
+/**
+ * Entrega (o renueva) la cookie XSRF-TOKEN. Público: el front lo llama antes
+ * del login y cuando el backend responde CSRF_TOKEN_INVALID.
+ */
+const csrfCtrl = (req, res) => {
+  issueCsrfToken(res);
+  res.status(204).end();
 };
 
 const verifyPasswordCtrl = async (req, res) => {
@@ -152,4 +154,4 @@ const verifyPasswordCtrl = async (req, res) => {
   }
 };
 
-module.exports = { registerAdminCtrl, registerCtrl, loginCtrl, refreshCtrl, logoutCtrl, verifyPasswordCtrl };
+module.exports = { registerAdminCtrl, registerCtrl, loginCtrl, refreshCtrl, logoutCtrl, verifyPasswordCtrl, csrfCtrl };
